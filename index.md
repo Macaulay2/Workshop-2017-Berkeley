@@ -1,5 +1,7 @@
 ---
 layout: default
+title: Home
+permalink: /
 ---
 
 ## About the conference
@@ -32,10 +34,10 @@ for those wishing to attend the research meeting.
 
 
 For planning purposes, we request those who intend to attend the research
-meeting to register at <a href="http://tinyurl.com/m5j3qdk">http://tinyurl.com/m5j3qdk</a>, and to indicate 
-their request for funding, if any.  Feel free to re-register to amend your
-information.  Those who wish to apply for funding should do so by April 4,
-2014.
+meeting to register at [http://tinyurl.com/m5j3qdk](http://tinyurl.com/m5j3qdk), 
+and to indicate their request for funding, if any.  Feel free to re-register to 
+amend your information.  Those who wish to apply for funding should do so by 
+April 4, 2014.
 
 
 <h2>Macaulay2 School</h2>
@@ -44,9 +46,10 @@ information.  Those who wish to apply for funding should do so by April 4,
 The school will take place June 16-17, and although space is limited, all who
 wish to attend are invited to apply. The school will center on three tutorial
 sessions:
-   - Greg Smith: Toric Varieties<br>
-   - Dan Bates: Numerical Algebraic Geometry<br>
-   - Josephine Yu: Tropical Geometry<br>
+
+* Greg Smith: Toric Varieties
+* Dan Bates: Numerical Algebraic Geometry
+* Josephine Yu: Tropical Geometry
 
 
 
@@ -57,9 +60,8 @@ lodging, and subsistence; indicate that you wish to attend on the
 registration form mentioned above. Please also include a short statement of
 purpose on why you wish to attend.  Graduate students and postdocs should
 also arrange for a letter of endorsement from their advisor to be sent to
-<a href="mailto:smapes1@nd.edu">Sonja Mapes &lt;smapes1@nd.edu&gt;</a>.  Those who wish to attend should do so by
-April 4, 2014.
-
+[Sonja Mapes &lt;smapes1@nd.edu&gt;](mailto:smapes1@nd.edu).  Those who wish to 
+attend should do so by April 4, 2014.
 
 
 Those who wish to attend the school should commit to being present for the 5
