@@ -2,6 +2,7 @@
 layout: default
 title: Home
 permalink: /
+menuOrder: 0
 ---
 
 ## About the conference
@@ -34,7 +35,7 @@ for those wishing to attend the research meeting.
 
 
 For planning purposes, we request those who intend to attend the research
-meeting to register at [http://tinyurl.com/m5j3qdk](http://tinyurl.com/m5j3qdk), 
+meeting to register at [http://tinyurl.com/m5j3qdk ](http://tinyurl.com/m5j3qdk), 
 and to indicate their request for funding, if any.  Feel free to re-register to 
 amend your information.  Those who wish to apply for funding should do so by 
 April 4, 2014.

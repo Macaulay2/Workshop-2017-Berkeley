@@ -1,12 +1,13 @@
 <div id="header">
   <h1>
-    Conference and Macaulay2 Workshop <br> July 17-21, 2017
+    Free Resolutions and Computation <br> July 17-21, 2017
   </h1>
 </div>
 
 <div id="navigation">
       <ul>
-        {% for page in site.pages %}
+        {% assign sortedPages = site.pages | sort: 'menuOrder' %}
+        {% for page in sortedPages %}
           {% if page.title %}
           <li><a class="page-link" href="{{ page.url | prepend: site.baseurl }}">{{ page.title }}</a></li>
           {% endif %}
