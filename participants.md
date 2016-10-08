@@ -1,12 +1,11 @@
 ---
 layout: default
-title: Participants
+title: Participant List
 permalink: /participants/
 menuOrder: 20
 ---
 
-
-## Participant List
+## {{ page.title }}
 
 * Lara Anderson (Virginia Tech) 
 * Arindam Banerjee (U. of Virginia)
