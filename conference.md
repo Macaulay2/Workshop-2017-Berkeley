@@ -107,7 +107,7 @@ David Eisenbud - "Tying Betti numbers together"
       [<A href="javascript:;"
         onclick="toggleDisplay('DEisenbud');">abstract</A>] 
 
-<div id="DEisenbud" style="display: none">
+<div id="DEisenbud" style="display: ">
 If $M$ is a graded module over $k[x_1, \dots x_n]$  (or a
 module over a regular local ring) that is annihilated by a regular
 sequence $f_1,\dots f_m$, then the homotopies for the $f_i$ make
