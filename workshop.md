@@ -21,6 +21,6 @@ Here is a list of previous Macaulay2 workshops.
 * Wake2012 - Wake Forest Workshop, August 5-9, 2012.
 * IMA2011 - IMA workshop, July 24-29, 2011.
 * MSRI2011 - MSRI Summer Graduate Workshop, June 6-17, 2011.
-* G\"ottingen2011 - G\"ottingen workshop, February 28 - March 4, 2011.
+* Gottingen2011 - Gottingen workshop, February 28 - March 4, 2011.
 
 
