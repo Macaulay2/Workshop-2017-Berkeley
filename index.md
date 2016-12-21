@@ -14,7 +14,7 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 * Mel Hochster
 * Craig Huneke
 * Julio Caviglia
-* Jason McCollough
+* Jason McCullough
 
 ## Organizers
 
