@@ -11,20 +11,23 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 
 ## Confirmed Speakers
 
+* Christine Berkesch Zamaere
 * Mel Hochster
 * Craig Huneke
 * Giulio Caviglia
+* Sonja Mapes
 * Jason McCullough
+* Alexandra Seceleanu
 * Mauricio Velasco
 
 ## Organizers
 
 * David Eisenbud (Berkeley)
 * Sonja Mapes (Notre Dame)
-* Hal Schenck, (Illinois)
+* Hal Schenck (Illinois)
 * Branden Stone (Adelphi University)
 * David Swinarski (Fordham)
-* Amelia Taylor, (Zymergen, Inc.)
+* Amelia Taylor (Zymergen, Inc.)
 
 
 
