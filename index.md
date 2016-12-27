@@ -17,6 +17,7 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 * Giulio Caviglia
 * Sonja Mapes
 * Jason McCullough
+* Irena Peeva
 * Alexandra Seceleanu
 * Mauricio Velasco
 
