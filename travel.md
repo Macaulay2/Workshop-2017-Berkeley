@@ -7,7 +7,7 @@ menuOrder: 40
 
 ## {{ page.title }}	      
 
-##Lodging
+**Lodging**
 
 Even in summer, Berkeley housing can fill up quickly,
 so participants are encouraged to make reservations
