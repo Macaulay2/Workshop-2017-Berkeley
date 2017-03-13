@@ -12,14 +12,15 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 ## Confirmed Speakers
 
 * Christine Berkesch Zamaere
-* Giulio Caviglia
-* Andre Galligo
 * Mel Hochster
 * Craig Huneke
+* Giulio Caviglia
 * Sonja Mapes
 * Jason McCullough
 * Irena Peeva
 * Alexandra Seceleanu
+* Frank-Olaf Schreyer
+* Mauricio Velasco
 
 
 ## Organizers
