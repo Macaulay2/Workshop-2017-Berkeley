@@ -20,6 +20,7 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 * Irena Peeva
 * Alexandra Seceleanu
 * Frank-Olaf Schreyer
+* Ravi Vakil
 
 
 ## Organizers
