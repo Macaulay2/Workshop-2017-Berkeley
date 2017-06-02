@@ -7,9 +7,9 @@ menuOrder: 1
 
 ## {{ page.title }}
 
-## Conference Schedule
+### Schedule
 
-###Monday
+#### Monday
 
 * 9:00 -9:45 Vakil
 * 9:45-10:15 Coffee
@@ -20,7 +20,7 @@ menuOrder: 1
 * 2:45-3:15 Coffee
 * 3:15-4:00 Hochster
 
-###Tuesday
+#### Tuesday
 
 * 9:00-9:45 Seceleanu
 * 9:45-10:15 Coffee
