@@ -10,7 +10,7 @@ menuOrder: 3
 Since this workshop is only 3 days, we adopt a fairly aggressive schedule like that used at the Boise workshop in an effort to maximize our time together.  Also, most of you will already be at the conference and have planned to depart on Saturday, so we include on the schedule for the 3 days of intensive Macaulay2 workshop here.  
 
 | Times         |Wednesday             | Thursday            | Friday |
-| ---         | ---               | ---              | --- |
+| :---          | :---                 | :---                | :--- |
 | 8:30 - 9:30   | Intro to the Workhop | Presentations       | Presentations |
 | 9:30 - 10:00  | Break                | Break               | Break  |
 | 10:00 - 12:00 | Projects             | Projects            | Projects |
@@ -35,3 +35,18 @@ Here is a list of previous Macaulay2 workshops. This is a good place to look at 
 * Gottingen2011 - Gottingen workshop, February 28 - March 4, 2011.
 
 
+|||---|||
+#### Columns
+
+can save space.
+
+#### Prettify
+
+the page layout.
+
+*** promo
+#### Can be
+
+trendy.
+***
+|||---|||
