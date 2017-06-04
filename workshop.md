@@ -21,11 +21,7 @@ Since this workshop is only 3 days, we adopt a fairly aggressive schedule like t
 | 16:15 - 16:45  | Break                 | Break               | Future/Closing       |
 | 16:45 - 18:00  | Projects              | Projects            | Future/Closing       | 
 
-<table>
-<tr> <td> Times </td>
-<td> Wednesday </td>
-</tr>
-</table>
+The [Schedule](https://macaulay2.github.io/Workshop-2017-Berkeley/workshop-schedule)
 
 ### Previous Workshops
 
