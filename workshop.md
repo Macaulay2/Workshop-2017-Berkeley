@@ -18,7 +18,7 @@ Since this workshop is only 3 days, we adopt a fairly aggressive schedule like t
 | 14:00 - 15:00 | Projects             | Presentations       | Presentations |
 | 15:00 - 16:15 | Projects             | Projects            | Projects  |
 | 16:15 - 16:45 | Break                | Break               | Future/Closing |
-| 16:45 - 18:00 | Projects             | Projects            | Future/Closing (we typically finish by 5pm) | 
+| 16:45 - 18:00 | Projects             | Projects            | Future/Closing | 
 
 ### Previous Workshops
 
@@ -34,19 +34,3 @@ Here is a list of previous Macaulay2 workshops. This is a good place to look at 
 * MSRI2011 - MSRI Summer Graduate Workshop, June 6-17, 2011.
 * Gottingen2011 - Gottingen workshop, February 28 - March 4, 2011.
 
-
-|||---|||
-#### Columns
-
-can save space.
-
-#### Prettify
-
-the page layout.
-
-*** promo
-#### Can be
-
-trendy.
-***
-|||---|||
