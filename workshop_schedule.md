@@ -1,8 +1,8 @@
 ---
 layout: default
 title: Workshop
-permalink: /workshop/schedule/
-menuOrder: 15
+permalink: /workshop-schedule
+menuOrder: 100
 ---
 
 ## {{ page.title }}	 
@@ -19,4 +19,4 @@ Since this workshop is only 3 days, we adopt a fairly aggressive schedule like t
 | 14:00 - 15:00  | Projects              | Presentations       | Presentations        |
 | 15:00 - 16:15  | Projects              | Projects            | Projects             |
 | 16:15 - 16:45  | Break                 | Break               | Future/Closing       |
-| 16:45 - 18:00  | Projects              | Projects            | Future/Closing       | 
+| 16:45 - 18:00  | Projects              | Projects            | Future/Closing       |
