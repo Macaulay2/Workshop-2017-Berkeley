@@ -9,6 +9,8 @@ menuOrder: 0
 
 A conference and software development workshop will be held July 17-21, 2017 at the University of California, Berkeley. The first two days of the meeting will be a conference on free resolutions and commutative algebra and the rest of the time will be spent hosting a Macaulay2 workshop.
 
+![alt text](DM.jpg)
+
 ## Confirmed Speakers
 
 * Christine Berkesch Zamaere
