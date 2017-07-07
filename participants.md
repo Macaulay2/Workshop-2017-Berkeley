@@ -7,4 +7,5 @@ menuOrder: 20
 
 ## {{ page.title }}
 
-Participants will be posted when available. 
+* Sonja Mapes
+ 
