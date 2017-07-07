@@ -35,6 +35,25 @@ menuOrder: 1
 ### Abstracts
 
 
+* Christine Berkesch Zamaere - Virtual resolutions for products of projective spaces
+
+Given a module M over the Cox ring of a smooth toric variety, one can consider free complexes that are acyclic modulo irrelevant homology, which we call virtual resolutions for M. These complexes have many advantages over minimal free resolutions over smooth toric varieties other than projective spaces. We develop this in detail for products of projective spaces. This is joint work with Daniel Erman and Gregory G. Smith.
+
+* Andre Galligo - Deformations of curve germs with and without embedded components.
+
+Recent articles (by J. Bobadilla, J. Snoussi, M. Spivatovski  and by G-M. Greuel) provided interesting generalizations of some results of my old joint paper with J. Brian_c{c}on and J-M. Granger, which classified the natural notions of equisingularity for deformations of reduced complex curve germs.
+They studied reduced surface germs S, deformations of curve germs which are only generically reduced.
+One of the consequences is that such an S is not necessarily Cohen-Macaulay.
+I will first present the topological and algebraic aspects of the subject. Then I will report on experiments for an attempt to recover some results using Macaulayfication (CM linkage) of the surface S.
+
+* Mel Hochster - Small subalgebras and Stillman bounds
+
+The talk will discuss joint work of the speaker and Tigran Ananyan
+proving Stillman's conjecture for all degrees and characteristics,
+developing specific bounds for the functions involved in
+small degree by somewhat different methods, as well as some
+related developments.
+
 * Jason McCullough - The Projective Dimension of 3 Cubics
 
 
@@ -47,4 +66,17 @@ Stillman's Question, recently answered in the affirmative by Ananyan-Hochster, a
 I report on work of two of my students: Christian Bopp and Michael Hoff. Given a curve C of genus g together with a rational function f:C -> P^1 of degree d the canonical model lies on a rational normal scroll X, and the resolution of O_C as an O_X module is build with certain vector bundle N_i on P^1. It is interesting to ask whether the splitting type of the N_i is balanced for a general pair (C,f), since then jump loci lead to interesting subspaces of the Hurwitz scheme H_{g,d}. By experiment Bopp and Hoff discovered that the second syzygy bundle N_2
 is not balanced for (g,d)=(9,6) for finite fields. In the talk I will explain how their proof in characteristic zero builds upon a moduli space of certain lattice polarized K3 surfaces.
  
+* Alexandra Seceleanu - Polynomial growth for Betti numbers
+
+It is well known that the asymptotic patterns of the Betti
+sequences of the finitely generated modules over a local ring R reflect the
+structure of R. For instance, these sequences are eventually zero if and
+only if R is regular  and they are eventually constant if and only if R is a
+hypersurface. We consider the problem of characterizing the rings R such
+that every R-module has Betti numbers eventually given by a single
+polynomial. We give necessary and sufficient conditions for R to have this
+property. In some important cases, for example when R is homogeneous, these
+conditions coincide and therefore characterize R. 
+
+This is joint work with Lucho Avramov and Yang Zheng.
 
