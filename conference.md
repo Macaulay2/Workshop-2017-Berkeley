@@ -32,12 +32,21 @@ menuOrder: 1
 * 3:15-4:00 Schreyer
 * 6pm Conference Dinner
 
+All talks will be in room 150 of the Goldman School of Public Policy (GSPP), which is near Evans Hall.
+
 ### Abstracts
 
 
 * Christine Berkesch Zamaere - Virtual resolutions for products of projective spaces
 
 Given a module M over the Cox ring of a smooth toric variety, one can consider free complexes that are acyclic modulo irrelevant homology, which we call virtual resolutions for M. These complexes have many advantages over minimal free resolutions over smooth toric varieties other than projective spaces. We develop this in detail for products of projective spaces. This is joint work with Daniel Erman and Gregory G. Smith.
+
+* Giulio Caviglia - Extremal free resolutions over monomial complete intersections.
+
+Let S be a polynomial ring over a field k of characteristic 0,
+and let R be a complete intersection in S  defined by  powers of the variables.
+We prove that, in the Hilbert scheme parametrizing the closed subschemes of Proj R with a fixed Hilbert polynomial p,there exists a point whose saturated ideal I achieves the largest possible Betti numbers in the finite free resolution of R/I over S and in the infinite free resolution of R/I over R.
+In the case of a regular  ring, the ideal I also maximizes the infinite free resolution of k over R/I.  This is a joint work with Alessio Sammartano.
 
 * Andre Galligo - Deformations of curve germs with and without embedded components.
 
