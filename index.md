@@ -24,7 +24,7 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 * Ravi Vakil
 
 
-## Organizers
+## Scientific Committee
 
 * David Eisenbud (Berkeley)
 * Sonja Mapes (Notre Dame)
@@ -32,6 +32,11 @@ A conference and software development workshop will be held July 17-21, 2017 at 
 * Branden Stone (Adelphi University)
 * David Swinarski (Fordham)
 * Amelia Taylor (Zymergen, Inc.)
+
+## Local Organizers
+
+* Justin Chen
+* Mengyuan Zhang
 
 ![alt text](DM.jpg)
 
