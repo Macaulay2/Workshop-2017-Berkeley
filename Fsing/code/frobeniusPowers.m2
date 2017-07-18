@@ -22,19 +22,19 @@ fastExp = (N,f) ->
 
 --Outputs the p^e-th Frobenius power of an ideal, or the p^e-th (entry-wise) Frobenius power of a matrix.
 
-frobenius =  method( Options => { EthRootStrategy => Substitution } );
+frobenius =  method( Options => { FrobeniusRootStrategy => Substitution } );
 
 frobenius ( ZZ, Ideal ) := o -> ( e, I ) ->
 (
     if e == 0 then return I;
-    if e < 0 then return ethRoot( -e, I, o );
+    if e < 0 then return ethRoot( -e, I, EthRootStrategy => o.FrobeniusRootStrategy );
     R := ring I;
     p := char R;
     G := I_*;
     if #G == 0 then ideal( 0_R ) else ideal( apply( G, j -> fastExp( p^e, j ) ) )
 )
 
-frobenius ( ZZ, Matrix ) := ( e, M ) ->
+frobenius ( ZZ, Matrix ) := o -> ( e, M ) ->
 (
     if e == 0 then return M;
     if e < 0 then error "frobenius: first argment must be nonnegative.";
@@ -44,7 +44,7 @@ frobenius ( ZZ, Matrix ) := ( e, M ) ->
 
 frobenius ( Ideal ) := o -> I -> frobenius( 1, I, o )
 
-frobenius ( Matrix ) := M -> frobenius( 1, M )
+frobenius ( Matrix ) := o -> M -> frobenius( 1, M )
 
 FrobeniusOperator = new Type of MethodFunctionWithOptions
 
@@ -76,7 +76,7 @@ stableIdeal = { EthRootStrategy => Substitution } >> o -> ( e, I, J ) ->
 
 --Outputs the generalized Frobenius power of an ideal; either the N-th Frobenius power of N/p^e-th one.
 
-frobeniusPower = method( Options => { gfpStrategy => Naive, EthRootStrategy => Substitution } );
+frobeniusPower = method( Options => { gfpStrategy => Naive, FrobeniusRootStrategy => Substitution } );
 
 --Computes the integral generalized Frobenius power I^[N]
 frobeniusPower ( ZZ, Ideal ) := opts -> ( N, I ) -> 
@@ -104,10 +104,10 @@ frobeniusPower( ZZ, ZZ, Ideal ) := opts -> ( e, N, I ) ->
     if opts.gfpStrategy == Safe then 
     (
 	E := basePExp( p, rem );
-	J * product( #E, m -> ethRoot( e-m, I^( E#m ),  EthRootStrategy => opts.EthRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
+	J * product( #E, m -> ethRoot( e-m, I^( E#m ),  EthRootStrategy => opts.FrobeniusRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
                                                                             --using the base p expansion of rem/p^e < 1
     )
-    else J * ethRoot( e, frobeniusPower( rem, I ), EthRootStrategy => opts.EthRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
+    else J * ethRoot( e, frobeniusPower( rem, I ), EthRootStrategy => opts.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
 )
 
 --Computes the generalized Frobenius power I^[t] for a rational number t 
@@ -120,7 +120,7 @@ frobeniusPower( QQ, Ideal ) := opts -> ( t, I ) ->
 	(
 	    rem := a % ( p^c - 1 );      
 	    quot := a // ( p^c - 1 );     
-	    J := stableIdeal( c, frobeniusPower( rem, I ), I, EthRootStrategy => opts.EthRootStrategy );
-	    ethRoot( b, frobeniusPower( quot, I ) * J, EthRootStrategy => opts.EthRootStrategy )
+	    J := stableIdeal( c, frobeniusPower( rem, I ), I, EthRootStrategy => opts.FrobeniusRootStrategy );
+	    ethRoot( b, frobeniusPower( quot, I ) * J, EthRootStrategy => opts.FrobeniusRootStrategy )
         )
 )

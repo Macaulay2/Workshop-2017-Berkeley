@@ -99,9 +99,8 @@ ethRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
     I = R;
     for j from 0 to length(idealList) - 1 do I = I*(idealList#j)^(exponentList#j - nsList#j * p);
     I = ethRoot(1, I, EthRootStrategy => opts.EthRootStrategy);
-    ethRoot(e - 1, append(nsList, 1), append(idealList, I), EthRootStrategy => opts.EthRootStrategy)
-);
-
+    ethRoot(e - 1, append(nsList, 1), append(idealList, I), opts )
+)
 
 -----------------------------------------------------------------------------
 
@@ -111,7 +110,7 @@ ethRoot ( ZZ, ZZ, RingElement, Ideal ) := opts -> ( e, a, f, I ) -> ethRootRingE
 
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, ZZ, RingElement ) := opts -> ( e, a, f ) -> ethRootRingElements ( e, a, f,  opts ) ---MK
+ethRoot ( ZZ, ZZ, RingElement ) := opts -> ( e, a, f ) -> ethRootRingElements ( e, a, f, opts ) ---MK
  -- in the future, ethRootRingElements should be subsumed by ethRoot(ZZ, List, List). When this happens,
  -- the above line should end with ethRoot( e, {a}, {f} ) 
 
@@ -136,7 +135,7 @@ frobeniusRoot ( ZZ, Ideal ) := o -> ( n, I ) ->
 (
     p := char ring I;  
     e := floorLog( p, n );
-    if n != p^e then error "frobeniusPower: first argument must be a number of the form 1/p^e, where p is the characteristic of the ring.";   
+    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
     ethRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
 )
 
@@ -144,7 +143,7 @@ frobeniusRoot ( ZZ, MonomialIdeal ) := o -> ( n, I ) ->
 (
     p := char ring I;  
     e := floorLog( p, n );
-    if n != p^e then error "frobeniusPower: first argument must be a number of the form 1/p^e, where p is the characteristic of the ring.";   
+    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
     ethRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
 )
 
