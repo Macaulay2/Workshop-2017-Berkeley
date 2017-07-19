@@ -111,15 +111,10 @@ export{
     "findQGorGen", --Karl (this finds y such that I^{[p^e]} : I = (y) + I^{[p^e]}, if it exists) **Documented**
     "testElement", --Karl (my students Marcus and Dan did some improvements on this recently, it doesn't compute the whole Jacobian, it just looks at random minors until it finds a good one, it can be much much faster) **Documented**
     "MaxCartierIndex", --the cartier index limit in the test ideal method
---    "tauAOverPEMinus1Poly", --Karl (this should be removed)
---    "tauGor", --Karl (this should be removed)
---    "tauGorAmb",--Karl (this should be removed)
---    "tauNonPrincipalAOverPEPoly", --Karl (this should be removed)
---    "tauPoly", --Karl (this should be removed)
---    "tauQGor",    --Karl removed  since it is subsumed by the new testIdeal
---    "tauQGorAmb", --Karl removed  since it is subsumed by the new testIdeal
     "testIdeal", --Karl (the new version)
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
+    "isFregular",
+    "isFpure",
 
 -- Other.m2
 --    "HSL", 
@@ -167,7 +162,7 @@ load "./code/frobeniusPowers.m2"
 
 load "./code/compatiblySplit.m2"
 
-load "./code/FPure.m2"
+--load "./code/FPure.m2"
 
 load "./code/FFiniteSupport.m2"
 
@@ -197,7 +192,7 @@ load "./documentation/testIdealsDoc.m2"
 
 load "./documentation/parameterTestIdealDoc.m2"
 
-load "./documentation/FPureDoc.m2"
+--load "./documentation/FPureDoc.m2"
 
 -- TESTS
 
