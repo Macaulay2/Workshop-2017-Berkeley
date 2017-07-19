@@ -2014,6 +2014,16 @@ assert((prune HH_2 iC)==(iC.ring)^{1:-1,2:-2,1:-3})
 assert((prune HH_3 iC)==prune image matrix{{0_(iC.ring)}})
 ///
 
+TEST ///
+V = {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{0,-10}};
+V'= {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{1,-10}};
+F = {{0,1,2},{2,3,4},{0,4,5},{1,3,5},{1,2,3},{0,2,4},{0,1,5}};
+S1 = splineModule(V,F,1);
+S1' = splineModule(V',F,1);
+assert(splineDimensionTable(0,5,S1)==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,7,16,33,57}})
+assert(splineDimensionTable(0,5,S1')==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,6,16,33,57}})
+///
+
 end
 
 --may restore to documentation in future iterations
