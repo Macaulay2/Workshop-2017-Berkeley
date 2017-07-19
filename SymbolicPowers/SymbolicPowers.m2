@@ -27,9 +27,10 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
-(J = I;
+(J := I;
 (for i from 1 to n do J = J*I);
 J)
+
 
 
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
@@ -285,7 +286,6 @@ minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower
 
 
 
-
 -----------------------------------------------------------
 -----------------------------------------------------------
 -- Functions for asymptotic invariants
@@ -334,6 +334,12 @@ else (
 )
 
 
+
+
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 
 -----------------------------------------------------------
