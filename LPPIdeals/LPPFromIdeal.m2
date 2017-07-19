@@ -50,3 +50,61 @@ LPPFromIdeal(Ideal) := (I) -> (
        return lex;
        );
   )
+
+  --local function for use in isLPP
+--if mon is a pure power, returns {index of variable, exponent}
+purePowerIndex = method(TypicalValue=>Boolean)
+purePowerIndex(RingElement) := mon -> (
+     expVector:=flatten exponents mon;
+     if number(expVector,i->i!=0) > 1 then false else (
+	  pos:=position(expVector,i->i!=0);
+	  {position(expVector,i->i!=0),expVector#pos}
+     )
+)
+
+--determine whether a list of numbers is nondecreasing
+isNonDec = method(TypicalValue=>Boolean)
+isNonDec(List) := (li) -> (
+     len:=#li;
+     pos:=0;
+     result:=true;
+     while result==true and pos < len-1 do (
+  	  result=li#(pos+1)>=li#pos;
+  	  pos=pos+1;
+	  );
+     result
+)
+
+
+  isLPPNonFull = method(TypicalValue=>Boolean)
+  isLPPNonFull(Ideal) := (I) -> (
+       ri:=ring I;
+       numvars:=dim ri;
+       m:=ideal vars ri;
+       Igens:=first entries gens trim I;
+       --check that the power sequence has right length and is nondecreasing
+       powers:=select(Igens,i->isPurePower i);
+       --if #powers != numvars then return false;
+       expon:=apply(sort apply(powers,i->purePowerIndex i),i->i#1);
+       if not (isNonDec expon) then return false;
+       --nonPowers are not a power of a variable
+       nonPowers:=select(Igens,i->not isPurePower i);
+       if nonPowers=={} then return true; --if a CI with nondec. powers
+       maxDeg:=first flatten max(apply(nonPowers,i->flatten degree i));
+       deg:=1;
+       while deg <= maxDeg do (
+  	  --get the minimal generators in degree deg and find the smallest
+  	  --in descending lex order that isn't a pure power
+  	  nonPowersDeg:=select(nonPowers,i->(first flatten degree i)==deg);
+  	  ringBasis:=flatten entries basis(deg,ri);
+  	  lastPos:=position(reverse ringBasis,i->member(i,nonPowersDeg));
+       	  if lastPos===null then deg=deg+1 else (
+  	       normalPos:=binomial(numvars-1+deg,deg)-1-lastPos;
+  	       lastGen:=ringBasis#normalPos;
+  	       --check that all mons > than lastGen in desc. lex order
+  	       --are in I
+  	       if not all(0..normalPos,i->((ringBasis#i) % I)==0) then return false else deg=deg+1;
+       	       );
+  	  );
+       true
+  )
