@@ -45,8 +45,17 @@ sign = x ->
 
 -- input: 
 basesFromMatrix = A -> (
+    	E := entries transpose A/(v -> transpose matrix{v})
+        r := rank A;  -- maybe want to optimize this step more later
+        cols := numColumns A;
+        A1 := A;
+        if(r < numRows A) then A1 = transpose gens gb transpose A;
+	hashTable (apply(subsets(#E, r), s-> {s, sign det A1_(s) }))
+	)
+		
     
-    )
+    
+
 
 circuitsFromMatrix = A -> (
     r := rank A;
