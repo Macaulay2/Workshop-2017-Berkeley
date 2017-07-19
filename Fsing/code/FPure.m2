@@ -179,7 +179,7 @@ while (f) do
 	P1=(frobenius( answer )):u;
 	P1=intersect(answer,P1);
 	P2=ideal(u)*answer;
-	P2=ethRoot(1,P2);
+	P2=frobeniusRoot(1,P2);
 	P1=intersect(P1,P2);
 	P1=compress((gens(P1))%M);
 	P1=ideal(P1);

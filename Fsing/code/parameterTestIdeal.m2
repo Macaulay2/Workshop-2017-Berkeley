@@ -159,7 +159,7 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
             curTau = sub(curTau, S1);
-            curTau = ethRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1#j, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
+            curTau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1#j, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
             tau = tau + curTau;
             j = j+1;
         );                
@@ -171,7 +171,7 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
         curTau = sub(curTau, S1);                
-        tau = ethRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
+        tau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
     );
     
     (sub(tau, R1), sub(J1, R1), u1)
@@ -233,7 +233,7 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
                 --if we need to take more roots, do so...
             curTau = sub(curTau, S1);                
 
-            curTau = ethRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);
+            curTau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);
 
             tau = tau + curTau;
             j = j+1;
@@ -246,7 +246,7 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
         curTau = sub(curTau, S1);                
-        tau = ethRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);        
+        tau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);        
     );
     
     (sub(tau, R1), sub(J1, R1), u1)
