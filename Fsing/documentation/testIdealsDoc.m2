@@ -132,11 +132,11 @@ doc ///
 
 doc ///
     Key
-        [testIdeal, EthRootStrategy]
+        [testIdeal, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within the testIdeal call
     Usage
-        testElement(..., EthRootStrategy=>S)
+        testElement(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Outputs

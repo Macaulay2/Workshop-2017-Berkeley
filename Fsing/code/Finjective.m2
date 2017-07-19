@@ -8,7 +8,7 @@
 --*** local cohomology               ***
 --**************************************
 
-HSLGModule = method(Options => {EthRootStrategy => Substitution});
+HSLGModule = method(Options => {FrobeniusRootStrategy => Substitution});
                        --it returns two ideals, an element and an integer
                        --The first ideal is an ideal isomorphic to the non-F-injective module and the
                        --and the second is an ideal isomorphic to the canonical module, in which the parameter
@@ -22,7 +22,7 @@ HSLGModule = method(Options => {EthRootStrategy => Substitution});
 
 HSLGModule(Ring) := o-> (R1) -> (
     J1 := trim canonicalIdeal(R1);
-    HSLGModule(R1, J1, EthRootStrategy=>o.EthRootStrategy)
+    HSLGModule(R1, J1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy)
 );
 
 HSLGModule(Ring, Ideal) := o-> (R1, canIdeal) -> (
@@ -37,7 +37,7 @@ HSLGModule(Ring, Ideal) := o-> (R1, canIdeal) -> (
     curHSLList := null;
     i := 0;
     while (i < #u1) do (
-        curHSLList = HSLGModule(1, {1}, {u1#i}, canIdeal, EthRootStrategy=>o.EthRootStrategy);
+        curHSLList = HSLGModule(1, {1}, {u1#i}, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         curIdeal = curIdeal + curHSLList#0;
         curHSL = lcm(curHSL, curHSLList#3);
         i = i+1;
@@ -47,11 +47,11 @@ HSLGModule(Ring, Ideal) := o-> (R1, canIdeal) -> (
 
 HSLGModule(Ideal) := o -> (canIdeal) -> (
     R1 := ring canIdeal;
-    HSLGModule(R1, canIdeal, EthRootStrategy=>o.EthRootStrategy)
+    HSLGModule(R1, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy)
 );
 
 HSLGModule(ZZ, RingElement) := o -> (tt, ff) -> (
-    HSLGModule(tt/1, ff, EthRootStrategy=>o.EthRootStrategy)
+    HSLGModule(tt/1, ff, FrobeniusRootStrategy=>o.FrobeniusRootStrategy)
 );
 
 HSLGModule(QQ, RingElement) := o -> (tt, ff) -> (
@@ -83,7 +83,7 @@ HSLGModule(QQ, RingElement) := o -> (tt, ff) -> (
     curHSLList := null;
     i := 0;
     while (i < #u1) do (
-        curHSLList = HSLGModule(cc, {newExp, aa}, {u1#i, ff}, canIdeal, EthRootStrategy=>o.EthRootStrategy);
+        curHSLList = HSLGModule(cc, {newExp, aa}, {u1#i, ff}, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         curIdeal = curIdeal + curHSLList#0;
         curHSL = lcm(curHSL, curHSLList#3);
         i = i+1;
@@ -115,13 +115,13 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
     newExpList := apply(fractionDividedList, myList -> (myList#0)*floor( (pp^(ccLCM) - 1)/(pp^(myList#2)-1) ) );
 --    uList := u1 | fList;
 --    powList := (apply(u1, tt -> floor((pp^(ccLCM) - 1)/(pp - 1))) ) | newExpList;
---    HSLGModule(ccLCM, powList, uList, canIdeal, EthRootStrategy=>o.EthRootStrategy)
+--    HSLGModule(ccLCM, powList, uList, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy)
     curIdeal := ideal(sub(0, R1));
     curHSL := 1;
     curHSLList := null;
     i := 0;
     while (i < #u1) do (
-        curHSLList = HSLGModule(ccLCM, {floor((pp^(ccLCM) - 1)/(pp - 1))} | newExpList, {u1#i} | fList, canIdeal, EthRootStrategy=>o.EthRootStrategy);
+        curHSLList = HSLGModule(ccLCM, {floor((pp^(ccLCM) - 1)/(pp - 1))} | newExpList, {u1#i} | fList, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         curIdeal = curIdeal + curHSLList#0;
         curHSL = lcm(curHSL, curHSLList#3);
         i = i+1;
@@ -141,11 +141,11 @@ HSLGModule(ZZ, List, List, Ideal) :=  o-> (ee, expList, u1, canIdeal) -> (
     J1 := sub(canIdeal, S1) + I1;
     --now we do the HSLG computation
     idealIn := J1;
-    idealOut := frobeniusRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
+    idealOut := frobeniusRoot(ee, expList, u1, idealIn, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
     HSLCount := 0;
     while (not (idealIn + I1 == idealOut + I1)) do (
         idealIn = idealOut;
-        idealOut = frobeniusRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
+        idealOut = frobeniusRoot(ee, expList, u1, idealIn, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         HSLCount = HSLCount+1;
     );
     {sub(idealIn, R1), canIdeal, u1, HSLCount}
@@ -158,7 +158,7 @@ HSLGModule(ZZ, List, List, Ideal) :=  o-> (ee, expList, u1, canIdeal) -> (
 --****************************************************
 
 
-isFinjective = method(Options => {EthRootStrategy => Substitution, CanonicalStrategy => Katzman, AssumeCM => false, AssumeReduced => true, AssumeNormal => false});
+isFinjective = method(Options => {FrobeniusRootStrategy => Substitution, CanonicalStrategy => Katzman, AssumeCM => false, AssumeReduced => true, AssumeNormal => false});
 --originally written by Drew Ellingson, with assistance from Karl Schwede
 
 isFinjective(Ring) := o-> (R1) -> 
@@ -176,7 +176,7 @@ isFinjective(Ring) := o-> (R1) ->
     
     -- F-Injectivity fast to compute on dim(S)-dim(R), so we check there seperately by default
     if (o.CanonicalStrategy== Katzman) then (
-        if (isFinjectiveCanonicalStrategy(R1, EthRootStrategy=>o.EthRootStrategy) == false) then ( -- if F-injectivity fails in top dimension, no need to try any others
+        if (isFinjectiveCanonicalStrategy(R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy) == false) then ( -- if F-injectivity fails in top dimension, no need to try any others
         	return false;
     	);
     )
@@ -208,7 +208,7 @@ isFinjective(Ring) := o-> (R1) ->
 );
 
 --the following is an internal function, it checks if is F-injective at the top cohomology (quickly)
-isFinjectiveCanonicalStrategy = method(Options => {EthRootStrategy => Substitution});
+isFinjectiveCanonicalStrategy = method(Options => {FrobeniusRootStrategy => Substitution});
 
 isFinjectiveCanonicalStrategy(Ring) := o->(R1) -> (
     S1 := ambient R1;

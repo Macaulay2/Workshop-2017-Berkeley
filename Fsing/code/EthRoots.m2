@@ -28,12 +28,12 @@
 -------------------------------------------------------
 -------------------------------------------------------
 
-if  (not (class Fsing === Package)) then (
-    needs "BasicFunctions.m2" -- maybe this should be removed
-                          -- when we publish this package
-)                          
+--if  ((not (class Fsing === Package)) and (not (class TestIdeals === Package))) then (
+--    needs "BasicFunctions.m2" -- maybe this should be removed
+--                          -- when we publish this package
+--)                          
 
-frobeniusRoot = method(Options => {EthRootStrategy => Substitution});
+frobeniusRoot = method(Options => {FrobeniusRootStrategy => Substitution});
 --frobeniusRoot takes two strategy options: Substitution and MonomialBasis
 --The second strategy seems to generally be faster for computing I^[1/p^e] when e = 1, especially for polynomials of
 --high degree, but slower for larger e. 
@@ -54,7 +54,7 @@ frobeniusRoot ( ZZ, Ideal ) := Ideal => opts -> (e,I) -> (
     G := I_*;
     --Produces a list of the generators of I.
     if #G == 0 then ideal(0_R) 
-    else if opts.EthRootStrategy == MonomialBasis then (
+    else if opts.FrobeniusRootStrategy == MonomialBasis then (
 	    L := sum( apply( G, f -> frobeniusRootMonStrat(e,p,q,k,f,R) ) );
     	L = first entries mingens L;
 	    ideal(L)
@@ -137,7 +137,7 @@ frobeniusRoot ( ZZ, Matrix ) := opts -> (e, A) -> mEthRoot (e,A)  --- MK
 --    p := char ring I;  
 --    e := floorLog( p, n );
 --    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
---    frobeniusRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
+--    frobeniusRoot( e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy )
 --)
 
 --frobeniusRoot ( ZZ, MonomialIdeal ) := o -> ( n, I ) -> 
@@ -145,7 +145,7 @@ frobeniusRoot ( ZZ, Matrix ) := opts -> (e, A) -> mEthRoot (e,A)  --- MK
 --    p := char ring I;  
 --    e := floorLog( p, n );
 --    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
---    frobeniusRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
+--    frobeniusRoot( e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy )
 --)
 
 
@@ -222,7 +222,7 @@ frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
     substitute(ideal L, R)
 )
 
-frobeniusRootRingElements = method(Options => {EthRootStrategy => Substitution}); 
+frobeniusRootRingElements = method(Options => {FrobeniusRootStrategy => Substitution}); 
 --This tries to compute (f1^a1*f2^a2*...fk^ak*I)^{[1/p^e]} in such a way that we don't blow exponent buffers.  It can be much faster as well.
 --We should probably just use it.  It relies on the fact that (f^(ap+b))^{[1/p^2]} = (f^a(f^b)^{[1/p]})^{[1/p]}.
 
@@ -248,7 +248,7 @@ frobeniusRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I
         i := 1;
         while(i < e) do (
             aPowerList = apply(elmtList, expOfaList, (f, z) -> f^(z#i));
-            IN1 = frobeniusRoot( 1, IN1*ideal(product(aPowerList)), EthRootStrategy=>o.EthRootStrategy  );
+            IN1 = frobeniusRoot( 1, IN1*ideal(product(aPowerList)), FrobeniusRootStrategy=>o.FrobeniusRootStrategy  );
             i = i + 1;
         )
     );
@@ -256,13 +256,13 @@ frobeniusRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I
     IN1*ideal(product(aPowerList))
 )
 
-frobeniusRootRingElements( ZZ, Sequence, Sequence, Ideal ) := o->(a, b, c, d) -> frobeniusRootRingElements(a, toList b, toList c, d, EthRootStrategy => o.EthRootStrategy);
+frobeniusRootRingElements( ZZ, Sequence, Sequence, Ideal ) := o->(a, b, c, d) -> frobeniusRootRingElements(a, toList b, toList c, d, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
 
 frobeniusRootRingElements( ZZ, ZZ, RingElement, Ideal ) := o->( e, a, f, I ) -> 
-    frobeniusRootRingElements(e, {a}, {f}, I, EthRootStrategy => o.EthRootStrategy);
+    frobeniusRootRingElements(e, {a}, {f}, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
 
 frobeniusRootRingElements( ZZ, ZZ, RingElement ) := o->( e, a, f ) -> 
-    frobeniusRootRingElements( e, {a}, {f}, ideal( 1_(ring f) ), EthRootStrategy => o.EthRootStrategy);
+    frobeniusRootRingElements( e, {a}, {f}, ideal( 1_(ring f) ), FrobeniusRootStrategy => o.FrobeniusRootStrategy);
 
 
 
@@ -281,10 +281,10 @@ frobeniusRootRingElements( ZZ, ZZ, RingElement ) := o->( e, a, f ) ->
 
 --this is a new ascendIdeal written by Karl.  It ascends but does it in a possibly non-polynomial ring.
 --the point is the ascending might be faster if we don't care about it mod a certain ideal.  
-ascendIdeal = method(Options => {EthRootStrategy => Substitution, AscentCount=>false});
+ascendIdeal = method(Options => {FrobeniusRootStrategy => Substitution, AscentCount=>false});
 
 ascendIdeal(ZZ, RingElement, Ideal) := o->(ek, hk, Jk) -> (
-    ascendIdeal(ek, {1}, {hk}, Jk, EthRootStrategy => o.EthRootStrategy, AscentCount=>o.AscentCount)
+    ascendIdeal(ek, {1}, {hk}, Jk, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AscentCount=>o.AscentCount)
 )
 
 
@@ -292,7 +292,7 @@ ascendIdeal(ZZ, RingElement, Ideal) := o->(ek, hk, Jk) -> (
 -- what's ak?  Karl: ak is the numerator of the exponent t = ak/(p^ek - 1)
 
 ascendIdeal(ZZ, ZZ, RingElement, Ideal) := o->( ek, ak, hk, Jk) -> (
-    ascendIdeal(ek, {ak}, {hk}, Jk, EthRootStrategy => o.EthRootStrategy, AscentCount=>o.AscentCount)
+    ascendIdeal(ek, {ak}, {hk}, Jk, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AscentCount=>o.AscentCount)
 )
 
 
@@ -312,7 +312,7 @@ ascendIdeal(ZZ, BasicList, BasicList, Ideal) := o->(ek, akList,  hkList, Jk) -> 
         i1 = i1 + 1; 
         --print "Step";
         IP = IN;
-        IN = frobeniusRoot( ek, akList, hkList, IP, EthRootStrategy => o.EthRootStrategy) + IP
+        IN = frobeniusRoot( ek, akList, hkList, IP, FrobeniusRootStrategy => o.FrobeniusRootStrategy) + IP
     );
 
     --trim the output

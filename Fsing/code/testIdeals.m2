@@ -7,12 +7,12 @@
 -- This function computes the element f in the ambient ring S of R=S/I such that
 -- I^{[p^e]}:I = (f) + I^{[p^e]}.
 -- If there is no such unique element, the function returns an error.
-if  (not (class Fsing === Package)) then (
-    needs "BasicFunctions.m2";
-    needs "EthRoots.m2";
-    needs "frobeniusPowers.m2";
-    needs "parameterTestIdeal.m2";
-);
+--if  ((not (class Fsing === Package)) and (not (class TestIdeals === Package))) then (
+--    needs "BasicFunctions.m2";
+--    needs "EthRoots.m2";
+--    needs "frobeniusPowers.m2";
+--    needs "parameterTestIdeal.m2";
+--);
 
 needsPackage "Divisor";
 
@@ -121,7 +121,7 @@ isLocallyPrincipalIdeal := (I2) -> (
 
 --the following is the new function for computing test ideals written by Karl.
 
-testIdeal = method(Options => {MaxCartierIndex => 100, EthRootStrategy => Substitution, QGorensteinIndex => 0});
+testIdeal = method(Options => {MaxCartierIndex => 100, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0});
 
 testIdeal(Ring) := o->(R1) -> (
     canIdeal := canonicalIdeal(R1);
@@ -150,7 +150,7 @@ testIdeal(Ring) := o->(R1) -> (
         J1 := testElement( R1 );
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
-            computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1), EthRootStrategy => o.EthRootStrategy);
+            computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1), FrobeniusRootStrategy => o.FrobeniusRootStrategy);
             computedFlag = true;
         )
         else (
@@ -170,7 +170,7 @@ testIdeal(Ring) := o->(R1) -> (
 --    print gensList;
 --    1/0;
         for x in gensList do (
-            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1, EthRootStrategy => o.EthRootStrategy))#0;        
+            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy))#0;        
         );
 --    1/0;
     
@@ -182,24 +182,24 @@ testIdeal(Ring) := o->(R1) -> (
 
 testIdeal(QQ, RingElement, Ring) := o->(t1, f1, R1) -> (
     --this computes \tau(R, f^t)
-    testIdeal({t1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
+    testIdeal({t1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(ZZ, RingElement, Ring) := o->(t1, f1, R1) -> (
     --this computes \tau(R, f^t)
-    testIdeal({t1/1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
+    testIdeal({t1/1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(QQ, RingElement) := o->(t1, f1) -> (
-    testIdeal({t1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
+    testIdeal({t1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(ZZ, RingElement) := o->(t1, f1) -> (
-    testIdeal({t1/1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
+    testIdeal({t1/1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(List, List) := o->(tList, fList) ->(
-    testIdeal(tList, fList, ring (fList#0), MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
+    testIdeal(tList, fList, ring (fList#0), MaxCartierIndex => o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
@@ -230,7 +230,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
             --do stuff
-            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, EthRootStrategy => o.EthRootStrategy);
+            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
         ) else (
             computedFlag = false;
         );
@@ -250,7 +250,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
     
         for x in gensList do (
             f2 = append(fList, x);
-            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1, EthRootStrategy => o.EthRootStrategy))#0;        
+            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy))#0;        
         );
     
         newDenom := reflexify(canIdeal*dualCanIdeal);

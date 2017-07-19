@@ -27,7 +27,7 @@ frobenius =  method( Options => { FrobeniusRootStrategy => Substitution } );
 frobenius ( ZZ, Ideal ) := o -> ( e, I ) ->
 (
     if e == 0 then return I;
-    if e < 0 then return frobeniusRoot( -e, I, EthRootStrategy => o.FrobeniusRootStrategy );
+    if e < 0 then return frobeniusRoot( -e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
     R := ring I;
     p := char R;
     G := I_*;
@@ -60,7 +60,7 @@ FrobeniusOperator ^ ZZ := ( f, n ) -> ( x -> f( n, x ) )
 --This chain is ascending, and has the property that once two consecutive terms
 --agree, the chain stabilizes.  This function outputs the stable ideal of this chain.
 
-stableIdeal = { EthRootStrategy => Substitution } >> o -> ( e, I, J ) -> 
+stableIdeal = { FrobeniusRootStrategy => Substitution } >> o -> ( e, I, J ) -> 
 (
     K := ideal( 0_( ring I ) );
     L := frobeniusRoot( e, I*J, o );
@@ -104,10 +104,10 @@ frobeniusPower( ZZ, ZZ, Ideal ) := opts -> ( e, N, I ) ->
     if opts.FrobeniusPowerStrategy == Safe then 
     (
 	E := basePExp( p, rem );
-	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ),  EthRootStrategy => opts.FrobeniusRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
+	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ),  FrobeniusRootStrategy => opts.FrobeniusRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
                                                                             --using the base p expansion of rem/p^e < 1
     )
-    else J * frobeniusRoot( e, frobeniusPower( rem, I ), EthRootStrategy => opts.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
+    else J * frobeniusRoot( e, frobeniusPower( rem, I ), FrobeniusRootStrategy => opts.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
 )
 
 --Computes the generalized Frobenius power I^[t] for a rational number t 
@@ -120,7 +120,7 @@ frobeniusPower( QQ, Ideal ) := opts -> ( t, I ) ->
 	(
 	    rem := a % ( p^c - 1 );      
 	    quot := a // ( p^c - 1 );     
-	    J := stableIdeal( c, frobeniusPower( rem, I ), I, EthRootStrategy => opts.FrobeniusRootStrategy );
-	    frobeniusRoot( b, frobeniusPower( quot, I ) * J, EthRootStrategy => opts.FrobeniusRootStrategy )
+	    J := stableIdeal( c, frobeniusPower( rem, I ), I, FrobeniusRootStrategy => opts.FrobeniusRootStrategy );
+	    frobeniusRoot( b, frobeniusPower( quot, I ) * J, FrobeniusRootStrategy => opts.FrobeniusRootStrategy )
         )
 )

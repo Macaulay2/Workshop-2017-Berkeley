@@ -52,7 +52,7 @@ doc ///
         (testModule, QQ, RingElement, Ideal, List)
         (testModule, List, List)
         (testModule, List, List, Ideal, List)
-        [testModule, EthRootStrategy]
+        [testModule, FrobeniusRootStrategy]
     Headline
         Finds the parameter test module of a reduced ring.
     Usage

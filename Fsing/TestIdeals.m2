@@ -1,4 +1,4 @@
-newPackage( "Fsing",
+newPackage( "TestIdeals",
 Version => "0.1", 
 Date => "May 30th, 2017", 
 Authors => {
@@ -73,11 +73,9 @@ export{
     "ascendIdeal", --Karl (still needs more tests / documentation)
     "AscentCount",
     "boundLargestCompatible", ---MK
-    "ethRoot",
-    "ethRootRingElements",   
-    "EthRootStrategy",  
-    "frobeniusRoot",  
+    "frobeniusRootRingElements",   
     "FrobeniusRootStrategy",  
+    "frobeniusRoot",  
     "getFieldGenRoot",
     "minimalCompatible",
     "MonomialBasis",	

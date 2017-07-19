@@ -55,7 +55,7 @@ findusOfIdeal = (defIdeal, canIdeal) -> (
 	first entries M1
 )
 
-testModule = method(Options => {EthRootStrategy => Substitution}); --a rewritten function to construct the (parameter) test (sub)module of a given ring.  
+testModule = method(Options => {FrobeniusRootStrategy => Substitution}); --a rewritten function to construct the (parameter) test (sub)module of a given ring.  
                        --it returns two ideals and an element.  
                        --The first ideal is an ideal isomorphic to the test module and the
                        --and the second is an ideal isomorphic to the canonical module, in which the parameter
@@ -68,7 +68,7 @@ testModule = method(Options => {EthRootStrategy => Substitution}); --a rewritten
 
 testModule(Ring) := o -> (R1) -> (
     J1 := canonicalIdeal(R1);
-    testModule(R1, J1, EthRootStrategy=>o.EthRootStrategy)
+    testModule(R1, J1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy)
 );
 
 testModule(Ring, Ideal) := o->(R1, canIdeal) -> (
@@ -83,20 +83,20 @@ testModule(Ring, Ideal) := o->(R1, canIdeal) -> (
         print "testModule: Multiple trace map for omega generators (Macaulay2 failed to find the principal generator of a principal ideal).  Using them all.";
         j := 0;
         while (j < #u1) do (
-            tau = tau + ascendIdeal(1, u1#j, C1*J1*R1, EthRootStrategy=>o.EthRootStrategy);
+            tau = tau + ascendIdeal(1, u1#j, C1*J1*R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
             j = j+1;
         );
     )
     else (
         u1 = u1#0;
-        tau = ascendIdeal(1, u1, C1*J1*R1, EthRootStrategy => o.EthRootStrategy);
+        tau = ascendIdeal(1, u1, C1*J1*R1, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
     );
 
     (sub(tau, R1), sub(J1, R1), u1)
 );
 
 testModule(ZZ, RingElement) := o-> (tt, ff) -> ( --sometimes people pass in integers when the should pass rational numbers
-    testModule(tt/1, ff, EthRootStrategy => o.EthRootStrategy)
+    testModule(tt/1, ff, FrobeniusRootStrategy => o.FrobeniusRootStrategy)
 );
 
 testModule(QQ, RingElement) := o-> (tt, ff) ->(
@@ -106,7 +106,7 @@ testModule(QQ, RingElement) := o-> (tt, ff) ->(
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
     u1 := findusOfIdeal(I1, J1+I1);
-    testModule(tt, ff, canIdeal, u1, EthRootStrategy => o.EthRootStrategy)    
+    testModule(tt, ff, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
 testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
@@ -154,24 +154,24 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
         print "testModule: Multiple trace map for omega generators (Macaulay2 failed to find the principal generator of a principal ideal).  Using them all.";
         j := 0;
         while (j < #u1) do (
-            curTau = ascendIdeal(ccc, {floor((pp^ccc - 1)/(pp-1)),  aaa}, {u1#j, fff}, (ideal(fff))*C1*J1*R1, EthRootStrategy=>o.EthRootStrategy);
+            curTau = ascendIdeal(ccc, {floor((pp^ccc - 1)/(pp-1)),  aaa}, {u1#j, fff}, (ideal(fff))*C1*J1*R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
                 --note, we only have an ideal(ff) in the test element here since by construction, 
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
             curTau = sub(curTau, S1);
-            curTau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1#j, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
+            curTau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1#j, fff}, curTau, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
             tau = tau + curTau;
             j = j+1;
         );                
     )
     else (
         u1 = u1#0;
-        curTau = ascendIdeal(ccc, {floor((pp^ccc - 1)/(pp-1)),  aaa}, {u1, fff}, (ideal(fff^(min(1, aaa))))*C1*J1*R1, EthRootStrategy=>o.EthRootStrategy);
+        curTau = ascendIdeal(ccc, {floor((pp^ccc - 1)/(pp-1)),  aaa}, {u1, fff}, (ideal(fff^(min(1, aaa))))*C1*J1*R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
                 --note, we only have an ideal(ff) in the test element here since by construction, 
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
         curTau = sub(curTau, S1);                
-        tau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1, fff}, curTau, EthRootStrategy => o.EthRootStrategy);
+        tau = frobeniusRoot(bb, {floor((pp^bb - 1)/(pp-1)), newIntegerPart}, {u1, fff}, curTau, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
     );
     
     (sub(tau, R1), sub(J1, R1), u1)
@@ -227,13 +227,13 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
         print "testModule: Multiple trace map for omega generators (Macaulay2 failed to find the principal generator of a principal ideal).  Using them all.";
         j := 0;
         while (j < #u1) do (
-            curTau = ascendIdeal(lcmCs, append(aaListForCsReduced, floor((pp^lcmCs - 1)/(pp-1))), append(ffList, u1), (product(prodList))*C1*J1*R1, EthRootStrategy=>o.EthRootStrategy);
+            curTau = ascendIdeal(lcmCs, append(aaListForCsReduced, floor((pp^lcmCs - 1)/(pp-1))), append(ffList, u1), (product(prodList))*C1*J1*R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
                 --note, we only have an ideal(ff) in the test element here since by construction, 
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
             curTau = sub(curTau, S1);                
 
-            curTau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);
+            curTau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
 
             tau = tau + curTau;
             j = j+1;
@@ -241,12 +241,12 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
     )
     else (
         u1 = u1#0;
-        curTau = ascendIdeal(lcmCs, append(aaListForCsReduced, floor((pp^lcmCs - 1)/(pp-1))), append(ffList, u1), (product(prodList))*C1*J1*R1, EthRootStrategy=>o.EthRootStrategy);
+        curTau = ascendIdeal(lcmCs, append(aaListForCsReduced, floor((pp^lcmCs - 1)/(pp-1))), append(ffList, u1), (product(prodList))*C1*J1*R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
                 --note, we only have an ideal(ff) in the test element here since by construction, 
                 --aaa/(pp^ccc-1) is less than 1.
                 --if we need to take more roots, do so...
         curTau = sub(curTau, S1);                
-        tau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, EthRootStrategy => o.EthRootStrategy);        
+        tau = frobeniusRoot(maxBs, append(aaListForAfterAscension, floor((pp^maxBs - 1)/(pp-1))), append(ffList, u1), curTau, FrobeniusRootStrategy => o.FrobeniusRootStrategy);        
     );
     
     (sub(tau, R1), sub(J1, R1), u1)
@@ -259,7 +259,7 @@ testModule(List, List) := o-> (ttList, ffList) ->(
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
     u1 := findusOfIdeal(I1, J1+I1);
-    testModule(ttList, ffList, canIdeal, u1, EthRootStrategy => o.EthRootStrategy)    
+    testModule(ttList, ffList, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
 
