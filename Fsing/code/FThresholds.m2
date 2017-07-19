@@ -762,7 +762,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     );
 
     -- Now check if it is binomial:
-    if o.DiagonalCheck and isBinomial f then 
+    if o.BinomialCheck and isBinomial f then 
     ( 
         if o.Verbose then print "Polynomial is a binomial";
         return binomialFPT f 
@@ -787,7 +787,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     (
 	if o.Verbose then 
 	    print "The nu computed isn't fine enough. Try increasing the max exponent e.";
-	return { 0, 1/p }
+	return { 0, 1/p^e }
     );
 
     -- Check to see if either nu/(p^e-1) or (nu+1)/p^e is the fpt
@@ -902,7 +902,7 @@ fpt1 ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     );
 
     -- Now check if it is binomial:
-    if o.DiagonalCheck and isBinomial f then 
+    if o.BinomialCheck and isBinomial f then 
     ( 
         if o.Verbose then print "Polynomial is a binomial";
         return binomialFPT f 
