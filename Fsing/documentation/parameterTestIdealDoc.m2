@@ -39,7 +39,18 @@ doc ///
         :RingElement
     Description
         Text
-            Given $R = S/I$, where $S$ is a polynomial ring, there is a map from the canonical module of $R$ back to itself, dual to the Frobenius on $R$.  This map comes from a $p$ inverse linear map on $S$, restricted appropriately.  But every $p$ inverse linear map on $S$ is a premultiple of the Grothendieck dual by some element $u$.  This function finds the $u$, or at least finds some elements, some linear combination of them is the actual $u$.
+            Given $R = S/I$, where $S$ is a polynomial ring, there is a map from the canonical module of $R$ back to itself, dual to the Frobenius on $R$.  This map comes from a $p$ inverse linear map on $S$, restricted appropriately.  But every $p$ inverse linear map on $S$ is a premultiple of the Grothendieck dual by some element $u$.  This function finds the $u$, or at least finds some elements, some linear combination of them is the actual $u$.  We note that Macaulay2 doesn't always properly identify an ideal as principal (even though it is).  Thus we need a list of u's.
+        Text
+            Specifically, you need to pass this two ideals.  An ideal that restricts to the canonical ideal, and an ideal that defines the variety.  Normally the canonical ideal should be chosen so that it contains the defining ideal (if you do not do this, there may be unexpected behavior).
+        Example
+            S = ZZ/5[x,y,z,w];
+            T = ZZ/5[a,b];
+            f = map(T, S, {a^3, a^2*b, a*b^2, b^3});
+            defIdeal = ker f;
+            R = S/defIdeal;
+            J = canonicalIdeal(R);
+            canIdeal = sub(J, S) + defIdeal;
+            findusOfIdeal(canIdeal, defIdeal)
 ///
 
 doc ///
@@ -52,7 +63,6 @@ doc ///
         (testModule, QQ, RingElement, Ideal, List)
         (testModule, List, List)
         (testModule, List, List, Ideal, List)
-        [testModule, FrobeniusRootStrategy]
     Headline
         Finds the parameter test module of a reduced ring.
     Usage
@@ -105,6 +115,22 @@ doc ///
         Text
             Finally, sometimes you would like to specify the ambient canonical module (and choice of u) across multiple calls of testModule.  Those are what the $canIdeal$ or $u1$ can be used to specify.
 ///
+
+doc ///
+    Key
+        [testModule, FrobeniusRootStrategy]
+    Headline
+        option to control how Frobenius roots are called in other functions
+    Usage
+        testElement(..., FrobeniusRootStrategy=>S)
+    Inputs
+        S: Symbol
+    Outputs
+        :Ideal
+    Description
+        Text
+            Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.        
+///    
 
 doc ///
     Key
