@@ -53,6 +53,12 @@ export {
    "cellularComplex",
    "idealsComplex",
    "splineComplex"
+   --Remove after testing
+   --"getCodim1Intersections",
+   --"simpBoundary",
+   --"facetsN",
+   --"boundaryComplex",
+   --"polyBoundary"
    }
 
 
@@ -62,7 +68,7 @@ export {
 ------------------------------------------
 ------------------------------------------
 
---may include the following in a future iteration
+--may include the following data types in a future iteration
 
 --Create an object that gives ALL splines
 --on a given subdivision.
@@ -656,15 +662,22 @@ simpBoundary = method()
 simpBoundary(List,List) := Matrix => (F,E) -> (
     F = apply(F, f-> sort f);
     E = apply(E, e-> sort e);
-    tempLF := {};
-    rowList := {};
-    apply(F, f-> (
-	    tempLF = hashTable apply(#f, v-> position(E,e-> e == drop(f,{v,v})) => (-1)^v);
-	    rowList = append(rowList,apply(#E, j->if member(j,keys tempLF) then tempLF#j else 0));
-	    )
-	);
-    transpose matrix rowList
-    )
+    if #F==0 then return(
+	map(image matrix{{0}},image matrix{{0}},matrix{{0}})
+	)else(
+	if #E==0 then return(
+	    map(image matrix{{0}},ZZ^(length F),matrix{apply(length F,i->0)})
+	    )else(
+	    tempLF := {};
+	    rowList := {};
+	    apply(F, f-> (
+		    tempLF = hashTable apply(#f, v-> position(E,e-> e == drop(f,{v,v})) => (-1)^v);
+		    rowList = append(rowList,apply(#E, j->if member(j,keys tempLF) then tempLF#j else 0));
+		    )
+		);
+	    return transpose matrix rowList
+	    )))
+	
 
 ------------------------------------------
 orient = method()
@@ -788,18 +801,24 @@ polyBoundary=method()
 ------------------------------------------
 
 polyBoundary(List,List,List):=Matrix=>(V,L2,L1)->(
-    G:=L1_0;
-    H:=L2_0;
-    IG:=L1_1;
-    OG:=L1_2;
-    IH:=L2_1;
-    OH:=L2_2;
-    matrix table(#G,#H,(i,j)->(
-	    L1n :={G_i,IG_i,OG_i};
-	    L2n :={H_j,IH_j,OH_j};
-	    polyBoundaryPair(V,L2n,L1n)
-	    ))
-    )
+    G := L1_0;
+    H := L2_0;
+    if #H==0 then(
+	return map(image matrix{{0}},image matrix{{0}},matrix{{0}});
+	)else(
+	if #G==0 then(
+	    return map(image matrix{{0}},ZZ^(#H),matrix {apply(#H,i->0)});
+	    )else(
+	    IG:=L1_1;
+	    OG:=L1_2;
+	    IH:=L2_1;
+	    OH:=L2_2;
+	    return matrix table(#G,#H,(i,j)->(
+		    L1n :={G_i,IG_i,OG_i};
+		    L2n :={H_j,IH_j,OH_j};
+		    polyBoundaryPair(V,L2n,L1n)
+		    ));
+	    )))
 
 ------------------------------------------
 
@@ -892,7 +911,7 @@ cellularComplex(List) := ChainComplex => opts -> (F) -> (
 	C := apply(d+1, i-> getCodimDFacesSimplicial(F,i));
 	boundaryC := join({{}},apply(d, i-> getCodimDFacesSimplicial(boundaryF,i)));
     	intC := apply(#C, i -> select(C_i, f -> not member(f,boundaryC_i)));
-    	chain = chainComplex(reverse apply(#intC-1, c-> simpBoundary(intC_c,intC_(c+1))))**S
+    	chain = chainComplex(reverse apply(#intC-1, c-> sub(simpBoundary(intC_c,intC_(c+1)),S)))
 	);
     chain
     )
@@ -922,7 +941,7 @@ cellularComplex(List,List) := ChainComplex => opts -> (V,F) -> (
 	C := apply(d+1, i-> getCodimDFacesSimplicial(F,i));
 	boundaryC := join({{}},apply(d, i-> getCodimDFacesSimplicial(boundaryF,i)));
     	intC := apply(#C, i -> select(C_i, f -> not member(f,boundaryC_i)));
-    	chain := chainComplex(reverse apply(#intC-1, c-> simpBoundary(intC_c,intC_(c+1))))
+    	chain := chainComplex(reverse apply(#intC-1, c-> sub(simpBoundary(intC_c,intC_(c+1)),S )))
 	) else (
 	bComp := boundaryComplex(V,F);
 	--Construct list whose ith element is interior intersections of codim i--
@@ -953,10 +972,10 @@ cellularComplex(List,List) := ChainComplex => opts -> (V,F) -> (
 	chain = chainComplex(reverse apply(#intC-1, c-> (
 		    L1 := {intC_(c+1),idList_(c+1),orList_(c+1)};
 		    L2 := {intC_c,idList_c,orList_c};
-		    polyBoundary(V,L2,L1)
+		    sub(polyBoundary(V,L2,L1),S)
 		    )))
 	);
-    chain**S
+    chain
     )
 
 
@@ -991,7 +1010,7 @@ idealsComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	boundaryC := join({{}},apply(d, i-> getCodimDFacesSimplicial(boundaryF,i)));
 	intC := apply(#C, i -> select(C_i, f -> not member(f,boundaryC_i)));
 	--if there are no interior faces of large codimension, get rid of the empty lists
-	intC = select(intC,L->( (length L)>0));
+	--intC = select(intC,L->( (length L)>0));
 	--list of forms defining codim 1 interior faces
 	intformslist :=formsList(V,intC_1,r,
 	    Homogenize => opts.Homogenize,
@@ -999,13 +1018,20 @@ idealsComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	    CoefficientRing => opts.CoefficientRing,
 	    BaseRing => S); 
 	--list of modules which will define chain complex--
-	fullmodulelist:= apply(#intC,i->directSum apply(intC_i,e->(
-		CE := positions(intC_1,f->subsetL(e,f));
-		sub(module ideal (intformslist_CE),S)
-		)));
+	fullmodulelist := apply(#intC,i->(
+		if #(intC_i)==0 then(
+		    newMod := image matrix{{0_S}};
+		    )else(
+		    newMod = directSum apply(intC_i,e->(
+			    CE := positions(intC_1,f->subsetL(e,f));
+			    sub(module ideal (intformslist_CE),S)
+			    ));
+		    );
+		newMod
+		));
 	--defining the chain complex
 	CCSS :=chainComplex(reverse apply(#intC-1, c-> (
-		    inducedMap(fullmodulelist_(c+1),fullmodulelist_c,(simpBoundary(intC_c,intC_(c+1)))**S)
+		    inducedMap(fullmodulelist_(c+1),fullmodulelist_c,sub(simpBoundary(intC_c,intC_(c+1)),S))
 		    ))
 	    )
     	) else (
@@ -1018,7 +1044,7 @@ idealsComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 		intC =append(intC,current)
 	));
     	--if there are no intersections of larger codimension, get rid of the empty lists
-	intC = select(intC,L->((length L)>0));    	
+	--intC = select(intC,L->((length L)>0));    	
     	--get the forms defining codimension 1 faces--
 	fList :=formsList(V,intC_1,0,
 	    Homogenize => opts.Homogenize,
@@ -1039,15 +1065,22 @@ idealsComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	--set up list of forms to r+1 power--
 	intformslist =apply(fList,f->f^(r+1));
 	--list of modules which will define chain complex--
-	fullmodulelist = apply(#intC,i->directSum apply(intC_i,e->(
-		CE := codim1Cont(intC_1,e);
-		sub(module ideal (intformslist_CE),S)
-		)));
+	fullmodulelist = apply(#intC,i->(
+		if #(intC_i)==0 then(
+		    newMod := image matrix{{0_S}};
+		    )else(
+		    newMod = directSum apply(intC_i,e->(
+			    CE := positions(intC_1,f->subsetL(e,f));
+			    sub(module ideal (intformslist_CE),S)
+			    ));
+		    );
+		newMod
+		));
 	--set up the chain complex
 	CCSS = chainComplex(reverse apply(#intC-1, c-> (
 		    L1 := {intC_(c+1),idList_(c+1),orList_(c+1)};
 		    L2 := {intC_c,idList_c,orList_c};
-		    M := polyBoundary(V,L2,L1)**S;
+		    M := sub(polyBoundary(V,L2,L1),S);
 		    inducedMap(fullmodulelist_(c+1),fullmodulelist_c,M)
 		    )))
 	);
@@ -1098,7 +1131,7 @@ splineComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	boundaryC := join({{}},apply(d, i-> getCodimDFacesSimplicial(boundaryF,i)));
 	intC := apply(#C, i -> select(C_i, f -> not member(f,boundaryC_i)));
 	--if there are no interior faces of large codimension, get rid of the empty lists
-	intC = select(intC,L->( (length L)>0));
+	--intC = select(intC,L->( (length L)>0));
 	--list of forms defining codim 1 interior faces
 	intformslist := formsList(V,intC_1,r,
 	    Homogenize => opts.Homogenize,
@@ -1106,17 +1139,21 @@ splineComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	    CoefficientRing => opts.CoefficientRing,
 	    BaseRing => S); 
 	--list of modules which will define chain complex--
-	fullmodulelist:= {S^(#F)};
+	fullmodulelist := {S^(#F)};
 	scan(#intC-1,i->(
-		newMod := directSum apply(intC_(i+1),e->(
-		CE := codim1Cont(intC_1,e);
-		coker sub(gens ideal (intformslist_CE),S)
+		if #(intC_(i+1))==0 then(
+		    newMod := image matrix{{0_S}};
+		    )else(
+		    newMod = directSum apply(intC_(i+1),e->(
+			    CE := codim1Cont(intC_1,e);
+			    return coker sub(gens ideal (intformslist_CE),S)
+			    ));
+		    );
+		fullmodulelist = append(fullmodulelist,newMod)
 		));
-	    	fullmodulelist=append(fullmodulelist,newMod)
-	));
 	--defining the chain complex
 	CCSS :=chainComplex(reverse apply(#intC-1, c-> (
-		    map(fullmodulelist_(c+1),fullmodulelist_c,(simpBoundary(intC_c,intC_(c+1)))**S)
+		    map(fullmodulelist_(c+1),fullmodulelist_c,sub(simpBoundary(intC_c,intC_(c+1)),S))
 		    ))
 	    );
     	) else (
@@ -1129,7 +1166,7 @@ splineComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 		intC =append(intC,current)
 	));
     	--if there are no intersections of larger codimension, get rid of the empty lists
-	intC = select(intC,L->((length L)>0));
+	--intC = select(intC,L->((length L)>0));
     	--get the forms defining codimension 1 faces--
 	fList :=formsList(V,intC_1,0,
 	    Homogenize => opts.Homogenize,
@@ -1150,19 +1187,23 @@ splineComplex(List,List,ZZ):=ChainComplex => opts -> (V,F,r)->(
 	--set up list of forms to r+1 power--
 	intformslist =apply(fList,f->f^(r+1));
 	--list of modules which will define chain complex--
-	fullmodulelist= {S^(#F)};
+	fullmodulelist = {S^(#F)};
 	scan(#intC-1,i->(
-		newMod := directSum apply(intC_(i+1),e->(
-		CE := codim1Cont(intC_1,e);
-		coker sub(gens ideal (intformslist_CE),S)
+		if #(intC_(i+1))==0 then(
+		    newMod := image matrix{{0_S}};
+		    )else(
+		    newMod = directSum apply(intC_(i+1),e->(
+			    CE := codim1Cont(intC_1,e);
+			    return coker sub(gens ideal (intformslist_CE),S)
+			    ));
+		    );
+		fullmodulelist = append(fullmodulelist,newMod)
 		));
-	    	fullmodulelist=append(fullmodulelist,newMod)
-	));
 	--set up the chain complex
 	CCSS = chainComplex(reverse apply(#intC-1, c-> (
 		    L1 := {intC_(c+1),idList_(c+1),orList_(c+1)};
 		    L2 := {intC_c,idList_c,orList_c};
-		    M := polyBoundary(V,L2,L1)**S;
+		    M := sub(polyBoundary(V,L2,L1),S);
 		    map(fullmodulelist_(c+1),fullmodulelist_c,M)
 		    )))
 	);
@@ -1889,39 +1930,47 @@ TEST ///
 V = {{0,0},{1,0},{1,1},{-1,1},{-2,-1},{0,-1}}
 F = {{0,2,1},{0,2,3},{0,3,4},{0,4,5},{0,1,5}}
 E = {{0,1},{0,2},{0,3},{0,4},{0,5}}
-assert(splineMatrix(V,F,E,0) == matrix {{1, 0, 0, 0, -1, t_2, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, t_1-t_2,
-      0, 0, 0}, {0, 1, -1, 0, 0, 0, 0, t_1+t_2, 0, 0}, {0, 0, 1, -1, 0, 0, 0,
-      0, t_1-2*t_2, 0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, t_1}})
+S = QQ[x,y,z]
+R = QQ[u,v]
+assert(splineMatrix(V,F,E,0) == matrix {{1, 0, 0, 0, -1, t_1, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, t_0-t_1,
+      0, 0, 0}, {0, 1, -1, 0, 0, 0, 0, t_0+t_1, 0, 0}, {0, 0, 1, -1, 0, 0, 0,
+      0, t_0-2*t_1, 0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, t_0}})
 assert(splineMatrix(V,F,E,0,Homogenize=>false) == matrix {{1, 0, 0, 0, -1, t_2, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, t_1-t_2,
       0, 0, 0}, {0, 1, -1, 0, 0, 0, 0, t_1+t_2, 0, 0}, {0, 0, 1, -1, 0, 0, 0,
       0, t_1-2*t_2, 0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, t_1}})
-assert(splineMatrix(V,F,E,1) == matrix {{1, 0, 0, 0, -1, t_2^2, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0,
-      t_1^2-2*t_1*t_2+t_2^2, 0, 0, 0}, {0, 1, -1, 0, 0, 0, 0,
-      t_1^2+2*t_1*t_2+t_2^2, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0,
-      t_1^2-4*t_1*t_2+4*t_2^2, 0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, t_1^2}})
+assert(splineMatrix(V,F,E,1) == matrix {{1, 0, 0, 0, -1, t_1^2, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0,
+      t_0^2-2*t_0*t_1+t_1^2, 0, 0, 0}, {0, 1, -1, 0, 0, 0, 0,
+      t_0^2+2*t_0*t_1+t_1^2, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0,
+      t_0^2-4*t_0*t_1+4*t_1^2, 0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, t_0^2}})
+assert(splineMatrix(V,F,0,BaseRing=>S)==matrix {{1, 0, 0, 0, -1, y, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, x-y, 0, 0,
+     0}, {0, 1, -1, 0, 0, 0, 0, x+y, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0, x-2*y,
+     0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, x}})
+assert(splineMatrix(V,F,0,Homogenize=>false,BaseRing=>R)==matrix {{1, 0, 0, 0, -1, v, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, u-v, 0, 0,
+      0}, {0, 1, -1, 0, 0, 0, 0, u+v, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0, u-2*v,
+      0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, u}})
 ///
 
 TEST ///
 V={{-5,0},{-3,0},{-1,-4},{-1,4},{-1,-2},{-1,2},{0,-1},{0,1},{1,-2},{1,2},{1,-4},{1,4},{3,0},{5,0}}
 F={{0, 1, 4, 2}, {0, 1, 5, 3}, {8, 10, 13, 12}, {9, 11, 13, 12}, {1, 4, 6, 7, 5}, {2, 4, 6, 8, 10}, {3, 5, 7, 9, 11}, {6, 7, 9, 12, 8}}
 E={{0, 1}, {0, 2}, {0, 3}, {1, 4}, {1, 5}, {2, 4}, {2, 10}, {3, 5}, {3, 11}, {4, 6}, {5, 7}, {6, 7}, {6, 8}, {7, 9}, {8, 10}, {8, 12}, {9, 11}, {9, 12}, {10, 13}, {11, 13}, {12, 13}}
-assert(splineMatrix(V,F,E,0) == matrix {{1, -1, 0, 0, 0, 0, 0, 0, t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0}, {1, 0, 0, 0, -1, 0, 0, 0, 0, 3*t_0+t_1+t_2, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 3*t_0+t_1-t_2, 0,
+assert(splineMatrix(V,F,E,0) == matrix {{1, -1, 0, 0, 0, 0, 0, 0, t_1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0}, {1, 0, 0, 0, -1, 0, 0, 0, 0, t_0+t_1+3*t_2, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, -1, 0, 0, 0, 0, 0, t_0-t_1+3*t_2, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0,
-      t_0+t_1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, -1, 0, 0,
-      0, 0, 0, t_0+t_1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, -1, 0,
-      0, 0, 0, 0, 0, 0, t_0-t_1+t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0,
-      1, 0, -1, 0, 0, 0, 0, 0, 0, 0, t_0-t_1-t_2, 0, 0, 0, 0, 0, 0, 0, 0}, {0,
-      0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, t_1, 0, 0, 0, 0, 0, 0, 0}, {0,
+      t_0+t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 1, 0, 0, 0, 0, -1, 0, 0,
+      0, 0, 0, t_0+t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0, 1, -1, 0,
+      0, 0, 0, 0, 0, 0, t_0-t_1-t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0}, {0, 0, 0, 0,
+      1, 0, -1, 0, 0, 0, 0, 0, 0, 0, t_0+t_1-t_2, 0, 0, 0, 0, 0, 0, 0, 0}, {0,
+      0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, t_0, 0, 0, 0, 0, 0, 0, 0}, {0,
       0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, t_0+t_1+t_2, 0, 0, 0, 0, 0,
-      0}, {0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, t_0+t_1-t_2, 0,
+      0}, {0, 0, 0, 0, 0, 0, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, t_0-t_1+t_2, 0,
       0, 0, 0, 0}, {0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      t_0-t_1, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 3*t_0-t_1+t_2, 0, 0, 0}, {0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, t_0-t_1, 0, 0}, {0, 0, 0, 1, 0, 0, 0, -1, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3*t_0-t_1-t_2, 0}, {0, 0, 1, -1, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t_2}})
+      t_0-t_2, 0, 0, 0, 0}, {0, 0, 1, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, t_0-t_1-3*t_2, 0, 0, 0}, {0, 0, 0, 1, 0, 0, -1, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, t_0-t_2, 0, 0}, {0, 0, 0, 1, 0, 0, 0, -1, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t_0+t_1-3*t_2, 0}, {0, 0, 1, -1, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, t_1}})
 assert(splineMatrix(V,F,E,0,Homogenize=>false) == matrix {{1, -1, 0, 0, 0, 0, 0, 0, t_2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0}, {1, 0, 0, 0, -1, 0, 0, 0, 0, t_1+t_2+3, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0}, {0, 1, 0, 0, -1, 0, 0, 0, 0, 0, t_1-t_2+3, 0, 0, 0, 0, 0,
