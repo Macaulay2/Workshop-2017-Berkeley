@@ -25,6 +25,13 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 	d-position(reverse(v-l),i->i==0))))
 
 
+fastPower = method(TypicalValue => Ideal)
+fastPower(Ideal,ZZ) := Ideal => (I,n) ->
+(J = I;
+(for i from 1 to n do J = J*I);
+J)
+
+
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
 doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := P^n; h := bigHeight(P);
     if bigHeight(Q) > h then false else (
