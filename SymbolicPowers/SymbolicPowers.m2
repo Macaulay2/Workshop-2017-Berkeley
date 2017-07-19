@@ -27,11 +27,9 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
-(J = I;
+(J := I;
 (for i from 1 to n do J = J*I);
 J)
-
-
 
 
 
