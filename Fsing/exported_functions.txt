@@ -3,7 +3,7 @@
     "carryTest",  
     "denom",   
     "digit", -- export; main	   
-    "divideFraction", 
+    "divideFraction",  
     "fasterFloorLog", 
     "firstCarry", 
     "floorLog",

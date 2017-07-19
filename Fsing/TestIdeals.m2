@@ -61,21 +61,12 @@ AuxiliaryFiles=>false
 export{
 --BasicFunctions (BasicFunctions.m2) 
     "basePExp",    
-    "carryTest",  
-    "denom",   
     "digit", 	   
     "divideFraction",
-    "fasterFloorLog",
-    "firstCarry", 
     "floorLog",
-    "fracPart", 
-    "getCanVector",
-    "getNumAndDenom", 
     "maxIdeal", 
     "multOrder",
     "NoZeroC", --option to force certain behavior from a function
-    "num",
-    "taxicabNorm",
     "truncatedBasePExp",
     
 --ethRootFunctions (EthRoots.m2)

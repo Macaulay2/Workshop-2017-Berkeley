@@ -26,143 +26,147 @@ fracPart = x -> x - floor(x)
 
 --===================================================================================
 
---Computes floor(log_b x), correcting problems due to rounding.
-floorLog = ( b, x ) -> 
-(
-    if ( x < b ) then ( return 0 );
-    flog := floor( log_b x );
-    while b^flog <= x do flog = flog + 1;
-    flog - 1       
-)
-
---===================================================================================
-
-multOrder = method()
-
---Finds the multiplicative order of a modulo b.
-multOrder( ZZ, ZZ ) := ( a, b ) ->
-(
-    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
-    n := 1;
-    x := 1;
-    while (x = (x*a) % b) != 1 do n = n+1;
-    n	      
-)     
-
---===================================================================================
-
-divideFraction = method(Options => {NoZeroC=>false});
-
--- This function takes in a fraction t and a prime p and spits out a list
--- {a,b,c}, where t = a/(p^b*(p^c-1))
--- if c = 0, then this means that t = a/p^b
---alternately, if NoZeroC => true, then we will always write t = a/p^b(p^c - 1)
---even if it means increasing a. 
-divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
-(
-    a := num t; -- finding a is easy, for now
-    den := denom(t);
-    b := 1;
-    while den % p^b == 0 do b = b+1;
-    b = b-1; 
-    temp := denom( t*p^b );
-    local c;
-    if (temp == 1) then c = 0 else 
-    (
-        c = multOrder( p, temp );  
-        a = lift( a*(p^c-1)/temp, ZZ ); -- fix a
-    );
-    if ((o.NoZeroC == true) and (c == 0)) then (
-        a = a*(p-1);
-        c = 1;
-    );
-    {a,b,c}
-)
-
-divideFraction( ZZ, ZZ ) := (p, t) -> divideFraction(p, t/1)
-
-
---===================================================================================
-
 --*************************************************
---Base p-expansions
+--Information Regarding Factors and Factorization
 --*************************************************
 
 --===================================================================================
 
-digit = method()
-
---Gives the e-th digit of the non-terminating base p expansion of x in [0,1].
-digit ( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
-(
-    if x < 0 or x > 1 then error "digit: Expected x in [0,1]";     	
-    local y;
-    if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
-    if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;
-    if fracPart( p^(e-1)*x ) == 0 then y = p-1;
-    y	  
-)
-
---Creates list containing e-th digits of non-terminating base p expansion of list of numbers.
-digit ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> digit( p, e, x ) )
+nontrivialPowerSet = L -> delete( {}, subsets L )
 
 --===================================================================================
 
-basePExp = method(); 
-
---Computes the terminating base p expansion of a positive integer.
---Gives expansion in reverse... so from left to right it gives
---the coefficient of 1, then of p, then of p^2, and so on
-basePExp( ZZ, ZZ ) := ( p, N ) ->
+--Returns a list of factors of a number with repeats.
+numberToPrimeFactorList = n ->
 (
-    if N < 0 then error "basePExp: Expected N to be positive";
-    if N < p then {N} else prepend( N % p, basePExp(p, N // p)) 
-    -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
-)
-
---Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
-basePExp( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
-(
-    if x < 0 or x > 1 then error "basePExp: Expected x in [0,1]";
-    apply( e, i -> digit( p, i+1, x ) )
+     prod := factor n;
+     flatten apply( toList prod, x -> toList( x#1:x#0 ) )
 )
 
 --===================================================================================
 
-truncatedBasePExp = method()
-
---Gives the e-th truncation of the non-terminating base p expansion of a rational number.
-truncatedBasePExp ( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
+--Returns a list of all proper -- not one -- factors of number.
+--Has funny order...
+getFactorList = n ->
 (
-    if x < 0 then error "truncatedBasePExp: Expected x>0";
-    ( ceiling( p^e*x ) - 1 )/p^e    	
+     if (n < 1) then error "getFactorList: expected an integer greater than 1.";
+     powSet := nontrivialPowerSet( numberToPrimeFactorList( n ) ); 
+     toList set apply( powSet, x -> product( x ) )
 )
-
---truncation threads over lists.
-truncatedBasePExp ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> truncatedBasePExp( p, e, x ) )
 
 --===================================================================================
 
---- write n=a*p^e+a_{e-1} p^{e-1} + \dots + a_0 where 0\leq a_j <p 
---- DS: so it's just like doing basePExp but giving up after p^e and just returning whatever number's left
---- DS: this could be merged with basePExp. Should it be? 
---- note: I changed the calling order here should change to be consistent with basePExp
---- The change I made was switching the order of the first two arguments
-baseP1 = ( p, n, e ) ->
+--*************************************************
+--Finding Numbers in Given Range
+--*************************************************
+
+--===================================================================================
+
+findNumberBetween = method(); 
+
+--This function finds rational numbers in the range of 
+--the interval; the max denominator allowed is listed. 
+findNumberBetween( ZZ, ZZ, ZZ) := ( maxDenom, firstN, secondN)->
 (
-    a:=n//(p^e);
-    answer:=1:a; -- this generates the list (a)
-    m:=n-a*(p^e);
-    f:=e-1; 
-    while (f>=0) do
+     divisionChecks :=  new MutableList from maxDenom:true; 
+         -- creates a list with maxDenom elements all set to true.
+     outList := {};
+     i := maxDenom;
+     while (i > 0) do (
+	  if ((divisionChecks#(i-1)) == true) then --if we need to do a computation..
+	      outList = join(outList,findNumberBetweenWithDenom(i, firstN, secondN ));
+	  factorList := getFactorList(i);
+     	  apply(factorList, j-> (divisionChecks#(j-1) = false) );
+	  i = i - 1;
+     );
+     sort(toList set outList)
+)
+
+--for backwards compatibility
+--findNumberBetween( ZZ, List ) := ( maxDenom, myInterv )-> findNumberBetween( maxDenom, myInterv#0, myInterv#1);
+
+--===================================================================================
+
+--*************************************************
+--Manipulations with Vectors   
+--*************************************************
+
+--===================================================================================
+
+--Given a vector w of rational integers in [0,1], returns a number of digits such that
+--it suffices to check to see if the components of w add without carrying in base p
+carryTest = ( p, w ) ->
+(
+    if any( w, x -> x < 0 or x > 1 ) then 
+        error "carryTest: Expected the second argument to be a list of rational numbers in [0,1]";
+     div := apply( w, x -> divideFraction(p, x) );
+     c := max (transpose div)#1; --max of second components of div
+     v := selectNonzero (transpose div)#2; -- nonzero third components of div
+     d := if v === {} then 1 else lcm v;
+     c+d+1
+)
+
+--===================================================================================
+
+--Given a vector w of rational integers in [0,1], returns the first spot 
+--e where the the sum of the entries in w carry in base p
+firstCarry = ( p, w ) ->
+(   
+    if any( w, x -> x < 0 or x > 1 ) then 
+        error "firstCarry: Expected the second argument to be a list of rational numbers in [0,1]";
+    if product( w ) == 0 then -1 else
     (
-        d:=m//(p^f);
-        answer=append(answer,d);
-        m=m-d*(p^f);
-        f=f-1;
-    );
-    answer
-)	
+	i := 0;	
+	d := 0;
+	while d < p and i < carryTest(p,w) do 
+	(
+	    i = i + 1;
+	    d = sum digit( p, i, w )
+	);
+        if i == carryTest(p,w) then -1 else i
+     )
+)
+
+--===================================================================================
+
+getCanVector = method()
+
+--canVector(i,n) returns the i-th canonical basis vector in dimension n
+--Warning: for convenience, this uses Macaulay2's convention of indexing lists starting 
+--with 0; so, for example, {1,0,0,0} is canVector(0,4), not canVector(1,4).
+getCanVector ( ZZ, ZZ ) := ( i, n ) -> 
+(
+    if ( (i<0) or (i>=n) ) then error "canVector(i,n) expects integers i and n with 0<=i<n.";   
+    apply( n, j -> if i==j then 1 else 0 )
+)
+ 
+--===================================================================================
+
+getNumAndDenom = method()
+
+-- Takes a rational vector u and returns a pair (a,q), where a
+--is an integer vector and q an integer such that u=a/q.
+getNumAndDenom ( List ) := u -> 
+(
+    den := lcm apply( u, denom );
+    a := apply( u, n -> lift( n*den, ZZ ) );
+    ( a, den )        
+)
+
+--===================================================================================
+
+taxicabNorm = method()
+
+--Computes the taxicab norm of a vector.
+taxicabNorm ( List ) := u -> sum( u, abs )
+
+--===================================================================================
+
+--Selects or finds positions of nonzero, zero, positive entries in a list
+selectNonzero = L -> select( L, x -> x != 0 )
+selectPositive = L -> select( L, x -> x > 0 )
+nonzeroPositions = L -> positions( L, x -> x != 0 )
+zeroPositions = L -> positions( L, x -> x == 0 )
 
 --===================================================================================
 
@@ -253,56 +257,19 @@ isLinearBinaryForm (RingElement) := Boolean => F ->
 --===================================================================================
 
 --*************************************************
---Partitions
---*************************************************
-
----------------------------------------------------------------------------------------
---- The following code was written in order to more quickly compute eth roots of (f^n*I)
---- It is used in fancyEthRoot
-----------------------------------------------------------------------------------------
---- Find all ORDERED partitions of n with k parts
-allPartitions = ( n, k )->
-(
-	PP0:=matrix{ toList(1..k) };
-	PP:=mutableMatrix PP0;
-	allPartitionsInnards (n,k,PP,{})
-)
-
-allPartitionsInnards = ( n, k, PP, answer)->
-(
-	local i;
-	if (k==1) then 
-	(
-		PP_(0,k-1)=n;
-		answer=append(answer,first entries (PP));
-	)
-	else
-	(
-		for i from 1 to n-(k-1) do
-		(
-			PP_(0,k-1)=i;
-			answer=allPartitionsInnards (n-i,k-1,PP,answer)	;	
-		);
-	);
-	answer
-)
-
---===================================================================================
-
---*************************************************
 --Miscelaneous
 --*************************************************
 
 --===================================================================================
 
--- maxIdeal returns the ideal generated by the variables of a polynomial ring
-maxIdeal = method( TypicalValue => Ideal )
+--===================================================================================
 
-maxIdeal ( PolynomialRing ) := Ideal => R -> monomialIdeal R_*
-
-maxIdeal ( RingElement ) := Ideal => f -> maxIdeal ring f
-
-maxIdeal ( Ideal ) := Ideal => I -> maxIdeal ring I
+--Finds the x-intercept of a line passing through two points
+xInt = ( x1, y1, x2, y2 ) ->
+(
+    if x1 == x2 then error "xInt: x1==x2 no intersection";
+    x1-(y1/((y1-y2)/(x1-x2)))
+)
 
 --===================================================================================
 
