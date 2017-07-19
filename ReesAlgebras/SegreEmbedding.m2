@@ -16,7 +16,9 @@ export {
     "segreIdeal"
     }
 
+
 --- Trying out making changes and merging.  Will introduce a conflict soon. Wondering how this goes.
+--- Trying out making changes and merging.  Will introduce a conflict soon. Conflict!!
 
 -- given a list of positive integers {a1,a2,a3,..an} computes the defining ideal of
 -- the Segre embedding PPa1 x PP a2 x .. x PPan into P^n for approriate N.
@@ -42,6 +44,8 @@ segreIdeal (List) := (D) ->(
 )
 
 end
+
+--- Making a different comment change for merge testing. 
 
 --------------------------------------------------------------------------------
 -- DOCUMENTATION
