@@ -2028,6 +2028,23 @@ assert(postulationNumber(S1)==2)
 assert(postulationNumber(S1')==0)
 ///
 
+TEST ///
+V = {{0,0},{1,0},{1,1},{0,1}};
+E = {{0,1},{0,2},{0,3},{1,2},{2,3}};
+S=QQ[x,y];
+assert(formsList(V,E,0)=={t_1, t_0-t_1, t_0, t_0-t_2, t_1-t_2})
+assert(formsList(V,E,0,BaseRing=>S,Homogenize=>false)=={y, x-y, x, x-1, y-1})
+///
+
+TEST ///
+S = QQ[x,y];
+E = {{0,1},{1,2},{2,3},{3,4},{0,4}};
+L = {ideal(y^2),ideal((x-y)^2),ideal((x+y)^2),ideal((x-2*y)^2),ideal(x^2)}
+assert(generalizedSplines(E,L)==image matrix {{1, 2*x^2, -3*x^2, x^2*y, x^3}, {1, 2*x^2+2*y^2, -3*x^2,
+      x^2*y-2*x*y^2+y^3, x^3-3*x*y^2+2*y^3}, {1, x^2+2*x*y+y^2, -6*x*y+3*y^2,
+      0, 0}, {1, 0, x^2-4*x*y+4*y^2, 0, 0}, {1, 0, 0, 0, 0}})
+///
+
 end
 
 --may restore to documentation in future iterations
