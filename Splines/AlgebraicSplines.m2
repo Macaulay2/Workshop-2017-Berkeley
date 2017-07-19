@@ -1990,6 +1990,25 @@ assert(splineMatrix(V,F,E,0,Homogenize=>false) == matrix {{1, -1, 0, 0, 0, 0, 0,
       t_2}})
 ///
 
+TEST ///
+V={{0,0,0},{1,1,1},{-1,1,1},{-1,1,-1},{1,1,-1},{1,-1,1},{-1,-1,1},{-1,-1,-1},{1,-1,-1}};
+F={{0,1,2,3,4},{0,1,4,5,8},{0,5,6,7,8},{0,2,3,6,7},{0,1,2,5,6}};
+C=cellularComplex(V,F);
+sC=splineComplex(V,F,0);
+iC=idealsComplex(V,F,0);
+assert((prune HH_0 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_1 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_2 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_3 C)==prune image matrix{{1_(C.ring)}})
+assert((prune HH_0 sC)==prune image matrix{{0_(sC.ring)}})
+assert((prune HH_1 sC)==prune image matrix{{0_(sC.ring)}})
+assert((prune HH_2 sC)==coker map((sC.ring)^{1:-1},(sC.ring)^2,sub(matrix{{t_1,t_0}},(sC.ring))))
+assert((prune HH_3 sC)==(sC.ring)^{1:0,1:-1,2:-2,1:-3})
+assert((prune HH_0 iC)==prune image matrix{{0_(iC.ring)}})
+assert((prune HH_1 iC)==coker map((iC.ring)^{1:-1},(iC.ring)^2,sub(matrix{{t_1,t_0}},(iC.ring))))
+assert((prune HH_2 iC)==(iC.ring)^{1:-1,2:-2,1:-3})
+assert((prune HH_3 iC)==prune image matrix{{0_(iC.ring)}})
+///
 
 end
 
