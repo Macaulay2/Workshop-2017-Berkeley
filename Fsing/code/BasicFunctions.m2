@@ -119,7 +119,11 @@ divideFraction = method(Options => {NoZeroC=>false});
 --even if it means increasing a. 
 divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
 (
+<<<<<<< HEAD
     a := numerator t; -- finding a is easy, for now
+=======
+    a := num t; -- finding a is easy, for now
+>>>>>>> fc16fba1c9ca8e707477d93d960a08eafc873814
     den := denominator(t);
     b := 1;
     while den % p^b == 0 do b = b+1;
@@ -390,7 +394,7 @@ getNumAndDenom = method()
 --is an integer vector and q an integer such that u=a/q.
 getNumAndDenom ( List ) := u -> 
 (
-    den := lcm apply( u, denom );
+    den := lcm apply( u, denominator );
     a := apply( u, n -> lift( n*den, ZZ ) );
     ( a, den )        
 )
