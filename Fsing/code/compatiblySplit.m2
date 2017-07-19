@@ -30,7 +30,7 @@
 findAllCompatibleIdeals = (u) ->(
 	L:={}; R:=ring u; p:=char R;
 	P:=ideal(0_R);
-	J:=ethRoot(1,ideal(u));
+	J:=frobeniusRoot(1,ideal(u));
 	t:=1_R % (gens J);
 	if (t != 0_R) then print("*** WARNING *** Frobenius action has nilpotent elements");
 	findAllCompatibleIdealsInnards (u,L,P)

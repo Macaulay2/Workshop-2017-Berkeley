@@ -130,7 +130,7 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
 );
 
 --the next one is the internal function that does the real work
---you pass it the base ethRoot to work with
+--you pass it the base frobeniusRoot to work with
 --the list of exponents of the u's (most frequently 1)
 --the list of u's
 --the canonical ideal (or whatever you want to run HSL on), this one is 
@@ -141,11 +141,11 @@ HSLGModule(ZZ, List, List, Ideal) :=  o-> (ee, expList, u1, canIdeal) -> (
     J1 := sub(canIdeal, S1) + I1;
     --now we do the HSLG computation
     idealIn := J1;
-    idealOut := ethRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
+    idealOut := frobeniusRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
     HSLCount := 0;
     while (not (idealIn + I1 == idealOut + I1)) do (
         idealIn = idealOut;
-        idealOut = ethRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
+        idealOut = frobeniusRoot(ee, expList, u1, idealIn, EthRootStrategy=>o.EthRootStrategy);
         HSLCount = HSLCount+1;
     );
     {sub(idealIn, R1), canIdeal, u1, HSLCount}
@@ -219,7 +219,7 @@ isFinjectiveCanonicalStrategy(Ring) := o->(R1) -> (
     curIdeal := ideal(sub(0, S1));  
     i := 0;
     while (i < #u1) do (
-        curIdeal = curIdeal + ethRoot(1, {1}, {u1#i}, J1);
+        curIdeal = curIdeal + frobeniusRoot(1, {1}, {u1#i}, J1);
         i = i+1;
     );
     if (curIdeal + I1 == J1 + I1) then true else false

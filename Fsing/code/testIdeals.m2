@@ -302,7 +302,7 @@ tauAOverPEMinus1Poly = ( f, a, e ) ->
      p := char R;
      b := a % (p^e - 1);
      k := a // (p^e - 1); --it seems faster to use the fact that tau(f^(1+k)) = f*tau(f^k) 
-     I := ethRoot( e, a, f, ideal(f) );     
+     I := frobeniusRoot( e, a, f, ideal(f) );     
      I = ascendIdeal( e, b, f, I );
      I*ideal(f^k)
 )
@@ -318,11 +318,11 @@ tauPoly = ( f, t ) ->
      if (c != 0) then 
      (
      	I = tauAOverPEMinus1Poly( f, a, c);
-     	if (b != 0) then I = ethRoot( b, I)
+     	if (b != 0) then I = frobeniusRoot( b, I)
      )
      else 
      (
-     	if (b != 0) then I = ethRoot( b, a, f )
+     	if (b != 0) then I = frobeniusRoot( b, a, f )
      	else I = ideal( f^a )
      );
      I
@@ -395,14 +395,14 @@ tauQGor = (Rk, ek, fk, t1) ->
      if (e1 != 0) then (
           I1 = tauAOverPEMinus1QGorAmb(Sk,Jk,hk,ek,fm,a2,e1);
           if (pPow != 0) then (
-          	I2 = ethRootRingElements(pPow, numerator((pp^pPow - 1)/(pp^ek - 1)), hk, I1 )
+          	I2 = frobeniusRootRingElements(pPow, numerator((pp^pPow - 1)/(pp^ek - 1)), hk, I1 )
 		)
 		else I2 = I1
      )
      else (
 	  	I1 = ascendIdeal(ek, hk, Jk);
 	  	if (pPow != 0) then (
-	  		I2 = ethRootRingElements( pPow, {numerator((pp^pPow - 1)/(pp^ek - 1)), a2}, {hk, fm}, I1 )
+	  		I2 = frobeniusRootRingElements( pPow, {numerator((pp^pPow - 1)/(pp^ek - 1)), a2}, {hk, fm}, I1 )
 	  	)
 	  	else I2 = I1
      );
@@ -478,7 +478,7 @@ tauNonPrincipalAOverPEPoly = {Verbose=> false}>> o -> (I1, a1, e1) -> ( -- compu
 	
 	while (flag == false) do (
 		if (o.Verbose == true) then (print  "Ascending ideal");
-		ascend = ethRoot(i1, a1*p1^(i1-e1), I1);
+		ascend = frobeniusRoot(i1, a1*p1^(i1-e1), I1);
 		if (o.Verbose == true) then (print ascend);
 		
 		flag = isSubset(descend, ascend);
@@ -490,7 +490,7 @@ tauNonPrincipalAOverPEPoly = {Verbose=> false}>> o -> (I1, a1, e1) -> ( -- compu
 		 	directIdeal := embedAsIdeal(myDirectImage**R1); --probably the tensor product is unnecessary
  			if ( codim(directIdeal)==1) then error "This function produced a codimension 1 ideal.";
  	
- 			descend = ethRoot(i1,directIdeal);
+ 			descend = frobeniusRoot(i1,directIdeal);
  			if (o.Verbose == true) then (print  "Descending ideal"; print descend)
 		);
 		

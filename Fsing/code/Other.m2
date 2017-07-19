@@ -17,7 +17,7 @@ sigmaAOverPEMinus1Poly ={HSL=> false}>> o -> (fm, a1, e1) -> (
      if (e2 == 0) then (e2 = 1; a2 = a1*(pp-1));
      if (a2 > pp^e2-1) then (m1 = floor((a2-1)/(pp^e2-1)); a2=((a2-1)%(pp^e2-1)) + 1 );
      --fpow := fm^a2;
-     IN := ethRoot(e2,ideal(1_Rm)); -- this is going to be the new value.
+     IN := frobeniusRoot(e2,ideal(1_Rm)); -- this is going to be the new value.
      -- the previous commands should use the fast power raising when Emily finishes it
      IP := ideal(0_Rm); -- this is going to be the old value.
      count := 0;
@@ -25,7 +25,7 @@ sigmaAOverPEMinus1Poly ={HSL=> false}>> o -> (fm, a1, e1) -> (
      --our initial value is something containing sigma.  This stops after finitely many steps.  
      while (IN != IP) do(
 		IP = IN;
-	  	IN = ethRootRingElements(e2,a2,fm,IP); -- ethRoot(e2,ideal(fpow)*IP);
+	  	IN = frobeniusRootRingElements(e2,a2,fm,IP); -- frobeniusRoot(e2,ideal(fpow)*IP);
 	  	count = count + 1
      );
 
@@ -44,7 +44,7 @@ sigmaQGor ={HSL=> false}>> o -> (Rm, gg) -> (
      
      while (IN != IP) do(
      	IP = IN;
-     	IN = ethRoot(gg,ideal(hk)*IP);
+     	IN = frobeniusRoot(gg,ideal(hk)*IP);
      	count = count + 1
      );
      
@@ -71,7 +71,7 @@ sigmaAOverPEMinus1QGor  ={HSL=> false}>> o -> (fk, a1, e1, gg) -> (
 
 	while (IN != IP) do(
 		IP = IN;
-		IN = ethRoot(e1, ideal(fpow*hl)*IP);
+		IN = frobeniusRoot(e1, ideal(fpow*hl)*IP);
 		count = count + 1
 	);
 	

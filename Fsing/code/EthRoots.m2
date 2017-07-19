@@ -13,12 +13,12 @@
 ---------- List of functions in this file -------------
 -----------------(as of 2017-05-17)--------------------
 -------------------------------------------------------
--- ethRoot
+-- frobeniusRoot
 -- getFieldGenRoot 
--- ethRootMonStrat 
--- ethRootSubStrat 
--- ethRootRingElements
--- ethRootRingElements 
+-- frobeniusRootMonStrat 
+-- frobeniusRootSubStrat 
+-- frobeniusRootRingElements
+-- frobeniusRootRingElements 
 -- ascendIdeal 
 -- getExponents
 -- mEthRootOfOneElement
@@ -33,21 +33,21 @@ if  (not (class Fsing === Package)) then (
                           -- when we publish this package
 )                          
 
-ethRoot = method(Options => {EthRootStrategy => Substitution});
---ethRoot takes two strategy options: Substitution and MonomialBasis
+frobeniusRoot = method(Options => {EthRootStrategy => Substitution});
+--frobeniusRoot takes two strategy options: Substitution and MonomialBasis
 --The second strategy seems to generally be faster for computing I^[1/p^e] when e = 1, especially for polynomials of
 --high degree, but slower for larger e. 
 -- Dan: I wonder if this is because getFieldGen is not optimized? It's called many times per
 -- generator of the ideal in the monomial strategy. Though I see it's also called for the 
 -- substitution strategy...
 
-ethRoot ( ZZ, Ideal ) := Ideal => opts -> (e,I) -> (
-    if (not e >= 0) then (error "ethRoot: Expected first argument to be a nonnegative integer.");
+frobeniusRoot ( ZZ, Ideal ) := Ideal => opts -> (e,I) -> (
+    if (not e >= 0) then (error "frobeniusRoot: Expected first argument to be a nonnegative integer.");
     R := ring I;
-    if (class R =!= PolynomialRing) then (error "ethRoot: Expected an ideal in a PolynomialRing.");
+    if (class R =!= PolynomialRing) then (error "frobeniusRoot: Expected an ideal in a PolynomialRing.");
     p := char R;
     k := coefficientRing(R);
-    if ((k =!= ZZ/p) and (class(k) =!= GaloisField)) then (error "ethRoot: Expected the coefficient field to be ZZ/p or a GaloisField.");
+    if ((k =!= ZZ/p) and (class(k) =!= GaloisField)) then (error "frobeniusRoot: Expected the coefficient field to be ZZ/p or a GaloisField.");
 
     q := k#order;
     --Gets the cardinality of the base field.
@@ -55,16 +55,16 @@ ethRoot ( ZZ, Ideal ) := Ideal => opts -> (e,I) -> (
     --Produces a list of the generators of I.
     if #G == 0 then ideal(0_R) 
     else if opts.EthRootStrategy == MonomialBasis then (
-	    L := sum( apply( G, f -> ethRootMonStrat(e,p,q,k,f,R) ) );
+	    L := sum( apply( G, f -> frobeniusRootMonStrat(e,p,q,k,f,R) ) );
     	L = first entries mingens L;
 	    ideal(L)
 	)
-    else ethRootSubStrat(e,p,q,k,I,R)  
+    else frobeniusRootSubStrat(e,p,q,k,I,R)  
 )
 
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, MonomialIdeal ) := Ideal => opts -> (e,I) -> (
+frobeniusRoot ( ZZ, MonomialIdeal ) := Ideal => opts -> (e,I) -> (
      R := ring I;
      p := char R;
      G := I_*;
@@ -73,7 +73,7 @@ ethRoot ( ZZ, MonomialIdeal ) := Ideal => opts -> (e,I) -> (
 
 ------------------------------------------------------------------------------
 
-ethRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
+frobeniusRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
     --idealList is a list of ideals and/or ring elements. 
     --exponentList is a list of exponents we're taking these ideals/elemetns to
 
@@ -98,55 +98,55 @@ ethRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
     ));
     I = R;
     for j from 0 to length(idealList) - 1 do I = I*(idealList#j)^(exponentList#j - nsList#j * p);
-    I = ethRoot(1, I, opts );
-    ethRoot(e - 1, append(nsList, 1), append(idealList, I), opts )
+    I = frobeniusRoot(1, I, opts );
+    frobeniusRoot(e - 1, append(nsList, 1), append(idealList, I), opts )
 );
 
 
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, ZZ, RingElement, Ideal ) := opts -> ( e, a, f, I ) -> ethRootRingElements ( e, a, f, I, opts ) ---MK
- -- in the future, ethRootRingElements should be subsumed by ethRoot(ZZ, List, List). When this happens,
- -- the above line should end with ethRoot( e, {a, 1}, {f, I} ) 
+frobeniusRoot ( ZZ, ZZ, RingElement, Ideal ) := opts -> ( e, a, f, I ) -> frobeniusRootRingElements ( e, a, f, I, opts ) ---MK
+ -- in the future, frobeniusRootRingElements should be subsumed by frobeniusRoot(ZZ, List, List). When this happens,
+ -- the above line should end with frobeniusRoot( e, {a, 1}, {f, I} ) 
 
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, ZZ, RingElement ) := opts -> ( e, a, f ) -> ethRootRingElements ( e, a, f, opts ) ---MK
- -- in the future, ethRootRingElements should be subsumed by ethRoot(ZZ, List, List). When this happens,
- -- the above line should end with ethRoot( e, {a}, {f} ) 
+frobeniusRoot ( ZZ, ZZ, RingElement ) := opts -> ( e, a, f ) -> frobeniusRootRingElements ( e, a, f, opts ) ---MK
+ -- in the future, frobeniusRootRingElements should be subsumed by frobeniusRoot(ZZ, List, List). When this happens,
+ -- the above line should end with frobeniusRoot( e, {a}, {f} ) 
 
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, ZZ, Ideal ) := opts -> ( e, m, I ) -> ethRoot( e, {m}, {I}, opts )
+frobeniusRoot ( ZZ, ZZ, Ideal ) := opts -> ( e, m, I ) -> frobeniusRoot( e, {m}, {I}, opts )
 
 -----------------------------------------------------------------------------
 
-ethRoot( ZZ, List, List, Ideal) := opts -> (e, exponentList, idealList, J) ->
-   ethRoot(e, append(exponentList, 1), append(idealList, J), opts );
+frobeniusRoot( ZZ, List, List, Ideal) := opts -> (e, exponentList, idealList, J) ->
+   frobeniusRoot(e, append(exponentList, 1), append(idealList, J), opts );
 -----------------------------------------------------------------------------
 
-ethRoot ( ZZ, Matrix ) := opts -> (e, A) -> mEthRoot (e,A)  --- MK
+frobeniusRoot ( ZZ, Matrix ) := opts -> (e, A) -> mEthRoot (e,A)  --- MK
 
 -----------------------------------------------------------------------------
 
 
-frobeniusRoot = method( Options => { FrobeniusRootStrategy => Substitution } )
+--frobeniusRoot = method( Options => { FrobeniusRootStrategy => Substitution } )
 
-frobeniusRoot ( ZZ, Ideal ) := o -> ( n, I ) -> 
-(
-    p := char ring I;  
-    e := floorLog( p, n );
-    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
-    ethRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
-)
+--frobeniusRoot ( ZZ, Ideal ) := o -> ( n, I ) -> 
+--(
+--    p := char ring I;  
+--    e := floorLog( p, n );
+--    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
+--    frobeniusRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
+--)
 
-frobeniusRoot ( ZZ, MonomialIdeal ) := o -> ( n, I ) -> 
-(
-    p := char ring I;  
-    e := floorLog( p, n );
-    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
-    ethRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
-)
+--frobeniusRoot ( ZZ, MonomialIdeal ) := o -> ( n, I ) -> 
+--(
+--    p := char ring I;  
+--    e := floorLog( p, n );
+--    if n != p^e then error "frobeniusPower: first argument must be a number of the form p^e, where p is the characteristic of the ring.";   
+--    frobeniusRoot( e, I, EthRootStrategy => o.FrobeniusRootStrategy )
+--)
 
 
 -----------------------------------------------------------------------------
@@ -168,7 +168,7 @@ getFieldGenRoot = (e,p,q,k) -> (
 
 -----------------------------------------------------------------------------
 
-ethRootMonStrat = (e,p,q,k,f,R) -> (
+frobeniusRootMonStrat = (e,p,q,k,f,R) -> (
     -- e = exponent, p = prime, q = size of coeff field, k = coeff field, 
 	-- f = a generator of the ideal in question, R = the ring
 	-- to use this strategy to find the p^eth root of an ideal, you need to apply this
@@ -195,7 +195,7 @@ ethRootMonStrat = (e,p,q,k,f,R) -> (
 
 -----------------------------------------------------------------------------
 
-ethRootSubStrat = (e,p,q,k,I,R) -> (
+frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
     n := numgens R;
     Rvars := R_*;
     Y := local Y;
@@ -222,13 +222,13 @@ ethRootSubStrat = (e,p,q,k,I,R) -> (
     substitute(ideal L, R)
 )
 
-ethRootRingElements = method(Options => {EthRootStrategy => Substitution}); 
+frobeniusRootRingElements = method(Options => {EthRootStrategy => Substitution}); 
 --This tries to compute (f1^a1*f2^a2*...fk^ak*I)^{[1/p^e]} in such a way that we don't blow exponent buffers.  It can be much faster as well.
 --We should probably just use it.  It relies on the fact that (f^(ap+b))^{[1/p^2]} = (f^a(f^b)^{[1/p]})^{[1/p]}.
 
---It's a special case of ethRoot(ZZ, List, List) that's optimized for lots of principal ideals
+--It's a special case of frobeniusRoot(ZZ, List, List) that's optimized for lots of principal ideals
 
-ethRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I ) -> (
+frobeniusRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I ) -> (
     R := ring I;
     p := char R;
     
@@ -244,11 +244,11 @@ ethRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I ) -> 
     
     IN1 := I*ideal(product(aPowerList));
     if (e > 0) then (
-        IN1 = ethRoot( 1, IN1 );
+        IN1 = frobeniusRoot( 1, IN1 );
         i := 1;
         while(i < e) do (
             aPowerList = apply(elmtList, expOfaList, (f, z) -> f^(z#i));
-            IN1 = ethRoot( 1, IN1*ideal(product(aPowerList)), EthRootStrategy=>o.EthRootStrategy  );
+            IN1 = frobeniusRoot( 1, IN1*ideal(product(aPowerList)), EthRootStrategy=>o.EthRootStrategy  );
             i = i + 1;
         )
     );
@@ -256,13 +256,13 @@ ethRootRingElements( ZZ, List, List, Ideal ) := o->( e, aList, elmtList, I ) -> 
     IN1*ideal(product(aPowerList))
 )
 
-ethRootRingElements( ZZ, Sequence, Sequence, Ideal ) := o->(a, b, c, d) -> ethRootRingElements(a, toList b, toList c, d, EthRootStrategy => o.EthRootStrategy);
+frobeniusRootRingElements( ZZ, Sequence, Sequence, Ideal ) := o->(a, b, c, d) -> frobeniusRootRingElements(a, toList b, toList c, d, EthRootStrategy => o.EthRootStrategy);
 
-ethRootRingElements( ZZ, ZZ, RingElement, Ideal ) := o->( e, a, f, I ) -> 
-    ethRootRingElements(e, {a}, {f}, I, EthRootStrategy => o.EthRootStrategy);
+frobeniusRootRingElements( ZZ, ZZ, RingElement, Ideal ) := o->( e, a, f, I ) -> 
+    frobeniusRootRingElements(e, {a}, {f}, I, EthRootStrategy => o.EthRootStrategy);
 
-ethRootRingElements( ZZ, ZZ, RingElement ) := o->( e, a, f ) -> 
-    ethRootRingElements( e, {a}, {f}, ideal( 1_(ring f) ), EthRootStrategy => o.EthRootStrategy);
+frobeniusRootRingElements( ZZ, ZZ, RingElement ) := o->( e, a, f ) -> 
+    frobeniusRootRingElements( e, {a}, {f}, ideal( 1_(ring f) ), EthRootStrategy => o.EthRootStrategy);
 
 
 
@@ -312,7 +312,7 @@ ascendIdeal(ZZ, BasicList, BasicList, Ideal) := o->(ek, akList,  hkList, Jk) -> 
         i1 = i1 + 1; 
         --print "Step";
         IP = IN;
-        IN = ethRoot( ek, akList, hkList, IP, EthRootStrategy => o.EthRootStrategy) + IP
+        IN = frobeniusRoot( ek, akList, hkList, IP, EthRootStrategy => o.EthRootStrategy) + IP
     );
 
     --trim the output
