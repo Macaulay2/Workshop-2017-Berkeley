@@ -16,6 +16,51 @@ export {
     "fakeParametricGB"
     }
 
+color = method(
+    TypicalValue => String    
+)
+
+
+
+color =(f,gamma) -> (
+    Z:=gamma_0;
+    NZ:=gamma_1;
+    a:=leadCoefficient(f);
+    K:=coefficientRing(ring a);    
+    a = a % (ideal(Z));
+    if a==0 then return "green";
+    for j from 0 to #NZ-1 do (
+        while (a % ideal(NZ_j))==0 do a = lift(a/(NZ_j),ring(a))
+    );
+    if monomials(a)==matrix {{1_(ring a)}} then return "red" else return "white"
+)
+
+headTerm = (f,gamma) -> (
+    g:=leadTerm(f);
+    while color(g,gamma)=="green" do (
+	f = f-g;
+	g=leadTerm(f);
+	if g==0 then return g
+    );
+    return {leadTerm(f),color(f,gamma)}
+);
+
+
+-- Examples to test
+R=QQ[c_1,c_2][x_0,x_1,x_2,x_3]
+Z={c_1}
+NZ={c_2}
+gamma = {Z,NZ}
+f1 = c_1^2*(c_1+2*c_2)*x_0*x_1
+f2 = c_2^2*(c_1+2*c_2)*x_0*x_2
+f3 = c_2^2*(c_2+2)*x_0*x_3
+color(f1,gamma)
+color(f2,gamma)
+color(f3,gamma)
+headTerm(f1+f2,gamma)
+headTerm(f1+f3,gamma)
+
+
 square = method(
     TypicalValue => ZZ
 )
@@ -27,6 +72,7 @@ square(ZZ) := (x) -> (x^2)
 fakeParametricGB = method(
     TypicalValue => List    
 )
+
 
 
 
