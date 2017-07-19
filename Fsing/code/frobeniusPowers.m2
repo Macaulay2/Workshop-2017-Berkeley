@@ -14,7 +14,7 @@
 fastExp = (N,f) ->
 (
      p:=char ring f;
-     E:=basePExp(p,N);
+     E:=adicExpansion(p,N);
      product(#E, e -> (sum(terms f^(E#e), g -> g^(p^e))))
 )
 
@@ -86,7 +86,7 @@ frobeniusPower ( ZZ, Ideal ) := opts -> ( N, I ) ->
      G := first entries mingens I;
      if #G == 0 then return ideal( 0_R );
      if #G == 1 then return ideal( fastExp( N, G#0 ) );
-     E := basePExp( p, N );
+     E := adicExpansion( p, N );
      product( #E, m -> frobenius( m, I^( E#m ) ) )
 )
 
@@ -103,7 +103,7 @@ frobeniusPower( ZZ, ZZ, Ideal ) := opts -> ( e, N, I ) ->
      
     if opts.FrobeniusPowerStrategy == Safe then 
     (
-	E := basePExp( p, rem );
+	E := adicExpansion( p, rem );
 	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ),  FrobeniusRootStrategy => opts.FrobeniusRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
                                                                             --using the base p expansion of rem/p^e < 1
     )

@@ -108,22 +108,22 @@ digit ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> digit( p, e, x ) )
 
 --===================================================================================
 
-basePExp = method(); 
+adicExpansion = method(); 
 
 --Computes the terminating base p expansion of a positive integer.
 --Gives expansion in reverse... so from left to right it gives
 --the coefficient of 1, then of p, then of p^2, and so on
-basePExp( ZZ, ZZ ) := ( p, N ) ->
+adicExpansion( ZZ, ZZ ) := ( p, N ) ->
 (
-    if N < 0 then error "basePExp: Expected N to be positive";
-    if N < p then {N} else prepend( N % p, basePExp(p, N // p)) 
+    if N < 0 then error "adicExpansion: Expected N to be positive";
+    if N < p then {N} else prepend( N % p, adicExpansion(p, N // p)) 
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
 
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
-basePExp( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
+adicExpansion( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
 (
-    if x < 0 or x > 1 then error "basePExp: Expected x in [0,1]";
+    if x < 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
     apply( e, i -> digit( p, i+1, x ) )
 )
 
@@ -144,9 +144,9 @@ truncatedBasePExp ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> truncatedBas
 --===================================================================================
 
 --- write n=a*p^e+a_{e-1} p^{e-1} + \dots + a_0 where 0\leq a_j <p 
---- DS: so it's just like doing basePExp but giving up after p^e and just returning whatever number's left
---- DS: this could be merged with basePExp. Should it be? 
---- note: I changed the calling order here should change to be consistent with basePExp
+--- DS: so it's just like doing adicExpansion but giving up after p^e and just returning whatever number's left
+--- DS: this could be merged with adicExpansion. Should it be? 
+--- note: I changed the calling order here should change to be consistent with adicExpansion
 --- The change I made was switching the order of the first two arguments
 baseP1 = ( p, n, e ) ->
 (

@@ -60,7 +60,7 @@ AuxiliaryFiles=>false
 
 export{
 --BasicFunctions (BasicFunctions.m2) 
-    "basePExp",    
+    "adicExpansion",    
     "digit", 	   
     "divideFraction",
     "floorLog",

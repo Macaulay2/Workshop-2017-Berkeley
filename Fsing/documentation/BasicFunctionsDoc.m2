@@ -1,5 +1,5 @@
 "carryTest",  
-    "basePExp",    
+    "adicExpansion",    
     "digit", 	   
     "denom",   
     "divideFraction",
@@ -19,6 +19,30 @@
 --Documentation for BasicFunctions.m2
 --***********************************************
 --***********************************************
+
+doc ///
+     Key
+     	adicExpansion
+	adicExpansion( ZZ, ZZ )
+	adicExpansion( ZZ, ZZ, QQ )
+     Headline
+     	 Computes base p expansions.
+     Usage
+     	 adicExpansion(p,N)
+	 adicExpansion(p,e,x)
+     Inputs 
+     		p:ZZ
+		N:ZZ	
+		e:ZZ
+		x:QQ	
+     Outputs
+         :List
+     Description
+	Text
+	Computes the base p expansion of an integer N.  The output is a list in which the i-th element is the coefficient of p^i.
+	Computes the first e digits in the base p expansion of a positive rational number x less than one.  The output is a list in which the i-th element is the coefficient of p^(-i-1)	    
+	    
+///
 
 doc ///
      Key
