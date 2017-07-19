@@ -59,6 +59,9 @@ doc ///
      Description
 	Text
 	    This differs from floor(log_b(x)) in that it corrects problems due to rounding.
+	Example
+	    floor( log_3 3^5 )
+	    floorLog( 3, 3^5 )    
 /// 
 
 doc ///
