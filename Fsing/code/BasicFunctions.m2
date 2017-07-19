@@ -60,12 +60,12 @@ divideFraction = method(Options => {NoZeroC=>false});
 --even if it means increasing a. 
 divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
 (
-    a := num t; -- finding a is easy, for now
-    den := denom(t);
+    a := numerator t; -- finding a is easy, for now
+    den := denominator(t);
     b := 1;
     while den % p^b == 0 do b = b+1;
     b = b-1; 
-    temp := denom( t*p^b );
+    temp := denominator( t*p^b );
     local c;
     if (temp == 1) then c = 0 else 
     (
