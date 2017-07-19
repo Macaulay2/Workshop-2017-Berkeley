@@ -32,6 +32,9 @@ fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 J)
 
 
+
+
+
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
 doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := P^n; h := bigHeight(P);
     if bigHeight(Q) > h then false else (
@@ -282,6 +285,12 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
     
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
+
+
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 -----------------------------------------------------------
 -----------------------------------------------------------
