@@ -1,19 +1,3 @@
-"carryTest",  
-    "adicExpansion",    
-    "digit", 	   
-    "denom",   
-    "divideFraction",
-    "firstCarry", 
-    "floorLog",
-    "fracPart", 
-    "getCanVector",
-    "getNumAndDenom", 
-    "maxIdeal", 
-    "multOrder",
-    "num",
-    "taxicabNorm",
-    "truncatedBasePExp",
-    
 --***********************************************
 --***********************************************
 --Documentation for BasicFunctions.m2
@@ -52,18 +36,18 @@ doc ///
      Usage
      	 floorLog(b,x)
      Inputs 
-     		b:ZZ
-		x:ZZ		
+     	 b:ZZ
+	 x:ZZ		
      Outputs
          :ZZ
      Description
-	Text
-	    This differs from floor(log_b(x)) in that it corrects problems due to rounding.
-	Example
-	    floor( log_3 3^5 )
-	    floorLog( 3, 3^5 )    
+         Text
+             This differs from floor(log_b(x)), in that it corrects problems due to rounding.
+         Example
+             floor( log_3 3^5 )
+             floorLog( 3, 3^5 )
 /// 
-
+    
 doc ///
      Key
      	multOrder
