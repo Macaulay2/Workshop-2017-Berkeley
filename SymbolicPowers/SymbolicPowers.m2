@@ -2,8 +2,10 @@ newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
 	Date => "May 14th, 2017",
-	Authors => {{Name => "Eloisa Grifo", 
-	Email => "eloisa.grifo@virginia.edu"}},
+	Authors => {
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu"},
+	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    },
 	Headline => "Calculations involving symbolic powers",
 	DebuggingMode => false
         )
@@ -30,7 +32,8 @@ export {
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
     "exponentsMonomialGens", 
-    "symbolicDefect"
+    "symbolicDefect",
+    "isGorenstein"
     }
 
 
@@ -343,8 +346,11 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
       # flatten entries mingens F(X)
       )
 
-
-
+-- To be placed in Depth.m2
+isGorenstein = method()
+isGorenstein(Ring) := Boolean => R ->(
+    
+    )
 
 
 -----------------------------------------------------------
