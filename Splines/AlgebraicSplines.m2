@@ -1948,6 +1948,10 @@ assert(splineMatrix(V,F,0,BaseRing=>S)==matrix {{1, 0, 0, 0, -1, y, 0, 0, 0, 0},
 assert(splineMatrix(V,F,0,Homogenize=>false,BaseRing=>R)==matrix {{1, 0, 0, 0, -1, v, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, u-v, 0, 0,
       0}, {0, 1, -1, 0, 0, 0, 0, u+v, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0, u-2*v,
       0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, u}})
+assert(splineModule(V,F,1,BaseRing=>S)==image matrix {{1, 6*y^2, -4*y^2, 4*x*y^2, -4*y^3}, {1, 3*x^2-6*x*y+9*y^2,
+      -x^2+2*x*y-5*y^2, x^2*y+2*x*y^2+y^3, x^3-3*x*y^2-2*y^3}, {1,
+      2*x^2-8*x*y+8*y^2, 4*x*y-4*y^2, 0, 0}, {1, 0, x^2, 0, 0}, {1, 0, 0, 0,
+      0}})
 ///
 
 TEST ///
