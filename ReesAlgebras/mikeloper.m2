@@ -1,5 +1,5 @@
 newPackage(
-    "FirstPackage",
+    "mikeloper",
     Version => "0.1",
     Date => "July 19, 2017",
     Authors => {{Name => "Mike Loper",
@@ -12,15 +12,15 @@ newPackage(
 needsPackage "SimpleDoc"
 needsPackage "BoijSoederberg"
 
-export {firstfunction}
+export {"firstFunction"}
 
-firstFunction = method(List => List)
+firstFunction = method()
 firstFunction List := List => lst -> pureBetti(lst)
 
 beginDocumentation()
 doc ///
     Key
-    	FirstPackage
+    	mikeloper
     Headline
        	an example Macaulay2 package
     Description
