@@ -261,29 +261,53 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
 
 --We can now check F-regularity
 
-isFregular = method(Options => {MaxCartierIndex => 100, IsLocal=>false, FrobeniusRootStrategy => Substitution});
+isFregular = method(Options => {MaxCartierIndex => 100, IsLocal=>false, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0});
 
 isFregular(Ring) := o->R1 -> (
-    tau := testIdeal(R1, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
-    if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    tau := testIdeal(R1, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex );
+    if (o.IsLocal == true) then (
+        maxIdeal:= ideal(first entries vars R1);  
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+    )
+    else(
+        if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    )        
 );
 
 isFregular(QQ, RingElement) := o->(tt, ff) -> (
     R1 := ring ff;
-    tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
-    if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
+    if (o.IsLocal == true) then (
+        maxIdeal:= ideal(first entries vars R1);  
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+    )
+    else(
+        if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    )        
 );
 
 isFregular(ZZ, RingElement) := o->(tt, ff) -> (
     R1 := ring ff;
-    tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
-    if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
+    if (o.IsLocal == true) then (
+        maxIdeal:= ideal(first entries vars R1);  
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+    )
+    else(
+        if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    )        
 );
 
 isFregular(List, List) := o->(ttList, ffList) -> (
     R1 := ring (ffList#0);
-    tau := testIdeal(ttList, ffList, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
-    if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    tau := testIdeal(ttList, ffList, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
+    if (o.IsLocal == true) then (
+        maxIdeal:= ideal(first entries vars R1);  
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+    )
+    else(
+        if (isSubset(ideal(sub(1, R1)), tau)) then true else false
+    )        
 );
 
 ----------------------------------------------------------------
