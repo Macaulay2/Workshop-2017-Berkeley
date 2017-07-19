@@ -134,7 +134,7 @@ doc ///
     Key
         [testIdeal, EthRootStrategy]
     Headline
-        controls the strategy for computing the Frobenius root of an ideal
+        controls the strategy for computing the Frobenius root of an ideal within the testIdeal call
     Usage
         testElement(..., EthRootStrategy=>S)
     Inputs
@@ -144,4 +144,60 @@ doc ///
     Description
         Text
             Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.
+///
+
+doc ///
+    Key
+        [testIdeal, MaxCartierIndex]
+    Headline
+        sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
+    Usage
+        testElement(..., MaxCartierIndex=>N)
+    Inputs
+        N: ZZ
+    Outputs
+        :Ideal
+    Description
+        Text
+            When working in a Q-Gorenstein ring, testIdeal must find an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass it a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option QGorensteinIndex.
+    SeeAlso
+        [testIdeal, QGorensteinIndex]
+///
+
+doc ///
+    Key
+        [testIdeal, QGorensteinIndex]
+    Headline
+        specifies the Q-Gorenstein index of the ring
+    Usage
+        testElement(..., QGorenstein=>N)
+    Inputs
+        N: ZZ
+    Outputs
+        :Ideal
+    Description
+        Text
+            When working in a Q-Gorenstein ring, testIdeal must find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known.  Specifying a value $> 0$ will mean that MaxCartierIndex is ignored.
+    SeeAlso
+        [testIdeal, MaxCartierIndex]
+///
+
+doc ///
+    Key
+        QGorensteinIndex
+    Headline
+        an option used to specify the Q-Gorenstein index of the ring
+    Description
+        Text
+            When working in a Q-Gorenstein ring frequently we must find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known by setting QGorensteinIndex => N.
+///
+
+doc ///
+    Key
+        MaxCartierIndex
+    Headline
+        an option used to specify the maximum possible Cartier index of a divisor
+    Description
+        Text
+            Some functions need to find the smallest value $N$ such that $N$ times a divisor is Cartier.  By specifying this value, the user controls what the maximal possible Cartier index to consider is.  
 ///

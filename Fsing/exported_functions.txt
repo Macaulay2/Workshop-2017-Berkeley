@@ -116,9 +116,11 @@
     "Katzman", --an option for CanonicalStrategy
 
 -- testIdeals.m2
-    "findQGorGen", --Karl (this finds y such that I^{[p^e]} : I = (y) + I^{[p^e]}, if it exists)
-    "findTestElementAmbient", --Karl (my students Marcus and Dan did some improvements on this recently, it doesn't compute the whole Jacobian, it just looks at random minors until it finds a good one, it can be much much faster)
-    "MaxCartierIndex", --the cartier index limit in the test ideal method
+    "findQGorGen", --export; main; documented
+    "findTestElementAmbient", --export; main; documented
+    "MaxCartierIndex", --export; main; documented
+    "QGorensteinIndex", --export; main; documented
+    "
     "tauAOverPEMinus1Poly", --Karl (this should be removed)
     "tauGor", --Karl (this should be removed)
     "tauGorAmb",--Karl (this should be removed)
