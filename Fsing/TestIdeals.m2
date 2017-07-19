@@ -122,7 +122,6 @@ export{
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
 
 -- Other.m2
-    "fSig",
     "HSL", 
     "imageOfRelativeCanonical",
     "imageOfTrace", --doesn't work! 
