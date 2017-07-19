@@ -593,6 +593,43 @@ guessFPT ={OutputRange=>false}>>o -> (ff, e1, maxDenom) ->(
           { {nn/(pp^e1-1), (nn+1)/(pp^e1)}, findNumberBetween( maxDenom, nn/(pp^e1-1), (nn+1)/(pp^e1) ) }
 )
 
+----------------------------------------------------------------
+--************************************************************--
+--Auxiliary functions for F-signature and Fpt computations.   --
+--************************************************************--
+----------------------------------------------------------------
+ 
+--- Computes the F-signature for a specific value a1/p^e1
+--- Input:
+---	e - some positive integer
+---	a - some positive integer between 0 and p^e
+---	f - some polynomial in two or three variables in a ring R of PRIME characteristic
+--- Output:
+---	returns value of the F-signature of the pair (R, f^{a/p^e})
+--- Code is based on work of Eric Canton
+fSig = (f, a, e) -> (
+     R := ring f;
+     p := char ring f;     
+     1 - p^(-e*dim(R))*degree( frobenius( e, maxIdeal R) + ideal( fastExp( a, f ) )) 
+)  
+
+--Calculates the x-int of the secant line between two guesses for the fpt
+--Input:
+--     t - some positive rational number
+--     b - the f-signature of (R,f^{t/p^e})
+--     e - some positive integer
+--     t1- another rational number > t
+--     f - some polynomial in two or three variables in a ring of PRIME characteristic
+--
+-- Output:
+--	fSig applied to (f,t1,e)
+--	x-intercept of the line passing through (t,b) and (t1,fSig(f,t1,e))
+threshInt = (f,e,t,b,t1)-> (
+     b1:=fSig(f,t1,e);
+{b1,xInt(t,b,t1/(char ring f)^e,b1)}
+)
+
+
 --F-pure threshold estimation, at the origin
 --e is the max depth to search in
 --FinalCheck is whether the last isFRegularPoly is run (it is possibly very slow) 
