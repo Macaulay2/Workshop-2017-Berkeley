@@ -238,16 +238,6 @@ squarefreeGens(Ideal) := List => I ->(
     l := flatten entries vars R;
     apply(v,o->product(apply(toList pairs(o),(i,j)->(l_i)^j))))
 
-///
-restart
-loadPackage"SymbolicPowers"
-R = QQ[x,y]
-I = ideal"x2,xy"
-w = exponentsMonomialGens I
-select(w,i -> all(i,o -> o<2))
-
-viewHelp all
-///
 
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
@@ -261,7 +251,8 @@ isKonig(Ideal) := Boolean => I -> (
     R := ring I;
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
-	    c := codim I; J := I^c;
+	    c := codim I; 
+	    J := I^c;
 	    not(squarefreeGens(J)=={})
 	    )
 	)
