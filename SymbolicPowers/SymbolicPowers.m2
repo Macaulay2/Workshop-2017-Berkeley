@@ -28,7 +28,7 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (J := I;
-(for i from 1 to n do J = J*I);
+(for i from 2 to n do J = J*I);
 J)
 
 
@@ -124,12 +124,14 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 
 
 symbolicPower = method(TypicalValue => Ideal)
-symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
+symbolicPower(Ideal,ZZ) => (I,n) -> (R := ring I;
+    if isPolynomialRing(R) then
+    (if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
 	if isMonomialIdeal I then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
 	    symbPowerSlow(I,n)
-	    )))
+	    ))) else (if
+
 
 
 
