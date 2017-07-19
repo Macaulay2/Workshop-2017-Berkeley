@@ -122,17 +122,17 @@ export{
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
 
 -- Other.m2
-    "HSL", 
-    "imageOfRelativeCanonical",
-    "imageOfTrace", --doesn't work! 
-    "isFPure",  
-    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular
-    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular
-    "isMapSplit",
-    "isSharplyFPurePoly", --Karl needs to be redone
-    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
-    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
-    "sigmaQGorAmb", --Karl needs to be redone
+--    "HSL", 
+--    "imageOfRelativeCanonical",
+--    "imageOfTrace", --doesn't work! 
+--    "isFPure",  
+--    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular
+--    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular
+--    "isMapSplit",
+--    "isSharplyFPurePoly", --Karl needs to be redone
+--    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
+--    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
+--    "sigmaQGorAmb", --Karl needs to be redone
  
 -- Other
     "FFiniteSupport", ---MK
@@ -176,8 +176,6 @@ load "./code/parameterTestIdeal.m2"
 load "./code/Finjective.m2"
 
 load "./code/testIdeals.m2"
-
-load "./code/Other.m2"
 
 beginDocumentation()
 
