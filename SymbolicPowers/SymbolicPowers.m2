@@ -13,7 +13,7 @@ export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "b
     "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
     "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
     "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence"}
+    "minDegreeSymbPower", "lowerBoundResurgence","symbolicDefect"}
 
 
 bigHeight = method(TypicalValue => ZZ)
@@ -289,6 +289,28 @@ isMonomial = method()
 isMonomial(RingElement) := r -> (terms(r) == {r})
 isMonomial(MonomialIdeal) := I -> true
 isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
+
+---------------------------------
+---Symbolic Defect
+---------------------------------
+symbolicDefect = method(TypicalValue => ZZ)
+symbolicDefect(Ideal,ZZ) := (I,n) -> (
+    R := ring I;
+    
+    Y := fastPower(I,n);
+     
+     S := R/Y;
+      
+      F := map(S,R);
+      
+      X := symbolicPower(I,n);
+      
+      # flatten entries mingens F(X)
+      )
+
+
+
+
 
 -----------------------------------------------------------
 -----------------------------------------------------------
