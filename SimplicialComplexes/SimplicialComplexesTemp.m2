@@ -27,3 +27,5 @@ newPackage(
 
 
 export {"join"}
+
+-- something stupid jason wrote
