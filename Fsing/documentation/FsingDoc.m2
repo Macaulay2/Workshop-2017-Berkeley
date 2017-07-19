@@ -7,7 +7,7 @@
 
 doc ///
    Key
-      Fsing
+      TestIdeals
    Headline
       A package for calculations of singularities in positive characteristic 
    Description
