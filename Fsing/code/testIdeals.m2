@@ -48,7 +48,8 @@ testElement = method()
 randomSubset = method()
 
 testElement(Ring) := (R1) ->
-(
+( --Marcus I believe wrote this code to look at random minors instead of all minors
+--note in the current version this will not terminate if the ring is not generically reduced
 	I1 := ideal R1;
 	n1 := #gens R1 - dim R1;
 	M1 := jacobian I1;
@@ -63,7 +64,7 @@ testElement(Ring) := (R1) ->
             testEle = testEle + (random(coefficientRing R1))*(first curMinor);
         );
 	);
-	testEle
+	testEle%I1
 );
 
 randomSubset(ZZ,ZZ) := (m,n) ->
@@ -120,7 +121,7 @@ isLocallyPrincipalIdeal := (I2) -> (
 
 --the following is the new function for computing test ideals written by Karl.
 
-testIdeal = method(Options => {MaxCartierIndex => 100});
+testIdeal = method(Options => {MaxCartierIndex => 100, EthRootStrategy => Substitution, QGorensteinIndex => 0});
 
 testIdeal(Ring) := o->(R1) -> (
     canIdeal := canonicalIdeal(R1);
@@ -131,27 +132,32 @@ testIdeal(Ring) := o->(R1) -> (
     curIdeal := ideal(sub(0, R1));
     locPrincList := null;
     computedTau := ideal(sub(0, R1));
-    while ( (fflag == false) and (cartIndex < o.MaxCartierIndex) ) do (
-        cartIndex = cartIndex + 1;
-        curIdeal = reflexivePower(cartIndex, canIdeal);
-        locPrincList = isLocallyPrincipalIdeal(curIdeal);
-        if (locPrincList#0 == true) then (            
-            fflag = true;
+    if (o.QGorensteinIndex > 0) then (
+        cartIndex = o.QGorensteinIndex;
+    )
+    else (
+        while ( (fflag == false) and (cartIndex < o.MaxCartierIndex) ) do (
+            cartIndex = cartIndex + 1;
+            curIdeal = reflexivePower(cartIndex, canIdeal);
+            locPrincList = isLocallyPrincipalIdeal(curIdeal);
+            if (locPrincList#0 == true) then (            
+                fflag = true;
+            );
         );
     );
-    if (fflag == false) then error "testIdeal: Ring does not appear to be Q-Gorenstein, perhaps increase the option MaxCartierIndex";
+    if (cartIndex <= 0) then error "testIdeal: Ring does not appear to be Q-Gorenstein, perhaps increase the option MaxCartierIndex";
     if ((pp-1)%cartIndex == 0) then ( 
         J1 := testElement( R1 );
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
-            computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1) );
+            computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1), EthRootStrategy => o.EthRootStrategy);
             computedFlag = true;
         )
         else (
             computedFlag = false;
         );
     );
-    if (computedFlag == false) then (
+    if (computedFlag == false) then ( --if we haven't already computed it
         gg := first first entries gens trim canIdeal;
         dualCanIdeal := (ideal(gg) : canIdeal);
         nMinusKX := reflexivePower(cartIndex, dualCanIdeal);
@@ -164,7 +170,7 @@ testIdeal(Ring) := o->(R1) -> (
 --    print gensList;
 --    1/0;
         for x in gensList do (
-            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1))#0;        
+            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1, EthRootStrategy => o.EthRootStrategy))#0;        
         );
 --    1/0;
     
@@ -176,24 +182,24 @@ testIdeal(Ring) := o->(R1) -> (
 
 testIdeal(QQ, RingElement, Ring) := o->(t1, f1, R1) -> (
     --this computes \tau(R, f^t)
-    testIdeal({t1}, {f1}, R1)
+    testIdeal({t1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(ZZ, RingElement, Ring) := o->(t1, f1, R1) -> (
     --this computes \tau(R, f^t)
-    testIdeal({t1/1}, {f1}, R1)
+    testIdeal({t1/1}, {f1}, R1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(QQ, RingElement) := o->(t1, f1) -> (
-    testIdeal({t1}, {f1}, ring f1)
+    testIdeal({t1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(ZZ, RingElement) := o->(t1, f1) -> (
-    testIdeal({t1/1}, {f1}, ring f1)
+    testIdeal({t1/1}, {f1}, ring f1, MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(List, List) := o->(tList, fList) ->(
-    testIdeal(tList, fList, ring (fList#0))
+    testIdeal(tList, fList, ring (fList#0), MaxCartierIndex => o.MaxCartierIndex, EthRootStrategy=>o.EthRootStrategy, QGorensteinIndex => o.QGorensteinIndex)
 );
 
 testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
@@ -205,12 +211,17 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
     curIdeal := ideal(sub(0, R1));
     locPrincList := null;
     computedTau := ideal(sub(0, R1));
-    while ( (fflag == false) and (cartIndex < o.MaxCartierIndex) ) do (
-        cartIndex = cartIndex + 1;
-        curIdeal = reflexivePower(cartIndex, canIdeal);
-        locPrincList = isLocallyPrincipalIdeal(curIdeal);
-        if (locPrincList#0 == true) then (            
-            fflag = true;
+    if (o.QGorensteinIndex > 0) then (
+        cartIndex = o.QGorensteinIndex;
+    )
+    else (
+        while ( (fflag == false) and (cartIndex < o.MaxCartierIndex) ) do (
+            cartIndex = cartIndex + 1;
+            curIdeal = reflexivePower(cartIndex, canIdeal);
+            locPrincList = isLocallyPrincipalIdeal(curIdeal);
+            if (locPrincList#0 == true) then (            
+                fflag = true;
+            );
         );
     );
     if (fflag == false) then error "testIdeal: Ring does not appear to be Q-Gorenstein, perhaps increase the option MaxCartierIndex";
@@ -219,7 +230,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
             --do stuff
-            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1});
+            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, EthRootStrategy => o.EthRootStrategy);
         ) else (
             computedFlag = false;
         );
@@ -239,7 +250,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
     
         for x in gensList do (
             f2 = append(fList, x);
-            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1))#0;        
+            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1, EthRootStrategy => o.EthRootStrategy))#0;        
         );
     
         newDenom := reflexify(canIdeal*dualCanIdeal);

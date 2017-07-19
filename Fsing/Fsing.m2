@@ -51,7 +51,7 @@ Authors => {
 Headline => "A package for calculations of singularities in positive characteristic", 
 DebuggingMode => true, 
 Reload => true,
-AuxiliaryFiles=>true 
+AuxiliaryFiles=>false
 )
 
 
@@ -188,6 +188,7 @@ export{
 --    "tauQGor",    --Karl removed  since it is subsumed by the new testIdeal
 --    "tauQGorAmb", --Karl removed  since it is subsumed by the new testIdeal
     "testIdeal", --Karl (the new version)
+    "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
 
 -- Other.m2
     "fSig",
