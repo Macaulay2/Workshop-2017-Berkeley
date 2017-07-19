@@ -62,7 +62,7 @@ maxBettiReg2Cyclic(Ring,List) := (R,h) -> (
 	    (for k from i+1 to r do
 	        (M#(k-1,2)=M#(k-1,2)-M#(k,1);
 		 M#(k,1)=0)));
-    peek M
+    new HashTable from M 
     )	
 
 makeBetti = H ->(
