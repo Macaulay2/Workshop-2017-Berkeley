@@ -8,12 +8,29 @@ newPackage(
 	DebuggingMode => false
         )
 
-export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "bigHeight",
-    "frobeniusPower", "symbPowerPrimePosChar", "doSymbolicAndOrdinaryPowersCoincide",
-    "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
-    "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
-    "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence"}
+export {
+    "symbolicPower", 
+    "isSymbPowerContainedinPower", 
+    "ContainmentProblem", 
+    "bigHeight",
+    "frobeniusPower", 
+    "symbPowerPrimePosChar", 
+    "doSymbolicAndOrdinaryPowersCoincide",
+    "symbolicPowerJoin", 
+    "joinIdeals", 
+    "ContainmentProblemGivenSymbolicPower",
+    "symbolicContainmentMonomialCurve", 
+    "squarefreeGens", 
+    "squarefreeInCodim",
+    "symbolicPowerMonomialCurve", 
+    "isKonig", 
+    "isPacked", 
+    "noPackedSub", 
+    "noPackedAllSubs",
+    "minDegreeSymbPower", 
+    "lowerBoundResurgence",
+    "exponentsMonomialGens"
+    }
 
 
 bigHeight = method(TypicalValue => ZZ)
@@ -176,6 +193,7 @@ symbolicPowerMonomialCurve(Ring,List,ZZ) := Ideal => (k,L,m) -> (
 --Given a monomial ideal, finds a minimal generating set, 
 --and then returns the exponents of the monomials in that set
 --Given a monomial, returns the exponents
+{*
 exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(RingElement) := List => r -> (
     R := ring r;
@@ -185,7 +203,16 @@ exponentsMonomialGens(RingElement) := List => r -> (
     S := k[toSequence flatten entries vars R,Degrees=>deg];
     f := map(S,R,flatten entries vars S);
     degree(f(r)))
+*}
+
+exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(Ideal) := List => I -> (
+    local L; 
+    L = flatten entries mingens I;
+    apply(L, l -> flatten exponents l)    
+    )
+
+{*        
     R := ring I;
     k := coefficientRing R;
     d := dim R;
@@ -194,12 +221,14 @@ exponentsMonomialGens(Ideal) := List => I -> (
     f := map(S,R,flatten entries vars S);
     m := flatten entries(mingens f(I));
     delete({},apply(m,degree)))
+*}
 
+{* Not using this.
 squarefreeGensList = method()
 squarefreeGensList(Ideal) := List => I ->(
     w := exponentsMonomialGens(I);
     select(w,i -> all(i,o -> o<2)))
-
+*}
 
 squarefreeGens = method()
 squarefreeGens(Ideal) := List => I ->(
@@ -210,7 +239,6 @@ squarefreeGens(Ideal) := List => I ->(
     apply(v,o->product(apply(toList pairs(o),(i,j)->(l_i)^j))))
 
 
-
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
@@ -219,11 +247,16 @@ squarefreeInCodim(Ideal) := List => I -> (c := codim I;
 
 
 isKonig = method(TypicalValue => Boolean)
-isKonig(Ideal) := Boolean => I -> (R := ring I;
+isKonig(Ideal) := Boolean => I -> (
+    R := ring I;
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
-	    c := codim I; J := I^c;
-	    not(squarefreeGens(J)=={}))))
+	    c := codim I; 
+	    J := I^c;
+	    not(squarefreeGens(J)=={})
+	    )
+	)
+    )
 
 
 
@@ -1034,3 +1067,6 @@ TEST ///
 ///
 
 end
+
+viewHelp primaryDecomposition
+viewHelp isSquareFree
