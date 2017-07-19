@@ -23,8 +23,8 @@
 doc ///
      Key
      	adicExpansion
-	adicExpansion( ZZ, ZZ )
-	adicExpansion( ZZ, ZZ, QQ )
+	(adicExpansion, ZZ, ZZ )
+	(adicExpansion, ZZ, ZZ, QQ )
      Headline
      	 Computes base p expansions.
      Usage
@@ -40,7 +40,7 @@ doc ///
      Description
 	Text
 	Computes the base p expansion of an integer N.  The output is a list in which the i-th element is the coefficient of p^i.
-	Computes the first e digits in the base p expansion of a positive rational number x less than one.  The output is a list in which the i-th element is the coefficient of p^(-i-1)	    
+	Computes the first e digits in the base p expansion of a positive rational number x in the unit interval.  The output is a list in which the i-th element is the coefficient of p^(-i-1)	    
 	    
 ///
 

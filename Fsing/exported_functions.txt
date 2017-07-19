@@ -1,5 +1,5 @@
 --BasicFunctions (BasicFunctions.m2) 
-    "adicExpansion",    --export; main
+    "adicExpansion",    --export; main  DONE
     "carryTest",  --do NOT export
     "digit", -- export; main	   
     "divideFraction", --export; main

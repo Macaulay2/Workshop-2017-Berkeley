@@ -113,6 +113,7 @@ adicExpansion = method();
 --Computes the terminating base p expansion of a positive integer.
 --Gives expansion in reverse... so from left to right it gives
 --the coefficient of 1, then of p, then of p^2, and so on
+
 adicExpansion( ZZ, ZZ ) := ( p, N ) ->
 (
     if N < 0 then error "adicExpansion: Expected N to be positive";
