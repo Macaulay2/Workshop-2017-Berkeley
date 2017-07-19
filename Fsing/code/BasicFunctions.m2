@@ -22,21 +22,21 @@ numerator( ZZ ) := x -> x;
 
 --Finds the denominator of a rational number.
 --denom is always positive.
---denom( QQ ) := x -> denominator(x); 
+--denominator( QQ ) := x -> denominator(x); 
 
 --Finds the denominator of an integer.
---denom( ZZ ) := x -> 1; 
+--denominator( ZZ ) := x -> 1; 
 
 --===================================================================================
 
---num = method(); 
+--numerator = method(); 
 
 --Finds the numerator of a rational number.
 --Will be negative if x is negative.
---num( QQ ) := x -> numerator(x); 
+--numerator( QQ ) := x -> numerator(x); 
 
 --Finds the numerator of an integer.
---num( ZZ ) := x -> x; 
+--numerator( ZZ ) := x -> x; 
 
 --===================================================================================
 
@@ -119,12 +119,12 @@ divideFraction = method(Options => {NoZeroC=>false});
 --even if it means increasing a. 
 divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
 (
-    a := num t; -- finding a is easy, for now
-    den := denom(t);
+    a := numerator t; -- finding a is easy, for now
+    den := denominator(t);
     b := 1;
     while den % p^b == 0 do b = b+1;
     b = b-1; 
-    temp := denom( t*p^b );
+    temp := denominator( t*p^b );
     local c;
     if (temp == 1) then c = 0 else 
     (
