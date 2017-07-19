@@ -133,6 +133,7 @@ doc ///
 doc ///
     Key
         [testIdeal, FrobeniusRootStrategy]
+        [isFregular, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within the testIdeal call
     Usage
@@ -149,6 +150,7 @@ doc ///
 doc ///
     Key
         [testIdeal, MaxCartierIndex]
+        [isFregular, MaxCartierIndex]
     Headline
         sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
     Usage
@@ -159,7 +161,7 @@ doc ///
         :Ideal
     Description
         Text
-            When working in a Q-Gorenstein ring, testIdeal must find an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass it a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option QGorensteinIndex.
+            When working in a Q-Gorenstein ring, and computing the test ideal or whether a pair is F-regular, we find an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass it a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option QGorensteinIndex.
     SeeAlso
         [testIdeal, QGorensteinIndex]
 ///
@@ -167,6 +169,7 @@ doc ///
 doc ///
     Key
         [testIdeal, QGorensteinIndex]
+        [isFregular, QGorensteinIndex]
     Headline
         specifies the Q-Gorenstein index of the ring
     Usage
@@ -177,7 +180,7 @@ doc ///
         :Ideal
     Description
         Text
-            When working in a Q-Gorenstein ring, testIdeal must find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known.  Specifying a value $> 0$ will mean that MaxCartierIndex is ignored.
+            When working in a Q-Gorenstein ring, and computing the test ideal or whether a pair is F-regular, we find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known.  Specifying a value $> 0$ will mean that MaxCartierIndex is ignored.
     SeeAlso
         [testIdeal, MaxCartierIndex]
 ///
@@ -201,3 +204,79 @@ doc ///
         Text
             Some functions need to find the smallest value $N$ such that $N$ times a divisor is Cartier.  By specifying this value, the user controls what the maximal possible Cartier index to consider is.  
 ///
+
+
+doc ///
+    Key
+        isFregular
+        (isFregular, Ring)
+        (isFregular, ZZ, RingElement)
+        (isFregular, QQ, RingElement)
+        (isFregular, List, List)
+    Headline
+        computes checks if a ring or pair is strongly F-regular
+    Usage
+        isFregular(R)
+        isFregular(t, f)
+        isFregular(Lexp, Lelts)
+    Inputs
+        R: Ring
+        t: QQ
+        t: ZZ
+        f: RingElement
+        Lexp: List
+        Lelts: List
+    Outputs
+        :Boolean
+    Description
+        Text
+            Given a normal Q-Gorenstein ring $R$, this computes whether the ring is strongly F-regular.
+        Example
+            R = ZZ/5[x,y,z]/ideal(x^2+y*z);
+            isFregular(R)
+        Example
+            R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
+            isFregular(R)
+        Text
+            It can also do the same computation for a pair.
+        Example
+            R = ZZ/5[x,y];
+            f = y^2-x^3;
+            isFregular(1/2, f)
+            isFregular(5/6, f)
+            isFregular(4/5, f)
+            isFregular(4/5-1/100000, f)
+///
+
+doc ///
+    Key
+        [isFregular, IsLocal]
+    Headline
+        controls whether F-regularity is checked at the origin or everywhere
+    Usage
+        isFregular(..., IsLocal=>b)
+    Inputs
+        b: Boolean
+    Outputs
+        :Boolean
+    Description
+        Text
+            When checking whether a ring or pair is strongly F-regular, the default option is to check this everywhere.  If you set IsLocal=>true (default is false), it will only check this at the origin.
+        Example
+            R = ZZ/7[x,y,z]/ideal((x-1)^3+(y-2)^3+z^3);
+            isFregular(R)
+            isFregular(R, IsLocal=>true)
+            S = ZZ/13[x,y,z]/ideal(x^3+y^3+z^3);
+            isFregular(S)
+            isFregular(S, IsLocal=>true)
+        Text
+            Here is an example of a pair.
+        Example
+            R = ZZ/13[x,y];
+            f = (y-2)^2 - (x-3)^3;
+            isFregular(5/6, f)
+            isFregular(5/6, f, IsLocal=>true)
+            g = y^2 - x^3;
+            isFregular(5/6, g)
+            isFregular(5/6, g, IsLocal=>true)
+///        

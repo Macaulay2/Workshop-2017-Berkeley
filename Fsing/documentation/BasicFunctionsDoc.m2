@@ -39,9 +39,13 @@ doc ///
          :List
      Description
 	Text
-	   Computes the base p expansion of an integer N:  the output is a list in which the i-th element is the coefficient of p^i.
-	   Computes the first e digits in the unique non-terminating base p expansion of a positive rational number x in the unit interval: the output is a list in which the i-th element is the coefficient of p^(-i-1).	    
-	    
+	   adicExpansion(p,N) computes the base p expansion of an integer N:  the output is a list in which the i-th element is the coefficient of p^i.
+    	Example
+	    Since 5=1*2^0+0*2^1+1*2^2, adicExpansion(2,5) = {1,0,1}.
+	Text
+           adicExpansion(p,e,x) computes the first e digits in the unique non-terminating base p expansion of a positive rational number x in the unit interval: the output is a list in which the i-th element is the coefficient of p^(-i-1).	    
+	Example 
+	    The unique non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ..., and so adicExpansion(2,4,1/2) = {0, 1, 1, 1}.     
 ///
 
 doc ///

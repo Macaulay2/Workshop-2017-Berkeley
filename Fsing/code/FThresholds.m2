@@ -1051,7 +1051,7 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	
 	if (c != 0) then (
 		myA = floor(a / (p^c - 1));
-		myTau = tauPoly( f, (a%(p^c-1))/(p^c-1) )
+		myTau = testIdeal( (a%(p^c-1))/(p^c-1), f )
 	);
 	
 	if (o.Verbose==true) then print "higher tau Computed";
@@ -1090,7 +1090,7 @@ isFJumpingNumberPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	--this writes t = a/(p^b(p^c-1))
 	(a,b,c) := toSequence divideFraction( p, t );
 	mySigma := ideal(f);
-	myTau := frobeniusRoot(b, tauPoly(f, t*p^b) );
+	myTau := frobeniusRoot(b, testIdeal(t*p^b, f) );
 	if (o.Verbose==true) then print "higher tau Computed";
 
 	--first we check whether this is even a jumping number.
