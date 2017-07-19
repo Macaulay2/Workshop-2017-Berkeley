@@ -1,8 +1,8 @@
 -- -*- coding: utf-8-unix -*-
--- Code for Simplicial Complexes
+-- Code for Simplicial Complexes Extras
 
 --------------------------------------------------------------------------------
--- Copyright 2006, 2010  Sorin Popescu, Gregory G. Smith, and Mike Stillman
+-- Copyright 2017  Jason McCullough
 -- 
 -- You may redistribute this program under the terms of the GNU General Public
 -- License as published by the Free Software Foundation, either version 2 of the
@@ -13,15 +13,17 @@
 -- should not affect the functionality present previously
 
 newPackage(
-	"SimplicialComplexesTemp",
+	"SimplicialComplexesTemp",  -- MERGE ME number 2
     	Version => "1.0", 
     	Date => "July 19, 2017",
     	Authors => {
-	     {Name => "Jason McCullough", Email => "jmccullo@iastate.edu"}
+	     {Name => "Jason McCullough", Email => "jmccullo@iastate.edu"}, HomePage => "http://users.rider.edu/~jmccullough"
 	     },
-    	Headline => "simplicial complexes add ones (temporary file)",
-    	DebuggingMode => false
+    	Headline => "simplicial complexes add-ons",
+    	DebuggingMode => false,
+	PackageExports=>{ "SimplicialComplexes"}
     	)
 
-needsPackage "SimplicialComplexes"
 
+
+export {"join"}
