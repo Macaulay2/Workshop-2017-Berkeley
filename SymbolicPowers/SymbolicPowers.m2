@@ -29,8 +29,10 @@ export {
     "noPackedAllSubs",
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
-    "exponentsMonomialGens"
+    "exponentsMonomialGens", 
+    "symbolicDefect"
     }
+
 
 
 bigHeight = method(TypicalValue => ZZ)
@@ -42,8 +44,16 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 	d-position(reverse(v-l),i->i==0))))
 
 
+
+fastPower = method(TypicalValue => Ideal)
+fastPower(Ideal,ZZ) := Ideal => (I,n) ->
+(J := I;
+(for i from 2 to n do J = J*I);
+J)
+
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
-doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := P^n; h := bigHeight(P);
+doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+    h := bigHeight(P);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
     
@@ -53,7 +63,7 @@ isSymbPowerContainedinPower = method(TypicalValue => Boolean)
 isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeight I; 
     if m<n then false else (
 	if m>= h*n then true else (
-	symb := symbolicPower(I,m); pow := I^n; isSubset(symb,pow))))
+	symb := symbolicPower(I,m); pow := fastPower(I,n); isSubset(symb,pow))))
 
 ContainmentProblem = method(TypicalValue => ZZ)
 ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
@@ -308,6 +318,34 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
     
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
+
+
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
+
+---------------------------------
+---Symbolic Defect
+---------------------------------
+symbolicDefect = method(TypicalValue => ZZ)
+symbolicDefect(Ideal,ZZ) := (I,n) -> (
+    R := ring I;
+    
+    Y := fastPower(I,n);
+     
+     S := R/Y;
+      
+      F := map(S,R);
+      
+      X := symbolicPower(I,n);
+      
+      # flatten entries mingens F(X)
+      )
+
+
+
+
 
 -----------------------------------------------------------
 -----------------------------------------------------------
@@ -1068,5 +1106,7 @@ TEST ///
 
 end
 
+
 viewHelp primaryDecomposition
 viewHelp isSquareFree
+
