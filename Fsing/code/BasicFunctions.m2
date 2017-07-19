@@ -16,25 +16,27 @@
 --*************************************************
 --===================================================================================
 
-denom = method(); 
+denominator( ZZ ) := x -> 1;
+numerator( ZZ ) := x -> x;
+--denom = method(); 
 
 --Finds the denominator of a rational number.
 --denom is always positive.
-denom( QQ ) := x -> denominator(x); 
+--denom( QQ ) := x -> denominator(x); 
 
 --Finds the denominator of an integer.
-denom( ZZ ) := x -> 1; 
+--denom( ZZ ) := x -> 1; 
 
 --===================================================================================
 
-num = method(); 
+--num = method(); 
 
 --Finds the numerator of a rational number.
 --Will be negative if x is negative.
-num( QQ ) := x -> numerator(x); 
+--num( QQ ) := x -> numerator(x); 
 
 --Finds the numerator of an integer.
-num( ZZ ) := x -> x; 
+--num( ZZ ) := x -> x; 
 
 --===================================================================================
 
