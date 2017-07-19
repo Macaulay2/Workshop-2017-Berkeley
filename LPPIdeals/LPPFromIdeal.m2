@@ -29,8 +29,8 @@ LPPNew(PolynomialRing,List,List) := (R,hilb,powers) -> (
   while (#powers < numvars) do (powers = append(powers, #hilb));
   LPP(R,hilb,powers)
 )
-LPPFromIdeals = method(TypicalValue=>Ideal)
-LPPFromIdeals(Ideal) := (I) -> (
+LPPFromIdeal = method(TypicalValue=>Ideal)
+LPPFromIdeal(Ideal) := (I) -> (
   powers := minregdeg(I);
   R:=ring I;
   if I == ideal(0_R) then return I;
@@ -45,7 +45,7 @@ LPPFromIdeals(Ideal) := (I) -> (
           hfArtinian:=hilbertFunct(artinian,MaxDegree=>deg+1);
           lex:=ideal select(flatten entries gens artinian,i->first degree i <= deg);
           if (hilbertFunct(lex,MaxDegree=>deg+1))#(deg+1) == hfArtinian#(deg+1) then done=true;
-          deg=deg+3;
+          deg=deg+10;
           );
        return lex;
        );
