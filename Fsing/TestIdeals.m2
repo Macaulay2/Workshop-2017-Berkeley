@@ -91,64 +91,6 @@ export{
     "Naive", 
     "Safe", 
     
---F-thresholds computations (FThresholds.m2)
-    "BinaryFormCheck",
-    "binarySearch1",
-    "binarySearchRecursive",
-    "BinomialCheck",
-    "ComputePreviousNus",
-    "DiagonalCheck", 
-    "estFPT", --Karl (and others, Pedro?, maybe should just be called fpt?)
-    "FinalCheck", 
-    "fpt",   
-    "fpt1",   
-    "FPTApproxList",     
-    "FTApproxList",
-    "FTHatApproxList", 
-    "guessFPT", --Karl (probably should be incorporated into estFPT
-    "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring)
-    "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring)
-    "linearSearch",
-    "MultiThread",
-    "newNu",
-    "newNuHat", 
-    "newNuHatList",
-    "newNuList",   
-    "nu",
-    "nuAlt",
-    "NuCheck",
-    "nuHat",
-    "nuHatList",
-    "nuList",
-    "nuListAlt",
-    "nuListAlt1",
-    "Origin",
-    "OutputRange",
-    "SearchFunction",
-    "TestFunction",
-    "testGenFrobeniusPower",
-    "testPower",
-    "testRoot",
-    "UseColonIdeals",
-
---F-thresholds of special families of polynomials (SpecialFThresholds.m2)
-    -- Eventually, only binomialFPT, diagonalFPT, and binaryFormFPT should  
-    -- be exported from this section **PT
-    "binaryFormFPT",     
-    "binaryFormFPTInternal",
-    "binomialFPT",
-    "diagonalFPT",
-    "factorList",    
-    "findCPBelow",
-    "isCP",
-    "isInLowerRegion",
-    "isInUpperRegion",
-    "MaxExp",
-    "Nontrivial",    
-    "PrintCP",
-    "setFTData",
-    "splittingField",
-
 -- parameterTestIdeal.m2
     "AssumeCM", --an option for function, if true, then the function will do less work.
     "AssumeReduced", --an option telling functions to assume a ring is reduced.
@@ -236,10 +178,6 @@ load "./code/parameterTestIdeal.m2"
 
 load "./code/Finjective.m2"
 
-load "./code/FThresholds.m2"
-
-load "./code/SpecialFThresholds.m2"
-
 load "./code/testIdeals.m2"
 
 load "./code/Other.m2"
@@ -253,10 +191,6 @@ load "./documentation/frobeniusPowersDoc.m2"
 load "./documentation/FsingDoc.m2"
 
 load "./documentation/EthRootsDoc.m2"
-
-load "./documentation/FThresholdsDoc.m2"
-
-load "./documentation/SpecialFThresholdsDoc.m2"
 
 load "./documentation/compatiblySplitDoc.m2"
 
@@ -275,7 +209,5 @@ load "./documentation/FPureDoc.m2"
 load "./tests/BasicFunctionsTest.m2"
 
 load "./tests/EthRootsTest.m2"
-
-load "./tests/SpecialFThresholdsTest.m2"
 
 load "./tests/frobeniusPowersTest.m2"
