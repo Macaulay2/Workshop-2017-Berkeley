@@ -148,7 +148,7 @@ getNumAndDenom = method()
 --is an integer vector and q an integer such that u=a/q.
 getNumAndDenom ( List ) := u -> 
 (
-    den := lcm apply( u, denom );
+    den := lcm apply( u, denominator );
     a := apply( u, n -> lift( n*den, ZZ ) );
     ( a, den )        
 )
