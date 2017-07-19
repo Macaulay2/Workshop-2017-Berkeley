@@ -2022,6 +2022,8 @@ S1 = splineModule(V,F,1);
 S1' = splineModule(V',F,1);
 assert(splineDimensionTable(0,5,S1)==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,7,16,33,57}})
 assert(splineDimensionTable(0,5,S1')==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,6,16,33,57}})
+assert(hilbertComparisonTable(0,5,S1')==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,6,16,33,57},{"HilbertPoly",7,3,6,16,33,57}})
+assert(hilbertComparisonTable(0,5,S1)==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,7,16,33,57},{"HilbertPoly",7,3,6,16,33,57}})
 ///
 
 end
