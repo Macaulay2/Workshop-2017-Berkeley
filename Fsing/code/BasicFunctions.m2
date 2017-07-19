@@ -118,11 +118,11 @@ divideFraction = method(Options => {NoZeroC=>false});
 divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
 (
     a := num t; -- finding a is easy, for now
-    den := denom(t);
+    den := denominator(t);
     b := 1;
     while den % p^b == 0 do b = b+1;
     b = b-1; 
-    temp := denom( t*p^b );
+    temp := denominator( t*p^b );
     local c;
     if (temp == 1) then c = 0 else 
     (
@@ -388,7 +388,7 @@ getNumAndDenom = method()
 --is an integer vector and q an integer such that u=a/q.
 getNumAndDenom ( List ) := u -> 
 (
-    den := lcm apply( u, denom );
+    den := lcm apply( u, denominator );
     a := apply( u, n -> lift( n*den, ZZ ) );
     ( a, den )        
 )

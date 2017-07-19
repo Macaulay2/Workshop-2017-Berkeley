@@ -294,7 +294,7 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
     if (pos!={}) then return(1/a_(pos_0)); 
        -- if some multiplicity a_i is "too big", return 1/a_i
     p:=S#"char";
-    den:=denom(2/deg);
+    den:=denominator(2/deg);
     local mult;
     if (opt.Nontrivial) then mult = infinity
     else
