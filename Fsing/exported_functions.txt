@@ -1,20 +1,18 @@
 --BasicFunctions (BasicFunctions.m2) 
     "basePExp",    --export; main
-    "carryTest",  
-    "denom",   
+    "carryTest",  --do NOT export
     "digit", -- export; main	   
-    "divideFraction", 
-    "fasterFloorLog", 
-    "firstCarry", 
-    "floorLog",
-    "fracPart", 
-    "getCanVector",
-    "getNumAndDenom", 
-    "maxIdeal", 
-    "multOrder", -- export; main ??
-    "NoZeroC", --option to force certain behavior from a function
-    "num",
-    "taxicabNorm",
+    "divideFraction", --export; main
+    "fasterFloorLog", --remove; do NOT export
+    "firstCarry", --do NOT export; fThreshold
+    "floorLog", --export; main
+    "fracPart", --do NOT export
+    "getCanVector", --do NOT export; FThresholds
+    "getNumAndDenom", --do NOT export; FThresholds
+    "maxIdeal", --do NOT export; main; 
+    "multOrder", -- export; main; to be optimized
+    "NoZeroC", --export; main; option to force certain behavior from a function
+    "taxicabNorm", --do NOT export; FThresholds
     "truncatedBasePExp", -- export; main
     
 --ethRootFunctions (EthRoots.m2)
