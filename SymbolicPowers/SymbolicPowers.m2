@@ -34,7 +34,8 @@ J)
 
 
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
-doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := P^n; h := bigHeight(P);
+doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+    h := bigHeight(P);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
     
@@ -44,7 +45,7 @@ isSymbPowerContainedinPower = method(TypicalValue => Boolean)
 isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeight I; 
     if m<n then false else (
 	if m>= h*n then true else (
-	symb := symbolicPower(I,m); pow := I^n; isSubset(symb,pow))))
+	symb := symbolicPower(I,m); pow := fastPower(I,n); isSubset(symb,pow))))
 
 ContainmentProblem = method(TypicalValue => ZZ)
 ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
@@ -124,14 +125,12 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 
 
 symbolicPower = method(TypicalValue => Ideal)
-symbolicPower(Ideal,ZZ) => (I,n) -> (R := ring I;
-    if isPolynomialRing(R) then
-    (if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
+symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
+    if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
 	if isMonomialIdeal I then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
 	    symbPowerSlow(I,n)
-	    ))) else (if
-
+	    )))
 
 
 
