@@ -180,3 +180,30 @@ dim R
 i1 = map(R,R1)
 i2 = map(R,R2)
 i1(R1_0) - i2(R2_0)
+
+
+
+
+-------------
+
+
+
+
+
+cone(SimplicialComplex) := (S) -> (
+    R:=ring S;
+    k:=coefficientRing R;
+    Q:=k(monoid[getSymbol "X"]);
+    point:=simplicialComplex {X};
+    S|point
+    )
+
+
+
+suspension(SimplicialComplex):= (S)-> (
+    R:=ring S;
+    k:=coefficientRing R;
+    Q:=k(monoid[getSymbol "X", getSymbol "Y"]);  
+    2points:=simplicialComplex{X,Y};
+    S|2points
+    )
