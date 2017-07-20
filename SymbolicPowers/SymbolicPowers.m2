@@ -45,7 +45,7 @@ export {
 needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
     (R := ring I; d := dim R; c := codim I; M := R^1/I; 
 	if codim Ext^d(M,R) == d then d else 
 	(l := toList (c .. d);
@@ -130,14 +130,26 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
+    (primaryDec:=primaryDecomposition I;
+	P:=apply(primaryDec, a-> radical a);
+	maxP:={};
+	apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+	Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));)
 
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
-	scan(primaryList,i->(if radical(i)==I then res=i; break));
-	res)
+
+	scan(primaryList,i->(if radical(i)==I then result := i; break));
+	result)
+    
+symbolicPowerPrimary = method()
+symbolicPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+    then "Not a prime ideal" else (rad := radical(I);
+	primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==rad then result := i; break));
+	result)
     
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
@@ -146,9 +158,8 @@ symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; sat
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp := primaryDecomposition(I^n);
-    comp := select(decomp,a -> isSubset({radical(a)},assI));
-    intersect(comp))
+    decomp = primaryDecomposition fastPower(I,n);
+    intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
 symbolicPower = method(TypicalValue => Ideal)
@@ -157,9 +168,9 @@ symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
     symbPowerSat(I,n) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
+	    if isPrimary I then symbPowerPrimary(I,n) else
 	    symbPowerSlow(I,n)
-	    )))
-
+	    ))))
 
 
 joinIdeals = method(TypicalValue => Ideal)
@@ -279,24 +290,36 @@ isKonig(Ideal) := Boolean => I -> (
     )
 
 
-
+-- Input: Ideal and List of variables to evaluate to 1
+-- Output: Ideal with vars from list evaluated to 1
 replaceVarsBy1 = method(TypicalValue => Ideal)
-replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,1,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
 
+
+-- Input: Ideal and List of variables to evaluate to 0
+-- Output: Ideal with vars from list evaluated to 0
 replaceVarsBy0 = method(TypicalValue => Ideal)
-replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,0,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
     
-
+-- Input: Monomial Ideal
+-- Output: Boolean value determining if packed or not
 isPacked = method(TypicalValue => Boolean)
-isPacked(Ideal) := Boolean => I -> (d := # flatten entries vars ring I; 
+isPacked(Ideal) := Boolean => I -> (
+    d := # flatten entries vars ring I; 
     s := subsets(d);
     w := flatten(table(s,s,(a,b) -> {a,b}));
     w = select(w, i -> unique(join(i_0,i_1))==join(i_0,i_1));
-    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1))))
+    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1)))
+    )
+
 
 noPackedSub = method(TypicalValue => List)
 noPackedSub(Ideal) := List => I -> (if not(isKonig(I)) then "The ideal itself is not Konig!" else (
@@ -348,6 +371,7 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
       )
 
 -- To be placed in Depth.m2
+-- Should look at the h-vector instead. 
 isGorenstein = method()
 isGorenstein(Ring) := Boolean => R ->(
     local C; local l;
@@ -367,13 +391,8 @@ isGorenstein(Ideal) := Boolean => I ->(
     return isGorenstein(R/I);
     )
 
-///
-restart
-needsPackage"Depth"
-loadPackage"SymbolicPowers"
-R = ZZ/101[x,y]/ideal"xy,y2"
-isGorenstein R
-///
+
+
 
 
 -----------------------------------------------------------
