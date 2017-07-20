@@ -60,7 +60,7 @@ doc ///
      	multOrder
      	(multOrder, ZZ, ZZ)
      Headline
-        Computes the multiplicative order of a modulo b
+        computes the multiplicative order of an integer modulo another
      Usage
      	 multOrder(a,b)
      Inputs 
@@ -71,6 +71,40 @@ doc ///
      Description
 	Text
 	    This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+///
+
+doc ///
+     Key
+     	divideFraction
+        (divideFraction, ZZ, QQ)
+        (divideFraction, ZZ, ZZ)
+     Headline
+        decomposes a rational number
+     Usage
+     	 L = divideFraction(p,t)
+     	 L = divideFraction(p,n)
+     Inputs 
+     		p:ZZ
+                    a prime
+		t:QQ
+		n:ZZ		
+     Outputs
+         L:List
+     Description
+	Text
+            Given a rational number t and a prime p, divideFraction(p,t) returns a list {a,b,c} such that t = a/(p^b*(p^c-1)).
+        Example
+            divideFraction( 3, 4/45 )
+	    4/45 == 64/( 3^2 * ( 3^4 -1 ) )
+        Text
+            If c = 0, then t = a/p^b.
+        Example
+            divideFraction( 3, 4/27 )
+        Text
+            The option NoZeroC => true forces the third component of the output to be nonzero, even if that means increasing the first component.
+        Example
+            divideFraction( 3, 4/27, NoZeroC => true )
+	    4/27 == 8/( 3^3 * ( 3 - 1 ) )
 ///
 
  

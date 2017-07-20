@@ -51,15 +51,16 @@ multOrder( ZZ, ZZ ) := ( a, b ) ->
 
 --===================================================================================
 
-divideFraction = method(Options => {NoZeroC=>false});
+divideFraction = method( TypicalValue => List, Options => { NoZeroC => false } );
 
 -- This function takes in a fraction t and a prime p and spits out a list
 -- {a,b,c}, where t = a/(p^b*(p^c-1))
 -- if c = 0, then this means that t = a/p^b
 --alternately, if NoZeroC => true, then we will always write t = a/p^b(p^c - 1)
 --even if it means increasing a. 
-divideFraction( ZZ, QQ ) := o -> ( p, t ) -> 
+divideFraction( ZZ, QQ ) := List => o -> ( p, t ) -> 
 (
+    if not isPrime( p ) then error "divideFraction: first argument must be a prime number.";
     a := numerator t; -- finding a is easy, for now
     den := denominator(t);
     b := 1;
@@ -72,14 +73,15 @@ divideFraction( ZZ, QQ ) := o -> ( p, t ) ->
         c = multOrder( p, temp );  
         a = lift( a*(p^c-1)/temp, ZZ ); -- fix a
     );
-    if ((o.NoZeroC == true) and (c == 0)) then (
+    if o.NoZeroC and c == 0 then 
+    (
         a = a*(p-1);
         c = 1;
     );
     {a,b,c}
 )
 
-divideFraction( ZZ, ZZ ) := (p, t) -> divideFraction(p, t/1)
+divideFraction( ZZ, ZZ ) := List => o -> (p, t) -> divideFraction(p, t/1, o)
 
 
 --===================================================================================

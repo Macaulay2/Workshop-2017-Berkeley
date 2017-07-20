@@ -201,3 +201,5 @@ load "./tests/BasicFunctionsTest.m2"
 load "./tests/EthRootsTest.m2"
 
 load "./tests/frobeniusPowersTest.m2"
+
+end
