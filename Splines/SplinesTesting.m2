@@ -13,8 +13,10 @@ splineMatrix(V,F,1)
 restart
 uninstallPackage "AlgebraicSplines"
 installPackage("AlgebraicSplines",FileName=>"~/Documents/Macaulay2/SplineCode/Workshop-2017-Berkeley/Splines/AlgebraicSplines.m2")
+check "AlgebraicSplines"
 V={{0,0,0},{1,1,1},{-1,1,1},{-1,1,-1},{1,1,-1},{1,-1,1},{-1,-1,1},{-1,-1,-1},{1,-1,-1}};
 F={{0,1,2,3,4},{0,1,4,5,8}}
+F={{0,1,2,3,4},{0,1,4,5,8},{0,5,6,7,8},{0,2,3,6,7},{0,1,2,5,6}}
 S=QQ[x,y,z,w]
 cellularComplex(V,F,BaseRing=>S)
 splineComplex(V,F,0,BaseRing=>S)
