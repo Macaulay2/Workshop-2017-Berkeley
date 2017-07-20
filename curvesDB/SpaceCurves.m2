@@ -28,7 +28,10 @@ export {
     "ExtraData",
     "IntersectionPairing",
     "effectiveDivisors",
-    "dgTable"
+    "dgTable",
+    "hartshorneRaoModule",
+    "hilbertBuchComputation",
+    "minimalCurveInLiaisonClass"
     }
 
 
@@ -150,7 +153,7 @@ dgTable List := L ->(
     gmin := min apply(Ldg,dg->last dg);
     M := mutableMatrix map(ZZ^(gmax-gmin+1),ZZ^(dmax-dmin+1),0);
     for dg in Ldg do (
-	j := first dg - dmin;
+	j := dmax - first dg;
 	i := gmax - last dg;
     	M_(i,j) = M_(i,j)+1;		
     );
@@ -284,8 +287,7 @@ effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
     if X.AbstractSurface === abstractQuadric then (
 	--Data = {degree}
 	assert(#Data == 1);
-	maxd := floor(1/2*first Data);
-	return for a from 1 to maxd list (
+	return for a from 0 to first Data list (
        	    C := abstractDivisor({a,first Data - a},abstractQuadric);
 	    realize(C,X)
 	)
@@ -349,6 +351,104 @@ TEST ///
   Ld = effectiveDivisors(X,{a,d});   
   dgTable Ld
 ///
+hilbertBurchComputation=method()
+hilbertBurchComputation(Module,Module) := (M,G) -> (
+    if not ring M === ring G then error "expected modules over the same polynomial ring";
+    -- add check: isFree G == true
+    fM:=res(M,LengthLimit=>2);
+    if not 1+rank fM_0-rank fM_1 +rank G == 0 then error "the free module has the wrong rank";
+    hom:=random(fM_2,G);
+    hilbBurch := fM.dd_2*hom;
+    degLim := -sum( -flatten degrees G) + sum(-flatten degrees fM_1)-sum(-flatten degrees fM_0);
+    syzHilbBurch := syz(transpose hilbBurch,DegreeLimit=>degLim);
+    ok := rank source syzHilbBurch == rank fM_0+1 and degrees source syzHilbBurch ==(-degrees fM_0|{{degLim}});
+    if ok then return trim ideal(transpose syzHilbBurch_{ rank fM_0} * fM.dd_2) else return null)
+
+TEST ///
+S = ZZ/32003[x_0..x_3]
+M=coker random(S^{2:1},S^{5:0})
+dim M
+reduceHilbert hilbertSeries M
+betti(fM=res M)
+r=rank fM_1-rank fM_0
+F= fM_2
+degs=sort flatten degrees F
+L=-degs_{0..r-2}
+G=S^L
+I=hilbertBurchComputation(M,G)
+betti I
+assert( codim I == 2)
+assert((degree I,genus I) == (7,2))
+I=hilbertBurchComputation(M,S^3)
+I=hilbertBurchComputation(M,S^2)
+I==null
+///
+minimalCurveInLiaisonClass=method()
+minimalCurveInLiaisonClass(Module) := M -> (    
+ -- a probalistic algorithm which over large finite fields will produce
+ -- a minimal curve in the liaison class corresponding to M with high probability
+    S := ring M; 
+    assert(dim M ==0);  
+    fM:= res(M,LengthLimit=>2); 
+    --betti fM
+    r:=rank fM_1-rank fM_0; -- rank of the 2nd syzygy module of M
+    degs:=sort flatten degrees fM_2;
+    degList:=unique subsets(degs,r-1);
+    --todo sort degList
+    apply(#degList,i->sum degList_i);
+    i:=0;
+    while (
+	L:=-degList_i;
+	G:=S^L;
+	I:=hilbertBurchComputation(M,G);
+	class I === class null)
+        do (i=i+1);
+    --betti I, L
+    return I)
+TEST ///
+S = ZZ/32003[x_0..x_3]
+M=coker (koszul(2,vars S)|random(S^{4:-1},S^{4:-3}));
+betti M
+dim M == 0
+time I=minimalCurveInLiaisonClass M; -- used 0.58667 seconds
+L
+assert( (degree I, genus I) == (43, 168) )
+betti res I
+omega=Ext^2(S^1/I,S^{-4});
+fomega=res omega
+betti fomega
+HRao= coker(Hom(fomega.dd_2_{0..(rank fomega_2-2)},S^{-4}))
+reduceHilbert hilbertSeries HRao
+reduceHilbert hilbertSeries M
+///	
+
+hartshorneRaoModule=method()
+hartshorneRaoModule(Ideal) := I -> (
+    S:=ring I;
+    d:= dim S;
+    assert( dim I == 2);
+    omega:=Ext^(d-2)(S^1/I,S^{-d});
+    fomega := res omega;
+    HRao := coker(Hom(fomega.dd_(d-2)_{0..(rank fomega_(d-2)-2)},S^{-d}));
+    return HRao)
+
+TEST ///
+S = ZZ/32003[x_0..x_3]
+M=coker random(S^{2:1},S^{5:0})
+dim M
+reduceHilbert hilbertSeries M
+betti(fM=res M)
+r=rank fM_1-rank fM_0
+F= fM_2
+degs=sort flatten degrees F
+L=-degs_{0..r-2}
+G=S^L
+I=hilbertBurchComputation(M,G)
+betti I
+HRao = hartshorneRaoModule(I)        
+assert(reduceHilbert hilbertSeries HRao === reduceHilbert hilbertSeries (M**S^{ -2}))
+///
+
 
 end--
 
@@ -361,6 +461,7 @@ a = 6
 time Lrd = flatten apply({10,11,12}, d -> 
     effectiveDivisors(X,{a,d}));  -- used 3.90876 seconds
 dgTable Lrd
+
 
 
 restart
