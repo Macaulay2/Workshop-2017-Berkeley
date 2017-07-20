@@ -100,6 +100,7 @@ export{
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
     "randomSubset",
     "testModule", --Karl (this subsumes a bunch of older functions)
+    "MTries",
     
 -- Finjective.m2
     "HSLGModule", --produces the non-F-injective module, ie the submodule of the canonical module
