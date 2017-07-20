@@ -216,4 +216,6 @@ load "./tests/EthRootsTest.m2"
 
 load "./tests/frobeniusPowersTest.m2"
 
+load "./tests/ParameterTestIdealTest.m2"
+
 end
