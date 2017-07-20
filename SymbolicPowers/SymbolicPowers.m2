@@ -7,7 +7,8 @@ newPackage(
 	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
 	    },
 	Headline => "Calculations involving symbolic powers",
-	DebuggingMode => false
+	DebuggingMode => false,
+	PackageExports => {"Depth"}
         )
 
 export {
@@ -349,8 +350,30 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
 -- To be placed in Depth.m2
 isGorenstein = method()
 isGorenstein(Ring) := Boolean => R ->(
+    local C; local l;
     
+    if isCM R == false then return false;
+    
+    C = res R.ideal;
+    l = (C.Resolution).length;
+    
+    if rank(C_(l-2)) == 1 then return true else return false;    
     )
+
+isGorenstein(Ideal) := Boolean => I ->(
+    local R;
+    
+    R = ring I;
+    return isGorenstein(R/I);
+    )
+
+///
+restart
+needsPackage"Depth"
+loadPackage"SymbolicPowers"
+R = ZZ/101[x,y]/ideal"xy,y2"
+isGorenstein R
+///
 
 
 -----------------------------------------------------------
