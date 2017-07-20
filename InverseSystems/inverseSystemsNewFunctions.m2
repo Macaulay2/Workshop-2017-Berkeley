@@ -162,6 +162,12 @@ dividedImInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
     apply(gensPhi,phi->(dividedImInDegree(i,phi)))
     )
 
+dividedImInDegree (ZZ, List) := Ideal => (i, L) -> (
+    s := flatten (L/degree);
+    d := max s;
+    apply(L,phi->(dividedImInDegree(i,phi)))
+    )
+
 
 --Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
 --Output: The image of multiplication by 'phi' in the degree of 'phi' - 'i' component in the dual polynomial ring.
@@ -183,9 +189,16 @@ dividedImInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
 
 TEST ///
 
-S = ZZ/7[x,y,z] 
-phi = x^5*y^4*z^6 + x^6*y^5*z^4+x^4*y^6*z^5
-dividedKerInDegree(7, phi)
-dividedImInDegree(8, phi)
+S = ZZ/5[x,y,z]; 
+phi = x^3+y^3+z^3;
+assert(dividedActionInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
+assert(dividedKerInDegree(2, phi)==ideal(x*y,x*z,y*z))
+assert(dividedImInDegree(2, phi)==ideal(x,y,z))
+
+R=ZZ/5[x,y,z];
+I=ideal(x^3+y^3+z^3,x*y^2+y*z^2+z*x^2);
+assert(dividedActionInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
+assert(dividedKerInDegree(2,I_*)==ideal(0_R))
+assert(dividedImInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
 
 ///
