@@ -99,7 +99,7 @@ dCalculation = ( w, N, p ) ->
     d := p;    
     while d > p - 2 do 
     (
-	d = sum( w, x -> digit( p, i, x ) );
+	d = sum( w, x -> adicDigit( p, i, x ) );
 	i = i - 1;
     );
     i + 1
@@ -317,7 +317,7 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
     while (I != ideal(1_rng) and e < (opt.MaxExp) and e < mult) do 
     (
 	e=e+1;
-	dgt=digit(p,e,u);
+	dgt=adicDigit(p,e,u);
 	I=frobenius( I ):product(polys,dgt,(f,k)->f^k);
 	ideals=append(ideals,I)
     );
@@ -335,7 +335,7 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
 	e0=e0-1;
         -- zoom out one step and look for CP again
     	S1=setFTData(ideals_e0,polys);
-	cp=findCPBelow(cp/p+digit(p,e0+1,u)/p,S1) 
+	cp=findCPBelow(cp/p+adicDigit(p,e0+1,u)/p,S1) 
     );
     cp=cp/p^e0+truncatedBasePExp(p,e0,u); -- "zoom out"
     if opt.PrintCP then print(toString cp);
