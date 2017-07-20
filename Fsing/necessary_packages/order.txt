@@ -1,4 +1,0 @@
-Parameterization
-Cremona
-RationalMaps
-Divisor
