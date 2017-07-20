@@ -162,6 +162,12 @@ dividedImInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
     apply(gensPhi,phi->(dividedImInDegree(i,phi)))
     )
 
+dividedImInDegree (ZZ, List) := Ideal => (i, L) -> (
+    s := flatten (L/degree);
+    d := max s;
+    apply(L,phi->(dividedImInDegree(i,phi)))
+    )
+
 
 --Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
 --Output: The image of multiplication by 'phi' in the degree of 'phi' - 'i' component in the dual polynomial ring.
@@ -185,7 +191,14 @@ TEST ///
 
 S = ZZ/7[x,y,z] 
 phi = x^5*y^4*z^6 + x^6*y^5*z^4+x^4*y^6*z^5
+dividedActionInDegree(7,phi)
 dividedKerInDegree(7, phi)
 dividedImInDegree(8, phi)
+
+R=ZZ/5[x,y,z]
+I=ideal(x*y^2+y*z^2+z*x^2,x^4+y^4+z^4)
+dividedActionInDegree(3,I)
+dividedKerInDegree(3,I_*)
+dividedImInDegree(2,I)
 
 ///
