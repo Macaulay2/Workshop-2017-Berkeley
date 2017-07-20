@@ -142,9 +142,16 @@ adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) ->
 adicTruncation = method( TypicalValue => QQ )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational number.
+
+adicTruncation ( ZZ, ZZ, ZZ ) := QQ => ( p, e, x ) -> 
+(
+    if x < 0 then error "adicTruncation: Expected x nonnegative";
+    ( ceiling( p^e*x ) - 1 )/p^e    	
+)
+
 adicTruncation ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
-    if x <= 0 then error "adicTruncation: Expected x>0";
+    if x <= 0 then error "adicTruncation: Expected x nonnegative";
     ( ceiling( p^e*x ) - 1 )/p^e    	
 )
 
