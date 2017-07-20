@@ -506,7 +506,6 @@ doc ///
 	       $\bullet$ @TO"Computing symbolic powers of an ideal"@
 	       
 	       $\bullet$ @TO"Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"@
-    	       
  
                {\bf Other examples which illustrate this package}
 
