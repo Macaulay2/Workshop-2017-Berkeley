@@ -1268,8 +1268,8 @@ doc ///
 	   
        Example 
 	   R = QQ[x,y,z]
-	   J = (ideal(x,y))^2+ ideal(x*z+y*z)
-	   waldschmidt(J)
+	   J = ideal(x*(y^3-z^3), y*(z^3-x^3), z*(x^3-y^3))
+	   waldschmidt(J,SampleSize=>5)
         
      SeeAlso 
 	  symbolicPolyhedron
