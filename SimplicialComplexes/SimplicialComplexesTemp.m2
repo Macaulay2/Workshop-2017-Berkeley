@@ -17,7 +17,7 @@ newPackage(
     	Version => "1.0", 
     	Date => "July 19, 2017",
     	Authors => {
-	     {Name => "Jason McCullough", Email => "jmccullo@iastate.edu"}, HomePage => "http://users.rider.edu/~jmccullough"
+	     {Name => "Jason McCullough", Email => "jmccullo@iastate.edu", HomePage => "http://users.rider.edu/~jmccullough"}
 	     },
     	Headline => "simplicial complexes add-ons",
     	DebuggingMode => false,
@@ -25,10 +25,8 @@ newPackage(
     	)
 
 
+export {"simplicialJoin","poincareSphere"}
 
-export {"poincareSphere"}
-
--- something stupid jason wrote
 
 poincareSphere = method()
 poincareSphere(Ring) := (F) -> (
@@ -129,3 +127,59 @@ poincareSphere(Ring) := (F) -> (
     simplicialComplex fac)
 
 
+=======
+simplicialJoin = method()
+simplicialJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
+    R1 := ring S1;
+    R2 := ring S2;
+    if R1 === R2 then internalJoin(S1,S2) else
+    (
+	vars1 := set apply(gens R1,x->toString x);
+	vars2 := set apply(gens R2,x->toString x);
+	if #(vars1 * vars2) > 0 then error"the underlying rings of the simplicial complexes share variables";
+	R := R1 ** R2;
+	i1 := map(R,R1);
+	i2 := map(R,R2);
+	newS1 := simplicialComplex apply(flatten entries facets S1,f -> i1(f));
+	newS2 := simplicialComplex apply(flatten entries facets S2,f -> i2(f));
+	internalJoin(newS1,newS2)
+	)
+    )
+
+internalJoin = method()
+internalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) ->
+(
+    fS1 := flatten entries facets(S1);
+    fS2 := flatten entries facets(S2);
+    simplicialComplex(flatten for f1 in fS1 list for f2 in fS2 list lcm(f1,f2))
+    ) 
+
+
+end
+
+restart
+installPackage"SimplicialComplexesTemp"
+
+restart
+needsPackage"SimplicialComplexes"
+
+
+
+
+r1 = QQ[a,b]
+s1 = simplicialComplex {a,b}
+r2 = QQ[a,c]
+s2 = simplicialComplex {a,c}
+simplicialJoin(s1,s2)
+
+------bug?-----
+restart
+R1 = QQ[a]
+R2 = QQ[a]
+(set gens R1) * (set gens R2)
+
+R = R1 ** R2
+dim R
+i1 = map(R,R1)
+i2 = map(R,R2)
+i1(R1_0) - i2(R2_0)
