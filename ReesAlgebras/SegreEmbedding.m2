@@ -16,6 +16,7 @@ export {
     "segreIdeal"
     }
 
+
 --- Teaching people about conflicts.
 
 -- given a list of positive integers {a1,a2,a3,..an} computes the defining ideal of
