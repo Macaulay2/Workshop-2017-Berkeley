@@ -445,7 +445,10 @@ else (
     )
 )
 
-
+waldschmidt MonomialIdeal := opts -> I -> (  
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
 
 
 
@@ -1225,6 +1228,47 @@ doc ///
         
      SeeAlso 
 	  Polyhedra
+///
+
+doc ///
+     Key 
+         waldschmidt
+	 (waldschmidt,Ideal)
+	 (waldschmidt,MonomialIdeal)
+     Headline 
+         Computes the Waldschmidt constant  for a homogeneous ideal. 
+     Usage 
+         waldschmidt(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :QQ 
+     Description	  
+       Text
+	   The Waldschmidt constant for a homogeneous ideal I is defined as $waldschmidt(I)=lim_{n\to\infty} \frac{\alpha(I^{(n)})}{n}$, 
+	   where $\alpha(J)$ denotes the smallest degree of a nonzero element in a given homogeneous ideal $J$. The limit of the sequence 
+	   $\frac{\alpha(I^{(n)})}{n}$ exists because of the subadditivity of $\alpha$ and is equal to the infimum of the sequence $\frac{\alpha(I^{(n)})}{n}$.
+	  
+       Text
+       	   The Waldschmidt constant can be computed for monomial ideals as the smallest value of the sum of the coordinates over all the points of 
+	   the symbolic polyhedron. The function uses this method to return an exact answer for the Waldschmidt constant of a monomial ideal.
+	   
+       Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   waldschmidt(I)
+	   
+       Example 
+	   R = QQ[x,y,z]
+	   J = (ideal(x,y))^2+ ideal(x*z+y*z)
+	   waldschmidt(J)
+        
+     SeeAlso 
+	  symbolicPolyhedron
 ///
 
 
