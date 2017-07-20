@@ -38,13 +38,51 @@ dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
     if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
     D := ring phi;
     d := (degree phi)#0;
-    if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    --if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
     matrix apply(flatten entries super basis(d - i, D), 
 	m -> apply(flatten entries super basis(i, D),
 	    u -> coefficient(m, lowerExponent(phi, u))
 	    )
 	)
     )
+
+dividedActionInDegree (ZZ, Ideal) := Matrix => (i, Phi) -> (
+    if not isHomogeneous Phi then (error "Expected a homogeneous ideal.");
+    D := ring Phi;
+    if Phi==0 then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    gensPhi := flatten entries mingens Phi;
+    s := flatten ((flatten entries mingens Phi)/degree);
+    d := max s;
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrixList := apply(#s,j -> dividedActionInDegree(i,gensPhi#j));
+    concatMatrix := matrixList#0;
+    matrixList = remove(matrixList,0);
+    while matrixList =!= {} do (
+	concatMatrix=concatMatrix || matrixList#0; 
+	matrixList = remove(matrixList,0)
+	);
+    concatMatrix
+    )
+
+dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
+    if any (L,phi ->isHomogeneous phi =!= true) then (error "Expected homogeneous polynomials..");
+    D := ring L#0;
+    if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
+    if L=={} then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    s := flatten (L/degree);
+    d := max s;
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrixList := apply(#s,j -> dividedActionInDegree(i,L#j));
+    concatMatrix := matrixList#0;
+    matrixList = remove(matrixList,0);
+    while matrixList =!= {} do (
+	concatMatrix=concatMatrix || matrixList#0; 
+	matrixList = remove(matrixList,0)
+	);
+    concatMatrix
+    )
+
 
 --Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
 --Output: The matrix representing multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
@@ -55,11 +93,24 @@ dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
 dividedKerInDegree = method()    
     
 dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
     K := gens ker dividedActionInDegree(i, phi);
     D := ring phi;
-    prune ideal( (super basis(i, D)) * K )
+    ideal mingens ideal( (super basis(i, D)) * K )
     )
+
+
+dividedKerInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
+    K := gens ker dividedActionInDegree(i, Phi);
+    D := ring Phi;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
+    K := gens ker dividedActionInDegree(i, L);
+    D := ring L#0;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
 
 --Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
 --Output: The kernel of multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
@@ -72,7 +123,7 @@ dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
 	d = d + 1
 	); 
     if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
-    prune ideal( (super basis(i, D) * A) )
+    ideal mingens ideal( (super basis(i, D) * A) )
     )
 
 --Input: A matrix 'A' representing multiplication by a homogeneous element of a divided powers algebra on the degree 'i' component of the dual polynomial ring.
@@ -97,12 +148,20 @@ dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
 dividedImInDegree = method()
 
 dividedImInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
-    I := gens image dividedActionInDegree(i, phi);
+    I := gens image dividedActionInDegree(i, phi); --remove words gens image where they appear
     D := ring phi;
     d := (degree phi)#0;
-    prune ideal( (super basis(d-i, D)) * I )
+    ideal mingens ideal( (super basis(d-i, D)) * I )
     )
+
+--in progress
+dividedImInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
+    gensPhi := flatten entries mingens Phi;
+    s := flatten ((flatten entries mingens Phi)/degree);
+    d := max s;
+    apply(gensPhi,phi->(dividedImInDegree(i,phi)))
+    )
+
 
 --Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
 --Output: The image of multiplication by 'phi' in the degree of 'phi' - 'i' component in the dual polynomial ring.
@@ -115,7 +174,7 @@ dividedImInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
 	d = d + 1
 	); 
     if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
-    prune ideal( (super basis(d - i, D) * A) )
+    ideal mingens ideal( (super basis(d - i, D) * A) )
     )
 
 --Input: A matrix 'A' representing multiplication by a homogeneous element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
