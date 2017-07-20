@@ -1232,3 +1232,22 @@ end
 
 
 
+-- branden
+restart
+R = ZZ/101[x,y,z]
+I = ideal"xy,xz,yz"
+J = ideal"x2,xy"
+primaryDecomposition I
+primaryDecomposition J
+
+F = res(R^1/I)
+j = codim(R^1/I) 
+p = F.Resolution.length
+rk = apply(p-1, l -> r_l = rank(F_l))
+rko = select(rk,odd)
+rke = select(rk,even)
+rk
+
+r := j ->     
+minors(
+
