@@ -8,6 +8,7 @@ newPackage(
 	DebuggingMode => false
         )
 
+
 export {
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
@@ -30,10 +31,12 @@ export {
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
     "exponentsMonomialGens", 
-    "symbolicDefect"
+    "symbolicDefect",
+    "symbPoly", "waldschmidt", "SampleSize"
     }
 
 
+needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
 bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
@@ -319,7 +322,6 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
-
 isMonomial = method()
 isMonomial(RingElement) := r -> (terms(r) == {r})
 isMonomial(MonomialIdeal) := I -> true
@@ -342,6 +344,60 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
       
       # flatten entries mingens F(X)
       )
+
+
+
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Functions for asymptotic invariants
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+-- Computes the symbolic polyhedron for a monomial ideal
+-- Input: an ideal or a  monomial ideal 
+-- Output: a Polyhedron
+
+symbPoly = method();
+
+symbPoly Ideal := Polyhedron => I -> (
+if not isMonomial(I) then ( 
+    print "Error -- symbPoly cannot be applied for an ideal that is not monomial"; 
+    return
+    );   
+return symbPoly monomialIdeal I
+)
+
+
+symbPoly MonomialIdeal := Polyhedron => I -> ( 
+Pd:=primaryDecomposition I;
+P:=apply(Pd, a-> radical a);
+maxP:={};
+apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+PI:=apply(Q, a-> newtonPolytope sum flatten entries gens a);
+C := posHull id_(ZZ^(dim ring I));
+QI :=apply(PI, p-> p+C);
+N :=intersection QI;
+return N
+)
+
+alpha = I -> min apply(flatten entries gens I, f-> (degree f)_0) 
+
+-- Computes the Waldschmidt constant for a given ideal
+waldschmidt = method(Options=>{SampleSize=>10});
+waldschmidt Ideal := opts -> I -> (
+if isMonomial I then ( 
+    print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
+    N:=symbPoly I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
+else (
+    print ("Ideal is not monomial, the  Waldschmidt constant is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list alpha(symbolicPower(I,i))/i
+    )
+)
 
 
 
