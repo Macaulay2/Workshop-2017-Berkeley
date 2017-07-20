@@ -58,7 +58,8 @@ basesFromMatrix = A -> (
     
     
 ------------------------------------------
-
+-- input: a matrix over QQ or RR
+-- output: all sign circuits of the oriented matroid on the columns of the input matrix (possibly up to re-orientation)
 -- CAVEAT: if the matrix does not have full row-rank, then the vectors may be reoriented
 circuitsFromMatrix = A -> (
     r := rank A;
