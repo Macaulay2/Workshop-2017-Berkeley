@@ -38,6 +38,16 @@ assert(J == { -19, 2, 0} )
 -- adicDigit test#1
 
 TEST ///
+time J = adicDigit(7, 2, 0);
+assert(J == 0)
+///
+
+TEST ///
+time J = adicDigit(13, 100, 1);
+assert(J == 12)
+///
+
+TEST ///
 time J = adicDigit(3, 2, 3/4);
 assert(J == 0)
 ///
@@ -50,14 +60,14 @@ assert(J == 2)
 
 -- digit test#3
 TEST ///
-time J = digit(5, 3, 1/13);
+time J = adicDigit(5, 3, 1/13);
 assert(J == 4)
 ///
 
 -- digit test#4
 TEST ///
 L = {3/4, 1/13};
-time J = digit(5, 3, L);
+time J = adicDigit(5, 3, L);
 assert(J == {3,4})
 ///
 
