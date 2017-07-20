@@ -51,7 +51,7 @@ allPartitionsInnards
 
 Exported
 
-"fastExp", 
+"fastExp",  DOCUMENTED
 "frobenius", 
 "frobeniusPower",
 FrobeniusPowerStrategy
