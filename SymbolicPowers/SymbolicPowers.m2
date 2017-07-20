@@ -1202,13 +1202,7 @@ doc ///
 	   R = QQ[x,y,z]
 	   I = ideal(x*y,y*z,x*z)
 	   symbolicPolyhedron(I)
-       Text
-       	   This function uses the Polyhedra package and returns an object of type Polyhedron.
-       
-       Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
-	   symbolicPolyhedron(I)  
+        
      SeeAlso 
 	  Polyhedra
 ///
@@ -1225,6 +1219,5 @@ TEST ///
 end
 
 
-viewHelp primaryDecomposition
-viewHelp isSquareFree
+
 
