@@ -51,6 +51,7 @@ multOrder = method( TypicalValue => ZZ )
 multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
     if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
+    if b==1 then return 1;
     maxOrder := lcm(apply(toList apply(factor b, i-> factor ((i#0-1)*((i#0)^(i#1-1)))), tt -> value tt));
     primeFactorList := sort unique apply( subsets( flatten apply(toList factor maxOrder, myPower -> apply(myPower#1, tt->myPower#0))), tt -> product tt);
 --    potentialOrderList := sort unique flatten  apply(flatten apply(toList apply(toList factor b, tt -> cyclicOrdPGroup(tt#0, tt#1)), tt -> toList tt), myPower -> subsets apply(myPower#1, tt->myPower#0));
