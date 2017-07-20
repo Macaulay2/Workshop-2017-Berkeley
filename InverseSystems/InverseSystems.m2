@@ -9,28 +9,35 @@ newPackage(
     	DebuggingMode => false
     	)
 
+
 export {"inverseSystem",
         "toDividedPowers",
         "fromDividedPowers",
 	"isStandardGradedPolynomialRing",
+	"lowerExponent",
 	--option names (symbols):
 	"PowerBound",
 	"DividedPowers",
 	"toDual", 
 	"fromDual"
 	}
+
+
 ///
 restart
 uninstallPackage "InverseSystems"
 installPackage "InverseSystems"
 check "InverseSystems"
 ///
+
+
 isStandardGradedPolynomialRing = method()
 isStandardGradedPolynomialRing Ring := R ->(
     isField coefficientRing R and
        isPolynomialRing R and
        all(gens R, v->(degree v)=={1})
        )
+
 
 toDividedPowers = method()
 toDividedPowers RingElement := p -> (
@@ -48,6 +55,7 @@ toDividedPowers Matrix := M -> (
     map(target M, source M, (i,j) -> toDividedPowers (M_j_i))
 )
 
+
 fromDividedPowers = method()
 fromDividedPowers RingElement := p -> (
     --fromDividedPowers takes a polynomial written in the divided power basis,
@@ -63,6 +71,7 @@ fromDividedPowers Matrix := M -> (
     --same for all the elements of a matrix
     map(target M, source M, (i,j) -> fromDividedPowers (M_j_i))
 )
+
 
 --fromDual takes a matrix or ring element and returns an ideal.
 fromDual = method(Options=>{DividedPowers => true, PowerBound => 0})						  
@@ -93,6 +102,7 @@ fromDual RingElement := o -> f -> fromDual(matrix{{f}}, DividedPowers=> o.Divide
 powers = (d,v) ->
    -- v a list of ring elements; d a natural number. Returns the list of powers.
     apply(v, x->x^d)
+
     
 containsDthPowers = method()
 containsDthPowers Ideal := I->(
@@ -107,6 +117,7 @@ containsDthPowers Ideal := I->(
     while (matrix{powers(d,v)} % I) != 0 do d = d+1;
     d
    ) 
+
 
 toDual = method(Options => {DividedPowers => true})
 toDual (ZZ,Ideal) := o -> (d,I) -> (
@@ -144,6 +155,140 @@ inverseSystem Matrix := o-> M -> (
 inverseSystem RingElement := o-> M -> (
     ideal fromDual(M, DividedPowers => o.DividedPowers)
     )
+
+
+lowerExponent = method()
+lowerExponent (RingElement, List) := RingElement => (phi,l) -> (
+    D := ring phi;
+    if not isStandardGradedPolynomialRing D then (error "Expected a polynomial in a standard graded polynomial ring.");
+    if not #l == numgens D then (error "Expected the length of the list to be equal to the number of variables.");
+    if any(l, i -> not instance(i, ZZ) or i < 0) then (error "Expected a list of non-negative integers.");
+    expList := exponents(phi);
+    expList = select(expList, e->all(e-l,i->(i>=0)));
+    sum(apply(expList,e->coefficient(D_e,phi)*D_(e-l)))
+    )
+  
+lowerExponent (RingElement, RingElement) := RingElement => (phi, f) -> (
+    D := ring phi;
+    S := ring f;
+    if not isStandardGradedPolynomialRing S then (error "Expected a polynomial in a standard graded polynomial ring.");
+    if not numgens D == numgens S then (error "Expected the rings of the polynomials to have the same number of variables."); 
+    exps := exponents(f);
+    coeffs := (coefficients f)_1;
+    ((matrix {apply(exps, l -> lowerExponent(phi, l))})*coeffs)_0_0
+    )
+    
+
+dividedActionInDegree = method()
+dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
+    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
+    D := ring phi;
+    d := (degree phi)#0;
+    --if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrix apply(flatten entries super basis(d - i, D), 
+	m -> apply(flatten entries super basis(i, D),
+	    u -> coefficient(m, lowerExponent(phi, u))
+	    )
+	)
+    )
+
+dividedActionInDegree (ZZ, Ideal) := Matrix => (i, Phi) -> (
+    if not isHomogeneous Phi then (error "Expected a homogeneous ideal.");
+    D := ring Phi;
+    if Phi==0 then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    gensPhi := flatten entries mingens Phi;
+    s := flatten ((flatten entries mingens Phi)/degree);
+    d := max s;
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrixList := apply(#s,j -> dividedActionInDegree(i,gensPhi#j));
+    concatMatrix := matrixList#0;
+    matrixList = remove(matrixList,0);
+    while matrixList =!= {} do (
+	concatMatrix=concatMatrix || matrixList#0; 
+	matrixList = remove(matrixList,0)
+	);
+    concatMatrix
+    )
+
+dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
+    if any (L,phi ->isHomogeneous phi =!= true) then (error "Expected homogeneous polynomials..");
+    D := ring L#0;
+    if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
+    if L=={} then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    s := flatten (L/degree);
+    d := max s;
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrixList := apply(#s,j -> dividedActionInDegree(i,L#j));
+    concatMatrix := matrixList#0;
+    matrixList = remove(matrixList,0);
+    while matrixList =!= {} do (
+	concatMatrix=concatMatrix || matrixList#0; 
+	matrixList = remove(matrixList,0)
+	);
+    concatMatrix
+    )
+
+
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The matrix representing multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
+
+
+-----------------------------------------------------------
+    
+dividedKerInDegree = method()    
+    
+dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
+    K := gens ker dividedActionInDegree(i, phi);
+    D := ring phi;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+
+dividedKerInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
+    K := gens ker dividedActionInDegree(i, Phi);
+    D := ring Phi;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
+    K := gens ker dividedActionInDegree(i, L);
+    D := ring L#0;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The kernel of multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
+
+
+dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
+    D := ring A;
+    n := numgens D;
+    d := 0;
+    while binomial(d-i + n -1, n-1) < numrows A do(
+	d = d + 1
+	); 
+    if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    ideal mingens ideal( (super basis(i, D) * A) )
+    )
+
+--Input: A matrix 'A' representing multiplication by a homogeneous element of a divided powers algebra on the degree 'i' component of the dual polynomial ring.
+--Output: The kernel of multiplication by 'A' in the dual polynomial ring.
+
+
+-----------------------------------------------------------
+
+dividedKerToDegree = method()
+
+dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
+    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
+    D := ring phi;
+    ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, phi), D))
+    )
+
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The kernel of multiplication by 'phi' up to degree 'i' in the dual polynomial ring.
 
 
 beginDocumentation()
@@ -355,6 +500,7 @@ SeeAlso
  DividedPowers
  fromDividedPowers
  toDividedPowers
+ lowerExponent
 ///
 
 doc ///
@@ -654,7 +800,55 @@ doc ///
     b:Boolean
    SeeAlso
     isPolynomialRing
-///
+///  
+
+doc ///
+   Key
+    lowerExponent
+    (lowerExponent, RingElement, List)
+    (lowerExponent, RingElement, RingElement) 
+   Headline
+    Computes the action of polynomials on elements of the divided powers algebra
+   Usage
+    psi = lowerExponent(phi, l)
+    psi = lowerExponent(phi, f)
+   Inputs
+    phi: RingElement
+     a polynomial in a standard graded polynomial ring
+    l: List
+     a list of non-negative integers representing the exponent of a monomial in the polynomial ring
+    f: RingElement
+     a polynomial in the same standard graded polynomial
+   Outputs
+    psi: RingElement
+   Description
+    Example
+     S = ZZ/5[x,y,z]
+     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
+     l = {0,1,1}
+     psi = lowerExponent(phi, l)
+    Example
+     S = ZZ/3[x,y,z]
+     phi = x^2*y^2*z + x*y*z^5
+     f = x*y*z+y*z^2
+     psi = lowerExponent(phi, f)
+     ///
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
 
 --check that the bounds are right
 TEST///

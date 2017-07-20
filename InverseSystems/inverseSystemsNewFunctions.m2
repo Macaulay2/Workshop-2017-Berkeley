@@ -148,7 +148,7 @@ dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
 dividedImInDegree = method()
 
 dividedImInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    I := gens image dividedActionInDegree(i, phi); --remove words gens image where they appear
+    I := dividedActionInDegree(i, phi);
     D := ring phi;
     d := (degree phi)#0;
     ideal mingens ideal( (super basis(d-i, D)) * I )
