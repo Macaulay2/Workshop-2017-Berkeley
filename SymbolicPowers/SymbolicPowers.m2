@@ -2,22 +2,50 @@ newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
 	Date => "May 14th, 2017",
-	Authors => {{Name => "Eloisa Grifo", 
-	Email => "eloisa.grifo@virginia.edu"}},
+	Authors => {
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"},
+	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    },
 	Headline => "Calculations involving symbolic powers",
-	DebuggingMode => false
+	DebuggingMode => false,
+	PackageExports => {"Depth"}
         )
 
-export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "bigHeight",
-    "frobeniusPower", "symbPowerPrimePosChar", "doSymbolicAndOrdinaryPowersCoincide",
-    "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
-    "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
-    "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence","symbolicDefect"}
 
+export {
+    "symbolicPower", 
+    "isSymbPowerContainedinPower", 
+    "ContainmentProblem", 
+    "bigHeight",
+    "frobeniusPower", 
+    "symbPowerPrimePosChar", 
+    "doSymbolicAndOrdinaryPowersCoincide",
+    "symbolicPowerJoin", 
+    "joinIdeals", 
+    "ContainmentProblemGivenSymbolicPower",
+    "symbolicContainmentMonomialCurve", 
+    "squarefreeGens", 
+    "squarefreeInCodim",
+    "symbolicPowerMonomialCurve", 
+    "isKonig", 
+    "isPacked", 
+    "noPackedSub", 
+    "noPackedAllSubs",
+    "minDegreeSymbPower", 
+    "lowerBoundResurgence",
+    "exponentsMonomialGens", 
+    "symbolicDefect",
+    "symbolicPolyhedron", 
+    "isGorenstein",
+    "waldschmidt", 
+    "SampleSize"
+    }
+
+
+needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
     (R := ring I; d := dim R; c := codim I; M := R^1/I; 
 	if codim Ext^d(M,R) == d then d else 
 	(l := toList (c .. d);
@@ -25,13 +53,12 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 	d-position(reverse(v-l),i->i==0))))
 
 
+
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (J := I;
 (for i from 2 to n do J = J*I);
 J)
-
-
 
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
 doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
@@ -103,14 +130,26 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
+    (primaryDec:=primaryDecomposition I;
+	P:=apply(primaryDec, a-> radical a);
+	maxP:={};
+	apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+	Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));)
 
 
-symbPowerPrime = method(TypicalValue => Ideal)
+symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
-    then "Not a prime ideal" else (primaryList := primaryDecomposition(I^n); 
-	res := select(primaryList,i->(radical(i)==I));
-	intersect(res)))
+    then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
+
+	scan(primaryList,i->(if radical(i)==I then result := i; break));
+	result)
+    
+symbolicPowerPrimary = method()
+symbolicPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+    then "Not a prime ideal" else (rad := radical(I);
+	primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==rad then result := i; break));
+	result)
     
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
@@ -119,19 +158,19 @@ symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; sat
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp := primaryDecomposition(I^n);
-    comp := select(decomp,a -> isSubset({radical(a)},assI));
-    intersect(comp))
+    decomp = primaryDecomposition fastPower(I,n);
+    intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
 symbolicPower = method(TypicalValue => Ideal)
 symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
-	if isMonomialIdeal I then symbPowerMon(monomialIdeal(I),n) else (
+    if (codim I == dim R - 1 and isHomogeneous(I)) then 
+    symbPowerSat(I,n) else (
+	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
+	    if isPrimary I then symbPowerPrimary(I,n) else
 	    symbPowerSlow(I,n)
-	    )))
-
+	    ))))
 
 
 joinIdeals = method(TypicalValue => Ideal)
@@ -185,6 +224,7 @@ symbolicPowerMonomialCurve(Ring,List,ZZ) := Ideal => (k,L,m) -> (
 --Given a monomial ideal, finds a minimal generating set, 
 --and then returns the exponents of the monomials in that set
 --Given a monomial, returns the exponents
+{*
 exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(RingElement) := List => r -> (
     R := ring r;
@@ -194,7 +234,16 @@ exponentsMonomialGens(RingElement) := List => r -> (
     S := k[toSequence flatten entries vars R,Degrees=>deg];
     f := map(S,R,flatten entries vars S);
     degree(f(r)))
+*}
+
+exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(Ideal) := List => I -> (
+    local L; 
+    L = flatten entries mingens I;
+    apply(L, l -> flatten exponents l)    
+    )
+
+{*        
     R := ring I;
     k := coefficientRing R;
     d := dim R;
@@ -203,12 +252,14 @@ exponentsMonomialGens(Ideal) := List => I -> (
     f := map(S,R,flatten entries vars S);
     m := flatten entries(mingens f(I));
     delete({},apply(m,degree)))
+*}
 
+{* Not using this.
 squarefreeGensList = method()
 squarefreeGensList(Ideal) := List => I ->(
     w := exponentsMonomialGens(I);
     select(w,i -> all(i,o -> o<2)))
-
+*}
 
 squarefreeGens = method()
 squarefreeGens(Ideal) := List => I ->(
@@ -219,7 +270,6 @@ squarefreeGens(Ideal) := List => I ->(
     apply(v,o->product(apply(toList pairs(o),(i,j)->(l_i)^j))))
 
 
-
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
@@ -228,31 +278,48 @@ squarefreeInCodim(Ideal) := List => I -> (c := codim I;
 
 
 isKonig = method(TypicalValue => Boolean)
-isKonig(Ideal) := Boolean => I -> (R := ring I;
+isKonig(Ideal) := Boolean => I -> (
+    R := ring I;
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
-	    c := codim I; J := I^c;
-	    not(squarefreeGens(J)=={}))))
+	    c := codim I; 
+	    J := I^c;
+	    not(squarefreeGens(J)=={})
+	    )
+	)
+    )
 
 
-
+-- Input: Ideal and List of variables to evaluate to 1
+-- Output: Ideal with vars from list evaluated to 1
 replaceVarsBy1 = method(TypicalValue => Ideal)
-replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,1,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
 
+
+-- Input: Ideal and List of variables to evaluate to 0
+-- Output: Ideal with vars from list evaluated to 0
 replaceVarsBy0 = method(TypicalValue => Ideal)
-replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,0,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
     
-
+-- Input: Monomial Ideal
+-- Output: Boolean value determining if packed or not
 isPacked = method(TypicalValue => Boolean)
-isPacked(Ideal) := Boolean => I -> (d := # flatten entries vars ring I; 
+isPacked(Ideal) := Boolean => I -> (
+    d := # flatten entries vars ring I; 
     s := subsets(d);
     w := flatten(table(s,s,(a,b) -> {a,b}));
     w = select(w, i -> unique(join(i_0,i_1))==join(i_0,i_1));
-    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1))))
+    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1)))
+    )
+
 
 noPackedSub = method(TypicalValue => List)
 noPackedSub(Ideal) := List => I -> (if not(isKonig(I)) then "The ideal itself is not Konig!" else (
@@ -285,7 +352,6 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
-
 isMonomial = method()
 isMonomial(RingElement) := r -> (terms(r) == {r})
 isMonomial(MonomialIdeal) := I -> true
@@ -297,19 +363,92 @@ isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 symbolicDefect = method(TypicalValue => ZZ)
 symbolicDefect(Ideal,ZZ) := (I,n) -> (
     R := ring I;
-    
     Y := fastPower(I,n);
-     
-     S := R/Y;
-      
-      F := map(S,R);
-      
-      X := symbolicPower(I,n);
-      
-      # flatten entries mingens F(X)
+    S := R/Y;
+    F := map(S,R);
+    X := symbolicPower(I,n);
+    # flatten entries mingens F(X)
       )
 
+-- To be placed in Depth.m2
+-- Should look at the h-vector instead. 
+isGorenstein = method()
+isGorenstein(Ring) := Boolean => R ->(
+    local C; local l;
+    
+    if isCM R == false then return false;
+    
+    C = res R.ideal;
+    l = (C.Resolution).length;
+    
+    if rank(C_(l-2)) == 1 then return true else return false;    
+    )
 
+isGorenstein(Ideal) := Boolean => I ->(
+    local R;
+    
+    R = ring I;
+    return isGorenstein(R/I);
+    )
+
+
+
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Functions for asymptotic invariants
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+-- Computes the symbolic polyhedron for a monomial ideal
+-- Input: an ideal or a  monomial ideal 
+-- Output: a Polyhedron
+
+symbolicPolyhedron = method();
+
+symbolicPolyhedron Ideal := Polyhedron => I -> (
+if not isMonomial(I) then ( 
+    print "Error -- symbolicPolyhedron cannot be applied for an ideal that is not monomial"; 
+    return
+    );   
+return symbolicPolyhedron monomialIdeal I
+)
+
+
+symbolicPolyhedron MonomialIdeal := Polyhedron => I -> ( 
+Pd:=primaryDecomposition I;
+P:=apply(Pd, a-> radical a);
+maxP:={};
+apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+PI:=apply(Q, a-> newtonPolytope sum flatten entries gens a);
+C := posHull id_(ZZ^(dim ring I));
+QI :=apply(PI, p-> p+C);
+N :=intersection QI;
+return N
+)
+
+alpha = I -> min apply(flatten entries gens I, f-> (degree f)_0) 
+
+-- Computes the Waldschmidt constant for a given ideal
+waldschmidt = method(Options=>{SampleSize=>10});
+waldschmidt Ideal := opts -> I -> (
+if isMonomial I then ( 
+    print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
+else (
+    print ("Ideal is not monomial, the  Waldschmidt constant is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list alpha(symbolicPower(I,i))/i
+    )
+)
+
+waldschmidt MonomialIdeal := opts -> I -> (  
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
 
 
 
@@ -1060,6 +1199,77 @@ doc ///
 
 ///
 
+doc ///
+     Key 
+         symbolicPolyhedron
+	 (symbolicPolyhedron,Ideal)
+	 (symbolicPolyhedron,MonomialIdeal)
+     Headline 
+         Computes the symbolic polyhedron for a monomial ideal. 
+     Usage 
+         symbolicPolyhedron(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :Polyhedron 
+     Description	  
+       Text
+	   The symbolic polyhedron associated to a monomial ideal I is defined in the paper "Symbolic Powers of Monomial Ideals" 
+	   by S. M. Cooper, R. J. D. Embree, H. T. Ha, A. H. Hoefel. The symbolic polyhedron contains the exponent vector of any
+	   monomial in I^n scaled by 1/n.
+	  
+       Text
+       	   This function uses the Polyhedra package and returns an object of type Polyhedron.
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   symbolicPolyhedron(I)
+        
+     SeeAlso 
+	  Polyhedra
+///
+
+doc ///
+     Key 
+         waldschmidt
+	 (waldschmidt,Ideal)
+	 (waldschmidt,MonomialIdeal)
+     Headline 
+         Computes the Waldschmidt constant  for a homogeneous ideal. 
+     Usage 
+         waldschmidt(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :QQ 
+     Description	  
+       Text
+	   The Waldschmidt constant for a homogeneous ideal I is defined as $waldschmidt(I)=lim_{n\to\infty} \frac{\alpha(I^{(n)})}{n}$, 
+	   where $\alpha(J)$ denotes the smallest degree of a nonzero element in a given homogeneous ideal $J$. The limit of the sequence 
+	   $\frac{\alpha(I^{(n)})}{n}$ exists because of the subadditivity of $\alpha$ and is equal to the infimum of the sequence $\frac{\alpha(I^{(n)})}{n}$.
+	  
+       Text
+       	   The Waldschmidt constant can be computed for monomial ideals as the smallest value of the sum of the coordinates over all the points of 
+	   the symbolic polyhedron. The function uses this method to return an exact answer for the Waldschmidt constant of a monomial ideal.
+	   
+       Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   waldschmidt(I)
+	   
+       Example 
+	   R = QQ[x,y,z]
+	   J = (ideal(x,y))^2+ ideal(x*z+y*z)
+	   waldschmidt(J)
+        
+     SeeAlso 
+	  symbolicPolyhedron
+///
 
 
 
@@ -1071,4 +1281,7 @@ TEST ///
 ///
 
 end
+
+
+
 
