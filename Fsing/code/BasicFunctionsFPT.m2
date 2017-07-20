@@ -121,7 +121,7 @@ firstCarry = ( p, w ) ->
 	while d < p and i < carryTest(p,w) do 
 	(
 	    i = i + 1;
-	    d = sum digit( p, i, w )
+	    d = sum adicDigit( p, i, w )
 	);
         if i == carryTest(p,w) then -1 else i
      )

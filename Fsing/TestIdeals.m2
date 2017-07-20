@@ -61,19 +61,19 @@ AuxiliaryFiles=>false
 export{
 --BasicFunctions (BasicFunctions.m2) 
     "adicExpansion",    
-    "digit", 	   
+    "adicDigit", 	   
+    "adicTruncation",
     "divideFraction",
     "floorLog",
     "maxIdeal", 
     "multOrder",
     "NoZeroC", --option to force certain behavior from a function
-    "truncatedBasePExp",
-    
+        
 --ethRootFunctions (EthRoots.m2)
     "ascendIdeal", --Karl (still needs more tests / documentation)
     "AscentCount",
     "boundLargestCompatible", ---MK
-    "frobeniusRootRingElements",   
+--    "frobeniusRootRingElements",   (now an internal function)
     "FrobeniusRootStrategy",  
     "frobeniusRoot",  
     "getFieldGenRoot",
@@ -98,7 +98,7 @@ export{
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
     "isFrational", --Karl (added recently).
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
-    "randomSubset",
+--    "randomSubset", probably should not be exported
     "testModule", --Karl (this subsumes a bunch of older functions)
     "MTries",
     
