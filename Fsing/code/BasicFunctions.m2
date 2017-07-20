@@ -103,7 +103,7 @@ digit = method( TypicalValue => ZZ )
 digit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
 (
     if x < 0 or x > 1 then error "digit: Expected x in [0,1]";     
-    if x = 0 then 0;	
+    if x == 0 then return 0;	
     local y;
     if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
     if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;

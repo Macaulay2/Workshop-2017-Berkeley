@@ -1,13 +1,17 @@
 TEST /// -- eth roots via frobenius and frobeniusPower
 R = ZZ/5[x,y];
+assert( fastExp(0,0_R) == 1_R )
 assert( fastExp(409,0_R) == 0_R )
--- assert( fastExp(0,x+y) == 1_R )
 f = -2*x^5+x^3*y^2+x^2*y^3-2*x*y^4-2*y^5;
+assert( fastExp(0,f) == 1_R )
+assert( fastExp(1,f) == f )
 time out1 = f^409;
 time out2 = fastExp(409,f);
 assert( out1 == out2 )
 R = R/ideal( f );
 g = -x^10+x^9*y-x^8*y^2+2*x^7*y^3-x^6*y^4+x^4*y^6+2*x^3*y^7+2*x*y^9-2*y^10;
+assert( fastExp(0,g) == 1_R )
+assert( fastExp(1,g) == g )
 time out1 = g^409;
 time out2 = fastExp(409,g);
 assert( out1 == out2 )
