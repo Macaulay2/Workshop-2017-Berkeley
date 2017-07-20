@@ -134,6 +134,7 @@ doc ///
     Key
         [testIdeal, FrobeniusRootStrategy]
         [isFregular, FrobeniusRootStrategy]
+        [HSLGModule, FrobeniusRootStrategy]
         [isFpure, FrobeniusRootStrategy]
         [isFinjective, FrobeniusRootStrategy]
     Headline
@@ -141,7 +142,9 @@ doc ///
     Usage
         testIdeal(..., FrobeniusRootStrategy=>S)
         isFregular(..., FrobeniusRootStrategy=>S)
+        HSLGModule(..., FrobeniusRootStrategy=>S)        
         isFpure(..., FrobeniusRootStrategy=>S)
+        isFinjective(..., FrobeniusRootStrategy=>S)        
     Inputs
         S: Symbol
     Outputs

@@ -178,7 +178,7 @@ isFinjective(Ring) := o-> (R1) ->
     flagPushComputed := false;
     
     -- F-Injectivity fast to compute on dim(S)-dim(R), so we check there seperately by default
-    if (o.CanonicalStrategy== Katzman) then (
+    if (o.CanonicalStrategy === Katzman) then (
         if (isFinjectiveCanonicalStrategy(R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy) == false) then ( -- if F-injectivity fails in top dimension, no need to try any others
         	return false;
     	);
