@@ -284,6 +284,20 @@ replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring 
     v := fold((i,o) -> replace(o,0,i),w,L);
     promote(substitute(I,matrix{v}),ring I))
     
+///
+restart
+loadPackage"SymbolicPowers"
+R = ZZ/101[x,y]
+I = ideal"xy,y2"
+isPacked I
+restart
+installPackage"SymbolicPowers"
+restart
+uninstallPackage"SymbolicPowers"
+restart
+
+///
+
 
 isPacked = method(TypicalValue => Boolean)
 isPacked(Ideal) := Boolean => I -> (d := # flatten entries vars ring I; 
@@ -348,6 +362,7 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
       )
 
 -- To be placed in Depth.m2
+-- Should look at the h-vector instead. 
 isGorenstein = method()
 isGorenstein(Ring) := Boolean => R ->(
     local C; local l;
@@ -367,13 +382,8 @@ isGorenstein(Ideal) := Boolean => I ->(
     return isGorenstein(R/I);
     )
 
-///
-restart
-needsPackage"Depth"
-loadPackage"SymbolicPowers"
-R = ZZ/101[x,y]/ideal"xy,y2"
-isGorenstein R
-///
+
+
 
 
 -----------------------------------------------------------
