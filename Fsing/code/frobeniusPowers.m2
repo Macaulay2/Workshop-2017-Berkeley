@@ -11,11 +11,16 @@
 --N = N_0 + N_1 p + ... + N_e p^e, where 0 <= N_i < p, then this computes f^N as
 --f^(N_0) (f^(N_1))^p ... (f^(N_e))^(p^e). 
 
-fastExp = (N,f) ->
+fastExp = method( TypicalValue => RingElement )
+
+fastExp ( ZZ, RingElement ) := RingElement => ( N, f ) ->
 (
-     p:=char ring f;
-     E:=adicExpansion(p,N);
-     product(#E, e -> (sum(terms f^(E#e), g -> g^(p^e))))
+    if N < 0 then error "fastExp: first argument must be a polynomial over a nonnegative integer.";
+    if char ring f == 0 then 
+        error "fastExp: second argument must be a polynomial over a field of positive characteristic.";
+    p:=char ring f;
+    E:=adicExpansion(p,N);
+    product(#E, e -> sum( terms f^(E#e), g -> g^(p^e) ) )
 )
 
 --------------------------------------------------------------------------------------------------------
