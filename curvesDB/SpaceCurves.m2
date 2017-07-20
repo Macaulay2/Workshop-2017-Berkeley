@@ -25,6 +25,8 @@ export {
     "Hyperplane",
     "IntersectionPairing",
     "irreducibleOnCubic",
+    "effectiveDivisorsOnCubic",
+    "realizedDivisorOnCubic",
     "Class",     --Different name??   
     "Chi" -- Euler characteristic of OO_X.
     }
@@ -198,7 +200,7 @@ realizeSurface AbstractSurface := opts -> X -> (
     )
 
 realize = method()
-realize(DivisorClass, RealizedSurface) := (C, X) -> (
+realize (DivisorClass, RealizedSurface) := (C, X) -> (
     if abstractSurface C =!= abstractSurface X then error "expected divisor class on the given surface";
     if abstractSurface X === abstractCubic then (
         -- check irreducibility from numerical criterion
@@ -221,6 +223,20 @@ realize(DivisorClass, RealizedSurface) := (C, X) -> (
         );
     error "not implemented yet for your type of surface"
     )
+realize (ZZ,ZZ,RealizedSurface) := (a,d,X) -> (
+    dList := effectiveDivisorsOnCubic(a,d);
+    irreducibleList := select(dList,C->irreducibleOnCubic C);
+    apply(irreducibleList, D -> 
+    	(degree D,genus D, D, betti res realize(D,X)))
+)
+
+effectiveDivisorsOnCubic = method()
+effectiveDivisorsOnCubic (ZZ,ZZ) := (a,d) -> (
+    dlist := apply(select(partitions(3*a-d),p->#p<=6),q-> {a} | toList q | splice{(6-#q):0});    
+    apply(dlist,L -> divisorClass(L,abstractCubic))
+)
+
+
 beginDocumentation()
 
 TEST ///
@@ -277,7 +293,12 @@ restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
 
+S = ZZ/32003[x_0..x_3]
+X = realizeSurface(abstractCubic, Ring => S)
+a = 6
+d = 10
+L=realize(a,d,X);#L
+netList L
 
-IQ = realizeSurface(abstractQuadric, Ring => QQ[a..d])
 
 
