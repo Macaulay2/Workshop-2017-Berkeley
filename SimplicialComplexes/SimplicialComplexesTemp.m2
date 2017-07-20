@@ -25,7 +25,7 @@ newPackage(
     	)
 
 
-export {"poincareSphere"}
+export {"poincareSphere","suspension"}
 
 
 poincareSphere = method()
@@ -156,20 +156,42 @@ internalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) ->
 
 SimplicialComplex | SimplicialComplex := (S1,S2) -> externalJoin(S1,S2)
 
+cone(SimplicialComplex) := (S) -> (
+    R := ring S;
+    k := coefficientRing R;
+    Q := k(monoid[getSymbol "X"]);
+    point := simplicialComplex {Q_0};
+    S | point
+    )
+
+
+suspension = method()
+suspension(SimplicialComplex):= (S)-> (
+    R := ring S;
+    k := coefficientRing R;
+    Q := k(monoid[getSymbol "X", getSymbol "Y"]);  
+    points := simplicialComplex{Q_0,Q_1};
+    S | points
+    )
+
 end
 
+
+----Claudiu's Test Area
 restart
 installPackage"SimplicialComplexesTemp"
 
-restart
-needsPackage"SimplicialComplexes"
-
-
 r1 = QQ[a,b]
 s1 = simplicialComplex {a,b}
-r2 = QQ[d,c]
-s2 = simplicialComplex {d,c}
+r2 = QQ[a,c]
+s2 = simplicialComplex {a,c}
 s1 | s2
+
+cone(s1)
+suspension(s2)
+
+-----
+
 
 ------bug?-----
 restart
@@ -177,8 +199,15 @@ R1 = QQ[a]
 R2 = QQ[a]
 R = R1 ** R2
 dim R
+
 n1 = numgens R1
 n2 = numgens R2
 i1 = map(R,R1,apply(n1,j -> R_j))
 i2 = map(R,R2,apply(n2,j -> R_(n1+j)))
 i1(R1_0) - i2(R2_0)
+
+----end Claudiu's Test Area
+
+
+
+
