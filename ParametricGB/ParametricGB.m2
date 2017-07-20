@@ -35,6 +35,17 @@ color =(f,gamma) -> (
     if monomials(a)==matrix {{1_(ring a)}} then return "red" else return "white"
 )
 
+whitePart = (f,gamma) -> (
+    Z:=gamma_0;
+    NZ:=gamma_1;
+    a:=leadCoefficient(f);    
+    a = a % (ideal(Z));
+    for j from 0 to #NZ-1 do (
+        while (a % ideal(NZ_j))==0 do a = lift(a/(NZ_j),ring(a))
+    );
+    return a    
+);
+
 headTerm = (f,gamma) -> (
     g:=leadTerm(f);
     while color(g,gamma)=="green" do (
@@ -46,16 +57,16 @@ headTerm = (f,gamma) -> (
 );
 
 determineCover = (f,gamma) -> (
-    g := headTerm(f,gamma_0);
+    g := 0;
     refinedGamma := {};
     tempList := {};
     for j from 0 to #gamma-1 do(
 	g = headTerm(f,gamma_j);
         if g_1 == "white" then (
-	    tempList = {append(gamma_j_1,leadCoefficient(g_0))};
+	    tempList = {append(gamma_j_1,whitePart(g_0,gamma_j))};
 	    tempList = insert(0,gamma_j_0,tempList);
 	    refinedGamma = append(refinedGamma,tempList);
-	    tempList = {append(gamma_j_0,leadCoefficient(g_0))};
+	    tempList = {append(gamma_j_0,whitePart(g_0,gamma_j))};
 	    tempList = insert(1,gamma_j_1,tempList);
 	    refinedGamma = join(refinedGamma,determineCover(f,{tempList}))
         )
@@ -69,6 +80,7 @@ determineCover = (f,gamma) -> (
 R=QQ[c_1,c_2][x_0,x_1,x_2,x_3]
 Z={c_1}
 NZ={c_2}
+beta = {{0},{1}}
 gamma = {Z,NZ}
 f1 = c_1^2*(c_1+2*c_2)*x_0*x_1
 f2 = c_2^2*(c_1+2*c_2)*x_0*x_2
@@ -76,10 +88,12 @@ f3 = c_2^2*(c_2+2)*x_0*x_3
 color(f1,gamma)
 color(f2,gamma)
 color(f3,gamma)
+color(f1,beta)
 headTerm(f1+f2,gamma)
 headTerm(f1+f3,gamma)
 determineCover(f1+f3,{gamma})
-
+determineCover(f1+f2+f3,determineCover(f1+f3,{gamma}))
+whitePart(f3,gamma)
 
 square = method(
     TypicalValue => ZZ
