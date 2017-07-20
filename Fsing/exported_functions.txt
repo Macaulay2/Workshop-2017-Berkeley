@@ -1,7 +1,12 @@
---==================================================================
---BasicFunctions (BasicFunctions.m2)
+--============================================================
+--============================================================
 
-MAIN
+TestIdeals Package
+
+--============================================================
+--============================================================
+
+--BasicFunctions (BasicFunctions.m2)
 
 Exported
 
@@ -24,9 +29,119 @@ isPolynomialOverFiniteField
 "maxIdeal",
 allPartitions
 allPartitionsInnards
---------------
 
-FPT
+--===========================================================
+
+--ethRootFunctions (EthRoots.m2)
+    "ascendIdeal", --Karl (still needs more tests / documentation) -- ??
+    "AscentCount", -- ??
+    "boundLargestCompatible", ---MK --??
+    "ethRoot", 
+    "ethRootRingElements",   
+    "EthRootStrategy",  
+    "frobeniusRoot",  -- export; main
+    "FrobeniusRootStrategy",  -- export; main
+    "getFieldGenRoot",
+    "minimalCompatible", -- ??
+    "MonomialBasis",	 -- export; main
+    "Substitution", -- export; main
+
+--===========================================================
+--Frobenius Powers (frobeniusPowers.m2)
+
+Exported
+
+"fastExp", 
+"frobenius", 
+"frobeniusPower",
+FrobeniusPowerStrategy
+"Naive", 
+"Safe",  
+
+NOT Exported
+
+frobeniusMethod
+stableIdeal
+
+--===========================================================
+
+
+-- parameterTestIdeal.m2
+    "AssumeCM", --an option for function, if true, then the function will do less work.
+    "AssumeReduced", --an option telling functions to assume a ring is reduced.
+    "AssumeNormal", --an option telling functions to assume a ring is normal.
+    "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
+    "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
+    "isFrational", --Karl (added recently).
+    "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
+    "randomSubset",
+    "testModule", --Karl (this subsumes a bunch of older functions)
+
+--============================================================
+
+-- Finjective.m2
+    "HSLGModule", --produces the non-F-injective module, ie the submodule of the canonical module
+    "isFinjective",
+    "CanonicalStrategy", --how to check F-injectivity on the canonical module (Ext or Katzman)
+    "Katzman", --an option for CanonicalStrategy
+
+--============================================================
+
+-- testIdeals.m2
+    "findQGorGen", --export; main; documented
+    "findTestElementAmbient", --export; main; documented
+    "MaxCartierIndex", --export; main; documented
+    "QGorensteinIndex", --export; main; documented
+    "
+    "tauAOverPEMinus1Poly", --Karl (this should be removed)
+    "tauGor", --Karl (this should be removed)
+    "tauGorAmb",--Karl (this should be removed)
+    "tauNonPrincipalAOverPEPoly", --Karl (this should be removed)
+    "tauPoly", --Karl (this should be removed)
+--    "tauQGor",    --Karl removed  since it is subsumed by the new testIdeal
+--    "tauQGorAmb", --Karl removed  since it is subsumed by the new testIdeal
+    "testIdeal", --Karl (the new version) --exportl main
+
+--============================================================
+
+-- Other.m2
+    "fSig",
+    "HSL", 
+    "imageOfRelativeCanonical",
+    "imageOfTrace", --doesn't work! 
+    "isFPure",  --exportl main
+    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular --exportl main
+    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular --exportl main
+    "isMapSplit",
+    "isSharplyFPurePoly", --Karl needs to be redone --exportl main
+    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
+    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
+    "sigmaQGorAmb", --Karl needs to be redone
+
+--============================================================
+
+-- Other
+    "FFiniteSupport", ---MK
+    "findAllCompatibleIdeals", ---MK	   
+    "findGeneratingMorphisms", ---MK
+    "FPureIdeals",
+    "FullMap", ---Karl
+    "generatingMorphism", ---MK
+    "generatingRoot" ---MK
+--    "paraTestModule", ---MK
+--    "paraTestModuleAmbient" ---MK  
+
+
+--============================================================
+--============================================================
+
+FPT Package
+
+--============================================================
+--============================================================
+
+basicFunctionsFPT
 
 NOT exported
 
@@ -53,30 +168,8 @@ isNonConstantBinaryForm
 isLinearBinaryForm
 xInt
 
---==================================================================
+--===========================================================
 
---ethRootFunctions (EthRoots.m2)
-    "ascendIdeal", --Karl (still needs more tests / documentation) -- ??
-    "AscentCount", -- ??
-    "boundLargestCompatible", ---MK --??
-    "ethRoot", 
-    "ethRootRingElements",   
-    "EthRootStrategy",  
-    "frobeniusRoot",  -- export; main
-    "FrobeniusRootStrategy",  -- export; main
-    "getFieldGenRoot",
-    "minimalCompatible", -- ??
-    "MonomialBasis",	 -- export; main
-    "Substitution", -- export; main
-    
---Frobenius Powers (frobeniusPowers.m2)
-    "fastExp", -- export; main
-    "frobenius", -- export; main
-    "frobeniusPower", -- export; main
-    "gfpStrategy", -- delete
-    "Naive", -- export; main
-    "Safe",  -- export; main
-    
 --F-thresholds computations (FThresholds.m2)
     "BinaryFormCheck",
     "binarySearch1",
@@ -117,79 +210,26 @@ xInt
     "testRoot", -- export; FPT
     "UseColonIdeals", -- export; FPT
 
+--===========================================================
+
 --F-thresholds of special families of polynomials (SpecialFThresholds.m2)
-    -- Eventually, only binomialFPT, diagonalFPT, and binaryFormFPT should  
-    -- be exported from this section **PT
-    "binaryFormFPT",  -- export; FPT   
-    "binaryFormFPTInternal",
-    "binomialFPT", -- export; FPT
-    "diagonalFPT", -- export; FPT
-    "factorList",    
-    "findCPBelow",
-    "isCP",
-    "isInLowerRegion",
-    "isInUpperRegion",
-    "MaxExp",
-    "Nontrivial",    
-    "PrintCP", -- ? export or delete
-    "setFTData",
-    "splittingField",
 
--- parameterTestIdeal.m2
-    "AssumeCM", --an option for function, if true, then the function will do less work.
-    "AssumeReduced", --an option telling functions to assume a ring is reduced.
-    "AssumeNormal", --an option telling functions to assume a ring is normal.
-    "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
-    "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
-    "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
-    "isFrational", --Karl (added recently).
-    "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
-    "randomSubset",
-    "testModule", --Karl (this subsumes a bunch of older functions)
-    
--- Finjective.m2
-    "HSLGModule", --produces the non-F-injective module, ie the submodule of the canonical module
-    "isFinjective",
-    "CanonicalStrategy", --how to check F-injectivity on the canonical module (Ext or Katzman)
-    "Katzman", --an option for CanonicalStrategy
+Exported
 
--- testIdeals.m2
-    "findQGorGen", --export; main; documented
-    "findTestElementAmbient", --export; main; documented
-    "MaxCartierIndex", --export; main; documented
-    "QGorensteinIndex", --export; main; documented
-    "
-    "tauAOverPEMinus1Poly", --Karl (this should be removed)
-    "tauGor", --Karl (this should be removed)
-    "tauGorAmb",--Karl (this should be removed)
-    "tauNonPrincipalAOverPEPoly", --Karl (this should be removed)
-    "tauPoly", --Karl (this should be removed)
---    "tauQGor",    --Karl removed  since it is subsumed by the new testIdeal
---    "tauQGorAmb", --Karl removed  since it is subsumed by the new testIdeal
-    "testIdeal", --Karl (the new version) --exportl main
+"binaryFormFPT"  
+"binomialFPT", 
+"diagonalFPT"
+"MaxExp",
+ "Nontrivial",    
+ "PrintCP", --maybe delete
 
--- Other.m2
-    "fSig",
-    "HSL", 
-    "imageOfRelativeCanonical",
-    "imageOfTrace", --doesn't work! 
-    "isFPure",  --exportl main
-    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular --exportl main
-    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular --exportl main
-    "isMapSplit",
-    "isSharplyFPurePoly", --Karl needs to be redone --exportl main
-    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
-    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
-    "sigmaQGorAmb", --Karl needs to be redone
- 
--- Other
-    "FFiniteSupport", ---MK
-    "findAllCompatibleIdeals", ---MK	   
-    "findGeneratingMorphisms", ---MK
-    "FPureIdeals",
-    "FullMap", ---Karl
-    "generatingMorphism", ---MK
-    "generatingRoot" ---MK
---    "paraTestModule", ---MK
---    "paraTestModuleAmbient" ---MK  
-}
+NOT Exported
+
+"binaryFormFPTInternal",
+ "factorList",    
+ "findCPBelow",
+ "isCP",
+ "isInLowerRegion",
+ "isInUpperRegion",
+ "setFTData",
+ "splittingField",

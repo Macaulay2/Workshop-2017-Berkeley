@@ -22,9 +22,9 @@ fastExp = (N,f) ->
 
 --Outputs the p^e-th Frobenius power of an ideal, or the p^e-th (entry-wise) Frobenius power of a matrix.
 
-frobeniusMeth =  method( Options => { FrobeniusRootStrategy => Substitution } );
+frobeniusMethod =  method( TypicalValue => Ideal, Options => { FrobeniusRootStrategy => Substitution } );
 
-frobeniusMeth ( ZZ, Ideal ) := o -> ( e, I ) ->
+frobeniusMethod ( ZZ, Ideal ) := Ideal => o -> ( e, I ) ->
 (
     if e == 0 then return I;
     if e < 0 then return frobeniusRoot( -e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
@@ -34,7 +34,7 @@ frobeniusMeth ( ZZ, Ideal ) := o -> ( e, I ) ->
     if #G == 0 then ideal( 0_R ) else ideal( apply( G, j -> fastExp( p^e, j ) ) )
 )
 
-frobeniusMeth ( ZZ, Matrix ) := o -> ( e, M ) ->
+frobeniusMethod ( ZZ, Matrix ) := Matrix => o -> ( e, M ) ->
 (
     if e == 0 then return M;
     if e < 0 then error "frobenius: first argment must be nonnegative.";
@@ -42,13 +42,13 @@ frobeniusMeth ( ZZ, Matrix ) := o -> ( e, M ) ->
     matrix apply( entries M, u -> apply( u, j -> fastExp( p^e, j ) ) )
 )
 
-frobeniusMeth ( Ideal ) := o -> I -> frobenius( 1, I, o )
+frobeniusMethod ( Ideal ) := Ideal => o -> I -> frobeniusMethod( 1, I, o )
 
-frobeniusMeth ( Matrix ) := o -> M -> frobenius( 1, M )
+frobeniusMethod ( Matrix ) := Matrix => o -> M -> frobeniusMethod( 1, M )
 
 FrobeniusOperator = new Type of MethodFunctionWithOptions
 
-frobenius = new FrobeniusOperator from frobeniusMeth
+frobenius = new FrobeniusOperator from frobeniusMethod
 
 FrobeniusOperator ^ ZZ := ( f, n ) -> ( x -> f( n, x ) )
 
