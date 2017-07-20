@@ -25,7 +25,8 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere","dunceHat","suspension"}
+export {"simplicialJoin","poincareSphere","dunceHat","suspension","projectivePlane",
+    "bjornerExample"}
 
 -- Jason's area to work in
 
@@ -133,7 +134,7 @@ dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
     assert(isField F);
     x := o.Variable;
     if instance(x,String) then x = getSymbol x;
-    R := F[x_1..x_16];
+    R := F[x_1..x_8];
     L := {{1,2,4},
 {1,2,7},
 {1,2,8},
@@ -151,6 +152,46 @@ dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
 {4,5,6},
 {4,6,8},
 {6,7,8}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+projectivePlane = method(Options=>{Variable => "x"})
+projectivePlane(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_6];
+    L := {{1,2,4},
+{1,2,6},
+{1,3,4},
+{1,3,5},
+{1,5,6},
+{2,3,5},
+{2,3,6},
+{2,4,5},
+{3,4,6},
+{4,5,6}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+bjornerExample = method(Options=>{Variable => "x"})
+bjornerExample(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_6];
+    L := {{1,2,3},
+{1,2,5},
+{1,2,6},
+{1,3,4},
+{1,3,6},
+{1,4,5},
+{2,3,4},
+{2,3,5},
+{2,4,6},
+{3,5,6},
+{4,5,6}};
     fac := apply(L,l->product apply(l,v->R_(v-1)));
     simplicialComplex fac)
 
@@ -252,11 +293,16 @@ F = ZZ/2
 loadPackage "SimplicialComplexesTemp"
 S = poincareSphere(F,Variable => x)
 T = dunceHat(F,Variable => y)
-zero HH_1 S
-zero HH_2 S
-prune HH_3 S
-
-
+U = projectivePlane(F,Variable =>z)
+V = bjornerExample(F)
+zero HH_(-1) V
+zero HH_0 V
+zero HH_1 V
+zero HH_2 V
+zero HH_3 V
+fVector V
+transpose facets V
+prune HH_2(chainComplex U)
 -- end Jason test area
 
 
