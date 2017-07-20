@@ -1,11 +1,15 @@
 newPackage(
 	"InverseSystems",
-    	Version => "1.0", 
-    	Date => "May 7, 2017",
+    	Version => "1.1", 
+    	Date => "July 20, 2017",
     	Authors => {{Name => "David Eisenbud", 
-		  Email => "de@msri.org"
+		  Email => "de@msri.org",
+		  Name => "Matthew Mastroeni",
+		  Email => "mastroe2@illinois.edu",
+		  Name => "Rebecca R.G.",
+		  Email => "rirebhuh@syr.edu"
 		  }},
-    	Headline => "equivariant Macaulay inverse systems",
+    	Headline => "Macaulay inverse systems via differentiation and divided powers",
     	DebuggingMode => false
     	)
 
@@ -18,6 +22,7 @@ export {"inverseSystem",
 	"dividedActionInDegree",
 	"dividedKerInDegree",
 	"dividedKerToDegree",
+	"dividedImInDegree",
 	--option names (symbols):
 	"PowerBound",
 	"DividedPowers",
@@ -252,6 +257,33 @@ dividedKerToDegree (ZZ, List) := Ideal => (i, L) -> (
     D := ring L#0;
     ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, L), D))
     )
+
+
+dividedImInDegree = method()
+dividedImInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
+    I := dividedActionInDegree(i, phi);
+    D := ring phi;
+    d := (degree phi)#0;
+    ideal mingens ideal( (super basis(d-i, D)) * I )
+    )
+
+dividedImInDegree (ZZ, List) := Ideal => (i, L) -> (
+    s := flatten (L/degree);
+    d := max s;
+    apply(L,phi->(dividedImInDegree(i,phi)))
+    )
+
+dividedImInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
+    D := ring A;
+    n := numgens D;
+    d := 0;
+    while binomial(d-i + n -1, n-1) < numrows A do(
+	d = d + 1
+	); 
+    if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    ideal mingens ideal( (super basis(d - i, D) * A) )
+    )
+
 
 beginDocumentation()
 
@@ -853,6 +885,52 @@ doc ///
      phi = x^5*y^2 + y^5*z^2 + z^5*x^2
      dividedActionInDegree(3, phi)
      ///
+
+doc ///
+   Key
+    dividedKerInDegree
+    (dividedKerInDegree, ZZ, RingElement)
+    (dividedKerInDegree, ZZ, List)
+    (dividedKerInDegree, ZZ, Matrix) 
+   Headline
+    Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+   Usage
+    I = dividedKerInDegree(i, phi)
+    I = dividedKerInDegree(i,L)
+    I = dividedKerInDegree(i,A)
+   Inputs
+    i: ZZ
+     an integer
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous elements of a standard graded polynomial ring
+    A: Matrix
+     the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
+   Outputs
+    I: Ideal
+   Description
+    Text
+     Computes the degree i piece of the kernel of the map from symmetric powers to divided powers 
+     given by multiplication by the ring element or list of elements. Matrix option allows user to
+     input matrix gotten from dividedActionInDegree function, to avoid having to repeat the computation.
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     psi = dividedKerInDegree(i,phi)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
+     psi = dividedKerInDegree(i,L)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     A = dividedActionInDegree(i,phi)
+     psi = dividedKerInDegree(i,A)
+     ///
      
 doc ///
    Key
@@ -882,14 +960,78 @@ doc ///
      dividedKerToDegree(5, phi)
      ///
 
+doc ///
+   Key
+    dividedImInDegree
+    (dividedImInDegree, ZZ, RingElement)
+    (dividedImInDegree, ZZ, List) 
+    (dividedImInDegree, ZZ, Matrix)
+   Headline
+    Computes the image of the action of homogeneous polynomials on elements of the divided powers algebra in given degrees
+   Usage
+    U = dividedImInDegree(i, phi)
+    W = dividedImInDegree(i, L)
+    U = dividedImInDegree(i, A)
+   Inputs
+    i: ZZ
+     an integer
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous elements of a standard graded polynomial ring
+    A: Matrix
+     the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
+   Outputs
+    U: Ideal
+     an ideal whose generators span the image
+    W: List
+     a list of ideals
+   Description
+    Text
+     Computes the image of the map from the ith graded piece of the symmetric algebra to the direct sum of 
+     divided power rings, which is given by multiplication by the ring element or list of elements. 
+     The Matrix option allows the user to input the matrix gotten from dividedActionInDegree function, 
+     to avoid having to repeat the computation.
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     U = dividedImInDegree(i,phi)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     L = {x^3+y^3+z^3,x*y^2+y*z^2+z*x^2}
+     W = dividedImInDegree(i,L)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     A = dividedActionInDegree(i,phi)
+     U = dividedImInDegree(i,A)
+     ///
+
 
   
+TEST ///
+
+S = ZZ/5[x,y,z]; 
+phi = x^3+y^3+z^3;
+assert(dividedActionInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
+assert(dividedKerInDegree(2, phi)==ideal(x*y,x*z,y*z))
+assert(dividedImInDegree(2, phi)==ideal(x,y,z))
+
+///
 
 
+TEST ///
 
+R=ZZ/5[x,y,z];
+I=ideal(x^3+y^3+z^3,x*y^2+y*z^2+z*x^2);
+assert(dividedActionInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
+assert(dividedKerInDegree(2,I_*)==ideal(0_R))
+assert(dividedImInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
 
-
-  
+///
 
 
 
