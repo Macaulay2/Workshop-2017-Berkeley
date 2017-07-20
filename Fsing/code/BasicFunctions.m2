@@ -102,7 +102,8 @@ digit = method( TypicalValue => ZZ )
 --Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
 digit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
 (
-    if x <= 0 or x > 1 then error "digit: Expected x in (0,1]";     	
+    if x < 0 or x > 1 then error "digit: Expected x in [0,1]";     
+    if x = 0 then 0;	
     local y;
     if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
     if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;
@@ -124,7 +125,7 @@ adicExpansion = method( TypicalValue => List );
 adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
 (
     if p <= 0 then error "adicExpansion: Expected first argument to be positive";
-    if N <= 0 then error "adicExpansion: Expected second argument to be positive";
+    if N < 0 then error "adicExpansion: Expected second argument to be nonnegative";
     if N < p then { N } else prepend( N % p, adicExpansion( p, N // p ) ) 
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
@@ -132,7 +133,7 @@ adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
 adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) -> 
 (
-    if x <= 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
+    if x < 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
     apply( e, i -> digit( p, i+1, x ) )
 )
 

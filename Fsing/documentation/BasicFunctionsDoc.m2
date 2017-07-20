@@ -39,6 +39,19 @@ doc ///
             adicExpansion(2,4,1/2)
 ///
 
+
+--doc ///
+--    Key
+--        digit
+--        (digit ZZ, ZZ, QQ)
+--        (digit ZZ, ZZ, List)
+
+
+--///
+
+
+
+
 doc ///
     Key
         floorLog
