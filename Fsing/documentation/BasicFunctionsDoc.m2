@@ -53,6 +53,7 @@ doc ///
 doc ///
     Key
         floorLog
+        (floorLog, ZZ, ZZ)
     Headline
         Computes the floor of the log base b of x
     Usage
@@ -126,4 +127,37 @@ doc ///
 ///
 
  
- 
+doc ///
+    Key
+        adicTruncation
+        (adicTruncation, ZZ, ZZ, ZZ)
+        (adicTruncation, ZZ, ZZ, QQ)
+        (adicTruncation, ZZ, ZZ, List)
+    Headline
+        computes the e-th truncation of the non-terminating base p expansion of a rational number
+    Usage
+        adicTruncation(p, e, r)
+        adicTruncation(p, e, L)
+    Inputs
+        p:ZZ
+            a prime
+        e:ZZ
+        r:QQ
+            a rational number to compute the truncation of
+        L:List
+            a list of rational numbers to compute the truncation of
+    Outputs
+        :QQ
+            the trunction
+    Description
+        Text
+            This function computes the rational number equal to the $e$th truncation of a rational number.  If you pass it zero, it returns zero.            
+        Example
+            adicTruncation(5, 2, 1/100)
+            adicTruncation(5, 4, 1/100)
+            adicTruncation(5, 5, 1/1000)
+        Text
+            You can also pass it a list of numbers, in which case it returns the list of the truncations.
+        Example
+            adicTruncation(5, 5, {1/100, 1/1000})
+///

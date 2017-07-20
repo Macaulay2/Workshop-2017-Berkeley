@@ -146,7 +146,6 @@ export{
     "findAllCompatibleIdeals", ---MK	   
     "findGeneratingMorphisms", ---MK
     "FPureIdeals",
-    "FullMap", ---Karl
     "generatingMorphism", ---MK
     "generatingRoot" ---MK
 --    "paraTestModule", ---MK
