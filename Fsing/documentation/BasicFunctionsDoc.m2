@@ -94,11 +94,11 @@ doc ///
 doc ///
     Key
         multOrder
-     	(multOrder, ZZ, ZZ)
+        (multOrder, ZZ, ZZ)
     Headline
         computes the multiplicative order of an integer modulo another
     Usage
-     	multOrder(a,b)
+        multOrder(a,b)
     Inputs
         a:ZZ
         b:ZZ
@@ -107,7 +107,11 @@ doc ///
         :ZZ
     Description
         Text
-	    This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+            This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+        Example
+            multOrder(2, 11^2)
+            multOrder(3, 11^2)
+            multOrder(4, 11^2)
 ///
 
 doc ///
@@ -116,7 +120,7 @@ doc ///
         (divideFraction, ZZ, QQ)
         (divideFraction, ZZ, ZZ)
     Headline
-        decomposes a rational number
+        decompose a rational number into a/p^b(p^c-1)
     Usage
         L = divideFraction(p,t)
         L = divideFraction(p,n)
@@ -129,20 +133,35 @@ doc ///
         L:List
     Description
         Text
-            Given a rational number t and a prime p, divideFraction(p,t) returns a list {a,b,c} of nonnegative integers such that t = a/(p^b*(p^c-1)).
+            Given a rational number $t$ and a prime $p$, {\tt divideFraction(p,t)} returns a list {\tt \{a,b,c\}} of nonnegative integers such that $t = a/(p^b*(p^c-1))$.
         Example
             divideFraction( 3, 4/45 )
-	    4/45 == 64/( 3^2 * ( 3^4 -1 ) )
+            4/45 == 64/( 3^2 * ( 3^4 -1 ) )
         Text
-            If c = 0, then t = a/p^b.
+            If the denominator is a pure power of $p$, then $t = a/p^b$ and the function returns {\tt c = 0}.  See the option {\tt NoZeroC} to avoid this.
         Example
             divideFraction( 3, 4/27 )
-        Text
-            The option NoZeroC => true forces the third component of the output to be nonzero, even if that means increasing the first component.
-        Example
-            divideFraction( 3, 4/27, NoZeroC => true )
-	    4/27 == 8/( 3^3 * ( 3 - 1 ) )
 ///
+
+doc ///
+    Key
+        [divideFraction, NoZeroC]
+    Headline
+        decompose a rational number into a/p^b(p^c-1) and force c not equal to zero
+    Usage
+        L = divideFraction(..., NoZeroC=>b)
+    Inputs
+        b:Boolean
+    Outputs
+        L:List
+    Description
+        Text
+            We are writing a rational number as $a/p^b(p^c-1)$.  If our number is $a/p^b$ then there is no valid value of $c$ and the function returns $c = 0$.  Setting the option {\tt NoZeroC => true} forces the third entry of the output list to be nonzero, even if that means increasing the first entry.
+        Example
+            divideFraction( 3, 4/27)
+            divideFraction( 3, 4/27, NoZeroC => true )
+	        4/27 == 8/( 3^3 * ( 3 - 1 ) )
+///    
 
  
 doc ///

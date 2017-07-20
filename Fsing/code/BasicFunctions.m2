@@ -44,15 +44,33 @@ floorLog ( ZZ, ZZ ) := ZZ => ( b, x ) ->
 
 multOrder = method( TypicalValue => ZZ )
 
+--eulerphi := n -> value(apply(factor n, i-> (i#0-1)*((i#0)^(i#1-1))))
+--cyclicOrdPGroup := (pp, nn) -> ( return (factor(pp-1))*(new Power from {pp, (nn-1)}) );
+
 --Finds the multiplicative order of a modulo b.
 multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
     if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
-    n := 1;
-    x := 1;
-    while (x = (x*a) % b) != 1 do n = n+1;
-    n	      
+    maxOrder := lcm(apply(toList apply(factor b, i-> factor ((i#0-1)*((i#0)^(i#1-1)))), tt -> value tt));
+    primeFactorList := sort unique apply( subsets( flatten apply(toList factor maxOrder, myPower -> apply(myPower#1, tt->myPower#0))), tt -> product tt);
+--    potentialOrderList := sort unique flatten  apply(flatten apply(toList apply(toList factor b, tt -> cyclicOrdPGroup(tt#0, tt#1)), tt -> toList tt), myPower -> subsets apply(myPower#1, tt->myPower#0));
+    i := 0;
+    while (i < #primeFactorList) do (
+        if (powermod(a, primeFactorList#i, b) == 1) then return primeFactorList#i;
+        i = i + 1;
+    );
+    error "Something went wrong, multOrder failed to find the multiplicative order";
 )     
+
+--multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
+--(
+--    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
+--    n := 1;
+--    x := 1;
+--    while (x = (x*a) % b) != 1 do n = n+1;
+--    n	      
+--)     
+
 
 --===================================================================================
 
