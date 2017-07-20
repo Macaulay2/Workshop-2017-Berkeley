@@ -64,21 +64,29 @@ orientedMatroid (List, List) := Matroid => opts -> (E, B) -> (
 	M
 )
 
--- needs to be adapted to our situation
-nonbasesFromCircuits = method(Options => {symbol TargetRank => -1})
-nonbasesFromCircuits (List, ZZ) := (List, ZZ) => opts -> (C, n) -> (
+
+rankFromCircuits = method(Options => {symbol TargetRank => -1})
+rankFromCircuits (List, ZZ) := (List, ZZ) => opts -> (C, n) -> (
 	E := set(0..<n);
-	t := if opts.TargetRank >= 0 then opts.TargetRank + 1 else max(C/(c -> #c));
-	N := toList set flatten((select(C, c -> #c < t))/(c -> subsets(E - c, t - 1 - #c)/(s -> c + s)));
-	if opts.TargetRank >= 0 then return (N, opts.TargetRank);
-	D := toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s)));
-	Cmax := select(C, c -> #c == t);
-	if #D + #Cmax == binomial(#E, t) then return (N, t-1) else N = join(D, Cmax);
+	t := if opts.TargetRank >= 0 then opts.TargetRank + 1 else max(C/(c -> #supp(c))); -- count nonzero entries of each circuit
+        C'= unique(C/(c-> set supp(c)));
+	N := toList set flatten((select(C', c -> #c < t))/(c -> subsets(E - c, t - 1 - #c)/(s -> c + s))); -- fills up small circuits to be of size t-1 which can't be bases
+	if opts.TargetRank >= 0 then  return opts.TargetRank;
+	D := toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s))); -- gives us things of size t that are not bases
+	Cmax := select(C', c -> #c == t);
+	if #D + #Cmax == binomial(#E, t) then return t-1 else N = join(D, Cmax);
 	for i from t+1 to #E do (
 		D = toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s)));
-		if #D == binomial(#E, i) then return (N, i-1) else N = D;
+		if #D == binomial(#E, i) then return i-1 else N = D;
 	)
 )
+
+
+
+-- support function returns nonzero spots in +/-/0 vector
+supp = (circ) ->(
+    select(unique apply(#circ, spot-> if circ_spot != 0 then spot), elt-> elt =!= null)
+    )
 
 -- sign function
 -- CAVEAT: may give random output if not in an ordered ring/field
