@@ -54,7 +54,6 @@ Reload => true,
 AuxiliaryFiles=>false
 )
 
-
 --- *** I SORTED THESE ALPHABETICALLY TO FIND MY WAY AROUND *** MK
 --- *** Reorganized by subpackages, so we know where to find stuff *** PT
 
@@ -65,7 +64,6 @@ export{
     "adicTruncation",
     "divideFraction",
     "floorLog",
-    "maxIdeal", 
     "multOrder",
     "NoZeroC", --option to force certain behavior from a function
         
@@ -146,7 +144,6 @@ export{
     "findAllCompatibleIdeals", ---MK	   
     "findGeneratingMorphisms", ---MK
     "FPureIdeals",
-    "FullMap", ---Karl
     "generatingMorphism", ---MK
     "generatingRoot" ---MK
 --    "paraTestModule", ---MK

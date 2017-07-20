@@ -38,14 +38,31 @@ doc ///
 ///
 
 
---doc ///
---    Key
---        digit
---        (digit ZZ, ZZ, QQ)
---        (digit ZZ, ZZ, List)
-
-
---///
+doc ///
+    Key
+        adicDigit
+        (adicDigit ZZ, ZZ, QQ)
+        (adicDigit ZZ, ZZ, List)
+    Headline
+        computes the digit of the non-terminating expansion of a number in (0,1] in a given base
+    Usage 
+        adicExpansion(p,e,x)
+        adicExpansion(p,e,L)
+    Inputs
+        p:ZZ
+            positive
+        e:ZZ
+            positive
+        x:QQ
+            in the interval [0,1]
+    Outputs   
+        :ZZ
+    Description
+        Text    
+            If x=0, then adicDigit(p,e,x) returns 0.  If x is in (0,1], then it returns the coefficient of p^(-e-1) in the non-terminating base p expansion of x.  If L is a list, this function returns a list where this function is applied to each element of the list. 
+    Example
+        adicDigit(5,4,1/3)
+///
 
 
 
@@ -53,6 +70,7 @@ doc ///
 doc ///
     Key
         floorLog
+        (floorLog, ZZ, ZZ)
     Headline
         Computes the floor of the log base b of x
     Usage
@@ -75,11 +93,11 @@ doc ///
 doc ///
     Key
         multOrder
-     	(multOrder, ZZ, ZZ)
+        (multOrder, ZZ, ZZ)
     Headline
         computes the multiplicative order of an integer modulo another
     Usage
-     	multOrder(a,b)
+        multOrder(a,b)
     Inputs
         a:ZZ
         b:ZZ
@@ -88,7 +106,11 @@ doc ///
         :ZZ
     Description
         Text
-	    This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+            This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+        Example
+            multOrder(2, 11^2)
+            multOrder(3, 11^2)
+            multOrder(4, 11^2)
 ///
 
 doc ///
@@ -97,7 +119,7 @@ doc ///
         (divideFraction, ZZ, QQ)
         (divideFraction, ZZ, ZZ)
     Headline
-        decomposes a rational number
+        decompose a rational number into a/p^b(p^c-1)
     Usage
         L = divideFraction(p,t)
         L = divideFraction(p,n)
@@ -110,20 +132,68 @@ doc ///
         L:List
     Description
         Text
-            Given a rational number t and a prime p, divideFraction(p,t) returns a list {a,b,c} of nonnegative integers such that t = a/(p^b*(p^c-1)).
+            Given a rational number $t$ and a prime $p$, {\tt divideFraction(p,t)} returns a list {\tt \{a,b,c\}} of nonnegative integers such that $t = a/(p^b*(p^c-1))$.
         Example
             divideFraction( 3, 4/45 )
-	    4/45 == 64/( 3^2 * ( 3^4 -1 ) )
+            4/45 == 64/( 3^2 * ( 3^4 -1 ) )
         Text
-            If c = 0, then t = a/p^b.
+            If the denominator is a pure power of $p$, then $t = a/p^b$ and the function returns {\tt c = 0}.  See the option {\tt NoZeroC} to avoid this.
         Example
             divideFraction( 3, 4/27 )
-        Text
-            The option NoZeroC => true forces the third component of the output to be nonzero, even if that means increasing the first component.
-        Example
-            divideFraction( 3, 4/27, NoZeroC => true )
-	    4/27 == 8/( 3^3 * ( 3 - 1 ) )
 ///
 
+doc ///
+    Key
+        [divideFraction, NoZeroC]
+    Headline
+        decompose a rational number into a/p^b(p^c-1) and force c not equal to zero
+    Usage
+        L = divideFraction(..., NoZeroC=>b)
+    Inputs
+        b:Boolean
+    Outputs
+        L:List
+    Description
+        Text
+            We are writing a rational number as $a/p^b(p^c-1)$.  If our number is $a/p^b$ then there is no valid value of $c$ and the function returns $c = 0$.  Setting the option {\tt NoZeroC => true} forces the third entry of the output list to be nonzero, even if that means increasing the first entry.
+        Example
+            divideFraction( 3, 4/27)
+            divideFraction( 3, 4/27, NoZeroC => true )
+	        4/27 == 8/( 3^3 * ( 3 - 1 ) )
+///    
+
  
- 
+doc ///
+    Key
+        adicTruncation
+        (adicTruncation, ZZ, ZZ, ZZ)
+        (adicTruncation, ZZ, ZZ, QQ)
+        (adicTruncation, ZZ, ZZ, List)
+    Headline
+        computes the e-th truncation of the non-terminating base p expansion of a rational number
+    Usage
+        adicTruncation(p, e, r)
+        adicTruncation(p, e, L)
+    Inputs
+        p:ZZ
+            a prime
+        e:ZZ
+        r:QQ
+            a rational number to compute the truncation of
+        L:List
+            a list of rational numbers to compute the truncation of
+    Outputs
+        :QQ
+            the trunction
+    Description
+        Text
+            This function computes the rational number equal to the $e$th truncation of a rational number.  If you pass it zero, it returns zero.            
+        Example
+            adicTruncation(5, 2, 1/100)
+            adicTruncation(5, 4, 1/100)
+            adicTruncation(5, 5, 1/1000)
+        Text
+            You can also pass it a list of numbers, in which case it returns the list of the truncations.
+        Example
+            adicTruncation(5, 5, {1/100, 1/1000})
+///

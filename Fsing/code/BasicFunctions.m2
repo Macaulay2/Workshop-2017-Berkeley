@@ -44,15 +44,33 @@ floorLog ( ZZ, ZZ ) := ZZ => ( b, x ) ->
 
 multOrder = method( TypicalValue => ZZ )
 
+--eulerphi := n -> value(apply(factor n, i-> (i#0-1)*((i#0)^(i#1-1))))
+--cyclicOrdPGroup := (pp, nn) -> ( return (factor(pp-1))*(new Power from {pp, (nn-1)}) );
+
 --Finds the multiplicative order of a modulo b.
 multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
     if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
-    n := 1;
-    x := 1;
-    while (x = (x*a) % b) != 1 do n = n+1;
-    n	      
+    maxOrder := lcm(apply(toList apply(factor b, i-> factor ((i#0-1)*((i#0)^(i#1-1)))), tt -> value tt));
+    primeFactorList := sort unique apply( subsets( flatten apply(toList factor maxOrder, myPower -> apply(myPower#1, tt->myPower#0))), tt -> product tt);
+--    potentialOrderList := sort unique flatten  apply(flatten apply(toList apply(toList factor b, tt -> cyclicOrdPGroup(tt#0, tt#1)), tt -> toList tt), myPower -> subsets apply(myPower#1, tt->myPower#0));
+    i := 0;
+    while (i < #primeFactorList) do (
+        if (powermod(a, primeFactorList#i, b) == 1) then return primeFactorList#i;
+        i = i + 1;
+    );
+    error "Something went wrong, multOrder failed to find the multiplicative order";
 )     
+
+--multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
+--(
+--    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
+--    n := 1;
+--    x := 1;
+--    while (x = (x*a) % b) != 1 do n = n+1;
+--    n	      
+--)     
+
 
 --===================================================================================
 
@@ -101,15 +119,14 @@ adicDigit = method( TypicalValue => ZZ )
 
 --Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
 adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
-(
-    if x < 0 or x > 1 then error "adicDigit: Expected x in [0,1]";     
-    if x == 0 then return 0;	
-    local y;
-    if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
-    if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;
-    if fracPart( p^(e-1)*x ) == 0 then y = p-1;
-    y	  
-)
+    ( 
+        if x < 0 or x > 1 then error "adicDigit: Expected last argument in [0,1]";
+        if x==0 then return 0;
+        (adicTruncation(p, e, x) - adicTruncation(p, e-1, x))*p^e
+    )
+
+adicDigit ( ZZ, ZZ, ZZ ) := ZZ => ( p, e, x ) ->
+        adicDigit(p,e,x/1)
 
 --Creates list containing e-th digits of non-terminating base p expansion of list of numbers.
 adicDigit ( ZZ, ZZ, List ) := ZZ => ( p, e, u ) -> apply( u, x -> adicDigit( p, e, x ) )
@@ -130,6 +147,10 @@ adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
 
+--Special case for adic expansion of integers
+adicExpansion( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
+    adicExpansion(p,e,x/1)
+
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
 adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) -> 
 (
@@ -143,19 +164,15 @@ adicTruncation = method( TypicalValue => QQ )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational number, unless that number is zero.
 
-adicTruncation ( ZZ, ZZ, ZZ ) := QQ => ( p, e, x ) -> 
-(    
-    if x < 0 then error "adicTruncation: Expected x nonnegative";
-    if x==0 then 0 else
-    ( ceiling( p^e*x ) - 1 )/p^e    	
-)
-
 adicTruncation ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
     if x < 0 then error "adicTruncation: Expected x nonnegative";
     if x==0 then 0 else
     ( ceiling( p^e*x ) - 1 )/p^e    	
 )
+
+adicTruncation( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
+    adicTruncation(p,e,x/1)
 
 --truncation threads over lists.
 adicTruncation ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
