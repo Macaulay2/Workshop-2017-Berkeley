@@ -43,9 +43,11 @@ export {
 
 
 needsPackage "Polyhedra";
+needsPackage "Depth";
+
 
 bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
     (R := ring I; d := dim R; c := codim I; M := R^1/I; 
 	if codim Ext^d(M,R) == d then d else 
 	(l := toList (c .. d);
@@ -126,41 +128,53 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
 	--intersecting the powers of its associated primes
     if isSquareFree I then 
     (assP := associatedPrimes(I); 
-    intersect apply(assP, i -> i^n))
+    intersect apply(assP, i -> fastPower(i,n)))
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
-
+    Pd:=primaryDecomposition I;
+    P:=apply(Pd, a-> radical a);
+    maxP:={};
+    apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+    Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+    intersect apply(Q,i -> fastPower(i,n))))
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
-	scan(primaryList,i->(if radical(i)==I then res=i; break));
-	res)
-    )
+	local result;
+	scan(primaryList, i -> if radical(i)==I then (result = i; break));
+	result))
+    
+symbPowerPrimary = method()
+symbPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+    then "Not a prime ideal" else (rad := radical(I);
+	local result;
+	primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==rad then result := i; break));
+	result))
     
 symbPowerSat = method(TypicalValue => Ideal)
-symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
+symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; 
+    m := ideal vars R; 
+    saturate(fastPower(I,n),m))
 
 --Takes a primary decomposition of I^n, picks the components corresponding to the 
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp := primaryDecomposition(I^n);
-    comp := select(decomp,a -> isSubset({radical(a)},assI));
-    intersect(comp))
+    decomp := primaryDecomposition fastPower(I,n);
+    intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
 symbolicPower = method(TypicalValue => Ideal)
 symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I)) then 
-    symbPowerSat(I,n) else (
+    if (codim I == dim R - 1 and isHomogeneous(I)) then (
+	if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
-	    if isPrime I then symbPowerPrime(I,n) else (
-	    print("here");
+	    if isPrime I then symbPowerPrime(I,n) else 
+	    if isPrimary I then symbPowerPrimary(I,n) else
 	    symbPowerSlow(I,n)
-	    )
 	    )))
 
 
@@ -264,7 +278,7 @@ squarefreeGens(Ideal) := List => I ->(
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
-    J := I^c;
+    J := fastPower(I,c);
     squarefreeGens(J))
 
 
@@ -274,7 +288,7 @@ isKonig(Ideal) := Boolean => I -> (
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
 	    c := codim I; 
-	    J := I^c;
+	    J := fastPower(I,c);
 	    not(squarefreeGens(J)=={})
 	    )
 	)
@@ -377,7 +391,6 @@ isGorenstein(Ring) := Boolean => R ->(
 
 isGorenstein(Ideal) := Boolean => I ->(
     local R;
-    
     R = ring I;
     return isGorenstein(R/I);
     )
@@ -436,7 +449,10 @@ else (
     )
 )
 
-
+waldschmidt MonomialIdeal := opts -> I -> (  
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
 
 
 
@@ -490,7 +506,6 @@ doc ///
 	       $\bullet$ @TO"Computing symbolic powers of an ideal"@
 	       
 	       $\bullet$ @TO"Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"@
-    	       
  
                {\bf Other examples which illustrate this package}
 
@@ -1216,6 +1231,47 @@ doc ///
         
      SeeAlso 
 	  Polyhedra
+///
+
+doc ///
+     Key 
+         waldschmidt
+	 (waldschmidt,Ideal)
+	 (waldschmidt,MonomialIdeal)
+     Headline 
+         Computes the Waldschmidt constant  for a homogeneous ideal. 
+     Usage 
+         waldschmidt(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :QQ 
+     Description	  
+       Text
+	   The Waldschmidt constant for a homogeneous ideal I is defined as $waldschmidt(I)=lim_{n\to\infty} \frac{\alpha(I^{(n)})}{n}$, 
+	   where $\alpha(J)$ denotes the smallest degree of a nonzero element in a given homogeneous ideal $J$. The limit of the sequence 
+	   $\frac{\alpha(I^{(n)})}{n}$ exists because of the subadditivity of $\alpha$ and is equal to the infimum of the sequence $\frac{\alpha(I^{(n)})}{n}$.
+	  
+       Text
+       	   The Waldschmidt constant can be computed for monomial ideals as the smallest value of the sum of the coordinates over all the points of 
+	   the symbolic polyhedron. The function uses this method to return an exact answer for the Waldschmidt constant of a monomial ideal.
+	   
+       Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   waldschmidt(I)
+	   
+       Example 
+	   R = QQ[x,y,z]
+	   J = (ideal(x,y))^2+ ideal(x*z+y*z)
+	   waldschmidt(J)
+        
+     SeeAlso 
+	  symbolicPolyhedron
 ///
 
 
