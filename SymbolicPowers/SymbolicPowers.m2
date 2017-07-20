@@ -143,6 +143,13 @@ symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I))
 	scan(primaryList,i->(if radical(i)==I then result := i; break));
 	result)
     
+symbolicPowerPrimary = method()
+symbolicPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+    then "Not a prime ideal" else (rad := radical(I);
+	primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==rad then result := i; break));
+	result)
+    
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
 
@@ -150,9 +157,8 @@ symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; sat
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp := primaryDecomposition(I^n);
-    comp := select(decomp,a -> isSubset({radical(a)},assI));
-    intersect(comp))
+    decomp = primaryDecomposition fastPower(I,n);
+    intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
 symbolicPower = method(TypicalValue => Ideal)
@@ -161,6 +167,7 @@ symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
     symbPowerSat(I,n) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
+	    if isPrimary I then symbPowerPrimary(I,n) else
 	    symbPowerSlow(I,n)
 	    )))
 
