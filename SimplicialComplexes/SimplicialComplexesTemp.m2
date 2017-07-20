@@ -25,7 +25,7 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere"}
+export {"poincareSphere"}
 
 
 poincareSphere = method()
@@ -126,19 +126,19 @@ poincareSphere(Ring) := (F) -> (
     fac := apply(L,l->product apply(l,v->(X)_v));
     simplicialComplex fac)
 
+--experts say that we only need | for joining simplicial complexes
 
-simplicialJoin = method()
-simplicialJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
+externalJoin = method()
+externalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
     R1 := ring S1;
     R2 := ring S2;
     if R1 === R2 then internalJoin(S1,S2) else
     (
-	vars1 := set apply(gens R1,x->toString x);
-	vars2 := set apply(gens R2,x->toString x);
-	if #(vars1 * vars2) > 0 then error"the underlying rings of the simplicial complexes share variables";
 	R := R1 ** R2;
-	i1 := map(R,R1);
-	i2 := map(R,R2);
+	n1 := numgens R1;
+	n2 := numgens R2;
+	i1 := map(R,R1,apply(n1,j -> R_j));
+	i2 := map(R,R2,apply(n2,j -> R_(n1+j)));
 	newS1 := simplicialComplex apply(flatten entries facets S1,f -> i1(f));
 	newS2 := simplicialComplex apply(flatten entries facets S2,f -> i2(f));
 	internalJoin(newS1,newS2)
@@ -154,6 +154,8 @@ internalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) ->
     ) 
 
 
+SimplicialComplex | SimplicialComplex := (S1,S2) -> externalJoin(S1,S2)
+
 end
 
 restart
@@ -165,18 +167,18 @@ needsPackage"SimplicialComplexes"
 
 r1 = QQ[a,b]
 s1 = simplicialComplex {a,b}
-r2 = QQ[a,c]
-s2 = simplicialComplex {a,c}
-simplicialJoin(s1,s2)
+r2 = QQ[d,c]
+s2 = simplicialComplex {d,c}
+s1 | s2
 
 ------bug?-----
 restart
 R1 = QQ[a]
 R2 = QQ[a]
-(set gens R1) * (set gens R2)
-
 R = R1 ** R2
 dim R
-i1 = map(R,R1)
-i2 = map(R,R2)
+n1 = numgens R1
+n2 = numgens R2
+i1 = map(R,R1,apply(n1,j -> R_j))
+i2 = map(R,R2,apply(n2,j -> R_(n1+j)))
 i1(R1_0) - i2(R2_0)
