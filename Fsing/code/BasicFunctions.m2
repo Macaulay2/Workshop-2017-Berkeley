@@ -16,8 +16,9 @@
 --*************************************************
 --===================================================================================
 
-denominator( ZZ ) := x -> 1;
-numerator( ZZ ) := x -> x;
+denominator( ZZ ) := x -> 1
+
+numerator( ZZ ) := x -> x
 
 --===================================================================================
 
@@ -27,9 +28,13 @@ fracPart = x -> x - floor(x)
 --===================================================================================
 
 --Computes floor(log_b x), correcting problems due to rounding.
-floorLog = ( b, x ) -> 
+floorLog = method( TypicalValue => ZZ )
+
+floorLog ( ZZ, ZZ ) := ZZ => ( b, x ) -> 
 (
-    if ( x < b ) then ( return 0 );
+    if b <= 1 then error "floorLog: expected the first argument to be greater than 1";
+    if x <= 0 then error "floorLog: expected the second argument to be positive";
+    if x < b then return 0;
     flog := floor( log_b x );
     while b^flog <= x do flog = flog + 1;
     flog - 1       
@@ -37,10 +42,10 @@ floorLog = ( b, x ) ->
 
 --===================================================================================
 
-multOrder = method()
+multOrder = method( TypicalValue => ZZ )
 
 --Finds the multiplicative order of a modulo b.
-multOrder( ZZ, ZZ ) := ( a, b ) ->
+multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
     if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
     n := 1;
@@ -92,12 +97,12 @@ divideFraction( ZZ, ZZ ) := List => o -> (p, t) -> divideFraction(p, t/1, o)
 
 --===================================================================================
 
-digit = method()
+digit = method( TypicalValue => ZZ )
 
---Gives the e-th digit of the non-terminating base p expansion of x in [0,1].
-digit ( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
+--Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
+digit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
 (
-    if x < 0 or x > 1 then error "digit: Expected x in [0,1]";     	
+    if x <= 0 or x > 1 then error "digit: Expected x in (0,1]";     	
     local y;
     if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
     if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;
@@ -106,43 +111,45 @@ digit ( ZZ, ZZ, QQ ) := ( p, e, x ) ->
 )
 
 --Creates list containing e-th digits of non-terminating base p expansion of list of numbers.
-digit ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> digit( p, e, x ) )
+digit ( ZZ, ZZ, List ) := ZZ => ( p, e, u ) -> apply( u, x -> digit( p, e, x ) )
 
 --===================================================================================
 
-adicExpansion = method(); 
+adicExpansion = method( TypicalValue => List ); 
 
 --Computes the terminating base p expansion of a positive integer.
 --Gives expansion in reverse... so from left to right it gives
 --the coefficient of 1, then of p, then of p^2, and so on
 
-adicExpansion( ZZ, ZZ ) := ( p, N ) ->
+adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
 (
-    if N < 0 then error "adicExpansion: Expected N to be positive";
-    if N < p then {N} else prepend( N % p, adicExpansion(p, N // p)) 
+    if p <= 0 then error "adicExpansion: Expected first argument to be positive";
+    if N <= 0 then error "adicExpansion: Expected second argument to be positive";
+    if N < p then { N } else prepend( N % p, adicExpansion( p, N // p ) ) 
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
 
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
-adicExpansion( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
+adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) -> 
 (
-    if x < 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
+    if x <= 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
     apply( e, i -> digit( p, i+1, x ) )
 )
 
 --===================================================================================
 
-truncatedBasePExp = method()
+truncatedBasePExp = method( TypicalValue => QQ )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational number.
-truncatedBasePExp ( ZZ, ZZ, QQ ) := ( p, e, x ) -> 
+truncatedBasePExp ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
-    if x < 0 then error "truncatedBasePExp: Expected x>0";
+    if x <= 0 then error "truncatedBasePExp: Expected x>0";
     ( ceiling( p^e*x ) - 1 )/p^e    	
 )
 
 --truncation threads over lists.
-truncatedBasePExp ( ZZ, ZZ, List ) := ( p, e, u ) -> apply( u, x -> truncatedBasePExp( p, e, x ) )
+truncatedBasePExp ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
+    apply( u, x -> truncatedBasePExp( p, e, x ) )
 
 --===================================================================================
 
