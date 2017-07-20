@@ -27,12 +27,14 @@ newPackage(
 
 export {"simplicialJoin","poincareSphere"}
 
+-- Jason's area to work in
 
-poincareSphere = method()
-poincareSphere(Ring) := (F) -> (
+poincareSphere = method(Options=>{Variable => "x"})
+poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
     assert(isField F);
-    X := symbol X;
-    R := F[X_1..X_16];
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_16];
     L := {{1,2,4,9},
 	{1,2,4,15},
 	{1,2,6,14},
@@ -123,9 +125,10 @@ poincareSphere(Ring) := (F) -> (
 	{11,13,14,16},
 	{12,13,14,15},
 	{13,14,15,16}};
-    fac := apply(L,l->product apply(l,v->(X)_v));
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
     simplicialComplex fac)
 
+-- end Jason's work area
 
 simplicialJoin = method()
 simplicialJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
@@ -180,3 +183,12 @@ dim R
 i1 = map(R,R1)
 i2 = map(R,R2)
 i1(R1_0) - i2(R2_0)
+
+-- Jason test area --
+
+restart
+F = ZZ/2
+loadPackage "SimplicialComplexesTemp"
+S = poincareSphere(ZZ/2,Variable => x)
+--
+
