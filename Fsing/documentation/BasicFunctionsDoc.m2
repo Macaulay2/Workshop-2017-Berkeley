@@ -32,9 +32,7 @@ doc ///
             5==1*2^0+0*2^1+1*2^2
             adicExpansion(2,5)
         Text
-            adicExpansion(p,e,0) returns a list with e elements, all of which are zero.  If x is nonzero, then adicExpansion(p,e,x) returns a list of size e in which the i-th element is the coefficient of p^(-i-1) in the unique nonterminat base p expansion of x.	    
-        Text 
-            For example, the non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ..., and so 
+            adicExpansion(p,e,0) returns a list with e elements, all of which are zero.  If x is nonzero, then adicExpansion(p,e,x) returns a list of size e in which the i-th element is the coefficient of p^(-i-1) in the unique nonterminating base p expansion of x.  For example, the non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ... and so 
         Example
             adicExpansion(2,4,1/2)
 ///
