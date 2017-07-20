@@ -25,41 +25,34 @@ export {
     "makeBetti",
     "isValidTable",
     "searchCone"
-    "maxBettiReg2",
+    "maxBetti",
     "maxBettiReg2Cyclic"
     }
 
-maxBettiReg2= method()
+maxBetti= method()
 ---the maximal betti table given a hilbert function and a ring
-
-maxBettiReg2(Ring,List) := (R,h) -> (
-       r:=dim R;
-       maxGradedBetti= (i,j)-> h_(j-i)*binomial(r,i);
-       maxBettiList:={};
-       for i from 0 to r do 
-           (for j from 0 to 2 do 
-	      maxBettiList= append(maxBettiList,{(i,j), maxGradedBetti(i,i+j)}));
-       maxBettiTable= new MutableHashTable from maxBettiList;
-       maxBettiTable
+maxBetti(ZZ,List) := (n,h) -> (
+       maxGradedBetti := (i,j)-> h_(j-i)*binomial(n,i);
+       maxBettiList := {};
+       L := flatten apply(n+1,p->(apply(#h,q->{(p,q), maxGradedBetti(p,p+q)})));
+       new HashTable from L
        )
      
 maxBettiReg2Cyclic= method()
 ---the maximal betti table of a cyclic zero dimensional module with a given hilbert function
-
-maxBettiReg2Cyclic(Ring,List) := (R,h) -> (
-    r:= dim R;
-    M=maxBettiReg2(R,h);
+maxBettiReg2Cyclic(ZZ,List) := (n,h) -> (
+    M := new MutableHashTable from maxBettiReg2(n,h);
     for j from 1 to 2 do 
          (M#(1,j-1)= M#(1,j-1)-M#(0,j);
 	  M#(0,j)=0);
     for j from 0 to 1 do
          (if (M#(1,j))==0 then 
-	     (for i from 2 to r do
+	     (for i from 2 to n do
 	         (M#(i-1,j+1)=M#(i-1,j+1)-M#(i,j);
 		  M#(i,j)=0)));
-    for i from 2 to r do
+    for i from 2 to n do
         (if (M#(i,1))==0 and M#(i,0)==0 then
-	    (for k from i+1 to r do
+	    (for k from i+1 to n do
 	        (M#(k-1,2)=M#(k-1,2)-M#(k,1);
 		 M#(k,1)=0)));
     new HashTable from M 
