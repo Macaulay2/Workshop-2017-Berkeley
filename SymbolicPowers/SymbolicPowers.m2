@@ -132,46 +132,50 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDec:=primaryDecomposition I;
-	P:=apply(primaryDec, a-> radical a);
-	maxP:={};
-	apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
-	Q:=for p in maxP list (intersect select(primaryDec, a-> isSubset(a,p)));)
-
+    Pd:=primaryDecomposition I;
+    P:=apply(Pd, a-> radical a);
+    maxP:={};
+    apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+    Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+    intersect Q))
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
-	scan(primaryList,i->(if radical(i)==I then result := i; break));
+	local result;
+	scan(primaryList, i -> if radical(i)==I then (result = i; break));
 	result))
     
-symbolicPowerPrimary = method()
-symbolicPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+symbPowerPrimary = method()
+symbPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
     then "Not a prime ideal" else (rad := radical(I);
+	local result;
 	primaryList := primaryDecomposition(fastPower(I,n)); 
 	scan(primaryList,i->(if radical(i)==rad then result := i; break));
-	result)
+	result))
     
 symbPowerSat = method(TypicalValue => Ideal)
-symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
+symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; 
+    m := ideal vars R; 
+    saturate(I^n,m))
 
 --Takes a primary decomposition of I^n, picks the components corresponding to the 
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp = primaryDecomposition fastPower(I,n);
+    decomp := primaryDecomposition fastPower(I,n);
     intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
 symbolicPower = method(TypicalValue => Ideal)
 symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
     if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	if depth R/I == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
+	if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
 	    if isPrimary I then symbPowerPrimary(I,n) else
 	    symbPowerSlow(I,n)
-	    ))))
+	    )))
 
 
 joinIdeals = method(TypicalValue => Ideal)
