@@ -3,7 +3,6 @@
 -----------(as of 2016-07-18 --------------------------
 -------------------------------------------------------
 -- frobeniusRoot
--- frobeniusRootRingElements
 -- minimalCompatible 
 -- Mstar 
 -------------------------------------------------------
@@ -44,7 +43,7 @@ doc ///
             ascendIdeal(1, h, ideal(y^3))
             ascendIdeal(1, h, ideal((sub(y, S))^3))          
         Text
-            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the h passed is a power, $h = h^a$.  If $a$ is large, we don't want to compute $h^a$, instead we try to keep the exponent small by only raising it to the minimal power via calling {\tt frobeniusRootRingElements}.
+            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the h passed is a power, $h = h^a$.  If $a$ is large, we don't want to compute $h^a$, instead we try to keep the exponent small by only raising it to the minimal power.
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;
@@ -98,6 +97,7 @@ doc ///
         (frobeniusRoot, ZZ, List, List)
         (frobeniusRoot, ZZ, ZZ, RingElement, Ideal)
         (frobeniusRoot, ZZ, ZZ, RingElement)
+        (frobeniusRoot, ZZ, ZZ, Ideal)
         (frobeniusRoot, ZZ, List, List, Ideal)
         (frobeniusRoot, ZZ, Matrix)
     Headline
@@ -118,7 +118,7 @@ doc ///
         idealList:List
             A list of ideals whose product you want to take the root of. 
         exponentList:List
-            A list of exponents to which you're raising the above ideals. E.g. to find the root of I^2*J^3, set idealList = {I, J} and exponentList = {2, 3}. 
+            A list of exponents which you're raising idealList to. E.g. to find the root of I^2*J^3, set idealList = {I, J} and exponentList = {2, 3}. 
         a:ZZ
             The exponent you're raising f to.
         f:RingElement
@@ -149,47 +149,9 @@ doc ///
         Text
             The above example computes the ideal (I1^4*I2^5*I3^6)^{[1/p]}	. For legacy reasons, you can specify the last ideal in your list using frobeniusRoot(e, exponentList, idealList, I). This last ideal is just raised to the first power. 
 
-            The implementation of this function is not optimal, especially if many of the ideals are principal. In that case, frobeniusRootRingElements should be faster. 
-
             Finally, you can also call frobeniusRoot(e, a, f). This computes the eth root of the principal ideal f^a. Calling frobeniusRoot(e, m, I) computes the eth root of the ideal I^m, and calling frobeniusRoot(e, a, f, I) computes the eth root of the product f^a*I. 
-    SeeAlso
-        frobeniusRootRingElements
 ///
 
-doc ///
-    Key
-        frobeniusRootRingElements
-    Headline
-        This is a version of frobeniusRoot that's optimized for lists of principal ideals. 
-    Usage
-        frobeniusRootRingElements(e, aList, elmList, I)
-        frobeniusRootRingElements(e, a, f, I)
-        frobeniusRootRingElements(e, a, f)
-    Inputs
-        f:RingElement
-        I:Ideal
-        a:ZZ
-        e:ZZ
-        aList:List
-        elmList:List
-    Outputs
-        :Ideal 
-    Description
-        Text
-            This is a version of frobeniusRoot that's optimized for lists of principal ideals. For instance,
-        Example 
-            kk = ZZ/5;
-            R = kk[x,y,z];
-            I1 = ideal(x^10, y^10, z^10);
-            f1 = x^100;
-            f2 = y^30 + z^50;
-            frobeniusRootRingElements(2, {2, 3}, {f1, f2}, I1)
-        Text
-            The above example computes the ideal (f1^2*f2^3*I)^{[1/25]}. One could compute the same ideal by calling
-        Example
-            frobeniusRoot(2, {2,3,1}, {f1, f2, I1})
-
-///
 
 doc ///
     Key
@@ -232,3 +194,54 @@ doc ///
         :Matrix
 ///
 
+doc ///
+    Key
+        [testIdeal, FrobeniusRootStrategy]
+        [isFregular, FrobeniusRootStrategy]
+        [HSLGModule, FrobeniusRootStrategy]
+        [isFpure, FrobeniusRootStrategy]
+        [isFinjective, FrobeniusRootStrategy]
+        [ascendIdeal, FrobeniusRootStrategy]
+        [testModule, FrobeniusRootStrategy]        
+    Headline
+        controls the strategy for computing the Frobenius root of an ideal within other call
+    Usage
+        testIdeal(..., FrobeniusRootStrategy=>S)
+        isFregular(..., FrobeniusRootStrategy=>S)
+        HSLGModule(..., FrobeniusRootStrategy=>S)        
+        isFpure(..., FrobeniusRootStrategy=>S)
+        isFinjective(..., FrobeniusRootStrategy=>S)        
+        ascendIdeal(..., FrobeniusRootStrategy=>S)
+        testModule(..., FrobeniusRootStrategy=>S)
+    Inputs
+        S: Symbol
+    Outputs
+        :Ideal
+    Description
+        Text
+            Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.
+///
+
+doc ///
+    Key
+        FrobeniusRootStrategy
+    Headline
+        an option for various functions
+    Description
+        Text
+            An option for various functions and in particular for frobeniusRoot.  The valid options are {\tt Substitution} and {\tt MonomialBasis}.
+///        
+
+doc ///
+    Key
+        Substitution
+    Headline
+        a valid value for the FrobeniusRootStrategy option
+///    
+
+doc ///
+    Key
+        MonomialBasis
+    Headline
+        a valid value for the FrobeniusRootStrategy option
+///    

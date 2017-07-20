@@ -130,31 +130,7 @@ doc ///
             As above, frequently passing a list will be faster (as opposed to finding a common denominator and passing a single element) since the testIdeal can do things in a more intelligent way for such a list.
 ///
 
-doc ///
-    Key
-        [testIdeal, FrobeniusRootStrategy]
-        [isFregular, FrobeniusRootStrategy]
-        [HSLGModule, FrobeniusRootStrategy]
-        [isFpure, FrobeniusRootStrategy]
-        [isFinjective, FrobeniusRootStrategy]
-        [ascendIdeal, FrobeniusRootStrategy]
-    Headline
-        controls the strategy for computing the Frobenius root of an ideal within other call
-    Usage
-        testIdeal(..., FrobeniusRootStrategy=>S)
-        isFregular(..., FrobeniusRootStrategy=>S)
-        HSLGModule(..., FrobeniusRootStrategy=>S)        
-        isFpure(..., FrobeniusRootStrategy=>S)
-        isFinjective(..., FrobeniusRootStrategy=>S)        
-        ascendIdeal(..., FrobeniusRootStrategy=>S)
-    Inputs
-        S: Symbol
-    Outputs
-        :Ideal
-    Description
-        Text
-            Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.
-///
+    
 
 doc ///
     Key
