@@ -31,19 +31,23 @@ frobeniusMethod =  method( TypicalValue => Ideal, Options => { FrobeniusRootStra
 
 frobeniusMethod ( ZZ, Ideal ) := Ideal => o -> ( e, I ) ->
 (
-    if e == 0 then return I;
-    if e < 0 then return frobeniusRoot( -e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
     R := ring I;
     p := char R;
+    if p == 0 then 
+        error "frobeniusMethod: expected an ideal in a ring of positive characteristic.";
+    if e == 0 then return I;
+    if e < 0 then return frobeniusRoot( -e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
     G := I_*;
     if #G == 0 then ideal( 0_R ) else ideal( apply( G, j -> fastExp( p^e, j ) ) )
 )
 
 frobeniusMethod ( ZZ, Matrix ) := Matrix => o -> ( e, M ) ->
 (
-    if e == 0 then return M;
-    if e < 0 then error "frobenius: first argment must be nonnegative.";
     p := char ring M;
+    if p == 0 then 
+        error "frobeniusMethod: expected an matrix with entries in a ring of positive characteristic.";
+    if e == 0 then return M;
+    if e < 0 then error "frobenius: first argument must be nonnegative.";
     matrix apply( entries M, u -> apply( u, j -> fastExp( p^e, j ) ) )
 )
 
