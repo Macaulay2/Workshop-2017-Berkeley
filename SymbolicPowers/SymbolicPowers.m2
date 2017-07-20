@@ -2,19 +2,47 @@ newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
 	Date => "May 14th, 2017",
-	Authors => {{Name => "Eloisa Grifo", 
-	Email => "eloisa.grifo@virginia.edu"}},
+	Authors => {
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu"},
+	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    },
 	Headline => "Calculations involving symbolic powers",
-	DebuggingMode => false
+	DebuggingMode => false,
+	PackageExports => {"Depth"}
         )
 
-export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "bigHeight",
-    "frobeniusPower", "symbPowerPrimePosChar", "doSymbolicAndOrdinaryPowersCoincide",
-    "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
-    "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
-    "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence"}
 
+export {
+    "symbolicPower", 
+    "isSymbPowerContainedinPower", 
+    "ContainmentProblem", 
+    "bigHeight",
+    "frobeniusPower", 
+    "symbPowerPrimePosChar", 
+    "doSymbolicAndOrdinaryPowersCoincide",
+    "symbolicPowerJoin", 
+    "joinIdeals", 
+    "ContainmentProblemGivenSymbolicPower",
+    "symbolicContainmentMonomialCurve", 
+    "squarefreeGens", 
+    "squarefreeInCodim",
+    "symbolicPowerMonomialCurve", 
+    "isKonig", 
+    "isPacked", 
+    "noPackedSub", 
+    "noPackedAllSubs",
+    "minDegreeSymbPower", 
+    "lowerBoundResurgence",
+    "exponentsMonomialGens", 
+    "symbolicDefect",
+    "isGorenstein",
+    "symbPoly", 
+    "waldschmidt", 
+    "SampleSize"
+    }
+
+
+needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
 bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
@@ -25,13 +53,12 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 	d-position(reverse(v-l),i->i==0))))
 
 
+
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (J := I;
 (for i from 2 to n do J = J*I);
 J)
-
-
 
 doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
 doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
@@ -185,6 +212,7 @@ symbolicPowerMonomialCurve(Ring,List,ZZ) := Ideal => (k,L,m) -> (
 --Given a monomial ideal, finds a minimal generating set, 
 --and then returns the exponents of the monomials in that set
 --Given a monomial, returns the exponents
+{*
 exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(RingElement) := List => r -> (
     R := ring r;
@@ -194,7 +222,16 @@ exponentsMonomialGens(RingElement) := List => r -> (
     S := k[toSequence flatten entries vars R,Degrees=>deg];
     f := map(S,R,flatten entries vars S);
     degree(f(r)))
+*}
+
+exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(Ideal) := List => I -> (
+    local L; 
+    L = flatten entries mingens I;
+    apply(L, l -> flatten exponents l)    
+    )
+
+{*        
     R := ring I;
     k := coefficientRing R;
     d := dim R;
@@ -203,12 +240,14 @@ exponentsMonomialGens(Ideal) := List => I -> (
     f := map(S,R,flatten entries vars S);
     m := flatten entries(mingens f(I));
     delete({},apply(m,degree)))
+*}
 
+{* Not using this.
 squarefreeGensList = method()
 squarefreeGensList(Ideal) := List => I ->(
     w := exponentsMonomialGens(I);
     select(w,i -> all(i,o -> o<2)))
-
+*}
 
 squarefreeGens = method()
 squarefreeGens(Ideal) := List => I ->(
@@ -219,7 +258,6 @@ squarefreeGens(Ideal) := List => I ->(
     apply(v,o->product(apply(toList pairs(o),(i,j)->(l_i)^j))))
 
 
-
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
@@ -228,11 +266,16 @@ squarefreeInCodim(Ideal) := List => I -> (c := codim I;
 
 
 isKonig = method(TypicalValue => Boolean)
-isKonig(Ideal) := Boolean => I -> (R := ring I;
+isKonig(Ideal) := Boolean => I -> (
+    R := ring I;
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
-	    c := codim I; J := I^c;
-	    not(squarefreeGens(J)=={}))))
+	    c := codim I; 
+	    J := I^c;
+	    not(squarefreeGens(J)=={})
+	    )
+	)
+    )
 
 
 
@@ -285,11 +328,111 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
-
 isMonomial = method()
 isMonomial(RingElement) := r -> (terms(r) == {r})
 isMonomial(MonomialIdeal) := I -> true
 isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
+
+---------------------------------
+---Symbolic Defect
+---------------------------------
+symbolicDefect = method(TypicalValue => ZZ)
+symbolicDefect(Ideal,ZZ) := (I,n) -> (
+    R := ring I;
+    
+    Y := fastPower(I,n);
+     
+     S := R/Y;
+      
+      F := map(S,R);
+      
+      X := symbolicPower(I,n);
+      
+      # flatten entries mingens F(X)
+      )
+
+-- To be placed in Depth.m2
+isGorenstein = method()
+isGorenstein(Ring) := Boolean => R ->(
+    local C; local l;
+    
+    if isCM R == false then return false;
+    
+    C = res R.ideal;
+    l = (C.Resolution).length;
+    
+    if rank(C_(l-2)) == 1 then return true else return false;    
+    )
+
+isGorenstein(Ideal) := Boolean => I ->(
+    local R;
+    
+    R = ring I;
+    return isGorenstein(R/I);
+    )
+
+///
+restart
+needsPackage"Depth"
+loadPackage"SymbolicPowers"
+R = ZZ/101[x,y]/ideal"xy,y2"
+isGorenstein R
+///
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Functions for asymptotic invariants
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+-- Computes the symbolic polyhedron for a monomial ideal
+-- Input: an ideal or a  monomial ideal 
+-- Output: a Polyhedron
+
+symbPoly = method();
+
+symbPoly Ideal := Polyhedron => I -> (
+if not isMonomial(I) then ( 
+    print "Error -- symbPoly cannot be applied for an ideal that is not monomial"; 
+    return
+    );   
+return symbPoly monomialIdeal I
+)
+
+
+symbPoly MonomialIdeal := Polyhedron => I -> ( 
+Pd:=primaryDecomposition I;
+P:=apply(Pd, a-> radical a);
+maxP:={};
+apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+PI:=apply(Q, a-> newtonPolytope sum flatten entries gens a);
+C := posHull id_(ZZ^(dim ring I));
+QI :=apply(PI, p-> p+C);
+N :=intersection QI;
+return N
+)
+
+alpha = I -> min apply(flatten entries gens I, f-> (degree f)_0) 
+
+-- Computes the Waldschmidt constant for a given ideal
+waldschmidt = method(Options=>{SampleSize=>10});
+waldschmidt Ideal := opts -> I -> (
+if isMonomial I then ( 
+    print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
+    N:=symbPoly I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
+else (
+    print ("Ideal is not monomial, the  Waldschmidt constant is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list alpha(symbolicPower(I,i))/i
+    )
+)
+
+
+
+
 
 -----------------------------------------------------------
 -----------------------------------------------------------
@@ -1049,3 +1192,8 @@ TEST ///
 ///
 
 end
+
+
+viewHelp primaryDecomposition
+viewHelp isSquareFree
+
