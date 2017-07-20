@@ -37,20 +37,30 @@ isSmooth Ideal := (I) -> (
     dim(I + minors(c, jacobian I)) == 0
     )
 AbstractSurface = new Type of HashTable
-DivisorClass = new Type of HashTable
+-- IntersectionMatrix
+-- Hyperplane
+-- CanonicalClass
+-- Chi
+AbstractDivisor = new Type of HashTable
+-- AbstractSurface
+-- DivisorClass
 RealizedSurface = new Type of HashTable
-  -- fields:
-  --  AbstractSurface
-  --  Ideal
-  --  ExtraData: generally a Sequence whose meaning changes depending on the surface.
-ideal RealizedSurface := (X) -> X.Ideal
+-- AbstractSurface
+-- Ideal
+-- ExtraData (e.g. For cubic: (Phi:P^2-->P^3))
+RealizedDivisor = new Type of HashTable
+-- AbstractDivisor
+-- RealizedSurface
+-- Ideal
+
+ideal RealizedSurface := X -> X.Ideal
+ideal RealizedDivisor := C -> C.Ideal
 
 abstractSurface = method()
-abstractSurface RealizedSurface := (X) -> X.AbstractSurface
-abstractSurface DivisorClass := (D) -> D.AbstractSurface
+abstractSurface RealizedSurface := X -> X.AbstractSurface
+abstractSurface AbstractDivisor := D -> D.AbstractSurface
 abstractSurface(Matrix, List, List, ZZ) := (M, hyperplane, canonical, surfaceChi) -> (
-    -- M is a square matrix over the integers, which is the
-    -- intersection pairing of Num(X), for some surface X.
+    -- M is integer matrix of intersection pairing of Num(X)
     rho := numRows M;
     if rho != numColumns M then error "expected square matrix";
     -- TODO: add hodge index.
@@ -86,53 +96,49 @@ linesOnCubic = () -> (
         )
     )
 
-divisorClass = method()
-divisorClass(List, AbstractSurface) := (C, X) -> (
-    new DivisorClass from {
-        symbol Class => C,
+abstractDivisor = method()
+abstractDivisor(List, AbstractSurface) := (C, X) -> (
+    new AbstractDivisor from {
+        symbol DivisorClass => C,
         symbol AbstractSurface => X
         }
     )
-net DivisorClass := (D) -> net D.Class
+net AbstractDivisor := D -> net D.DivisorClass
 
-ZZ * DivisorClass := (n,D) -> (
-    divisorClass(n * D.Class, D.AbstractSurface)
+ZZ * AbstractDivisor := (n,D) -> (
+    AbstractDivisor(n * D.DivisorClass, D.AbstractSurface)
     )
-DivisorClass + DivisorClass := (C,D) -> (
+AbstractDivisor + AbstractDivisor := (C,D) -> (
     assert(C.AbstractSurface === D.AbstractSurface);
-    divisorClass(C.Class + D.Class, D.AbstractSurface)
+    AbstractDivisor(C.DivisorClass + D.DivisorClass, D.AbstractSurface)
     )
-DivisorClass - DivisorClass := (C,D) -> (
+AbstractDivisor - AbstractDivisor := (C,D) -> (
     assert(C.AbstractSurface === D.AbstractSurface);
-    divisorClass(C.Class - D.Class, D.AbstractSurface)
+    AbstractDivisor(C.DivisorClass - D.DivisorClass, D.AbstractSurface)
     )
 
-DivisorClass * DivisorClass := (C,D) -> (
+AbstractDivisor * AbstractDivisor := (C,D) -> (
     X := C.AbstractSurface;
     assert(X === D.AbstractSurface);
-    (matrix{C.Class} * X.IntersectionPairing * transpose matrix{D.Class})_(0,0)
+    (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{D.DivisorClass})_(0,0)
     )
 
-degree(DivisorClass) := C -> (
+degree AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    (matrix{C.Class} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0)
+    (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0)
     )
-genus(DivisorClass) := C -> (
+genus DivisorClass := C -> (
     X := C.AbstractSurface;
-    K := divisorClass(X.CanonicalClass,X);
+    K := AbstractDivisor(X.CanonicalClass,X);
     1/2*((K+C)*C)+1
     )
 chi DivisorClass := C -> (
     X := C.AbstractSurface;
-    K := divisorClass(X.CanonicalClass,X);
+    K := AbstractDivisor(X.CanonicalClass,X);
     1/2 * (C * (C-K)) + X.Chi
     )
 
-existsCurveOnCubic = method()
-existsCurveOnCubic DivisorClass := Boolean => (C) -> (
-    -- todo
-    )
-
+-- Checks whether a divisor class on the abstract cubic is irreducible
 irreducibleOnCubic = method()
 irreducibleOnCubic DivisorClass := Boolean => (C) -> (
     X := C.AbstractSurface;
@@ -149,17 +155,8 @@ irreducibleOnCubic DivisorClass := Boolean => (C) -> (
      )
     )
 
-existsCurveOnQuadric = method()
-existsCurveOnQuadric DivisorClass := Boolean => (C) -> (
-    -- todo
-    )
 
-smoothCurveOnSurface = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
-smoothCurveOnSurface DivisorClass := opts -> (C) -> (
-    -- create a curve, if possible
-    )
-
-realizeSurface = method(Options => options smoothCurveOnSurface)
+realizeSurface = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
 realizeSurface AbstractSurface := opts -> X -> (
     -- Note: this is in P^3
     R := if opts#Ring =!= null then 
@@ -199,8 +196,8 @@ realizeSurface AbstractSurface := opts -> X -> (
     error "don't know how to realize your pathetic surface";
     )
 
-realize = method()
-realize (DivisorClass, RealizedSurface) := (C, X) -> (
+realizeDivisor = method()
+realizeDivisor (AbstractDivisor,RealizedSurface) := (C, X) -> (
     if abstractSurface C =!= abstractSurface X then error "expected divisor class on the given surface";
     if abstractSurface X === abstractCubic then (
         -- check irreducibility from numerical criterion
@@ -222,6 +219,10 @@ realize (DivisorClass, RealizedSurface) := (C, X) -> (
         -- 
         );
     error "not implemented yet for your type of surface"
+    )
+realizeDivisor AbstractDivisor := C -> (
+    X := realizeSurface C.AbstractSurface;
+    realizeDivisor(C,X)
     )
 realize (ZZ,ZZ,RealizedSurface) := (a,d,X) -> (
     dList := effectiveDivisorsOnCubic(a,d);
