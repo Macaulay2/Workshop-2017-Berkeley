@@ -324,7 +324,7 @@ isFregular(List, List) := o->(ttList, ffList) -> (
 isFpure = method(Options => {FrobeniusRootStrategy => Substitution, IsLocal=>false});
 
 isFpure(Ring) := o->R1->(
-    isFpure(ideal R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, IsLocal=>o.IsLocal);
+    isFpure(ideal R1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, IsLocal=>o.IsLocal)
 );
 
 isFpure(Ideal) := o->I1->(
@@ -345,11 +345,11 @@ isFpure(Ideal) := o->I1->(
         	if(cond==false) then answer=true else answer=false;
 	    );    
     )
-    else (
+    else (    
         nonFPureLocus := frobeniusRoot(1, frobenius(I1) : I1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy );
-        if (nonFPureLocus == ideal(sub(1, ideal(I1)))) then answer = true else answer = false;
+        if (nonFPureLocus == ideal(sub(1, ring(I1)))) then answer = true else answer = false;
     );
-    answer
+    return answer
 );
 
 
