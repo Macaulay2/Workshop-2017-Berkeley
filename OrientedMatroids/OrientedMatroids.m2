@@ -5,7 +5,7 @@ newPackage("OrientedMatroids",
 	Headline => "Oriented Matroids",
 	Version => "0.1",
 	Date => "July, 2017",
-	Authors => {{Name => Sonja Mapes}, {Name => "Josephine Yu"}},
+	Authors => {{Name => "Sonja Mapes"}, {Name => "Josephine Yu"}},
 	DebuggingMode => true
 )
 export {
@@ -90,7 +90,7 @@ sign = x ->
 ------------------------------------------
 
 -- input: 
-basesFromMatrix = A -> (
+chirotopeFromMatrix = A -> (
     	E := entries transpose A/(v -> transpose matrix{v});
         r := rank A;  -- maybe want to optimize this step more later
         cols := numColumns A;
@@ -122,10 +122,10 @@ circuitsFromMatrix = A -> (
 -- input: B is a hash table whose keys are r-element subsets of {0,1,..,n}, whose values are +/-/0
 -- r = rank
 -- n = size of ground set
-circuitsFromBases = (H, n, r) -> (
-    C = apply(subsets(n,r+1),  S -> 
+circuitsFromChirotope = (H, n, r) -> (
+    C := apply(subsets(n,r+1),  S -> 
 	    apply(n, i -> (
-		    pos = position(S, s -> s == i);
+		    pos := position(S, s -> s == i);
 		    if pos =!= null then
 		    	(-1)^pos * H#(drop(S,{pos,pos}))   
 		    else 0 
@@ -135,16 +135,27 @@ circuitsFromBases = (H, n, r) -> (
     sort unique(C | apply(C, c -> -1 * c))
     )
 
+------------------------------------------
+
+-- product of signed (co)vectors (non-commutative!)
+prod = (v1, v2) -> (
+    if #v1 =!= #v2 then error "The lists must have the same length"
+    else apply(#v1, i -> if v1_i =!= 0 then v1_i else v2_i)
+    )
 
 end
 ------------------------------------------
 restart
 
+loadPackage "OrientedMatroids"
 A = matrix{{0,-1,1,1,2},{1,1,0,1,-1},{0,-1,0,-2,2},{1,0,0,-1,1}}
 B = transpose gens kernel A
+net matrix circuitsFromMatrix A
 net matrix circuitsFromMatrix B
+
 C = matrix{{0,0,0,0,1},{0,0,0,1,1},{1,2,3,4,5}}
 matrix circuitsFromMatrix C
 n = numColumns A; r = rank A;
-H = basesFromMatrix A
-circuitsFromBases (H, n, r)
+H = chirotopeFromMatrix A
+C = circuitsFromChirotope (H, n, r)
+prod (C_0, C_1)
