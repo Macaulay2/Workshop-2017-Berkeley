@@ -1948,6 +1948,10 @@ assert(splineMatrix(V,F,0,BaseRing=>S)==matrix {{1, 0, 0, 0, -1, y, 0, 0, 0, 0},
 assert(splineMatrix(V,F,0,Homogenize=>false,BaseRing=>R)==matrix {{1, 0, 0, 0, -1, v, 0, 0, 0, 0}, {1, -1, 0, 0, 0, 0, u-v, 0, 0,
       0}, {0, 1, -1, 0, 0, 0, 0, u+v, 0, 0}, {0, 0, 1, -1, 0, 0, 0, 0, u-2*v,
       0}, {0, 0, 0, 1, -1, 0, 0, 0, 0, u}})
+assert(splineModule(V,F,1,BaseRing=>S)==image matrix {{1, 6*y^2, -4*y^2, 4*x*y^2, -4*y^3}, {1, 3*x^2-6*x*y+9*y^2,
+      -x^2+2*x*y-5*y^2, x^2*y+2*x*y^2+y^3, x^3-3*x*y^2-2*y^3}, {1,
+      2*x^2-8*x*y+8*y^2, 4*x*y-4*y^2, 0, 0}, {1, 0, x^2, 0, 0}, {1, 0, 0, 0,
+      0}})
 ///
 
 TEST ///
@@ -1990,6 +1994,56 @@ assert(splineMatrix(V,F,E,0,Homogenize=>false) == matrix {{1, -1, 0, 0, 0, 0, 0,
       t_2}})
 ///
 
+TEST ///
+V={{0,0,0},{1,1,1},{-1,1,1},{-1,1,-1},{1,1,-1},{1,-1,1},{-1,-1,1},{-1,-1,-1},{1,-1,-1}};
+F={{0,1,2,3,4},{0,1,4,5,8},{0,5,6,7,8},{0,2,3,6,7},{0,1,2,5,6}};
+C=cellularComplex(V,F);
+sC=splineComplex(V,F,0);
+iC=idealsComplex(V,F,0);
+assert((prune HH_0 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_1 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_2 C)==prune image matrix{{0_(C.ring)}})
+assert((prune HH_3 C)==prune image matrix{{1_(C.ring)}})
+assert((prune HH_0 sC)==prune image matrix{{0_(sC.ring)}})
+assert((prune HH_1 sC)==prune image matrix{{0_(sC.ring)}})
+assert((prune HH_2 sC)==coker map((sC.ring)^{1:-1},(sC.ring)^2,sub(matrix{{t_1,t_0}},(sC.ring))))
+assert((prune HH_3 sC)==(sC.ring)^{1:0,1:-1,2:-2,1:-3})
+assert((prune HH_0 iC)==prune image matrix{{0_(iC.ring)}})
+assert((prune HH_1 iC)==coker map((iC.ring)^{1:-1},(iC.ring)^2,sub(matrix{{t_1,t_0}},(iC.ring))))
+assert((prune HH_2 iC)==(iC.ring)^{1:-1,2:-2,1:-3})
+assert((prune HH_3 iC)==prune image matrix{{0_(iC.ring)}})
+///
+
+TEST ///
+V = {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{0,-10}};
+V'= {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{1,-10}};
+F = {{0,1,2},{2,3,4},{0,4,5},{1,3,5},{1,2,3},{0,2,4},{0,1,5}};
+S1 = splineModule(V,F,1);
+S1' = splineModule(V',F,1);
+assert(splineDimensionTable(0,5,S1)==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,7,16,33,57}})
+assert(splineDimensionTable(0,5,S1')==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,6,16,33,57}})
+assert(hilbertComparisonTable(0,5,S1')==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,6,16,33,57},{"HilbertPoly",7,3,6,16,33,57}})
+assert(hilbertComparisonTable(0,5,S1)==netList{{Degree,0,1,2,3,4,5},{"Dimension",1,3,7,16,33,57},{"HilbertPoly",7,3,6,16,33,57}})
+assert(postulationNumber(S1)==2)
+assert(postulationNumber(S1')==0)
+///
+
+TEST ///
+V = {{0,0},{1,0},{1,1},{0,1}};
+E = {{0,1},{0,2},{0,3},{1,2},{2,3}};
+S=QQ[x,y];
+assert(formsList(V,E,0)=={t_1, t_0-t_1, t_0, t_0-t_2, t_1-t_2})
+assert(formsList(V,E,0,BaseRing=>S,Homogenize=>false)=={y, x-y, x, x-1, y-1})
+///
+
+TEST ///
+S = QQ[x,y];
+E = {{0,1},{1,2},{2,3},{3,4},{0,4}};
+L = {ideal(y^2),ideal((x-y)^2),ideal((x+y)^2),ideal((x-2*y)^2),ideal(x^2)}
+assert(generalizedSplines(E,L)==image matrix {{1, 2*x^2, -3*x^2, x^2*y, x^3}, {1, 2*x^2+2*y^2, -3*x^2,
+      x^2*y-2*x*y^2+y^3, x^3-3*x*y^2+2*y^3}, {1, x^2+2*x*y+y^2, -6*x*y+3*y^2,
+      0, 0}, {1, 0, x^2-4*x*y+4*y^2, 0, 0}, {1, 0, 0, 0, 0}})
+///
 
 end
 
