@@ -1287,7 +1287,26 @@ doc ///
 	  symbolicPolyhedron
 ///
 
-
+doc ///
+   Key
+         symbolicDefect
+        (symbolicDefect, Ideal, ZZ)
+   Headline
+         Given an ideal I and integer m, returns the size of a minimal generating set for the m-th symbolic power of I modulo I^m.
+   Usage
+         symbolicDefect(I,m)
+   Inputs
+         I:Ideal
+         m:ZZ
+   Outputs
+          :ZZ
+             the size of a minimal generating set of the m-th symbolic power of I modulo I^m.
+   Description
+       Example
+         R = QQ[x,y,z]    
+         I = ideal(x*y,x*z,y*z);					      
+	 symbolicDefect(I,2)
+ ///
 
 
 TEST ///
@@ -1296,10 +1315,136 @@ TEST ///
    assert(isSymbPowerContainedinPower(I,2,2) == true)
 ///
 
-end
+--bigHeight
+TEST ///
+R=ZZ/2[x,y,z]
+I=ideal(x,y)
+assert(bigHeight(I)==2)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y^3,z^2)
+assert(bigHeight I==3)
+///
 
 
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(bigHeight(I)==2)
+///
 
+
+--symbolicPower
+TEST ///
+R=QQ[x,y,z]
+I=ideal(y-z,x+z)
+assert(symbolicPower(I,2)==ideal(y^2-2*y*z+z^2,x*y-x*z+y*z-z^2,x^2+2*x*z+z^2))
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x)
+assert(symbolicPower(I,2)==ideal(x^2))
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x+1)
+assert(symbolicPower(I,2)==ideal(x^2+2*x+1))
+///
+
+TEST ///
+R=QQ[w,x,y,z]
+I=ideal(x*y+1,w*y*z)
+assert(symbolicPower(I,3)==ideal(w^3*z^3,w^2*x*y*z^2+w^2*z^2,w*x^2*y^2*z+2*w*x*y*z+w*z,x^3*y^3+3*x^2*y^2+3*x*y+1))
+
+///
+
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y+x*z)
+assert(symbolicPower(I,2)==ideal(y^2+2*y*z+z^2))
+///
+
+--isSymbPowerContainedinPower
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,2,3)==false)
+///
+
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,2,2)==true))
+///
+
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,3,2)==true)
+///
+
+--ContainmentProblem
+
+TEST ///
+R=QQ[x,y,z];
+
+I=ideal(x*y,x*z,y*z);
+
+assert(ContainmentProblem(I,2)==3)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(ContainmentProblem(I,2)==4)
+///
+
+--frobeniusPower
+TEST ///
+R=ZZ/3[x,y]
+I=ideal(x*y^2+1,x^2)
+assert(frobeniusPower(I,9)=x^9*y^(19)+1,x^(18))
+///
+
+--symbPowerPrimePosChar
+TEST ///
+R=QQ[x]
+I=ideal(x)
+assert(symbPowerPrimePosChar(I,3)=="The characteristic must be positive")
+///
+
+TEST ///
+R=ZZ/2[x,y]
+I=ideal(x*y)
+assert(symbPowerPrimePosChar(I,2)=="Not a prime ideal")
+///
+
+TEST ///
+R=ZZ/5[x,y,z]
+I=ideal(x+1,x+y+z)
+assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
+
+///
+
+--lowerBoundResurgence
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(lowerBoundResurgence(I,5)==6/5)
+///
+
+end 
 
 -- branden
 restart
@@ -1339,5 +1484,3 @@ bigHeight(I)
 	r l)
 
 ?minors
-
-
