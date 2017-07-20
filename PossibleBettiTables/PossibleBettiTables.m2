@@ -26,7 +26,7 @@ export {
     "isValidTable",
     "searchCone"
     "maxBetti",
-    "maxBettiReg2Cyclic"
+    "maxBettiCyclic"
     }
 
 maxBetti= method()
@@ -38,25 +38,35 @@ maxBetti(ZZ,List) := (n,h) -> (
        new HashTable from L
        )
      
-maxBettiReg2Cyclic= method()
+maxBettiCyclic= method()
 ---the maximal betti table of a cyclic zero dimensional module with a given hilbert function
-maxBettiReg2Cyclic(ZZ,List) := (n,h) -> (
-    M := new MutableHashTable from maxBettiReg2(n,h);
-    for j from 1 to 2 do 
+maxBettiCyclic(ZZ,List) := (n,h) -> (
+    M := new MutableHashTable from maxBetti(n,h);
+-- zeroing out first column under (0,0)
+    for j from 1 to #h-1 do 
          (M#(1,j-1)= M#(1,j-1)-M#(0,j);
 	  M#(0,j)=0);
-    for j from 0 to 1 do
-         (if (M#(1,j))==0 then 
-	     (for i from 2 to n do
-	         (M#(i-1,j+1)=M#(i-1,j+1)-M#(i,j);
-		  M#(i,j)=0)));
-    for i from 2 to n do
-        (if (M#(i,1))==0 and M#(i,0)==0 then
-	    (for k from i+1 to n do
-	        (M#(k-1,2)=M#(k-1,2)-M#(k,1);
-		 M#(k,1)=0)));
+-- check for zeros
+    for j from 0 to #h-2 do (
+	for i from 1 to n do (
+	    if M#(i-1,j) == 0 then (
+		t = true;
+		for k from 0 to j-1 do (
+		    t = t and (M#(i-1,k) == 0);
+		    );
+		if t then (
+		    for k from i to n do (
+			M#(k-1,j+1) = M#(k-1,j+1)-M#(k,j);
+			M#(k,j) = 0
+			);
+		    );
+		);
+	    );
+	);
+	    
     new HashTable from M 
     )	
+
 
 makeBetti = H ->(
     new BettiTally from apply(keys H, h-> (h_0,{h_0+h_1},h_0+h_1)=> H#h)
