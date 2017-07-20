@@ -28,14 +28,13 @@ time J = divideFraction(2, 5/24);
 assert(J == {5, 3, 2} )
 ///
 
-
 -- divideFraction test#4 - (negative)
 TEST ///
 time J = divideFraction(7, -19/49);
 assert(J == { -19, 2, 0} )
 ///
 
--- adicDigit test#1
+-- adicDigit tests
 
 TEST ///
 time J = adicDigit(7, 2, 0);
@@ -52,68 +51,58 @@ time J = adicDigit(3, 2, 3/4);
 assert(J == 0)
 ///
 
--- digit test#2
 TEST ///
 time J = adicDigit(3, 1, 3/4);
 assert(J == 2)
 ///
 
--- digit test#3
 TEST ///
 time J = adicDigit(5, 3, 1/13);
 assert(J == 4)
 ///
 
--- digit test#4
 TEST ///
 L = {3/4, 1/13};
 time J = adicDigit(5, 3, L);
 assert(J == {3,4})
 ///
 
--- basePExp test#1 
+-- adicExpansion tests 
 TEST ///
-time J = basePExp(2, 22);
+time J = adicExpansion(2, 22);
 assert(J == {0, 1, 1, 0, 1})
 ///
 
--- basePExp test#2 
 TEST ///
-time J = basePExp(5, 399);
+time J = adicExpansion(5, 399);
 assert(J == {4, 4, 0, 3})
 ///
 
--- basePExp test#3 
 TEST ///
-time J = basePExp(2, 4, 1/5);
+time J = adicExpansion(2, 4, 1/5);
 assert(J == {0, 0, 1, 1})
 ///
 
--- basePExp test#4 
 TEST ///
-time J = basePExp(7, 7, 1/19);
+time J = adicExpansion(7, 7, 1/19);
 assert(J == {0, 2, 4, 0, 2, 4,0})
 ///
 
--- truncatedBasePExp test#1
+-- adicTruncation
 TEST ///
-time J = truncatedBasePExp(7, 4, 1/19);
+time J = adicTruncation(7, 4, 1/19);
 assert(J == 18/343)
 ///
 
--- truncatedBasePExp test#2
 TEST ///
-time J = truncatedBasePExp(7, 4, 1/29);
+time J = adicTruncation(7, 4, 1/29);
 assert(J == 82/2401)
 ///
 
--- truncatedBasePExp test#3
 TEST ///
-time J = truncatedBasePExp(7, 4, {1/19, 1/29});
+time J = adicTruncation(7, 4, {1/19, 1/29});
 assert(J == {18/343, 82/2401)
 ///
-
--- baseP1 - NEEED
 
 -- carryTest - test#1
 TEST ///
