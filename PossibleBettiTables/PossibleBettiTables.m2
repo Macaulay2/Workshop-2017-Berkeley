@@ -146,8 +146,8 @@ possibleCancelations (HashTable) := H ->(
     pd := (max(keys H))#0;
     reg := (max(keys H))#1;
     
-    M = entries fromHashToDiagMatrix(H);
-    Z = apply(M, i->apply(i,j->0));
+    M := entries fromHashToDiagMatrix(H);
+    Z := apply(M, i->apply(i,j->0));
     
     X := matrix apply(min(pd,reg)+1,i->{(-1)^i});
     C := (matrix M)*X;
