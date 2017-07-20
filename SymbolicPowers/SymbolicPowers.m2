@@ -2,10 +2,13 @@ newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
 	Date => "May 14th, 2017",
-	Authors => {{Name => "Eloisa Grifo", 
-	Email => "eloisa.grifo@virginia.edu"}},
+	Authors => {
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu"},
+	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    },
 	Headline => "Calculations involving symbolic powers",
-	DebuggingMode => false
+	DebuggingMode => false,
+	PackageExports => {"Depth"}
         )
 
 
@@ -32,7 +35,10 @@ export {
     "lowerBoundResurgence",
     "exponentsMonomialGens", 
     "symbolicDefect",
-    "symbPoly", "waldschmidt", "SampleSize"
+    "isGorenstein",
+    "symbPoly", 
+    "waldschmidt", 
+    "SampleSize"
     }
 
 
@@ -345,8 +351,33 @@ symbolicDefect(Ideal,ZZ) := (I,n) -> (
       # flatten entries mingens F(X)
       )
 
+-- To be placed in Depth.m2
+isGorenstein = method()
+isGorenstein(Ring) := Boolean => R ->(
+    local C; local l;
+    
+    if isCM R == false then return false;
+    
+    C = res R.ideal;
+    l = (C.Resolution).length;
+    
+    if rank(C_(l-2)) == 1 then return true else return false;    
+    )
 
+isGorenstein(Ideal) := Boolean => I ->(
+    local R;
+    
+    R = ring I;
+    return isGorenstein(R/I);
+    )
 
+///
+restart
+needsPackage"Depth"
+loadPackage"SymbolicPowers"
+R = ZZ/101[x,y]/ideal"xy,y2"
+isGorenstein R
+///
 
 
 -----------------------------------------------------------
