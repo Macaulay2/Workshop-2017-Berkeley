@@ -45,6 +45,24 @@ headTerm = (f,gamma) -> (
     return {leadTerm(f),color(f,gamma)}
 );
 
+determineCover = (f,gamma) -> (
+    g := headTerm(f,gamma_0);
+    refinedGamma := {};
+    tempList := {};
+    for j from 0 to #gamma-1 do(
+	g = headTerm(f,gamm_j);
+        if g_1 == "white" then (
+    	    tempList = gamma_j;
+	    tempList_1 = append(tempList_1,g_0);
+	    refinedGamma = append(refinedGamma,tempList);
+	    gamma_j_0 = append(gamma_j_0,g_0);
+	    refinedGamma = join(refinedGamma,determineCover(f,{gamma_j}))
+        );
+    refinedGamma = append(refinedGamma,gamma_j)
+    );
+    return refinedGamma
+);
+
 
 -- Examples to test
 R=QQ[c_1,c_2][x_0,x_1,x_2,x_3]
@@ -59,7 +77,7 @@ color(f2,gamma)
 color(f3,gamma)
 headTerm(f1+f2,gamma)
 headTerm(f1+f3,gamma)
-
+L = determineCover(f1+f2,{gamma})
 
 square = method(
     TypicalValue => ZZ
