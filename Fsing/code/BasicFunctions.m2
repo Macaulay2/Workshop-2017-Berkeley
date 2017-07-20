@@ -130,6 +130,10 @@ adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
 
+--Special case for adic expansion of integers
+adicExpansion( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
+    adicExpansion(p,e,x/1)
+
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
 adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) -> 
 (
