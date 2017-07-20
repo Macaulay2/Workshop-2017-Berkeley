@@ -881,6 +881,53 @@ doc ///
      psi = dividedKerInDegree(i,A)
      ///
 
+--latest RRG documentation addition
+doc ///
+   Key
+    dividedImInDegree
+    (dividedImInDegree, ZZ, RingElement)
+    (dividedImInDegree, ZZ, List) 
+    (dividedImInDegree, ZZ, Matrix)
+   Headline
+    Computes the image of the map from the ith graded piece of the symmetric algebra to the direct sum of 
+    divided power rings, which is given by multiplication by the ring element or list of elements. 
+    The Matrix option allows the user to input the matrix gotten from dividedActionInDegree function, 
+    to avoid having to repeat the computation.
+   Usage
+    psi = dividedImInDegree(i, phi)
+    psi = dividedImInDegree(i,L)
+    psi = dividedImInDegree(i,A)
+   Inputs
+    i: ZZ
+     an integer
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous elements of a standard graded polynomial ring
+    A: Matrix
+     the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
+   Outputs
+    psi: List
+     list of ideals
+   Description
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     psi = dividedImInDegree(i,phi)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     L = {x^3+y^3+z^3,x*y^2+y*z^2+z*x^2}
+     psi = dividedImInDegree(i,L)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     A = dividedActionInDegree(i,phi)
+     psi = dividedImInDegree(i,A)
+     ///
+
 
 
   
