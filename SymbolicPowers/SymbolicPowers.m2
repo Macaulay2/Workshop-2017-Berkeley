@@ -138,6 +138,7 @@ symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I))
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
 	scan(primaryList,i->(if radical(i)==I then res=i; break));
 	res)
+    )
     
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
@@ -156,10 +157,11 @@ symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
     if (codim I == dim R - 1 and isHomogeneous(I)) then 
     symbPowerSat(I,n) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
-	    if isPrime I then symbPowerPrime(I,n) else 
+	    if isPrime I then symbPowerPrime(I,n) else (
+	    print("here");
 	    symbPowerSlow(I,n)
+	    )
 	    )))
-
 
 
 joinIdeals = method(TypicalValue => Ideal)
@@ -279,32 +281,27 @@ isKonig(Ideal) := Boolean => I -> (
     )
 
 
-
+-- Input: Ideal and List of variables to evaluate to 1
+-- Output: Ideal with vars from list evaluated to 1
 replaceVarsBy1 = method(TypicalValue => Ideal)
-replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,1,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
 
+
+-- Input: Ideal and List of variables to evaluate to 0
+-- Output: Ideal with vars from list evaluated to 0
 replaceVarsBy0 = method(TypicalValue => Ideal)
-replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,0,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
     
-///
-restart
-loadPackage"SymbolicPowers"
-R = ZZ/101[x,y]
-I = ideal"xy,y2"
-isPacked I
-restart
-installPackage"SymbolicPowers"
-restart
-uninstallPackage"SymbolicPowers"
-restart
-viewHelp table
-///
-
-
+-- Input: Monomial Ideal
+-- Output: Boolean value determining if packed or not
 isPacked = method(TypicalValue => Boolean)
 isPacked(Ideal) := Boolean => I -> (
     d := # flatten entries vars ring I; 
@@ -313,6 +310,7 @@ isPacked(Ideal) := Boolean => I -> (
     w = select(w, i -> unique(join(i_0,i_1))==join(i_0,i_1));
     all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1)))
     )
+
 
 noPackedSub = method(TypicalValue => List)
 noPackedSub(Ideal) := List => I -> (if not(isKonig(I)) then "The ideal itself is not Konig!" else (
