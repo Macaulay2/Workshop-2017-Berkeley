@@ -43,6 +43,8 @@ export {
 
 
 needsPackage "Polyhedra";
+needsPackage "Depth";
+
 
 bigHeight = method(TypicalValue => ZZ)
 bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
@@ -134,15 +136,14 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
 	P:=apply(primaryDec, a-> radical a);
 	maxP:={};
 	apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
-	Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));)
+	Q:=for p in maxP list (intersect select(primaryDec, a-> isSubset(a,p)));)
 
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
-
 	scan(primaryList,i->(if radical(i)==I then result := i; break));
-	result)
+	result))
     
 symbolicPowerPrimary = method()
 symbolicPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
@@ -164,8 +165,8 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 
 symbolicPower = method(TypicalValue => Ideal)
 symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I)) then 
-    symbPowerSat(I,n) else (
+    if (codim I == dim R - 1 and isHomogeneous(I)) then (
+	if depth R/I == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
 	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
 	    if isPrimary I then symbPowerPrimary(I,n) else
@@ -386,7 +387,6 @@ isGorenstein(Ring) := Boolean => R ->(
 
 isGorenstein(Ideal) := Boolean => I ->(
     local R;
-    
     R = ring I;
     return isGorenstein(R/I);
     )
