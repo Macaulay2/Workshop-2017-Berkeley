@@ -22,19 +22,19 @@ doc ///
         e:ZZ
 	    positive
         x:QQ
-	    in the interval (0,1]	
+	    in the interval [0,1]	
     Outputs
         :List
     Description
         Text
-            adicExpansion(p,N) computes the base p expansion of an integer N:  the output is a list in which the i-th element is the coefficient of p^i.
+            adicExpansion(p,0) returns a list with one element, which is zero.  If N is nonzero, then adicExpansion(p,N) returns a list in which the i-th element is the coefficient of p^i in the base p expansion of N.  
         Example
             5==1*2^0+0*2^1+1*2^2
             adicExpansion(2,5)
         Text
-            adicExpansion(p,e,x) computes the first e digits in the unique non-terminating base p expansion of a positive rational number x in the unit interval: the output is a list in which the i-th element is the coefficient of p^(-i-1).	    
+            adicExpansion(p,e,0) returns a list with e elements, all of which are zero.  If x is nonzero, then adicExpansion(p,e,x) returns a list of size e in which the i-th element is the coefficient of p^(-i-1) in the unique nonterminat base p expansion of x.	    
         Text 
-            The unique non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ..., and so 
+            For example, the non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ..., and so 
         Example
             adicExpansion(2,4,1/2)
 ///
