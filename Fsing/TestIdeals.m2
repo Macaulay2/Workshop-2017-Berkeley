@@ -192,6 +192,8 @@ load "./documentation/testIdealsDoc.m2"
 
 load "./documentation/parameterTestIdealDoc.m2"
 
+load "./documentation/FinjectiveDoc.m2"
+
 --load "./documentation/FPureDoc.m2"
 
 -- TESTS
