@@ -135,6 +135,7 @@ doc ///
         [testIdeal, FrobeniusRootStrategy]
         [isFregular, FrobeniusRootStrategy]
         [isFpure, FrobeniusRootStrategy]
+        [isFinjective, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
@@ -157,7 +158,7 @@ doc ///
     Headline
         sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
     Usage
-        testElement(..., MaxCartierIndex=>N)
+        testIdeal(..., MaxCartierIndex=>N)
     Inputs
         N: ZZ
     Outputs
@@ -176,7 +177,7 @@ doc ///
     Headline
         specifies the Q-Gorenstein index of the ring
     Usage
-        testElement(..., QGorenstein=>N)
+        testIdeal(..., QGorenstein=>N)
     Inputs
         N: ZZ
     Outputs
