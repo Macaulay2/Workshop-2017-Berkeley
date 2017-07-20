@@ -39,7 +39,7 @@ doc ///
             HSLList#2 --the element representing trace of Frobenius
             HSLList#3 --how many times it took until the image stabilized
         Text
-            If you don't want the function to compute the canonicalModule, you can also pass it.  This can be useful if you pass it something other than the canonical module as well.
+            If you don't want the function to compute the canonicalModule, you can also pass it.  This can be useful if you pass it something other than the canonical module as well (for example, a submodule of the canonical module).
         Text
             Additionally, you can specify a pair $(R, f^t)$ as long as $t$ is a rational number without $p$ in its denominator.
         Example
@@ -49,4 +49,11 @@ doc ///
             HSLList#0
             HSLList = HSLGModule(9/10, y^2-x^3);
             HSLList#0
+        Text
+            Additionally, we can compute HSLG-modules of things like $\tau(R, f^s g^t)$ even when $R$ is not regular.    
+        Example
+            R = ZZ/3[x,y,z]/ideal(x^2-y*z);
+            f = y;
+            g = z;
+            HSLGModule({1/2, 1/2, 1/2}, {y,z,y+z})
 ///
