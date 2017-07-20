@@ -14,7 +14,8 @@ newPackage(
 
 export {"macaulayRep", "macaulayBound", "macaulayLowerOperator", "isHF", "hilbertFunct",
      "isCM", "lexIdeal", "isLexIdeal", "isPurePower", "LPP", "generateLPPs", "isLPP", "cancelAll",
-     "multUpperHF", "multLowerBound", "multUpperBound", "multBounds", "PrintIdeals", "MaxDegree"}
+     "multUpperHF", "multLowerBound", "multUpperBound", "multBounds", "PrintIdeals", "MaxDegree",
+		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP"}
 
 --gives the d-th Macaulay representation of a.
 --use for finding upper bound for Hilbert function in degree d+1
@@ -507,7 +508,7 @@ minDegRegularSeq(Ideal) := (I) ->
   heights := cumulativeIdeals / codim;
   lastheight := -1;
   numgens := #Igens;
-  returner = {};
+  returner := {};
   for i from 0 to numgens - 1 do (
     if lastheight != heights_i then (
       returner = append(returner, Degrees_i);
