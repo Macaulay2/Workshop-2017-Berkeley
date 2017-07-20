@@ -138,16 +138,15 @@ doc ///
             If t is an arbitrary nonegative rational number, and t_n = a_n/p^(e_n) is 
             a sequence of rational numbers converging to t from above, then 
             I^[t] is the largest ideal in the increasing chain of ideals I^[t_n].
-///
-{*
         Example
-            p = 13;
+            p = 7;
             R = ZZ/p[x,y];
             I = ideal(x^50,y^30);
-            t = 7/19;
+            t = 6/19;
             expon = e -> ceiling( p^e*t )/p^e; -- a sequence converging to t from above
             scan( 5, i -> print frobeniusPower(expon(i),I) )
-            frobeniusPower(7/19,I,FrobeniusPowerStrategy => Safe)
-*}
+            frobeniusPower(t,I)
+///
+
  
  

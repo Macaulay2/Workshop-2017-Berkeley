@@ -105,26 +105,24 @@ frobeniusPower ( ZZ, Ideal ) := Ideal => opts -> ( N, I ) ->
 )
 
 --Computes the generalized Frobenius power I^[N/p^e]
-frobeniusPower( ZZ, ZZ, Ideal ) := Ideal => opts -> ( e, N, I ) ->
+frobeniusPowerHelper = { FrobeniusPowerStrategy => Naive, FrobeniusRootStrategy => Substitution } >> 
+    o -> ( e, N, I ) ->
 (   
-    if N < 0 or e < 0 then error "frobeniusPower: expected nonnegative number(s).";
     R := ring I;
     p := char R;
-    if p == 0 then 
-        error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
     G := first entries mingens I;
     if #G == 0 then return ideal( 0_R );
     rem := N % p^e;
     M := N // p^e;
     J := frobeniusPower( M, I );  --component when applying Skoda's theorem     
-    if opts.FrobeniusPowerStrategy == Safe then 
+    if o.FrobeniusPowerStrategy == Safe then 
     (
 	E := adicExpansion( p, rem );
-	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ), FrobeniusRootStrategy => opts.FrobeniusRootStrategy ) );  
+	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ), FrobeniusRootStrategy => o.FrobeniusRootStrategy ) );  
         --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
         --using the base p expansion of rem/p^e < 1
     )
-    else J * frobeniusRoot( e, frobeniusPower( rem, I ), FrobeniusRootStrategy => opts.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
+    else J * frobeniusRoot( e, frobeniusPower( rem, I ), FrobeniusRootStrategy => o.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
 )
 
 --Computes the generalized Frobenius power I^[t] for a rational number t 
@@ -135,7 +133,7 @@ frobeniusPower( QQ, Ideal ) := Ideal => opts -> ( t, I ) ->
     if p == 0 then 
         error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
     ( a, b, c ) := toSequence divideFraction( p, t ); --write t = a/(p^b*(p^c-1))
-    if c == 0 then frobeniusPower( b, a, I, opts )  --if c = 0, call simpler function
+    if c == 0 then frobeniusPowerHelper( b, a, I, opts )  --if c = 0, call simpler function
         else 
 	(
 	    rem := a % ( p^c - 1 );      
