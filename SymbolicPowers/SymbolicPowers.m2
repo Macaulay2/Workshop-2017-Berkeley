@@ -13,8 +13,9 @@ export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "b
     "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
     "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
     "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence"}
+    "minDegreeSymbPower", "lowerBoundResurgence","symbPoly", "waldschmidt", "SampleSize"}
 
+needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
 bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
@@ -284,7 +285,10 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
-
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 -----------------------------------------------------------
 -----------------------------------------------------------
@@ -320,26 +324,24 @@ N :=intersection QI;
 return N
 )
 
+alpha = I -> min apply(flatten entries gens I, f-> (degree f)_0) 
+
 -- Computes the Waldschmidt constant for a given ideal
 waldschmidt = method(Options=>{SampleSize=>10});
 waldschmidt Ideal := opts -> I -> (
 if isMonomial I then ( 
-    print "Ideal is monomial -- Waldschmidt constant computed exactly";   
+    print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
     N:=symbPoly I;
     return min apply (entries transpose vertices N, a-> sum  a)
     )
 else (
+    print ("Ideal is not monomial, the  Waldschmidt constant is approximated using first "| opts#SampleSize |" powers.");
     return min for i from 1 to opts#SampleSize  list alpha(symbolicPower(I,i))/i
     )
 )
 
 
 
-
-isMonomial = method()
-isMonomial(RingElement) := r -> (terms(r) == {r})
-isMonomial(MonomialIdeal) := I -> true
-isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 
 -----------------------------------------------------------
