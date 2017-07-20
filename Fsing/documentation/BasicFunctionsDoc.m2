@@ -160,7 +160,17 @@ doc ///
             divideFraction( 3, 4/27)
             divideFraction( 3, 4/27, NoZeroC => true )
 	        4/27 == 8/( 3^3 * ( 3 - 1 ) )
-///    
+///   
+
+doc ///
+    Key
+        NoZeroC
+    Headline
+        an option for divideFraction
+    Description
+        Text
+            Valid values are {\tt true} or {\tt false}.
+///         
 
  
 doc ///
