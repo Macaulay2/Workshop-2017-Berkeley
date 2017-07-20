@@ -128,7 +128,7 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
 	--intersecting the powers of its associated primes
     if isSquareFree I then 
     (assP := associatedPrimes(I); 
-    intersect apply(assP, i -> i^n))
+    intersect apply(assP, i -> fastPower(i,n)))
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
@@ -137,7 +137,7 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     maxP:={};
     apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
     Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
-    intersect Q))
+    intersect apply(Q,i -> fastPower(i,n))))
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
@@ -157,7 +157,7 @@ symbPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I))
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; 
     m := ideal vars R; 
-    saturate(I^n,m))
+    saturate(fastPower(I,n),m))
 
 --Takes a primary decomposition of I^n, picks the components corresponding to the 
 --minimal primes of I and intersects them
@@ -278,7 +278,7 @@ squarefreeGens(Ideal) := List => I ->(
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
-    J := I^c;
+    J := fastPower(I,c);
     squarefreeGens(J))
 
 
@@ -288,7 +288,7 @@ isKonig(Ideal) := Boolean => I -> (
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
 	    c := codim I; 
-	    J := I^c;
+	    J := fastPower(I,c);
 	    not(squarefreeGens(J)=={})
 	    )
 	)
@@ -506,7 +506,6 @@ doc ///
 	       $\bullet$ @TO"Computing symbolic powers of an ideal"@
 	       
 	       $\bullet$ @TO"Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"@
-    	       
  
                {\bf Other examples which illustrate this package}
 
