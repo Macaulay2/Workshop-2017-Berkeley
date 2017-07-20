@@ -40,7 +40,7 @@ headTerm = (f,gamma) -> (
     while color(g,gamma)=="green" do (
 	f = f-g;
 	g=leadTerm(f);
-	if g==0 then return g
+	if g==0 then return {g,"green"}
     );
     return {leadTerm(f),color(f,gamma)}
 );
@@ -50,15 +50,16 @@ determineCover = (f,gamma) -> (
     refinedGamma := {};
     tempList := {};
     for j from 0 to #gamma-1 do(
-	g = headTerm(f,gamm_j);
+	g = headTerm(f,gamma_j);
         if g_1 == "white" then (
-    	    tempList = gamma_j;
-	    tempList_1 = append(tempList_1,g_0);
+	    tempList = {append(gamma_j_1,leadCoefficient(g_0))};
+	    tempList = insert(0,gamma_j_0,tempList);
 	    refinedGamma = append(refinedGamma,tempList);
-	    gamma_j_0 = append(gamma_j_0,g_0);
-	    refinedGamma = join(refinedGamma,determineCover(f,{gamma_j}))
-        );
-    refinedGamma = append(refinedGamma,gamma_j)
+	    tempList = {append(gamma_j_0,leadCoefficient(g_0))};
+	    tempList = insert(1,gamma_j_1,tempList);
+	    refinedGamma = join(refinedGamma,determineCover(f,{tempList}))
+        )
+        else refinedGamma = append(refinedGamma,gamma_j);
     );
     return refinedGamma
 );
@@ -77,7 +78,8 @@ color(f2,gamma)
 color(f3,gamma)
 headTerm(f1+f2,gamma)
 headTerm(f1+f3,gamma)
-L = determineCover(f1+f2,{gamma})
+determineCover(f1+f3,{gamma})
+
 
 square = method(
     TypicalValue => ZZ
