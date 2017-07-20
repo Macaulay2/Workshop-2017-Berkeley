@@ -136,8 +136,8 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
     then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
-	scan(primaryList,i->(if radical(i)==I then res=i; break));
-	res)
+	scan(primaryList,i->(if radical(i)==I then result := i; break));
+	result)
     
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
