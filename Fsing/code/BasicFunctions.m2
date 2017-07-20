@@ -100,7 +100,7 @@ divideFraction( ZZ, ZZ ) := List => o -> (p, t) -> divideFraction(p, t/1, o)
 adicDigit = method( TypicalValue => ZZ )
 
 --Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
-digit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
+adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
 (
     if x < 0 or x > 1 then error "adicDigit: Expected x in [0,1]";     
     if x == 0 then return 0;	
