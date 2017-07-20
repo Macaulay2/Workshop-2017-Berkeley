@@ -522,17 +522,25 @@ minDegRegularSeqFast = method(TypicalValue=>List)
 minDegRegularSeqFast(Ideal) := (I) ->
 (
 	Igens := sort flatten entries mingens I;
-	Degrees := Igens / (g -> first degree g);
-	maxheight := codim I;
-	Q := ambient ring I;
-	returner := {};
+	minDegree := first degree first Igens;
+	maxDegree := first degree last Igens;
+	heights = prepend(0,
+		for d from minDegree to maxDegree list
+			codim ideal(select(Igens, t -> first degree t <= d)));
+	for d from minDegree to maxDegree list
+		((heights#(d-minDegree+1)-heights#(d-minDegree)):d)
+
+	accumulate := {};
+	cumulativeIdeals := for gen in Igens list (accumulate = append(accumulate,gen); ideal(accumulate));
+	heights := cumulativeIdeals / codim;
 	lastheight := -1;
-	for Igen in Igens when (lastheight < maxheight) do (
-		Q = Q / Igen;
-		thisheight := codim Q;
-		if thisheight != lastheight then (returner = append(returner, first degree Igen));
-		lastheight = thisheight;
-		print(thisheight);
+	numgens := #Igens;
+	returner := {};
+	for i from 0 to numgens - 1 do (
+		if lastheight != heights_i then (
+			returner = append(returner, Degrees_i);
+		);
+		lastheight = heights_i;
 	);
 	returner
 )
