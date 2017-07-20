@@ -15,7 +15,7 @@ newPackage(
 export {"macaulayRep", "macaulayBound", "macaulayLowerOperator", "isHF", "hilbertFunct",
      "isCM", "lexIdeal", "isLexIdeal", "isPurePower", "LPP", "generateLPPs", "isLPP", "cancelAll",
      "multUpperHF", "multLowerBound", "multUpperBound", "multBounds", "PrintIdeals", "MaxDegree",
-		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP", "minDegRegularSeqFast"}
+		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP"}
 
 --gives the d-th Macaulay representation of a.
 --use for finding upper bound for Hilbert function in degree d+1
@@ -501,48 +501,14 @@ multBounds(Ideal) := I -> (
 minDegRegularSeq = method(TypicalValue=>List)
 minDegRegularSeq(Ideal) := (I) ->
 (
-  Igens := sort flatten entries mingens I;
-  Degrees := Igens / (g -> first degree g);
-  accumulate := {};
-  cumulativeIdeals := for gen in Igens list (accumulate = append(accumulate,gen); ideal(accumulate));
-  heights := cumulativeIdeals / codim;
-  lastheight := -1;
-  numgens := #Igens;
-  returner := {};
-  for i from 0 to numgens - 1 do (
-    if lastheight != heights_i then (
-      returner = append(returner, Degrees_i);
-    );
-    lastheight = heights_i;
-  );
-  returner
-)
-
-minDegRegularSeqFast = method(TypicalValue=>List)
-minDegRegularSeqFast(Ideal) := (I) ->
-(
 	Igens := sort flatten entries mingens I;
 	minDegree := first degree first Igens;
 	maxDegree := first degree last Igens;
-	heights = prepend(0,
+	heights := prepend(0,
 		for d from minDegree to maxDegree list
 			codim ideal(select(Igens, t -> first degree t <= d)));
-	for d from minDegree to maxDegree list
-		((heights#(d-minDegree+1)-heights#(d-minDegree)):d)
-
-	accumulate := {};
-	cumulativeIdeals := for gen in Igens list (accumulate = append(accumulate,gen); ideal(accumulate));
-	heights := cumulativeIdeals / codim;
-	lastheight := -1;
-	numgens := #Igens;
-	returner := {};
-	for i from 0 to numgens - 1 do (
-		if lastheight != heights_i then (
-			returner = append(returner, Degrees_i);
-		);
-		lastheight = heights_i;
-	);
-	returner
+	flatten (for d from minDegree to maxDegree list
+		toList((heights#(d-minDegree+1)-heights#(d-minDegree)):d))
 )
 
 
