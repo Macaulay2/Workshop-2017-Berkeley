@@ -14,7 +14,7 @@
 --    needs "parameterTestIdeal.m2";
 --);
 
-needsPackage "Divisor";
+--needsPackage "Divisor";
 
 --*********************
 --Preliminary functions

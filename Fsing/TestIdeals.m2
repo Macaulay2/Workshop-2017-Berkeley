@@ -128,6 +128,17 @@ export{
 --    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
 --    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
 --    "sigmaQGorAmb", --Karl needs to be redone
+
+--REMOVE LATER (DivisorPatch.m2)
+--MTries = MTries;
+--NoStrategy = "NoStrategy";
+--ReturnMap = "ReturnMap";
+--IdealStrategy = "IdealStrategy";
+--Section = "Section";
+--KnownDomain = "KnownDomain";
+--IsGraded = "IsGraded"; 
+--ModuleStrategy = "ModuleStrategy";
+
  
 -- Other
     "FFiniteSupport", ---MK
@@ -139,6 +150,7 @@ export{
     "generatingRoot" ---MK
 --    "paraTestModule", ---MK
 --    "paraTestModuleAmbient" ---MK  
+
 }
 
 --*************************************************
@@ -171,6 +183,8 @@ load "./code/parameterTestIdeal.m2"
 load "./code/Finjective.m2"
 
 load "./code/testIdeals.m2"
+
+load "./code/DivisorPatch.m2"
 
 beginDocumentation()
 
