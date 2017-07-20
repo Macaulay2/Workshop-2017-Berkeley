@@ -13,6 +13,10 @@ newPackage(
 
 
 export {
+    -- Options
+    "UseMinimalPrimes",
+    
+    -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
     "ContainmentProblem", 
@@ -167,15 +171,24 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
     intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
-symbolicPower = method(TypicalValue => Ideal)
-symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
-	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
-	    if isPrime I then symbPowerPrime(I,n) else 
-	    if isPrimary I then symbPowerPrimary(I,n) else
-	    symbPowerSlow(I,n)
-	    )))
+symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
+symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
+
+    if opts.UseMinimalPrimes then print "Hello Eloisa";
+        
+    if not opts.UseMinimalPrimes then (    
+    	if (codim I == dim R - 1 and isHomogeneous(I)) then (
+	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
+	    if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
+	    	if isPrime I then symbPowerPrime(I,n) else 
+	    	if isPrimary I then symbPowerPrimary(I,n) else
+	    	symbPowerSlow(I,n)
+	    ))
+    )
+    
+
+        
+    )
 
 
 joinIdeals = method(TypicalValue => Ideal)
@@ -1290,8 +1303,12 @@ end
 
 -- branden
 restart
-R = ZZ/101[x_1..x_10]
-I = ideal(apply(1..10, l -> x_1*x_l) )
+n = 3
+R = ZZ/101[x_1..x_n]
+I = ideal(apply(1..n, l -> x_1*x_l) )
+loadPackage"SymbolicPowers"
+symbolicPower(I,2)
+check "SymbolicPowers"
 toString I
 primaryDecomposition I
 
@@ -1322,4 +1339,5 @@ bigHeight(I)
 	r l)
 
 ?minors
-loadPackage"SymbolicPowers"
+
+
