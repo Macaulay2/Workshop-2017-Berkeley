@@ -168,35 +168,12 @@ selectPositive = L -> select( L, x -> x > 0 )
 nonzeroPositions = L -> positions( L, x -> x != 0 )
 zeroPositions = L -> positions( L, x -> x == 0 )
 
+
 --===================================================================================
 
 --*************************************************
 --Tests for various types of polynomials   
 --*************************************************
-
---===================================================================================
-
---isPolynomial(F) checks if F is a polynomial
-isPolynomial = method( TypicalValue => Boolean )
-
-isPolynomial (RingElement) := Boolean => F -> isPolynomialRing( ring F ) 
-
---===================================================================================
-
---isPolynomialOverPosCharField(F) checks if F is a polynomial over a field
---of positive characteristic
-isPolynomialOverPosCharField = method( TypicalValue => Boolean )
-
-isPolynomialOverPosCharField (RingElement) := Boolean => F ->
-    isPolynomial F and isField( kk := coefficientRing ring F ) and ( char kk ) > 0
-
---===================================================================================
-
---isPolynomialOverFiniteField(F) checks if F is a polynomial over a finite field.
-isPolynomialOverFiniteField = method( TypicalValue => Boolean )
-
-isPolynomialOverFiniteField (RingElement) := Boolean => F ->
-    isPolynomialOverPosCharField( F ) and isFinitePrimeField(coefficientRing ring F)
 
 --===================================================================================
 
@@ -256,6 +233,8 @@ isLinearBinaryForm (RingElement) := Boolean => F ->
 
 --===================================================================================
 
+--===================================================================================
+
 --*************************************************
 --Miscelaneous
 --*************************************************
@@ -272,4 +251,3 @@ xInt = ( x1, y1, x2, y2 ) ->
 )
 
 --===================================================================================
-

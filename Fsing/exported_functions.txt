@@ -1,20 +1,60 @@
---BasicFunctions (BasicFunctions.m2) 
-    "adicExpansion",    --export; main  DONE
-    "carryTest",  --do NOT export
-    "digit", -- export; main	   
-    "divideFraction", --export; main
-    "fasterFloorLog", --remove; do NOT export
-    "firstCarry", --do NOT export; fThreshold
-    "floorLog", --export; main
-    "fracPart", --do NOT export
-    "getCanVector", --do NOT export; FThresholds
-    "getNumAndDenom", --do NOT export; FThresholds
-    "maxIdeal", --do NOT export; main; 
-    "multOrder", -- export; main; to be optimized
-    "NoZeroC", --export; main; option to force certain behavior from a function
-    "taxicabNorm", --do NOT export; FThresholds
-    "truncatedBasePExp", -- export; main
-    
+--==================================================================
+--BasicFunctions (BasicFunctions.m2)
+
+MAIN
+
+Exported
+
+"adicExpansion",    DOCUMENTED
+"digit",	   
+"divideFraction", DOCUMENTED
+"floorLog", DOCUMENTED
+"multOrder",  DOCUMENTED; to be optimized
+"NoZeroC", DOCUMENTED
+"truncatedBasePExp", 
+
+NOT exported
+
+baseP1
+denominator/numerator
+"fracPart",
+isPolynomial
+isPolynomialOverPosCharField
+isPolynomialOverFiniteField
+"maxIdeal",
+allPartitions
+allPartitionsInnards
+--------------
+
+FPT
+
+NOT exported
+
+denominator/numerator
+"fracPart",
+"carryTest",  
+"firstCarry",  
+"getCanVector",
+"getNumAndDenom", 
+"taxicabNorm",
+nontrivialPowerSet
+numberToPrimeFactorList
+getFactorList
+findNumberBetween
+selectNonzero
+selectPositive
+nonzeroPositions
+zeroPositions
+isDiagonal
+isMonomial
+isBinomial
+isBinaryForm -- Check for standard grading!
+isNonConstantBinaryForm
+isLinearBinaryForm
+xInt
+
+--==================================================================
+
 --ethRootFunctions (EthRoots.m2)
     "ascendIdeal", --Karl (still needs more tests / documentation) -- ??
     "AscentCount", -- ??
