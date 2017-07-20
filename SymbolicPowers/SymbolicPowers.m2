@@ -3,7 +3,7 @@ newPackage(
 	Version => "1.0", 
 	Date => "May 14th, 2017",
 	Authors => {
-	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu"},
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"},
 	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
 	    },
 	Headline => "Calculations involving symbolic powers",
@@ -133,11 +133,11 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
 
 
-symbPowerPrime = method(TypicalValue => Ideal)
+symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
-    then "Not a prime ideal" else (primaryList := primaryDecomposition(I^n); 
-	res := select(primaryList,i->(radical(i)==I));
-	intersect(res)))
+    then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==I then res=i; break));
+	res)
     
 symbPowerSat = method(TypicalValue => Ideal)
 symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
@@ -153,8 +153,9 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 
 symbolicPower = method(TypicalValue => Ideal)
 symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
-	if isMonomialIdeal I then symbPowerMon(monomialIdeal(I),n) else (
+    if (codim I == dim R - 1 and isHomogeneous(I)) then 
+    symbPowerSat(I,n) else (
+	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
 	    if isPrime I then symbPowerPrime(I,n) else 
 	    symbPowerSlow(I,n)
 	    )))
