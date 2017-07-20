@@ -25,7 +25,7 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere"}
+export {"simplicialJoin","poincareSphere","dunceHat"}
 
 -- Jason's area to work in
 
@@ -128,6 +128,32 @@ poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
     fac := apply(L,l->product apply(l,v->R_(v-1)));
     simplicialComplex fac)
 
+dunceHat = method(Options=>{Variable => "x"})
+dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_16];
+    L := {{1,2,4},
+{1,2,7},
+{1,2,8},
+{1,3,4},
+{1,3,5},
+{1,3,6},
+{1,5,6},
+{1,7,8},
+{2,3,5},
+{2,3,7},
+{2,3,8},
+{2,4,5},
+{3,4,8},
+{3,6,7},
+{4,5,6},
+{4,6,8},
+{6,7,8}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
 -- end Jason's work area
 
 simplicialJoin = method()
@@ -189,6 +215,10 @@ i1(R1_0) - i2(R2_0)
 restart
 F = ZZ/2
 loadPackage "SimplicialComplexesTemp"
-S = poincareSphere(ZZ/2,Variable => x)
+S = poincareSphere(F,Variable => x)
+T = dunceHat(F,Variable => y)
+zero HH_1 S
+zero HH_2 S
+prune HH_3 S
 --
 
