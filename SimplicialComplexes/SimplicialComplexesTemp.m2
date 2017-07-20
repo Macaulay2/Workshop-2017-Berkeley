@@ -25,10 +25,42 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere","dunceHat","suspension","projectivePlane",
-    "bjornerExample"}
+export {"simplicialJoin","poincareSphere","dunceHat","suspension",
+    "projectivePlane","bjornerExample","hachimoriExample1",
+    "hachimoriExample2","hachimoriExample3","hachimoriExample4"}
 
 -- Jason's area to work in
+
+SimplicialComplexMap = new Type of HashTable
+simplicialComplexMap = method(TypicalValue => SimplicialComplexMap)
+
+newSimplicialComplexMap := (S,T,f) ->
+     new SimplicialComplex from {
+	  symbol target => S,
+	  symbol source => T,
+	  symbol ringMap => f,
+	  symbol cache => new CacheTable
+	  }
+
+simplicialComplexMap (SimplicialComplex,SimplicialComplex,RingMap) := (T,S,f) -> (
+     RT := ring T;
+     RS := ring S;
+     if not RT = target f 
+     then error "target complex's ring does not match target of ring map";
+     if not RS = source f 
+     then error "source complex's ring does not match source of ring map";
+
+    facetsT = apply(flatten entries facets t,fc->face(f(fc)));
+    imageOfFacetsS = apply(flatten entries facets S,fc->face(fc));
+    if not all(imageOfFacetsS,fs->(any(facetsT,ft->isSubface(fs,ft))))
+    then error "Given ring map does not induce a simplicial map";
+    
+    
+
+     if not isSquareFree I then
+         error "expected squarefree monomial ideal";
+     newSimplicialComplex(I, complement generators dual I)
+     )
 
 poincareSphere = method(Options=>{Variable => "x"})
 poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
@@ -195,6 +227,139 @@ bjornerExample(Ring) := SimplicialComplex => o -> (F) -> (
     fac := apply(L,l->product apply(l,v->R_(v-1)));
     simplicialComplex fac)
 
+
+hachimoriExample1 = method(Options=>{Variable => "x"})
+hachimoriExample1(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_7];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,4,5},
+{1,6,7},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{4,5,7},
+{5,6,7}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+hachimoriExample2 = method(Options=>{Variable => "x"})
+hachimoriExample2(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+hachimoriExample3 = method(Options=>{Variable => "x"})
+hachimoriExample3(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+
+hachimoriExample4 = method(Options=>{Variable => "x"})
+hachimoriExample4(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
 -- end Jason's work area
 
 -- Claudiu's work area
@@ -294,7 +459,18 @@ loadPackage "SimplicialComplexesTemp"
 S = poincareSphere(F,Variable => x)
 T = dunceHat(F,Variable => y)
 U = projectivePlane(F,Variable =>z)
-V = bjornerExample(F)
+V = projectivePlane(F)
+
+ring U
+ring V
+f = map(ring V,ring U,toList(x_1..x_6))
+facetsU = apply(flatten entries facets U,fc->face(f(fc)))
+imageOfFacetsV = apply(flatten entries facets V,fc->face(fc))
+all(imageOfFacetsV,fv->(#select(facetsU,fu->isSubface(fv,fu))>0))
+isFaceOf(first apply(flatten entries facets U,thing->face(f(thing))),V)
+
+isSubface
+
 zero HH_(-1) V
 zero HH_0 V
 zero HH_1 V
@@ -306,3 +482,11 @@ prune HH_2(chainComplex U)
 -- end Jason test area
 
 
+R = QQ[x,y,z]
+
+factor(x*y*z)
+index(y)
+methods map
+code (map, Ring, Ring, Matrix)
+
+methods RingMap
