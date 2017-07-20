@@ -15,6 +15,9 @@ export {"inverseSystem",
         "fromDividedPowers",
 	"isStandardGradedPolynomialRing",
 	"lowerExponent",
+	"dividedActionInDegree",
+	"dividedKerInDegree",
+	"dividedKerToDegree",
 	--option names (symbols):
 	"PowerBound",
 	"DividedPowers",
@@ -193,26 +196,8 @@ dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
 	)
     )
 
-dividedActionInDegree (ZZ, Ideal) := Matrix => (i, Phi) -> (
-    if not isHomogeneous Phi then (error "Expected a homogeneous ideal.");
-    D := ring Phi;
-    if Phi==0 then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
-    gensPhi := flatten entries mingens Phi;
-    s := flatten ((flatten entries mingens Phi)/degree);
-    d := max s;
-    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
-    matrixList := apply(#s,j -> dividedActionInDegree(i,gensPhi#j));
-    concatMatrix := matrixList#0;
-    matrixList = remove(matrixList,0);
-    while matrixList =!= {} do (
-	concatMatrix=concatMatrix || matrixList#0; 
-	matrixList = remove(matrixList,0)
-	);
-    concatMatrix
-    )
-
 dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
-    if any (L,phi ->isHomogeneous phi =!= true) then (error "Expected homogeneous polynomials..");
+    if any (L,phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
     D := ring L#0;
     if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
     if L=={} then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
@@ -229,38 +214,20 @@ dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
     concatMatrix
     )
 
-
---Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
---Output: The matrix representing multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
-
-
------------------------------------------------------------
     
-dividedKerInDegree = method()    
-    
+dividedKerInDegree = method()        
 dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
     K := gens ker dividedActionInDegree(i, phi);
     D := ring phi;
     ideal mingens ideal( (super basis(i, D)) * K )
     )
 
-
-dividedKerInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
-    K := gens ker dividedActionInDegree(i, Phi);
-    D := ring Phi;
-    ideal mingens ideal( (super basis(i, D)) * K )
-    )
-
 dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
+    if any(L, phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
     K := gens ker dividedActionInDegree(i, L);
     D := ring L#0;
     ideal mingens ideal( (super basis(i, D)) * K )
     )
-
-
---Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
---Output: The kernel of multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
-
 
 dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
     D := ring A;
@@ -273,23 +240,18 @@ dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
     ideal mingens ideal( (super basis(i, D) * A) )
     )
 
---Input: A matrix 'A' representing multiplication by a homogeneous element of a divided powers algebra on the degree 'i' component of the dual polynomial ring.
---Output: The kernel of multiplication by 'A' in the dual polynomial ring.
-
-
------------------------------------------------------------
 
 dividedKerToDegree = method()
-
 dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
     if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
     D := ring phi;
     ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, phi), D))
     )
 
---Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
---Output: The kernel of multiplication by 'phi' up to degree 'i' in the dual polynomial ring.
-
+dividedKerToDegree (ZZ, List) := Ideal => (i, L) -> (
+    D := ring L#0;
+    ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, L), D))
+    )
 
 beginDocumentation()
 
@@ -834,6 +796,91 @@ doc ///
      psi = lowerExponent(phi, f)
      ///
 
+doc ///
+   Key
+    dividedActionInDegree
+    (dividedActionInDegree, ZZ, RingElement)
+    (dividedActionInDegree, ZZ, List)
+   Headline
+    Computes the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+   Usage
+    M = dividedActionInDegree(i, phi)
+    M = dividedActionInDegree(i, L)
+   Inputs
+    i: ZZ
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous polynomials in a standard graded polynomial ring 
+   Outputs
+    M: Matrix
+   Description
+    Text
+     The polynomial f and the entries of are interpreted as elements of the divided powers algebra.  Computes the action of
+     homogeneous polynomials of degree i on divided powers as a matrix over the ground field in the monomial and divided powers
+     bases. 
+    Example
+     S = ZZ/5[x,y,z]
+     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
+     dividedActionInDegree(3, phi)
+     ///
+     
+doc ///
+   Key
+    dividedActionInDegree
+    (dividedActionInDegree, ZZ, RingElement)
+    (dividedActionInDegree, ZZ, List)
+   Headline
+    Computes the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+   Usage
+    M = dividedActionInDegree(i, phi)
+    M = dividedActionInDegree(i, L)
+   Inputs
+    i: ZZ
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous polynomials in a standard graded polynomial ring 
+   Outputs
+    M: Matrix
+   Description
+    Text
+     The polynomial f and the entries of L are interpreted as elements of the divided powers algebra.  Computes the action of
+     homogeneous polynomials of degree i on divided powers as a matrix over the ground field in the monomial and divided powers
+     bases. 
+    Example
+     S = ZZ/5[x,y,z]
+     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
+     dividedActionInDegree(3, phi)
+     ///
+     
+doc ///
+   Key
+    dividedKerToDegree
+    (dividedKerToDegree, ZZ, RingElement)
+    (dividedKerToDegree, ZZ, List)
+   Headline
+    Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra up to a given degree
+   Usage
+    I = dividedKerToDegree(i, phi)
+    I = dividedKerToDegree(i, L)
+   Inputs
+    i: ZZ
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous polynomials in a standard graded polynomial ring 
+   Outputs
+    I: Ideal
+     a graded ideal that agrees with the kernel of the action on divided powers up to degree i
+   Description
+    Text
+     The polynomial f and the entries of L are interpreted as elements of the divided powers algebra.
+    Example
+     S = ZZ/5[x,y,z]
+     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
+     dividedKerToDegree(5, phi)
+     ///
 
 
   
