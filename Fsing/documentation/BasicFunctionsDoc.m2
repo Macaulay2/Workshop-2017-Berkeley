@@ -16,9 +16,13 @@ doc ///
         adicExpansion(p,e,x)
     Inputs 
         p:ZZ
-        N:ZZ	
+	    positive
+        N:ZZ
+	    positive	
         e:ZZ
-        x:QQ	
+	    positive
+        x:QQ
+	    in the interval (0,1]	
     Outputs
         :List
     Description
@@ -44,7 +48,9 @@ doc ///
      	 floorLog(b,x)
      Inputs 
      	 b:ZZ
-	 x:ZZ		
+            greater than 1
+	 x:ZZ
+	    positive		
      Outputs
          :ZZ
      Description
@@ -65,7 +71,8 @@ doc ///
      	 multOrder(a,b)
      Inputs 
      		a:ZZ
-		b:ZZ		
+		b:ZZ
+		    prime to a		
      Outputs
          :ZZ
      Description
@@ -92,7 +99,7 @@ doc ///
          L:List
      Description
 	Text
-            Given a rational number t and a prime p, divideFraction(p,t) returns a list {a,b,c} such that t = a/(p^b*(p^c-1)).
+            Given a rational number t and a prime p, divideFraction(p,t) returns a list {a,b,c} of nonnegative integers such that t = a/(p^b*(p^c-1)).
         Example
             divideFraction( 3, 4/45 )
 	    4/45 == 64/( 3^2 * ( 3^4 -1 ) )
