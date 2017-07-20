@@ -68,11 +68,6 @@ assert(J == { -19, 2, 0} )
 -- adicDigit test#1
 
 TEST ///
-time J = adicDigit(2, 5, 0);
-assert(J == {0,0,0,0,0})
-///
-
-TEST ///
 time J = adicDigit(3, 2, 3/4);
 assert(J == 0)
 ///
