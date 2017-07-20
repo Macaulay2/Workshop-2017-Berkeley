@@ -11,31 +11,27 @@ newPackage(
 
 export {
     "isSmooth",
-    "AbstractSurface",
-    "DivisorClass",
-    "RealizedSurface",
-    "ExtraData",
-    "divisorClass",
-    "abstractSurface",
+    "AbstractSurface",	  --type
+    "abstractSurface",	  --create an AbstractSurface
+    "AbstractDivisor",	  --type
+    "abstractDivisor",	  --create an AbstractDivisor	  
+    "RealizedSurface",	  --type
+    "RealizedDivisor",	  --type
+    "realize",
     "abstractQuadric",
     "abstractCubic",
-    "realizeSurface",
-    "realize",
+    "irreducibleOnCubic",
+    "Chi",
     "CanonicalClass",
     "Hyperplane",
+    "DivisorClass",
+    "ExtraData",
     "IntersectionPairing",
-    "irreducibleOnCubic",
-    "effectiveDivisorsOnCubic",
-    "realizedDivisorOnCubic",
-    "Class",     --Different name??   
-    "Chi" -- Euler characteristic of OO_X.
+    "irreducibleDivisorClassesOnCubic",
+    "dgTable"
     }
 
-isSmooth = method()
-isSmooth Ideal := (I) -> (
-    c := codim I;
-    dim(I + minors(c, jacobian I)) == 0
-    )
+
 AbstractSurface = new Type of HashTable
 -- IntersectionMatrix
 -- Hyperplane
@@ -47,7 +43,8 @@ AbstractDivisor = new Type of HashTable
 RealizedSurface = new Type of HashTable
 -- AbstractSurface
 -- Ideal
--- ExtraData (e.g. For cubic: (Phi:P^2-->P^3))
+-- ExtraData
+-- e.g. For cubic: (Phi:P^2-->P^3, ideal of 6 Points)
 RealizedDivisor = new Type of HashTable
 -- AbstractDivisor
 -- RealizedSurface
@@ -81,7 +78,7 @@ abstractCubic = abstractSurface(
     1)
 linesOnCubic = () -> (
     Ds := apply(entries diagonalMatrix{1, -1, -1, -1, -1, -1, -1}, 
-             d -> divisorClass(d,abstractCubic)
+             d -> abstractDivisor(d,abstractCubic)
              );
     L := Ds#0;
     Es := drop(Ds,1);
@@ -104,17 +101,20 @@ abstractDivisor(List, AbstractSurface) := (C, X) -> (
         }
     )
 net AbstractDivisor := D -> net D.DivisorClass
+net AbstractSurface := X -> net X.IntersectionPairing
+net RealizedSurface := X -> net X.Ideal
+net RealizedDivisor := D -> net D.Ideal
 
 ZZ * AbstractDivisor := (n,D) -> (
-    AbstractDivisor(n * D.DivisorClass, D.AbstractSurface)
+    abstractDivisor(n * D.DivisorClass, D.AbstractSurface)
     )
 AbstractDivisor + AbstractDivisor := (C,D) -> (
     assert(C.AbstractSurface === D.AbstractSurface);
-    AbstractDivisor(C.DivisorClass + D.DivisorClass, D.AbstractSurface)
+    abstractDivisor(C.DivisorClass + D.DivisorClass, D.AbstractSurface)
     )
 AbstractDivisor - AbstractDivisor := (C,D) -> (
     assert(C.AbstractSurface === D.AbstractSurface);
-    AbstractDivisor(C.DivisorClass - D.DivisorClass, D.AbstractSurface)
+    abstractDivisor(C.DivisorClass - D.DivisorClass, D.AbstractSurface)
     )
 
 AbstractDivisor * AbstractDivisor := (C,D) -> (
@@ -127,27 +127,53 @@ degree AbstractDivisor := C -> (
     X := C.AbstractSurface;
     (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0)
     )
-genus DivisorClass := C -> (
+degree RealizedDivisor := C -> degree ideal C
+genus AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    K := AbstractDivisor(X.CanonicalClass,X);
+    K := abstractDivisor(X.CanonicalClass,X);
     1/2*((K+C)*C)+1
     )
-chi DivisorClass := C -> (
+genus RealizedDivisor := C -> genus ideal C
+chi AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    K := AbstractDivisor(X.CanonicalClass,X);
+    K := abstractDivisor(X.CanonicalClass,X);
     1/2 * (C * (C-K)) + X.Chi
     )
+dgTable = method()
+dgTable List := L ->(
+    --Takes a list of AbstractDivisors or RealizedDivisors
+    --returns a (degree, genus)    
+    Ldg := apply(L, C -> (degree C, genus C));
+    dmax := max apply(Ldg,dg->first dg);
+    dmin := min apply(Ldg,dg->first dg);
+    gmax := max apply(Ldg,dg->last dg);
+    gmin := min apply(Ldg,dg->last dg);
+    M := mutableMatrix map(ZZ^(gmax-gmin+1),ZZ^(dmax-dmin+1),0);
+    for dg in Ldg do (
+	j := dmax - first dg;
+	i := gmax - last dg;
+    	M_(i,j) = M_(i,j)+1;		
+    );
+    return matrix M;
+)
+isSmooth = method()
+isSmooth Ideal := (I) -> (
+    c := codim I;
+    dim(I + minors(c, jacobian I)) == 0
+    )
+isSmooth RealizedSurface := X -> isSmooth ideal X
+isSmooth RealizedDivisor := C -> isSmooth ideal C
 
 -- Checks whether a divisor class on the abstract cubic is irreducible
 irreducibleOnCubic = method()
-irreducibleOnCubic DivisorClass := Boolean => (C) -> (
+irreducibleOnCubic AbstractDivisor := Boolean => (C) -> (
     X := C.AbstractSurface;
     if X =!= abstractCubic then error "expected a divisor class on the cubic surface";
-    H := divisorClass(X.Hyperplane,X);
+    H := abstractDivisor(X.Hyperplane,X);
     twentysevenLines := linesOnCubic();
-    any(twentysevenLines, L -> L.Class == C.Class)
+    any(twentysevenLines, L -> L.DivisorClass == C.DivisorClass)
     or -- these are the conics:
-    any(twentysevenLines, L -> (H-L).Class == C.Class)
+    any(twentysevenLines, L -> (H-L).DivisorClass == C.DivisorClass)
     or (
      all(twentysevenLines, L -> L * C >= 0)
       and
@@ -155,9 +181,8 @@ irreducibleOnCubic DivisorClass := Boolean => (C) -> (
      )
     )
 
-
-realizeSurface = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
-realizeSurface AbstractSurface := opts -> X -> (
+realize = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
+realize AbstractSurface := opts -> X -> (
     -- Note: this is in P^3
     R := if opts#Ring =!= null then 
         opts#Ring 
@@ -184,66 +209,67 @@ realizeSurface AbstractSurface := opts -> X -> (
             dim (f + ideal jacobian f) != 0
             ) do ();
         return new RealizedSurface from {
-            symbol AbstractSurface => abstractCubic,
+            symbol AbstractSurface => X,
             symbol Ideal => f, 
             symbol ExtraData => (phi, points)
             }
         );
     if X === abstractQuadric then (
         IQ := ideal(R_0*R_3-R_1*R_2);
-        return (IQ, ideal(R_0, R_1), ideal(R_0, R_2))
+        return new RealizedSurface from {
+	    symbol AbstractSurface => X,
+	    symbol Ideal => IQ,
+	    symbol ExtraData => (ideal(R_0,R_1),ideal(R_0,R_2))
+	    }
         );
-    error "don't know how to realize your pathetic surface";
+    error "Not implemented yet";
     )
-
-realizeDivisor = method()
-realizeDivisor (AbstractDivisor,RealizedSurface) := (C, X) -> (
-    if abstractSurface C =!= abstractSurface X then error "expected divisor class on the given surface";
-    if abstractSurface X === abstractCubic then (
+realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
+    if C.AbstractSurface =!= X.AbstractSurface then error "expected divisor class on the given surface";
+    if X.AbstractSurface === abstractCubic then (
         -- check irreducibility from numerical criterion
-        if not irreducibleOnCubic C then return null else (
-            (phi,pts) := X.ExtraData;
-            S := target phi;
-            R := source phi;
-            ab := C.Class;
-            a := ab_0;
-            ipts := trim intersect (for i from 1 to 6 list (pts_(i-1))^(ab_i));
-            gipts := gens ipts;
-            if min flatten degrees source gipts > a then return null else (
-                cplane := ideal (gipts*random(source gipts,S^{-a}));
-                SC := S/cplane;
-                cspace := trim ker map(SC,R,phi.matrix);
-                return cspace;
-            )
+        (phi,pts) := X.ExtraData;
+        S := target phi;
+        R := source phi;
+        ab := C.DivisorClass;
+        a := ab_0;
+        ipts := trim intersect (for i from 1 to 6 list (pts_(i-1))^(ab_i));
+        gipts := gens ipts;
+        if min flatten degrees source gipts > a then return null else (
+            cplane := ideal (gipts*random(source gipts,S^{-a}));
+            SC := S/cplane;
+            cspace := trim ker map(SC,R,phi.matrix);
+            return new RealizedDivisor from {
+		symbol AbstractDivisor => C,
+		symbol RealizedSurface => X,
+		symbol Ideal => cspace
+		} ;
         )
-        -- 
-        );
+    );
+    if X.AbstractSurface === abstractQuadric then (
+    	return "Not implemented yet";	
+    ); 
     error "not implemented yet for your type of surface"
-    )
-realizeDivisor AbstractDivisor := C -> (
-    X := realizeSurface C.AbstractSurface;
-    realizeDivisor(C,X)
-    )
-realize (ZZ,ZZ,RealizedSurface) := (a,d,X) -> (
-    dList := effectiveDivisorsOnCubic(a,d);
-    irreducibleList := select(dList,C->irreducibleOnCubic C);
-    apply(irreducibleList, D -> 
-    	(degree D,genus D, D, betti res realize(D,X)))
 )
+realize AbstractDivisor := opts -> C -> (
+    X := realize C.AbstractSurface;
+    realize(C,X)
+    )
 
-effectiveDivisorsOnCubic = method()
-effectiveDivisorsOnCubic (ZZ,ZZ) := (a,d) -> (
+irreducibleDivisorClassesOnCubic = method()
+irreducibleDivisorClassesOnCubic (ZZ,ZZ) := (a,d) -> (
+    --returns a list of irreducible AbstractDivisors on the abstractCubic
     dlist := apply(select(partitions(3*a-d),p->#p<=6),q-> {a} | toList q | splice{(6-#q):0});    
-    apply(dlist,L -> divisorClass(L,abstractCubic))
+    Lad := apply(dlist,L -> abstractDivisor(L,abstractCubic));
+    select(Lad, ad-> irreducibleOnCubic ad)
 )
-
 
 beginDocumentation()
 
 TEST ///
   X = abstractQuadric
   R = QQ[a,b]
-  C = divisorClass({a,b},X)
+  C = abstractDivisor({a,b},X)
   assert(degree C == a+b)
   assert(genus C == (a-1)*(b-1))
   assert(chi C == (a+1)*(b+1))
@@ -252,40 +278,38 @@ TEST ///
 TEST ///
   X = abstractCubic
   R = QQ[a,b_1..b_6]
-  C = divisorClass(gens R,X)
+  C = abstractDivisor(gens R,X)
   degree C
   genus C
-  factor chi C
+  chi C
 ///
 
 TEST ///
   S = ZZ/32003[a..d]
-  X = realizeSurface(abstractCubic, Ring => S)
-
-  C = divisorClass({3,1,1,1,0,0,0},abstractCubic)
+  X = realize(abstractCubic, Ring => S)
+  C = abstractDivisor({3,1,1,1,0,0,0},abstractCubic)
   irreducibleOnCubic C
   assert(degree C == 6)
   assert(genus C == 1)
-  betti(I = realize(C,X))
+  I = realize(C,X)
   isSmooth I
-  betti res I
+  betti res ideal I
   assert(degree I == degree C)
   assert(genus I == genus C)
 ///
 
 TEST ///
   S = ZZ/32003[a..d]
-  X = realizeSurface(abstractCubic, Ring => S)
-
-  C = divisorClass({2,1,1,1,0,0,0},abstractCubic)
+  X = realize(abstractCubic, Ring => S)
+  C = abstractDivisor({2,1,1,1,0,0,0},abstractCubic)
   irreducibleOnCubic C
   (degree C, genus C)
   I = realize(C,X)
-  betti I
-  isSmooth I
-  betti res I
-  assert(degree I == degree C)
-  assert(genus I == genus C)
+  betti ideal I
+  isSmooth ideal I
+  betti res ideal I
+  assert(degree ideal I == degree C)
+  assert(genus ideal I == genus C)
 ///
 
 end--
@@ -295,11 +319,10 @@ needsPackage "SpaceCurves"
 check "SpaceCurves"
 
 S = ZZ/32003[x_0..x_3]
-X = realizeSurface(abstractCubic, Ring => S)
+X = realize(abstractCubic, Ring => S)
 a = 6
-d = 10
-L=realize(a,d,X);#L
-netList L
-
-
+time Lrd = flatten apply({10,11,12},d-> (
+	Lad := irreducibleDivisorClassesOnCubic(a,d);
+	apply(Lad, ad -> realize(ad,X))));    -- used 3.90876 seconds
+dgTable Lrd	
 
