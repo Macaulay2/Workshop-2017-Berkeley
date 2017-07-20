@@ -119,15 +119,14 @@ adicDigit = method( TypicalValue => ZZ )
 
 --Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
 adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
-(
-    if x < 0 or x > 1 then error "adicDigit: Expected x in [0,1]";     
-    if x == 0 then return 0;	
-    local y;
-    if fracPart( p^e*x ) != 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x );
-    if fracPart( p^e*x ) == 0 then y = floor( p^e*x ) - p*floor( p^(e-1)*x ) - 1;
-    if fracPart( p^(e-1)*x ) == 0 then y = p-1;
-    y	  
-)
+    ( 
+        if x < 0 or x > 1 then error "adicDigit: Expected last argument in [0,1]";
+        if x==0 then return 0;
+        (adicTruncation(p, e, x) - adicTruncation(p, e-1, x))*p^e
+    )
+
+adicDigit ( ZZ, ZZ, ZZ ) := ZZ => ( p, e, x ) ->
+        adicDigit(p,e,x/1)
 
 --Creates list containing e-th digits of non-terminating base p expansion of list of numbers.
 adicDigit ( ZZ, ZZ, List ) := ZZ => ( p, e, u ) -> apply( u, x -> adicDigit( p, e, x ) )
@@ -165,19 +164,15 @@ adicTruncation = method( TypicalValue => QQ )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational number, unless that number is zero.
 
-adicTruncation ( ZZ, ZZ, ZZ ) := QQ => ( p, e, x ) -> 
-(    
-    if x < 0 then error "adicTruncation: Expected x nonnegative";
-    if x==0 then 0 else
-    ( ceiling( p^e*x ) - 1 )/p^e    	
-)
-
 adicTruncation ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
     if x < 0 then error "adicTruncation: Expected x nonnegative";
     if x==0 then 0 else
     ( ceiling( p^e*x ) - 1 )/p^e    	
 )
+
+adicTruncation( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
+    adicTruncation(p,e,x/1)
 
 --truncation threads over lists.
 adicTruncation ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
