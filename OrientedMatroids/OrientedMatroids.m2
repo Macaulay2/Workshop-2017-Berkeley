@@ -36,31 +36,38 @@ net OrientedMatroid := X -> (
 orientedMatroid = method(Options => {})
 
 -- still need to finish adapting
-orientedMatroid = method(Options => {symbol EntryMethod => "bases", symbol TargetRank => -1})
-orientedMatroid (List, List) := Matroid => opts -> (E, B) -> (
-	if #B > 0 and not instance(B#0, Set) then B = B/(l -> set l)
-	r := if opts.TargetRank >= 0 then opts.TargetRank else if #B > 0 then #(B#0) else -1 -- this seems wrong
+orientedMatroid = method(Options => {symbol TargetRank => -1})
+-- inputing chirotope
+orientedMatroid (List, HashTable) := OrientedMatroid => opts -> (E, B) -> (
+	--if #B > 0 and not instance(B#0, Set) then B = B/(l -> set l)
+	--r := if opts.TargetRank >= 0 then opts.TargetRank else if #B > 0 then #(B#0) else -1 -- this seems wrong
+	r := if opts.TargetRank >= 0 then opts.TargetRank else #((keys B)_0); 
 	E' := set(0..<#E);
-	N := {};
-	B' := if opts.EntryMethod == "bases" then (
-		if #B == 0 then error "There must be at least one basis element" else B
-	) else if opts.EntryMethod == "circuits" then (
-		if #B == 0 then {E'}
-		else (
-			(N, r) = nonbasesFromCircuits(B, #E, TargetRank => opts.TargetRank); -- have to fix this
-			toList(set subsets(E', r) - N)
-		)
-	);
 	M := new OrientedMatroid from {
 		symbol ground => E',
 		symbol groundSet => E,
-		symbol rk => , -- how to put this in?
+		symbol rk => r , -- how to put this in?
 		cache => new CacheTable
 	};
-    	if opts.EntryMethod == "bases" then (
-	    M.cache.bases = B);
+    	M.cache.chirotope = B;
+	M
+)
+
+-- 2nd list is circuits
+orientedMatroid (List,List) := Matroid => opts -> (E, B) -> (
+	--if #B > 0 and not instance(B#0, Set) then B = B/(l -> set l)
+	--r := if opts.TargetRank >= 0 then opts.TargetRank else if #B > 0 then #(B#0) else -1 -- this seems wrong
+	r := if opts.TargetRank >= 0 then opts.TargetRank else #((keys B)_0); 
+	E' := set(0..<#E);
+	M := new OrientedMatroid from {
+		symbol ground => E',
+		symbol groundSet => E,
+		symbol rk => r , -- how to put this in?
+		cache => new CacheTable
+	};
+    	M.cache.chirotope = B;
 	if opts.EntryMethod == "circuits" then (
-		M.cache.circuits = B);
+		M.cache.circuits = B');  -- issue here chirotope is a hash table; circuits are vectors
 	M
 )
 
@@ -165,5 +172,8 @@ C = matrix{{0,0,0,0,1},{0,0,0,1,1},{1,2,3,4,5}}
 matrix circuitsFromMatrix C
 n = numColumns A; r = rank A;
 H = chirotopeFromMatrix A
+M =orientedMatroid(entries transpose A, H)
+M.cache.chirotope
+
 C = circuitsFromChirotope (H, n, r)
 prod (C_0, C_1)
