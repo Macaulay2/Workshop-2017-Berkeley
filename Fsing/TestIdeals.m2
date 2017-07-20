@@ -70,11 +70,9 @@ export{
 --ethRootFunctions (EthRoots.m2)
     "ascendIdeal", --Karl (still needs more tests / documentation)
     "AscentCount",
-    "boundLargestCompatible", ---MK
---    "frobeniusRootRingElements",   (now an internal function)
+    --"boundLargestCompatible", ---MK (now in Fpure)
     "FrobeniusRootStrategy",  
     "frobeniusRoot",  
-    "getFieldGenRoot",
     "minimalCompatible",
     "MonomialBasis",	
     "Substitution",
