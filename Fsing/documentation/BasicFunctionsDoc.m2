@@ -41,8 +41,9 @@ doc ///
 doc ///
     Key
         adicDigit
-        (adicDigit ZZ, ZZ, QQ)
-        (adicDigit ZZ, ZZ, List)
+        (adicDigit, ZZ, ZZ, QQ)
+        (adicDigit, ZZ, ZZ, ZZ)
+        (adicDigit, ZZ, ZZ, List)
     Headline
         computes the digit of the non-terminating expansion of a number in (0,1] in a given base
     Usage 
@@ -59,9 +60,9 @@ doc ///
         :ZZ
     Description
         Text    
-            If x=0, then adicDigit(p,e,x) returns 0.  If x is in (0,1], then it returns the coefficient of p^(-e-1) in the non-terminating base p expansion of x.  If L is a list, this function returns a list where this function is applied to each element of the list. 
-    Example
-        adicDigit(5,4,1/3)
+            The command adicDigit(p,e,0) returns 0.  If x is in (0,1], then adicDigit(p,e,x) returns the coefficient of p^(-e-1) in the non-terminating base p expansion of x.  If L is a list, this function returns a list where this function is applied to each element of the list. 
+        Example
+            adicDigit(5,4,1/3)
 ///
 
 
