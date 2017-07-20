@@ -143,21 +143,6 @@ doc ///
             Finally, sometimes you would like to specify the ambient canonical module (and choice of u) across multiple calls of testModule.  Those are what the $canIdeal$ or $u1$ can be used to specify.
 ///
 
-doc ///
-    Key
-        [testModule, FrobeniusRootStrategy]
-    Headline
-        option to control how Frobenius roots are called in other functions
-    Usage
-        testElement(..., FrobeniusRootStrategy=>S)
-    Inputs
-        S: Symbol
-    Outputs
-        :Ideal
-    Description
-        Text
-            Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.        
-///    
 
 doc ///
     Key
