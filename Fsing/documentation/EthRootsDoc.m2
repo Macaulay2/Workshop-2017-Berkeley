@@ -15,6 +15,9 @@
 doc ///
     Key
         ascendIdeal
+        (ascendIdeal, ZZ, RingElement, Ideal)
+        (ascendIdeal, ZZ, ZZ, RingElement, Ideal)
+        (ascendIdeal, ZZ, BasicList, BasicList, Ideal)
     Headline
         Finds the smallest phi-stable ideal containing a given ideal in a quotient of a polynomial ring.
     Usage
@@ -32,7 +35,7 @@ doc ///
         :Ideal
     Description
         Text
-            Let phi be the p^(-e) linear map obtained by multiplying e-th Frobenius trace on a polynomial ring by h.  Then this function finds the smallest phi-stable ideal containing J.  The idea is to consider the ascending chain J, J+phi(J), J+phi(J)+phi^2(J), etc.  We return the stable value.  For instance, this can be used to compute the test ideal.  Note if the ideal J is not an ideal in a polynomial ring, the function will do the computation with e-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
+            Let $\phi$ be the $p^(-e)$ linear map obtained by multiplying $e$-th Frobenius trace on a polynomial ring by $h$.  Then this function finds the smallest $\phi$-stable ideal containing $J$.  The idea is to consider the ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), ...$  We return the stable value.  For instance, this can be used to compute the test ideal.  Note if the ideal $J$ is not an ideal in a polynomial ring, the function will do the computation with $e$-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;
@@ -41,13 +44,15 @@ doc ///
             ascendIdeal(1, h, ideal(y^3))
             ascendIdeal(1, h, ideal((sub(y, S))^3))          
         Text
-            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the h passed is a power, h = h^a.  If a is large, we don't want to compute h^a, instead we try to keep the exponent small by only raising it to the minimal power via calling frobeniusRootRingElements.
+            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the h passed is a power, $h = h^a$.  If $a$ is large, we don't want to compute $h^a$, instead we try to keep the exponent small by only raising it to the minimal power via calling {\tt frobeniusRootRingElements}.
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;
             R = S/ideal(g);
             ascendIdeal(1, 4, g, ideal(y^3))
-            ascendIdeal(1, 4, g, ideal((sub(y, S))^3))   
+            ascendIdeal(1, 4, g, ideal((sub(y, S))^3)) 
+        Text
+            More generally, if the $h$ is a product of powers, $h = h_1^{a_1} h_2^{a_2} ...$ then you should pass {\tt ascendIdeal} the list of exponents and the list of bases.
         Text
             This method appared first in the work of Mordechai Katzman on star closure.  
 ///

@@ -10,9 +10,9 @@
 --it returns the lift of the canonical module to the ambient ring
 --needsPackage "Divisor";
 
-canonicalIdeal = method();
+canonicalIdeal = method(Options=>{MTries=>10});
 
-canonicalIdeal(Ring) := (R1) -> (
+canonicalIdeal(Ring) := o->(R1) -> (
     S1 := ambient R1;
 	I1 := ideal R1;
 	dR := dim R1;
@@ -24,8 +24,8 @@ canonicalIdeal(Ring) := (R1) -> (
 	else (
 		degList = apply(varList, q -> (degree(q))); );
 	M1 := (Ext^(dS - dR)(S1^1/I1, S1^{-(sum degList)}))**R1;
-	embedAsIdeal(M1)
-)
+	embedAsIdeal(M1, MTries=>o.MTries)
+);
 
 
 --the following function computes the u of a canonical ideal in a polynomial ring
