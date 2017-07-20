@@ -862,7 +862,7 @@ doc ///
      the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
    Outputs
     psi: Ideal
-   Description --RRG up to here in edits
+   Description
     Example
      S = ZZ/5[x,y,z]
      i = 2
@@ -871,7 +871,7 @@ doc ///
     Example
      S = ZZ/5[x,y,z]
      i = 2
-     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
+     L = {x^3+y^3+z^3,x*y^2+y*z^2+z*x^2}
      psi = dividedKerInDegree(i,L)
     Example
      S = ZZ/5[x,y,z]
