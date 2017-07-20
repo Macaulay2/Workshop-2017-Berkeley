@@ -137,6 +137,7 @@ doc ///
         [HSLGModule, FrobeniusRootStrategy]
         [isFpure, FrobeniusRootStrategy]
         [isFinjective, FrobeniusRootStrategy]
+        [ascendIdeal, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
@@ -145,6 +146,7 @@ doc ///
         HSLGModule(..., FrobeniusRootStrategy=>S)        
         isFpure(..., FrobeniusRootStrategy=>S)
         isFinjective(..., FrobeniusRootStrategy=>S)        
+        ascendIdeal(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Outputs

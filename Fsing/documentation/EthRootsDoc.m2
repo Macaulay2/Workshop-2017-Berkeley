@@ -57,6 +57,37 @@ doc ///
             This method appared first in the work of Mordechai Katzman on star closure.  
 ///
 
+doc ///
+    Key
+        [ascendIdeal, AscentCount]
+    Headline
+        return how many times it took before the ascent of the ideal stabilized
+    Usage
+        ascendIdeal(..., AscentCount=>b)
+    Inputs
+        b:Boolean
+    Outputs
+        :Ideal
+        :List
+    Description
+        Text
+            By default (when {\tt AscentCount => true}), ascendIdeal just returns the stable (ascended) ideal.  If instead you set {\tt AscentCount=>true} then it returns a list.  The first value is the stable ideal.  The second is how many steps it took to reach that ideal.
+        Example
+            R = ZZ/5[x,y,z];
+            J = ideal(x^12,y^15,z^21);
+            f = y^2+x^3-z^5;
+            ascendIdeal(1, f^4, J)
+            ascendIdeal(1, f^4, J, AscentCount=>true)
+///
+
+doc ///
+    Key
+        AscentCount
+    Headline
+        an option for ascendIdeal
+    SeeAlso
+        [ascendIdeal, AscentCount]        
+///        
 
 
 doc ///
