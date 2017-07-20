@@ -45,9 +45,12 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
 -- zeroing out first column under (0,0)
     for j from 1 to #h-1 do 
          (M#(1,j-1)= M#(1,j-1)-M#(0,j);
+	  if M#(1,j-1) < 0 then (
+	      error "Negative number in Betti Table \n
+	      not valid Hilbert function");
 	  M#(0,j)=0);
 -- check for zeros
-    for j from 0 to #h-2 do (
+    for j from 0 to #h-1 do (
 	for i from 1 to n do (
 	    if M#(i-1,j) == 0 then (
 		t = true;
@@ -56,7 +59,12 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
 		    );
 		if t then (
 		    for k from i to n do (
-			M#(k-1,j+1) = M#(k-1,j+1)-M#(k,j);
+			if (j < #h-1) then (
+			    M#(k-1,j+1) = M#(k-1,j+1)-M#(k,j);
+			    if M#(k-1,j+1) < 0 then (
+				error "Negative number in Betti Table
+				\n not valid Hilbert function");
+			    );
 			M#(k,j) = 0
 			);
 		    );
@@ -66,7 +74,6 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
 	    
     new HashTable from M 
     )	
-
 
 makeBetti = H ->(
     new BettiTally from apply(keys H, h-> (h_0,{h_0+h_1},h_0+h_1)=> H#h)
@@ -134,6 +141,63 @@ doc ///
     Caveat
         This package is underdevelopment.
 ///
+
+doc ///
+    Key
+    	maxBetti
+    Headline
+    	creates HashTable representing a Betti table of the maximum
+	possible betti numbers
+    Usage
+    	H = maxBetti(n,lst)
+    Inputs
+    	n:ZZ
+	    representing the dimension of a ring
+	lst:List
+	    representing the first nonzero values of the Hilbert
+	    function
+    Outputs
+    	H:Hashtable
+    Description
+    	Text
+	    Given an ZZ representing the dimension of a ring and
+	    a list representing values of a Hilbert function this
+	    returns a HastTable representing the maximum possible
+	    betti numbers
+	    
+	Example
+	    H = maxBetti(3,{1,3,3})	
+///
+
+///
+
+doc ///
+    Key
+    	maxBettiCyclic
+    Headline
+    	creates HashTable representing a Betti table of the maximum
+	possible betti numbers assuming the module is cyclic
+    Usage
+    	H = maxBettiCyclic(n,lst)
+    Inputs
+    	n:ZZ
+	    representing the dimension of a ring
+	lst:List
+	    representing the first nonzero values of the Hilbert
+	    function
+    Outputs
+    	H:Hashtable
+    Description
+    	Text
+	    Given an ZZ representing the dimension of a ring and
+	    a list representing values of a Hilbert function this
+	    returns a HastTable representing the maximum possible
+	    betti numbers assuming a cyclic module
+	    
+	Example
+	    H = maxBettiCyclic(3,{1,3,3})	
+///
+
 
 doc ///
     Key
@@ -205,15 +269,18 @@ doc ///
 	Example
 	    segreIdeal({1,1})
 	    segreIdeal({1,2})  	
-///
+
 
 TEST ///
     R = QQ[x_{0},x_{1},x_{2},x_{3}]
     I = ideal(x_{1}*x_{2}-x_{0}*x_{3}
     assert ( sub(segreIdeal({1,1}),R) == I)
+
 ///
 end
 
+maxBetti(3,{1,3,3})
+maxBettiCyclic(3,{1,3,3})
 
 searchCone(H)
 
