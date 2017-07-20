@@ -1,6 +1,7 @@
 doc ///
     Key
-        canonicalIdeal 
+        canonicalIdeal
+        (canonicalIdeal, Ring)
     Headline
         Given a ring, produces an ideal isomorphic to the canonical module.
     Usage
@@ -11,7 +12,7 @@ doc ///
         :Ideal
     Description
         Text
-            Given a ring $R$, typically a domain, this produces an ideal isomorphic to the canonical module of $R$.  This will not always produce the same ideal, especially in a non-domain.  
+            Given a ring $R$, typically a domain, this produces an ideal isomorphic to the canonical module of $R$.  This will not always produce the same ideal, especially in a non-domain.  It uses the function {\tt embedAsIdeal} from Divisor.m2.
         Example
             S = QQ[x,y,u,v];
             T = QQ[a,b];
@@ -24,6 +25,32 @@ doc ///
             R = ZZ/13[x,y,z]/ideal(x*y, x*z, y*z);
             canonicalIdeal(R)     
 ///
+
+doc ///
+    Key
+        [canonicalIdeal, MTries]
+    Headline
+        how many times to try to embed a canonical module as an ideal
+    Usage
+        canonicalIdeal(..., MTries=>n)
+    Inputs
+        n:ZZ
+    Outputs
+        :Ideal
+    Description
+        Text
+            The option MTries is passed to embedAsIdeal.
+///      
+
+doc ///
+    Key
+        MTries
+    Headline
+        an option to pass through to embedAsIdeal
+    Description
+        Text
+            Used when embedding a module (such as the canonical module) as an ideal.  This is passed through to {\tt embedAsIdeal} from the Divisor package.
+///            
 
 doc ///
     Key

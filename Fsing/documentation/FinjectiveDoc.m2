@@ -160,9 +160,23 @@ doc ///
         :Boolean
     Description
         Text
-            if {\tt CanonicalStrategy=>Katzman} which is the default behavior, then the Frobenius action on the top local cohomology (bottom $Ext$) is computed via the method of Katzman.  If it is set to anything else, it is simply brute forced in Macaulay2 using the fuctoriality of Ext.  {\tt CanonicalStrategy=>Katzman} typically is much faster.
+            If {\tt CanonicalStrategy=>Katzman} which is the default behavior, then the Frobenius action on the top local cohomology (bottom $Ext$) is computed via the method of Katzman.  If it is set to anything else, it is simply brute forced in Macaulay2 using the fuctoriality of Ext.  {\tt CanonicalStrategy=>Katzman} typically is much faster.
         Example
              R = ZZ/5[x,y,z]/ideal(y^2*z + x*y*z-x^3)
             time isFinjective(R)
             time isFinjective(R, CanonicalStrategy=>null)
 ///
+
+doc ///
+    Key
+        CanonicalStrategy
+    Headline
+        an option for isFinjective
+///
+
+doc ///
+    Key
+        Katzman
+    Headline
+        a valid value for the option CanonicalStrategy
+///        
