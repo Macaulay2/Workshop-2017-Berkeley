@@ -27,7 +27,7 @@ export {
     "DivisorClass",
     "ExtraData",
     "IntersectionPairing",
-    "irreducibleDivisorClassesOnCubic",
+    "effectiveDivisors",
     "dgTable"
     }
 
@@ -247,7 +247,19 @@ realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
         )
     );
     if X.AbstractSurface === abstractQuadric then (
-    	return "Not implemented yet";	
+	RC := ring X.Ideal;
+	kk := coefficientRing RC;
+	z := getSymbol "z";
+	cox := kk(monoid[z_0..z_3,Degrees=>{{0,1},{0,1},{1,0},{1,0}}]);
+    	segre := {cox_0*cox_2,cox_0*cox_3,cox_1*cox_2,cox_1*cox_3};
+	I := ideal random(C.DivisorClass,cox);
+	if I == 0 then return null;
+	segre = apply(segre, p -> sub(p,cox/I));
+	return new RealizedDivisor from {
+	    symbol AbstractDivisor => C,
+	    symbol RealizedSurface => X,
+	    symbol Ideal => kernel map(cox/I,RC,segre)
+	};
     ); 
     error "not implemented yet for your type of surface"
 )
@@ -256,12 +268,28 @@ realize AbstractDivisor := opts -> C -> (
     realize(C,X)
     )
 
-irreducibleDivisorClassesOnCubic = method()
-irreducibleDivisorClassesOnCubic (ZZ,ZZ) := (a,d) -> (
-    --returns a list of irreducible AbstractDivisors on the abstractCubic
-    dlist := apply(select(partitions(3*a-d),p->#p<=6),q-> {a} | toList q | splice{(6-#q):0});    
-    Lad := apply(dlist,L -> abstractDivisor(L,abstractCubic));
-    select(Lad, ad-> irreducibleOnCubic ad)
+effectiveDivisors = method()
+effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
+    --List all RealizedDivisors of the RealizedSurface X satisfying Data
+    if X.AbstractSurface === abstractCubic then (
+	--Data = {degree of plane model,space degree}
+	assert(#Data == 2);
+	a := Data#0;
+    	d := Data#1;
+    	dlist := apply(select(partitions(3*a-d),p->#p<=6),q-> {a} | toList q | splice{(6-#q):0});    
+    	Lad := apply(dlist,L -> abstractDivisor(L,abstractCubic));
+    	Lad = select(Lad, ad-> irreducibleOnCubic ad);
+    	return apply(Lad, ad -> realize(ad,X));
+    );
+    if X.AbstractSurface === abstractQuadric then (
+	--Data = {degree}
+	assert(#Data == 1);
+	return for a from 0 to first Data list (
+       	    C := abstractDivisor({a,first Data - a},abstractQuadric);
+	    realize(C,X)
+	)
+    );
+    error "not implemented yet for your type of surface"	
 )
 
 beginDocumentation()
@@ -312,17 +340,32 @@ TEST ///
   assert(genus ideal I == genus C)
 ///
 
+TEST ///
+  S = ZZ/32003[x_0..x_3];
+  X = realize(abstractCubic, Ring => S);
+  a = 6;
+  d = 9;
+  Ld = effectiveDivisors(X,{a,d});   
+  dgTable Ld
+///
+
 end--
 
 restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
-
 S = ZZ/32003[x_0..x_3]
 X = realize(abstractCubic, Ring => S)
 a = 6
-time Lrd = flatten apply({10,11,12},d-> (
-	Lad := irreducibleDivisorClassesOnCubic(a,d);
-	apply(Lad, ad -> realize(ad,X))));    -- used 3.90876 seconds
-dgTable Lrd	
+time Lrd = flatten apply({10,11,12}, d -> 
+    effectiveDivisors(X,{a,d}));  -- used 3.90876 seconds
+dgTable Lrd
+
+
+restart
+needsPackage "SpaceCurves"
+S = ZZ/32003[x_0..x_3]	
+Y = realize(abstractQuadric, Ring => S)
+time Lrd = flatten apply(6, d -> effectiveDivisors(Y,{d+1}));
+dgTable Lrd
 
