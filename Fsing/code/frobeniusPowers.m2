@@ -85,47 +85,58 @@ stableIdeal = { FrobeniusRootStrategy => Substitution } >> o -> ( e, I, J ) ->
 
 --Outputs the generalized Frobenius power of an ideal; either the N-th Frobenius power of N/p^e-th one.
 
-frobeniusPower = method( Options => { FrobeniusPowerStrategy => Naive, FrobeniusRootStrategy => Substitution } );
+frobeniusPower = method( 
+    Options => { FrobeniusPowerStrategy => Naive, FrobeniusRootStrategy => Substitution },
+    TypicalValue => Ideal 
+);
 
 --Computes the integral generalized Frobenius power I^[N]
-frobeniusPower ( ZZ, Ideal ) := opts -> ( N, I ) -> 
+frobeniusPower ( ZZ, Ideal ) := Ideal => opts -> ( N, I ) -> 
 (
-     R := ring I;
-     p := char R;
-     G := first entries mingens I;
-     if #G == 0 then return ideal( 0_R );
-     if #G == 1 then return ideal( fastExp( N, G#0 ) );
-     E := adicExpansion( p, N );
-     product( #E, m -> frobenius( m, I^( E#m ) ) )
+    R := ring I;
+    p := char R;
+    if p == 0 then 
+        error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
+    G := first entries mingens I;
+    if #G == 0 then return ideal( 0_R );
+    if #G == 1 then return ideal( fastExp( N, G#0 ) );
+    E := adicExpansion( p, N );
+    product( #E, m -> frobenius( m, I^( E#m ) ) )
 )
 
 --Computes the generalized Frobenius power I^[N/p^e]
-frobeniusPower( ZZ, ZZ, Ideal ) := opts -> ( e, N, I ) ->
-(
-     R := ring I;
-     p := char R;
-     G := first entries mingens I;
-     if #G == 0 then return ideal( 0_R );
-     rem := N % p^e;
-     M := N // p^e;
-     J := frobeniusPower( M, I );  --component when applying Skoda's theorem
-     
+frobeniusPower( ZZ, ZZ, Ideal ) := Ideal => opts -> ( e, N, I ) ->
+(   
+    if N < 0 or e < 0 then error "frobeniusPower: expected nonnegative number(s).";
+    R := ring I;
+    p := char R;
+    if p == 0 then 
+        error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
+    G := first entries mingens I;
+    if #G == 0 then return ideal( 0_R );
+    rem := N % p^e;
+    M := N // p^e;
+    J := frobeniusPower( M, I );  --component when applying Skoda's theorem     
     if opts.FrobeniusPowerStrategy == Safe then 
     (
 	E := adicExpansion( p, rem );
-	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ),  FrobeniusRootStrategy => opts.FrobeniusRootStrategy ) );  --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
-                                                                            --using the base p expansion of rem/p^e < 1
+	J * product( #E, m -> frobeniusRoot( e-m, I^( E#m ), FrobeniusRootStrategy => opts.FrobeniusRootStrategy ) );  
+        --step-by-step computation of generalized Frobenius power of I^[rem/p^e]
+        --using the base p expansion of rem/p^e < 1
     )
     else J * frobeniusRoot( e, frobeniusPower( rem, I ), FrobeniusRootStrategy => opts.FrobeniusRootStrategy )  --Skoda to compute I^[N/p^e] from I^[rem/p^e] 
 )
 
 --Computes the generalized Frobenius power I^[t] for a rational number t 
-frobeniusPower( QQ, Ideal ) := opts -> ( t, I ) ->
+frobeniusPower( QQ, Ideal ) := Ideal => opts -> ( t, I ) ->
 (
+    if t < 0 then error "frobeniusPower: expected nonnegative number(s).";
     p := char ring I;
+    if p == 0 then 
+        error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
     ( a, b, c ) := toSequence divideFraction( p, t ); --write t = a/(p^b*(p^c-1))
-     if c == 0 then frobeniusPower( b, a, I, opts )  --if c = 0, call simpler function
-    	else 
+    if c == 0 then frobeniusPower( b, a, I, opts )  --if c = 0, call simpler function
+        else 
 	(
 	    rem := a % ( p^c - 1 );      
 	    quot := a // ( p^c - 1 );     
