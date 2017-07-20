@@ -134,10 +134,13 @@ doc ///
     Key
         [testIdeal, FrobeniusRootStrategy]
         [isFregular, FrobeniusRootStrategy]
+        [isFpure, FrobeniusRootStrategy]
     Headline
-        controls the strategy for computing the Frobenius root of an ideal within the testIdeal call
+        controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
-        testElement(..., FrobeniusRootStrategy=>S)
+        testIdeal(..., FrobeniusRootStrategy=>S)
+        isFregular(..., FrobeniusRootStrategy=>S)
+        isFpure(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Outputs
@@ -214,7 +217,7 @@ doc ///
         (isFregular, QQ, RingElement)
         (isFregular, List, List)
     Headline
-        computes checks if a ring or pair is strongly F-regular
+        checks if a ring or pair is strongly F-regular
     Usage
         isFregular(R)
         isFregular(t, f)
@@ -279,4 +282,62 @@ doc ///
             g = y^2 - x^3;
             isFregular(5/6, g)
             isFregular(5/6, g, IsLocal=>true)
-///        
+///    
+
+doc ///
+    Key
+        isFpure
+        (isFpure, Ring)
+        (isFpure, Ideal)        
+    Headline
+        checks if a ring is F-pure
+    Usage
+        isFpure(R)
+        isFpure(I)
+    Inputs
+        R: Ring
+        I: Ideal
+    Outputs
+        :Boolean
+    Description
+        Text
+            Given a ring $R$, this computes whether the ring is F-pure.
+        Example
+            R = ZZ/5[x,y,z]/ideal(x^2+y*z);
+            isFpure(R)
+        Example
+            R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
+            isFpure(R)
+        Example
+            R = ZZ/5[x,y,z]/ideal(x^3+y^3+z^3);
+            isFpure(R)
+        Text
+            Alternately, one may pass it the defining ideal of a ring.
+        Example
+            S = ZZ/2[x,y,z];
+            isFpure(ideal(y^2-x^3))
+            isFpure(ideal(z^2-x*y*z+x*y^2+x^2*y))
+///
+
+doc ///
+    Key
+        [isFpure, IsLocal]
+    Headline
+        controls whether F-purity is checked at the origin or everywhere
+    Usage
+        isFpure(..., IsLocal=>b)
+    Inputs
+        b: Boolean
+    Outputs
+        :Boolean
+    Description
+        Text
+            When checking whether a ring F-pure, the default option is to check this everywhere.  If you set IsLocal=>true (default is false), it will only check this at the origin.
+        Example
+            R = ZZ/5[x,y,z]/ideal((x-1)^3+(y-2)^3+z^3);
+            isFpure(R)
+            isFpure(R, IsLocal=>true)
+            S = ZZ/13[x,y,z]/ideal(x^3+y^3+z^3);
+            isFpure(S)
+            isFpure(S, IsLocal=>true)
+///    
