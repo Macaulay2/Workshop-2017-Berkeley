@@ -120,8 +120,9 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
     curHSL := 1;
     curHSLList := null;
     i := 0;
+
     while (i < #u1) do (
-        curHSLList = HSLGModule(ccLCM, {floor((pp^(ccLCM) - 1)/(pp - 1))} | newExpList, {u1#i} | fList, canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
+        curHSLList = HSLGModule(ccLCM, {floor((pp^(ccLCM) - 1)/(pp - 1))} | newExpList, {u1#i} | apply(fList, gg -> sub(gg, S1)), canIdeal, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         curIdeal = curIdeal + curHSLList#0;
         curHSL = lcm(curHSL, curHSLList#3);
         i = i+1;
@@ -134,18 +135,20 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
 --the list of exponents of the u's (most frequently 1)
 --the list of u's
 --the canonical ideal (or whatever you want to run HSL on), this one is 
+--it computes sigma(canIdeal, f^s g^t h^l ...)
 HSLGModule(ZZ, List, List, Ideal) :=  o-> (ee, expList, u1, canIdeal) -> (
     R1 := ring canIdeal;
     S1 := ambient R1;
     I1 := ideal R1;
     J1 := sub(canIdeal, S1) + I1;
+    u2 := apply(u1, gg -> sub(gg, S1));
     --now we do the HSLG computation
     idealIn := J1;
     idealOut := frobeniusRoot(ee, expList, u1, idealIn, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
     HSLCount := 0;
     while (not (idealIn + I1 == idealOut + I1)) do (
         idealIn = idealOut;
-        idealOut = frobeniusRoot(ee, expList, u1, idealIn, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
+        idealOut = frobeniusRoot(ee, expList, u2, idealIn, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
         HSLCount = HSLCount+1;
     );
     {sub(idealIn, R1), canIdeal, u1, HSLCount}
