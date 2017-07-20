@@ -35,8 +35,8 @@ export {
     "lowerBoundResurgence",
     "exponentsMonomialGens", 
     "symbolicDefect",
+    "symbolicPolyhedron", 
     "isGorenstein",
-    "symbPoly", 
     "waldschmidt", 
     "SampleSize"
     }
@@ -339,16 +339,11 @@ isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 symbolicDefect = method(TypicalValue => ZZ)
 symbolicDefect(Ideal,ZZ) := (I,n) -> (
     R := ring I;
-    
     Y := fastPower(I,n);
-     
-     S := R/Y;
-      
-      F := map(S,R);
-      
-      X := symbolicPower(I,n);
-      
-      # flatten entries mingens F(X)
+    S := R/Y;
+    F := map(S,R);
+    X := symbolicPower(I,n);
+    # flatten entries mingens F(X)
       )
 
 -- To be placed in Depth.m2
@@ -390,18 +385,18 @@ isGorenstein R
 -- Input: an ideal or a  monomial ideal 
 -- Output: a Polyhedron
 
-symbPoly = method();
+symbolicPolyhedron = method();
 
-symbPoly Ideal := Polyhedron => I -> (
+symbolicPolyhedron Ideal := Polyhedron => I -> (
 if not isMonomial(I) then ( 
-    print "Error -- symbPoly cannot be applied for an ideal that is not monomial"; 
+    print "Error -- symbolicPolyhedron cannot be applied for an ideal that is not monomial"; 
     return
     );   
-return symbPoly monomialIdeal I
+return symbolicPolyhedron monomialIdeal I
 )
 
 
-symbPoly MonomialIdeal := Polyhedron => I -> ( 
+symbolicPolyhedron MonomialIdeal := Polyhedron => I -> ( 
 Pd:=primaryDecomposition I;
 P:=apply(Pd, a-> radical a);
 maxP:={};
@@ -421,7 +416,7 @@ waldschmidt = method(Options=>{SampleSize=>10});
 waldschmidt Ideal := opts -> I -> (
 if isMonomial I then ( 
     print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
-    N:=symbPoly I;
+    N:=symbolicPolyhedron I;
     return min apply (entries transpose vertices N, a-> sum  a)
     )
 else (
@@ -1181,6 +1176,42 @@ doc ///
 
 ///
 
+doc ///
+     Key 
+         symbolicPolyhedron
+	 (symbolicPolyhedron,Ideal)
+	 (symbolicPolyhedron,MonomialIdeal)
+     Headline 
+         Computes the symbolic polyhedron for a monomial ideal. 
+     Usage 
+         symbolicPolyhedron(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :Polyhedron 
+     Description	  
+       Text
+	   The symbolic polyhedron associated to a monomial ideal I is defined in the paper "Symbolic Powers of Monomial Ideals" 
+	   by S. M. Cooper, R. J. D. Embree, H. T. Ha, A. H. Hoefel. The symbolic polyhedron contains the exponent vector of any
+	   monomial in I^n scaled by 1/n.
+	  
+       Text
+       	   This function uses the Polyhedra package and returns an object of type Polyhedron.
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   symbolicPolyhedron(I)
+       Text
+       	   This function uses the Polyhedra package and returns an object of type Polyhedron.
+       
+       Example 
+	   R = QQ[x,y,z]
+	   I = ideal(x*y,y*z,x*z)
+	   symbolicPolyhedron(I)  
+     SeeAlso 
+	  Polyhedra
+///
 
 
 
