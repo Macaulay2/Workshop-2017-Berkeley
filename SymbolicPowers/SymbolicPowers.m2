@@ -1274,7 +1274,26 @@ doc ///
 	  symbolicPolyhedron
 ///
 
-
+doc ///
+   Key
+         symbolicDefect
+        (symbolicDefect, Ideal, ZZ)
+   Headline
+         Given an ideal I and integer m, returns the size of a minimal generating set for the m-th symbolic power of I modulo I^m.
+   Usage
+         symbolicDefect(I,m)
+   Inputs
+         I:Ideal
+         m:ZZ
+   Outputs
+          :ZZ
+             the size of a minimal generating set of the m-th symbolic power of I modulo I^m.
+   Description
+       Example
+         R = QQ[x,y,z]    
+         I = ideal(x*y,x*z,y*z);					      
+	 symbolicDefect(I,2)
+ ///
 
 
 TEST ///
@@ -1413,4 +1432,3 @@ assert(lowerBoundResurgence(I,5)==6/5)
 ///
 
 end
-
