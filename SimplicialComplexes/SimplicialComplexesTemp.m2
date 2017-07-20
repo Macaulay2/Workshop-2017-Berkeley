@@ -25,7 +25,7 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere","dunceHat"}
+export {"simplicialJoin","poincareSphere","dunceHat","suspension"}
 
 -- Jason's area to work in
 
@@ -156,18 +156,21 @@ dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
 
 -- end Jason's work area
 
-simplicialJoin = method()
-simplicialJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
+-- Claudiu's work area
+
+--experts say that we only need | for joining simplicial complexes
+
+externalJoin = method()
+externalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
     R1 := ring S1;
     R2 := ring S2;
     if R1 === R2 then internalJoin(S1,S2) else
     (
-	vars1 := set apply(gens R1,x->toString x);
-	vars2 := set apply(gens R2,x->toString x);
-	if #(vars1 * vars2) > 0 then error"the underlying rings of the simplicial complexes share variables";
 	R := R1 ** R2;
-	i1 := map(R,R1);
-	i2 := map(R,R2);
+	n1 := numgens R1;
+	n2 := numgens R2;
+	i1 := map(R,R1,apply(n1,j -> R_j));
+	i2 := map(R,R2,apply(n2,j -> R_(n1+j)));
 	newS1 := simplicialComplex apply(flatten entries facets S1,f -> i1(f));
 	newS2 := simplicialComplex apply(flatten entries facets S2,f -> i2(f));
 	internalJoin(newS1,newS2)
@@ -183,32 +186,64 @@ internalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) ->
     ) 
 
 
+SimplicialComplex | SimplicialComplex := (S1,S2) -> externalJoin(S1,S2)
+
+cone(SimplicialComplex) := (S) -> (
+    R := ring S;
+    k := coefficientRing R;
+    Q := k(monoid[getSymbol "X"]);
+    point := simplicialComplex {Q_0};
+    S | point
+    )
+
+
+suspension = method()
+suspension(SimplicialComplex):= (S)-> (
+    R := ring S;
+    k := coefficientRing R;
+    Q := k(monoid[getSymbol "X", getSymbol "Y"]);  
+    points := simplicialComplex{Q_0,Q_1};
+    S | points
+    )
+
 end
 
+
+----Claudiu's Test Area
 restart
 installPackage"SimplicialComplexesTemp"
-
-restart
-needsPackage"SimplicialComplexes"
-
 
 r1 = QQ[a,b]
 s1 = simplicialComplex {a,b}
 r2 = QQ[a,c]
 s2 = simplicialComplex {a,c}
-simplicialJoin(s1,s2)
+s1 | s2
+
+cone(s1)
+suspension(s2)
+
+-----
+
 
 ------bug?-----
 restart
 R1 = QQ[a]
 R2 = QQ[a]
-(set gens R1) * (set gens R2)
-
 R = R1 ** R2
 dim R
 i1 = map(R,R1)
 i2 = map(R,R2)
 i1(R1_0) - i2(R2_0)
+
+
+n1 = numgens R1
+n2 = numgens R2
+i1 = map(R,R1,apply(n1,j -> R_j))
+i2 = map(R,R2,apply(n2,j -> R_(n1+j)))
+i1(R1_0) - i2(R2_0)
+
+----end Claudiu's Test Area
+
 
 -- Jason test area --
 
@@ -220,5 +255,8 @@ T = dunceHat(F,Variable => y)
 zero HH_1 S
 zero HH_2 S
 prune HH_3 S
---
+
+
+-- end Jason test area
+
 
