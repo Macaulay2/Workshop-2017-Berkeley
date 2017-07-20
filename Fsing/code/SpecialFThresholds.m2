@@ -30,7 +30,7 @@ diagonalFPT ( RingElement ) := QQ => f ->
       -- w = list of reciprocals of the powers of the variables appearing in f
     fc := firstCarry( p, w );
     if fc == -1 then sum w
-    else sum( truncatedBasePExp( p, fc-1, w ) ) + 1/p^( fc-1 )
+    else sum( adicTruncation( p, fc-1, w ) ) + 1/p^( fc-1 )
 )
 
 
@@ -140,10 +140,10 @@ binomialFPT ( RingElement ) := QQ => g ->
 	if L == -1 then FPT = sum maxPt else
 	(
 	    d := dCalculation( maxPt, L-1, p );
-	    P := truncatedBasePExp( p, d, maxPt );
+	    P := adicTruncation( p, d, maxPt );
 	    P1 := P + { 0, 1/p^d };
 	    P2 := P + { 1/p^d, 0 };
-	    FPT = truncatedBasePExp( p, L-1, sum maxPt ) + calculateEpsilon( P1, P2, v, w )
+	    FPT = adicTruncation( p, L-1, sum maxPt ) + calculateEpsilon( P1, P2, v, w )
      	 )
      );
      monFPT := min apply( selectNonzero( mon ), x -> 1/x );
@@ -337,7 +337,7 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
     	S1=setFTData(ideals_e0,polys);
 	cp=findCPBelow(cp/p+adicDigit(p,e0+1,u)/p,S1) 
     );
-    cp=cp/p^e0+truncatedBasePExp(p,e0,u); -- "zoom out"
+    cp=cp/p^e0+adicTruncation(p,e0,u); -- "zoom out"
     if opt.PrintCP then print(toString cp);
     max apply(cp,a,(c,k)->c/k)
 )

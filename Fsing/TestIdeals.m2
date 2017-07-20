@@ -61,14 +61,14 @@ AuxiliaryFiles=>false
 export{
 --BasicFunctions (BasicFunctions.m2) 
     "adicExpansion",    
-    "digit", 	   
+    "adicDigit", 	   
+    "adicTruncation",
     "divideFraction",
     "floorLog",
     "maxIdeal", 
     "multOrder",
     "NoZeroC", --option to force certain behavior from a function
-    "truncatedBasePExp",
-    
+        
 --ethRootFunctions (EthRoots.m2)
     "ascendIdeal", --Karl (still needs more tests / documentation)
     "AscentCount",

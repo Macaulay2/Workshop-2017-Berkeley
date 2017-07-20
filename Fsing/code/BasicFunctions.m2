@@ -139,18 +139,18 @@ adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) ->
 
 --===================================================================================
 
-truncatedBasePExp = method( TypicalValue => QQ )
+adicTruncation = method( TypicalValue => QQ )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational number.
-truncatedBasePExp ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
+adicTruncation ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
-    if x <= 0 then error "truncatedBasePExp: Expected x>0";
+    if x <= 0 then error "adicTruncation: Expected x>0";
     ( ceiling( p^e*x ) - 1 )/p^e    	
 )
 
 --truncation threads over lists.
-truncatedBasePExp ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
-    apply( u, x -> truncatedBasePExp( p, e, x ) )
+adicTruncation ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
+    apply( u, x -> adicTruncation( p, e, x ) )
 
 --===================================================================================
 
