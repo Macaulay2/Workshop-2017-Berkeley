@@ -27,40 +27,40 @@ newPackage(
 
 export {"simplicialJoin","poincareSphere","dunceHat","suspension",
     "projectivePlane","bjornerExample","hachimoriExample1",
-    "hachimoriExample2","hachimoriExample3","hachimoriExample4"}
+    "hachimoriExample2","hachimoriExample3","hachimoriExample4","ringMap",
+    "simplicialComplexMap","SimplicialComplexMap"}
 
 -- Jason's area to work in
 
+-- New Type to keep track of simplicial maps
 SimplicialComplexMap = new Type of HashTable
 simplicialComplexMap = method(TypicalValue => SimplicialComplexMap)
 
-newSimplicialComplexMap := (S,T,f) ->
-     new SimplicialComplex from {
-	  symbol target => S,
-	  symbol source => T,
-	  symbol ringMap => f,
+-- Internal simplicial map constructor
+newSimplicialComplexMap := (T,S,f) ->
+     new SimplicialComplexMap from {
+	  symbol target => T,
+	  symbol source => S,
+	  ringMap => f,
 	  symbol cache => new CacheTable
 	  }
 
+-- How to make a new simplicial map with some error checking
 simplicialComplexMap (SimplicialComplex,SimplicialComplex,RingMap) := (T,S,f) -> (
-     RT := ring T;
-     RS := ring S;
-     if not RT = target f 
-     then error "target complex's ring does not match target of ring map";
-     if not RS = source f 
-     then error "source complex's ring does not match source of ring map";
+    RT := ring T;
+    RS := ring S;
+    if not RT === target f 
+    then error "target complex's ring does not match target of ring map";
+    if not RS === source f 
+    then error "source complex's ring does not match source of ring map";
 
-    facetsT = apply(flatten entries facets t,fc->face(f(fc)));
-    imageOfFacetsS = apply(flatten entries facets S,fc->face(fc));
+    facetsT := apply(flatten entries facets T,fc->face(fc));
+    imageOfFacetsS := apply(flatten entries facets S,fc->face(f(fc)));
     if not all(imageOfFacetsS,fs->(any(facetsT,ft->isSubface(fs,ft))))
     then error "Given ring map does not induce a simplicial map";
     
-    
-
-     if not isSquareFree I then
-         error "expected squarefree monomial ideal";
-     newSimplicialComplex(I, complement generators dual I)
-     )
+    newSimplicialComplexMap(T,S,f)
+    )
 
 poincareSphere = method(Options=>{Variable => "x"})
 poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
@@ -456,20 +456,15 @@ i1(R1_0) - i2(R2_0)
 restart
 F = ZZ/2
 loadPackage "SimplicialComplexesTemp"
-S = poincareSphere(F,Variable => x)
-T = dunceHat(F,Variable => y)
-U = projectivePlane(F,Variable =>z)
-V = projectivePlane(F)
+S = dunceHat(F,Variable => y)
+T = projectivePlane(F)
+RS = ring S
+RT = ring T
+f = map(RS,RS)
+simplicialComplexMap(S,S,f)
+g = map(RT,RS,(toList(x_1..x_6)|{x_1,x_1}))
+simplicialComplexMap(T,S,g)
 
-ring U
-ring V
-f = map(ring V,ring U,toList(x_1..x_6))
-facetsU = apply(flatten entries facets U,fc->face(f(fc)))
-imageOfFacetsV = apply(flatten entries facets V,fc->face(fc))
-all(imageOfFacetsV,fv->(#select(facetsU,fu->isSubface(fv,fu))>0))
-isFaceOf(first apply(flatten entries facets U,thing->face(f(thing))),V)
-
-isSubface
 
 zero HH_(-1) V
 zero HH_0 V
