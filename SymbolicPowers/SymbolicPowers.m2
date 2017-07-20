@@ -300,16 +300,18 @@ installPackage"SymbolicPowers"
 restart
 uninstallPackage"SymbolicPowers"
 restart
-
+viewHelp table
 ///
 
 
 isPacked = method(TypicalValue => Boolean)
-isPacked(Ideal) := Boolean => I -> (d := # flatten entries vars ring I; 
+isPacked(Ideal) := Boolean => I -> (
+    d := # flatten entries vars ring I; 
     s := subsets(d);
     w := flatten(table(s,s,(a,b) -> {a,b}));
     w = select(w, i -> unique(join(i_0,i_1))==join(i_0,i_1));
-    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1))))
+    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1)))
+    )
 
 noPackedSub = method(TypicalValue => List)
 noPackedSub(Ideal) := List => I -> (if not(isKonig(I)) then "The ideal itself is not Konig!" else (
