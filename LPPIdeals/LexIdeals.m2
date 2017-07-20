@@ -15,7 +15,7 @@ newPackage(
 export {"macaulayRep", "macaulayBound", "macaulayLowerOperator", "isHF", "hilbertFunct",
      "isCM", "lexIdeal", "isLexIdeal", "isPurePower", "LPP", "generateLPPs", "isLPP", "cancelAll",
      "multUpperHF", "multLowerBound", "multUpperBound", "multBounds", "PrintIdeals", "MaxDegree",
-		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP"}
+		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP", "minDegRegularSeqFast"}
 
 --gives the d-th Macaulay representation of a.
 --use for finding upper bound for Hilbert function in degree d+1
@@ -517,6 +517,29 @@ minDegRegularSeq(Ideal) := (I) ->
   );
   returner
 )
+
+minDegRegularSeqFast = method(TypicalValue=>List)
+minDegRegularSeqFast(Ideal) := (I) ->
+(
+	Igens := sort flatten entries mingens I;
+	Degrees := Igens / (g -> first degree g);
+	maxheight := codim I;
+	Q := ambient ring I;
+	returner := {};
+	lastheight := -1;
+	for Igen in Igens when (lastheight < maxheight) do (
+		Q = Q / Igen;
+		thisheight := codim Q;
+		if thisheight != lastheight then (returner = append(returner, first degree Igen));
+		lastheight = thisheight;
+		print(thisheight);
+	);
+	returner
+)
+
+
+
+
 NonArtinianLPP = method(TypicalValue=>Ideal)
 NonArtinianLPP(PolynomialRing,List,List) := (R,hilb,powers) -> (
   numvars:=dim R;
@@ -961,6 +984,94 @@ doc///
      SeeAlso
      	  generateLPPs
 	  isLPP
+///
+
+doc///
+     Key
+     	  LPPFromIdeal
+	  (LPPFromIdeal,Ideal)
+     Headline
+     	  return the (possibly non-artinian) lex-plus-powers (LPP) ideal corresponding to a given ideal
+     Usage
+     	  L=LPPFromIdeal(I)
+     Inputs
+     	  I:Ideal
+     Outputs
+     	  L:Ideal
+	       an LPP ideal with the desired Hilbert function and
+				 power sequence if one exists and {\tt null} otherwise
+     Description
+     	  Text
+	       This function returns the (possibly non-artinian) LPP that has the power
+				 sequence given by minDegRegularSeq with the same hilbert function as {\tt I}
+	  Example
+	       R=ZZ/32003[a..d];
+				 I=ideal(a,b)
+	       LPP(I*I*I)
+     SeeAlso
+		 		LPP
+     	  minDegRegularSeq
+	  		LPPFromIdeal
+				isNonArtinianLPP
+///
+
+doc///
+     Key
+     	  isNonArtinianLPP
+	  (isNonArtinianLPP,Ideal)
+     Headline
+     	  determine whether an ideal is a (possibly non-artinian) LPP ideal
+     Usage
+     	  B=isNonArtinianLPP I
+     Inputs
+     	  I:Ideal
+	       an ideal in a polynomial ring
+     Outputs
+     	  B:Boolean
+	       {\tt true} if {\tt I} is a (possibly non-artinian) LPP ideal in {\tt ring I} and {\tt false} otherwise
+     Description
+     	  Text
+	       Given an ideal {\tt I} in a polynomial ring {\tt R}, {\tt isNonArtinianLPP} checks that the power
+	       sequence is weakly increasing. Then {\tt isNonArtinianLPP} computes bases of {\tt R/I} in each degree up through the maximum
+	       degree of a minimal generator of {\tt I} to determine whether {\tt I} is an LPP ideal in {\tt R}.
+     	  Example
+	       R=ZZ/32003[a..c];
+				 I=ideal(a,b)
+	       isNonArtinianLPP LPPFromIdeal(I*I*I)
+	       isNonArtinianLPP ideal(a^3,b^3,c^3,a^2*b,a^2*c,a*b^2*c^2)
+	       isNonArtinianLPP ideal(a^3,b^4) --not Artinian since no power of c
+	       isNonArtinianLPP ideal(a^3,b^4,c^3) --powers not weakly increasing
+	       isNonArtinianLPP ideal(a^3,b^3,c^3,a^2*b,a*b^2)
+     SeeAlso
+     	  isLPP
+	  		LPPFromIdeal
+///
+
+doc///
+     Key
+     	  minDegRegularSeq
+	  (minDegRegularSeq,Ideal)
+     Headline
+     	  Returns the degrees of the minimal regular sequence of an ideal.
+     Usage
+     	  deglist=minDegRegularSeq(I)
+     Inputs
+     	  I:Ideal
+     Outputs
+     	  deglist:List
+	       a list of the degrees of the minimal regular sequence of {\tt I}
+     Description
+     	  Text
+	       This function returns the degrees of the minimal regular
+				 sequence of {\tt I}. Note: this list may not be full:
+				 it may not have the same length as the number of variables.
+	  Example
+	       R=ZZ/32003[a..d];
+				 I=ideal(a,b)
+	       minDegRegularSeq(I*I*I)
+     SeeAlso
+	  		LPPFromIdeal
+				isNonArtinianLPP
 ///
 
 doc///
