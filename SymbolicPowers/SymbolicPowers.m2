@@ -1234,20 +1234,36 @@ end
 
 -- branden
 restart
-R = ZZ/101[x,y,z]
-I = ideal"xy,xz,yz"
-J = ideal"x2,xy"
+R = ZZ/101[x_1..x_10]
+I = ideal(apply(1..10, l -> x_1*x_l) )
+toString I
 primaryDecomposition I
-primaryDecomposition J
 
 F = res(R^1/I)
-j = codim(R^1/I) 
+c = codim(R^1/I) 
 p = F.Resolution.length
-rk = apply(p-1, l -> r_l = rank(F_l))
+rk = apply(p, l -> r_l = rank(F_l))
 rko = select(rk,odd)
 rke = select(rk,even)
 rk
 
-r := j ->     
-minors(
 
+rj = sum_{i=j}^p (-1)^{i-j} rk_i
+r := j -> (
+    ind = apply(p-j, l-> j+l);
+    sum apply(ind, l -> if odd(l-j) then -1*rank(F_l) else rank(F_l))
+    )
+apply((c+1)..(p-1), l -> (
+	if 
+	l = 3
+	height 
+	r l
+	F.dd#l
+	minors(r l, F.dd#l)
+loadPackage"SymbolicPowers"
+bigHeight(I)
+	)
+	r l)
+
+?minors
+loadPackage"SymbolicPowers"
