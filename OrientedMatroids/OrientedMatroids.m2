@@ -35,6 +35,50 @@ net OrientedMatroid := X -> (
 -- constructor
 orientedMatroid = method(Options => {})
 
+-- still need to finish adapting
+orientedMatroid = method(Options => {symbol EntryMethod => "bases", symbol TargetRank => -1})
+orientedMatroid (List, List) := Matroid => opts -> (E, B) -> (
+	if #B > 0 and not instance(B#0, Set) then B = B/(l -> set l)
+	r := if opts.TargetRank >= 0 then opts.TargetRank else if #B > 0 then #(B#0) else -1 -- this seems wrong
+	E' := set(0..<#E);
+	N := {};
+	B' := if opts.EntryMethod == "bases" then (
+		if #B == 0 then error "There must be at least one basis element" else B
+	) else if opts.EntryMethod == "circuits" then (
+		if #B == 0 then {E'}
+		else (
+			(N, r) = nonbasesFromCircuits(B, #E, TargetRank => opts.TargetRank); -- have to fix this
+			toList(set subsets(E', r) - N)
+		)
+	);
+	M := new OrientedMatroid from {
+		symbol ground => E',
+		symbol groundSet => E,
+		symbol rk => , -- how to put this in?
+		cache => new CacheTable
+	};
+    	if opts.EntryMethod == "bases" then (
+	    M.cache.bases = B);
+	if opts.EntryMethod == "circuits" then (
+		M.cache.circuits = B);
+	M
+)
+
+-- needs to be adapted to our situation
+nonbasesFromCircuits = method(Options => {symbol TargetRank => -1})
+nonbasesFromCircuits (List, ZZ) := (List, ZZ) => opts -> (C, n) -> (
+	E := set(0..<n);
+	t := if opts.TargetRank >= 0 then opts.TargetRank + 1 else max(C/(c -> #c));
+	N := toList set flatten((select(C, c -> #c < t))/(c -> subsets(E - c, t - 1 - #c)/(s -> c + s)));
+	if opts.TargetRank >= 0 then return (N, opts.TargetRank);
+	D := toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s)));
+	Cmax := select(C, c -> #c == t);
+	if #D + #Cmax == binomial(#E, t) then return (N, t-1) else N = join(D, Cmax);
+	for i from t+1 to #E do (
+		D = toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s)));
+		if #D == binomial(#E, i) then return (N, i-1) else N = D;
+	)
+)
 
 -- sign function
 -- CAVEAT: may give random output if not in an ordered ring/field
