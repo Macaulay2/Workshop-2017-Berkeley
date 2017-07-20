@@ -45,7 +45,7 @@ export {
 needsPackage "Polyhedra";
 
 bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
     (R := ring I; d := dim R; c := codim I; M := R^1/I; 
 	if codim Ext^d(M,R) == d then d else 
 	(l := toList (c .. d);
@@ -130,7 +130,11 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     else 
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
+    (primaryDec:=primaryDecomposition I;
+	P:=apply(primaryDec, a-> radical a);
+	maxP:={};
+	apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+	Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));)
 
 
 symbPowerPrime = method()
