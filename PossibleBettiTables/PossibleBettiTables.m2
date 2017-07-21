@@ -117,6 +117,7 @@ fromDiagMatrixToHash = (M,d) ->(
 			H#(d-i,q+i+1)=M_(d+1+q,i)
 			))
 		));
+    apply(keys H, k->(if k#1>reg then remove(H,k)));
     new HashTable from H
     )
 
@@ -188,19 +189,18 @@ possibleCancelations = method()
 possibleCancelations (HashTable) := H ->(
     pd := (max(keys H))#0;
     reg := (max(keys H))#1;
-    
+    --
     M := entries fromHashToDiagMatrix(H);
     Z := apply(M, i->apply(i,j->0));
-    
+    --
     -- This first sieves out tables whose alter. sums are not the same.
     X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
     C1 := (matrix M)*X1;
-    L1 = delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
-
+    L1 := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
+    --
     -- This now sieves out the tables whose zeros do not propogate.		
     L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
-    delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))
-	
+    delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))	
     )
     
 possibleBettiTables = method()
@@ -424,3 +424,5 @@ searchCone(H)
 
 tb40 = new HashTable from {(5,2) => 0, (6,1) => 7920, (7,0) => 0, (8,0) => 0, (6,2) => 0, (7,1) => 6237, (9,0) => 0, (8,1) => 3344, (7,2) => 0, (10,0) => 0, (9,1) => 1089, (8,2) => 0, (11,0) => 0, (10,1) => 120, (9,2) => 0, (12,0) => 0, (11,1) => 0, (10,2) => 55, (12,1) => 0, (11,2) => 24, (12,2) => 3, (0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 75, (3,0) => 0, (2,1) => 536, (1,2) => 0, (3,1) => 1947, (2,2) => 0, (4,0) => 0, (3,2) => 0, (4,1) => 4488, (5,0) => 0, (4,2) => 0, (5,1) => 7095, (6,0) => 0};
 H = new HashTable from {{(0,0),1},{(1,0),0},{(2,0),0},{(3,0),0},{(0,1),0}, {(1,1),3}, {(2,1),8}, {(3,1),3}, {(0,2),0},{(1,2),9}, {(2,2),9}, {(3,2),3}}
+
+maxBettiCyclic(3,{1,3,3})
