@@ -15,6 +15,7 @@ newPackage(
 export {
     -- Options
     "UseMinimalPrimes",
+    "SampleSize",
     
     -- Methods
     "symbolicPower", 
@@ -23,7 +24,7 @@ export {
     "bigHeight",
     "frobeniusPower", 
     "symbPowerPrimePosChar", 
-    "doSymbolicAndOrdinaryPowersCoincide",
+    "isSymbolicEqualOrdinary",
     "symbolicPowerJoin", 
     "joinIdeals", 
     "ContainmentProblemGivenSymbolicPower",
@@ -42,7 +43,6 @@ export {
     "symbolicPolyhedron", 
     "isGorenstein",
     "waldschmidt", 
-    "SampleSize",
     "useWaldschmidt",
     "unmixedPart"
     }
@@ -68,8 +68,8 @@ fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (for i from 2 to n do J = J*I);
 J)
 
-doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
-doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+isSymbolicEqualOrdinary = method(TypicalValue => Boolean)
+isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
     h := bigHeight(P);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
@@ -82,9 +82,9 @@ isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeigh
 	if m>= h*n then true else (
 	symb := symbolicPower(I,m); pow := fastPower(I,n); isSubset(symb,pow))))
 
-ContainmentProblem = method(TypicalValue => ZZ)
-ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
-    while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
+containmentProblem = method(TypicalValue => ZZ)
+containmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
+s    while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
     m)
 
 
@@ -173,7 +173,7 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
 symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
 
-    if opts.UseMinimalPrimes then print "Hello Eloisa";
+    if opts.UseMinimalPrimes then return unmixedPart fastPower(I,n);
         
     if not opts.UseMinimalPrimes then (    
     	if (codim I == dim R - 1 and isHomogeneous(I)) then (
@@ -188,10 +188,7 @@ symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
 			return symbPowerSlow(I,n)
 	    	    )
 		)	    
-    )
-    
-
-        
+    )       
     )
 
 
@@ -622,7 +619,7 @@ doc ///
 	 Text
 	      We can also test it a bit faster, without computing the symbolic powers of P:
 	 Example
-	      doSymbolicAndOrdinaryPowersCoincide(P,2)
+	      isSymbolicEqualOrdinary(P,2)
 
 ///
 
@@ -643,7 +640,7 @@ doc ///
      	 Text
 	      In our example, $I^{(4)}$ is the smallest symbolic power contained in $I^2$:
 	 Example
-	      ContainmentProblem(I,2)
+	      containmentProblem(I,2)
      	 Text
 	      We can ask the same question backwards: what is the largest power of I that contains $I^{(4)}$?
 	 Example
@@ -787,12 +784,12 @@ doc ///
 
 doc ///
    Key
-       ContainmentProblem
-       (ContainmentProblem, Ideal, ZZ)
+       containmentProblem
+       (containmentProblem, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the smallest symbolic power of I contained in I^n.
    Usage
-       ContainmentProblem(I,n)
+       containmentProblem(I,n)
    Inputs
 	I:Ideal
 	n:ZZ
@@ -804,7 +801,7 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   m = ContainmentProblem(I,2)
+	   m = containmentProblem(I,2)
    SeeAlso
        isSymbPowerContainedinPower
        ContainmentProblemGivenSymbolicPower
@@ -832,7 +829,7 @@ doc ///
 	   I = ker f;
 	   ContainmentProblemGivenSymbolicPower(I,3)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 doc ///
@@ -926,12 +923,12 @@ doc ///
 
 doc ///
    Key
-       doSymbolicAndOrdinaryPowersCoincide
-       (doSymbolicAndOrdinaryPowersCoincide, Ideal, ZZ)
+       isSymbolicEqualOrdinary
+       (isSymbolicEqualOrdinary, Ideal, ZZ)
    Headline
-       Given a radical ideal I and an integer n, returns true iff $I^n=I^{(n)}$.
+       Given a radical ideal I and an integer n, returns true if and only if $I^n=I^{(n)}$.
    Usage
-       	doSymbolicAndOrdinaryPowersCoincide(I,n)
+       	isSymbolicEqualOrdinary(I,n)
    Inputs
         I:Ideal
 	n:ZZ
@@ -945,7 +942,7 @@ doc ///
               B = QQ[x,y,z];
 	      f = map(QQ[t],B,{t^3,t^4,t^5})
 	      I = ker f;
-	      doSymbolicAndOrdinaryPowersCoincide(I,2)
+	      isSymbolicEqualOrdinary(I,2)
    SeeAlso
       isSymbPowerContainedinPower
 ///
