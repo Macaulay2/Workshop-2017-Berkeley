@@ -126,6 +126,14 @@ doc ///
             paraTestMod = testModule(R)
             (paraTestMod#0) : (paraTestMod#1)
         Text
+            This function can be used to compute parameter test ideals in Cohen-Macaulay rings
+        Example
+            R=ZZ/2[x_1..x_5]; 
+            E=matrix {{x_1,x_2,x_2,x_5},{x_4,x_4,x_3,x_1}};
+            I=minors(2,E);
+            tau=testModule(R/I);
+            substitute( (tau#0):(tau#1),R)
+        Text
             This function can also be used to compute the parameter test module of a pair $(R, f^t)$.
         Example
             R = ZZ/7[x,y];
