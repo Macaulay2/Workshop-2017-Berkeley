@@ -101,7 +101,7 @@ doc ///
         (frobeniusRoot, ZZ, List, List, Ideal)
         (frobeniusRoot, ZZ, Matrix)
     Headline
-        computes $I^{[1/p^e]}$ in a polynomial ring over a perfect field
+        computes I^[1/p^e] in a polynomial ring over a perfect field
     Usage
         frobeniusRoot(e, I) 
         frobeniusRoot(e, exponentList, idealList)
