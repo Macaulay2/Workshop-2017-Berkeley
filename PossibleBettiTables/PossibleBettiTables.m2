@@ -25,6 +25,7 @@ export {
     "maxBetti",
     "maxBettiCyclic",
     "makeBettiFromHash",
+    "makeHashFromBetti",
     "isInCone",
     "possibleCancelations",
     "possibleBettiTables"
@@ -318,6 +319,31 @@ doc ///
 	Example
 	    H = new HashTable from {(0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 6, (3,0) => 0, (2,1) => 8, (1,2) => 0, (3,1) => 3, (2,2) => 0, (3,2) => 0};
 	    makeBettiFromHash(H) 	
+///
+
+
+doc ///
+    Key
+    	makeHashFromBetti
+	(makeHashFromBetti,BettiTally)
+    Headline
+    	turns the BettiTally into a HashTable representing a Betti table
+    Usage
+    	H = makeHashFromBetti(B)
+    Inputs
+    	B:BettiTally
+    Outputs
+    	H:HashTable
+	    representing the given Betti table
+    Description
+    	Text
+	    Given a BettiTally this returns a HashTable 
+	    representing the Betti table
+	    
+	Example
+	    B = new BettiTally from { (0,{0},0) => 1, (1,{1},1) => 2,
+	        (2,{3},3) => 3, (2,{4},4) => 4 }
+	    makeHashFromBetti(B) 	
 ///
 
 doc ///
