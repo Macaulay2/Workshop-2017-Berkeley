@@ -307,6 +307,13 @@ realize AbstractDivisor := opts -> C -> realize(C,realize(C.AbstractSurface))
 
 
 minimalCurveInLiaisonClass=method()
+
+minimalCurveInLiaisonClass(Ideal):= J-> (
+    M := hartshorneRaoModule J;
+    minimalCurveInLiaisonClass(M)
+    )
+    
+
 minimalCurveInLiaisonClass(Module) := M -> (    
  -- a probalistic algorithm which over large finite fields will produce
  -- a minimal curve in the liaison class corresponding to M with high probability
@@ -317,7 +324,7 @@ minimalCurveInLiaisonClass(Module) := M -> (
     r:=rank fM_1-rank fM_0; -- rank of the 2nd syzygy module of M
     degs:=sort flatten degrees fM_2;
     degList:=unique subsets(degs,r-1);
-    --todo sort degList
+    degList=sort apply(degList,c->(sum c,c))/last;
     apply(#degList,i->sum degList_i);
     i:=0;
     while (
@@ -535,6 +542,81 @@ doc ///
   SeeAlso
 ///
 
+doc ///
+  Key
+    hartshorneRaoModule
+    (hartshorneRaoModule, Ideal)
+  Headline
+    compute the Hartshorne-Rao module    
+  Usage
+     M = hartshorneRaoModule I
+  Inputs
+    I: Ideal
+       of a (locally) Cohen-Macaulay curve
+  Outputs
+     M: Module
+  Description
+     Text
+       Given I the homogeneous ideal of a (locally) Cohen-Macaulay curve in some projective space P^n, th function computes
+       the Hartshorne-Rao module
+       $$ M = \oplus H^1(P^r,\mathcal I(n)).$$  
+     Example
+       S = ZZ/32003[x_0..x_3]
+       M=coker random(S^{2:1},S^{5:0})
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       F=fM_2
+       degs=sort flatten degrees F
+       L=-degs_{0..r-2}
+       G=S^L
+       I=hilbertBurchComputation(M,G)
+       betti I
+       HRao = hartshorneRaoModule(I); betti HRao        
+       reduceHilbert hilbertSeries HRao === reduceHilbert hilbertSeries (M**S^{ -2})
+  SeeAlso
+///
+
+doc ///
+  Key
+    minimalCurveInLiaisonClass
+    ( minimalCurveInLiaisonClass, Module)
+    ( minimalCurveInLiaisonClass, Ideal)
+  Headline
+    probabilistic computation of a minimal curve in the even liaison class   
+  Usage
+     I = minimalCurveInLiaisonClass M
+     I = minimalCurveInLiaisonClass J
+  Inputs
+    M: Module
+       a given Hartshorne-Rao module, or
+    J: Ideal
+       of a CM curve in P^3
+  Outputs
+    I: Ideal
+        of a locally CM curve in P^3
+  Description
+     Text
+       Given M we compute a (locally) Cohen-Macaulay curve P^3 in the even liaison class represented by M
+       (of the curve defined by J).
+       The algorithm is only probalistic, i.e. with bad luck we might miss the minimal class due to the eandom choice for the Hilbert-Burch morphism.        
+     Example
+       S = ZZ/32003[x_0..x_3]
+       M=coker matrix{{x_0,x_1,x_2^2,x_3^2}}
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       degs=sort flatten degrees fM_2
+       L=-{3,4}
+       G=S^L
+       J=hilbertBurchComputation(M,G)
+       M=hartshorneRaoModule J
+       I=minimalCurveInLiaisonClass M
+       degree I, degree J
+  SeeAlso
+///
 
 -- TEST SECTION
 
