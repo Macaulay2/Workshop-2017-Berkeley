@@ -49,7 +49,7 @@ effPolyRad = ( f, J ) ->
 (
     if not isSubset( ideal( f ), radical( J ) ) then error "The polynomial is not contained in the radical of the ideal.";
     d := 1;
-    while not isSubset( ideal( fastExp( d, f ) ), J ) do d = d+1;
+    while not isSubset( ideal( fastExponentiation( d, f ) ), J ) do d = d+1;
     d
 )
 
@@ -114,7 +114,7 @@ nuList( ZZ, RingElement, Ideal ) := ( e, f, J ) -> ( --this is a faster nuList c
 	for d from 1 to e do (
 		while (top - 1 > bottom) do (--the bottom value is always not in m, the top is always in m
 			middle := floor((top + bottom)/2);
-			answer = isSubset(ideal(fastExp( middle, f )), frobenius( d, J ));
+			answer = isSubset(ideal(fastExponentiation( middle, f )), frobenius( d, J ));
 			if (answer == false) then bottom = middle else top = middle;
 		);
 		nuPrev = bottom;
@@ -182,7 +182,7 @@ nu( ZZ, RingElement, Ideal ) := ( e, f, J ) -> ( --this does a fast nu computati
 			
 	while (top - 1 > bottom) do (--the bottom value is always not in m, the top is always in m
 		middle = floor((top + bottom)/2);
-		answer = isSubset(ideal(fastExp( middle, f )), frobenius( e, J ));
+		answer = isSubset(ideal(fastExponentiation( middle, f )), frobenius( e, J ));
 		if (answer == false) then bottom = middle else top = middle;
 	);
 	bottom)
@@ -383,13 +383,13 @@ nu1 ( Ideal, Ideal ) :=  ( I, J ) ->
     d - 1
 )
 
--- for polynomials, we use fastExp
+-- for polynomials, we use fastExponentiation
 nu1 ( RingElement, Ideal ) := ( f, J ) -> 
 (
     if not isSubset( ideal f, radical J ) then 
         error "nu1: The polynomial is not contained in the radical of the ideal.";
     d := 1;
-    while not isSubset( ideal fastExp( d, f ), J ) do d = d + 1;
+    while not isSubset( ideal fastExponentiation( d, f ), J ) do d = d + 1;
     d - 1
 )
 
@@ -405,9 +405,9 @@ testPower = method()
 testPower ( Ideal, ZZ, Ideal, ZZ ) := ( J, a, I, e ) -> 
     isSubset( J^a, frobenius( e, I ) )
 
--- for polynomials, use fastExp
+-- for polynomials, use fastExponentiation
 testPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> 
-    isSubset( ideal fastExp( a, f ), frobenius( e, I ) )
+    isSubset( ideal fastExponentiation( a, f ), frobenius( e, I ) )
 
 -- testGenFrobeniusPower(J,a,I,e) checks whether J^[a] is a subset of I^[p^e]
 testGenFrobeniusPower = ( J, a, I, e ) -> 
@@ -485,7 +485,7 @@ nuInternal = optI >> o -> ( n, f, J ) ->
 	g := if isIdeal f then (trim f)_*_0 else f; 
 	scan( 1..n, e ->
 	    (
-		I = I : ideal( fastExp( nu, g ) );
+		I = I : ideal( fastExponentiation( nu, g ) );
 		nu =  last nuInternal( 1, g, I, TestFunction => o.TestFunction );
 	      	theList = append( theList, p*(last theList) + nu );
 	      	I = frobenius( I )
@@ -610,7 +610,7 @@ guessFPT ={OutputRange=>false}>>o -> (ff, e1, maxDenom) ->(
 fSig = (f, a, e) -> (
      R := ring f;
      p := char ring f;     
-     1 - p^(-e*dim(R))*degree( frobenius( e, maxIdeal R) + ideal( fastExp( a, f ) )) 
+     1 - p^(-e*dim(R))*degree( frobenius( e, maxIdeal R) + ideal( fastExponentiation( a, f ) )) 
 )  
 
 --Calculates the x-int of the secant line between two guesses for the fpt

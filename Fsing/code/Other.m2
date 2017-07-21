@@ -105,7 +105,7 @@ isFPure := I1->(
     
         if codim(I1)==numgens(I1) then(
 	        L:=flatten entries gens I1;
-	        cond = isSubset(ideal(product(#L, l-> fastExp(p1-1,L#l))),frobenius( maxideal ));
+	        cond = isSubset(ideal(product(#L, l-> fastExponentiation(p1-1,L#l))),frobenius( maxideal ));
         	if(cond==false) then answer=true else answer=false;
     	)
         else(
