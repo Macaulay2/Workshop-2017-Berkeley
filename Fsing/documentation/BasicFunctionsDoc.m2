@@ -156,11 +156,15 @@ doc ///
         L:List
     Description
         Text
-            We are writing a rational number as $a/p^b(p^c-1)$.  If our number is $a/p^b$ then there is no valid value of $c$ and the function returns $c = 0$.  Setting the option {\tt NoZeroC => true} forces the third entry of the output list to be nonzero, even if that means increasing the first entry.
+            We are writing a rational number as $a/(p^b(p^c-1))$.
+            If our number is $a/p^b$ then there is no valid value of $c$ and the 
+            function returns $c = 0$. Setting the option {\tt NoZeroC => true} 
+            forces the third entry of the output list to be nonzero, even if
+            that means increasing the first entry.
         Example
             divideFraction( 3, 4/27)
             divideFraction( 3, 4/27, NoZeroC => true )
-	        4/27 == 8/( 3^3 * ( 3 - 1 ) )
+            4/27 == 8/( 3^3 * ( 3 - 1 ) )
 ///   
 
 doc ///
