@@ -43,7 +43,8 @@ export {
     "isGorenstein",
     "waldschmidt", 
     "SampleSize",
-    "useWaldschmidt"
+    "useWaldschmidt",
+    "unmixedPart"
     }
 
 
@@ -176,21 +177,34 @@ symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
         
     if not opts.UseMinimalPrimes then (    
     	if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)
+	    if depth (R/I) == 0 then return fastPower(I,n) else 
+		return symbPowerSat(I,n) 
 	    ) else (
 	    if (isPolynomialRing R and isMonomial I) then (
-		symbPowerMon(monomialIdeal(I),n)
+		return symbPowerMon(monomialIdeal(I),n)
 		) else (
-		    if isPrime I then symbPowerPrime(I,n) else 
-	    	    if isPrimary I then symbPowerPrimary(I,n) else symbPowerSlow(I,n)
+		    if isPrime I then return symbPowerPrime(I,n) else 
+	    	    if isPrimary I then return symbPowerPrimary(I,n) else 
+			return symbPowerSlow(I,n)
 	    	    )
-		)
-	    
+		)	    
     )
     
 
         
     )
+
+
+unmixedPart = method()
+unmixedPart(Ideal) := Ideal => I -> (minPrimes := minimalPrimes (I);
+    primDec := primaryDecomposition(I);
+    minComponents := {};
+    scan(primDec, i -> (rad := radical(i); scan(minPrimes, a -> 
+		if rad == a then 
+		(minComponents = append(minComponents,i); break))));
+    intersect(minComponents))
+
+
 
 ///
 restart
