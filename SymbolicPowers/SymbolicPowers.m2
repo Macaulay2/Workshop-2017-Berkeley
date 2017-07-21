@@ -133,7 +133,7 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     if isSquareFree I then 
     (assP := associatedPrimes(I); 
     intersect apply(assP, i -> fastPower(i,n)))
-    else 
+    else (
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
     Pd:=primaryDecomposition I;
@@ -141,7 +141,7 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
     maxP:={};
     apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
     Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
-    intersect apply(Q,i -> fastPower(i,n))))
+    intersect apply(Q,i -> fastPower(i,n)))))
 
 symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
@@ -1378,7 +1378,7 @@ assert(symbolicPower(I,3)==ideal(w^3*z^3,w^2*x*y*z^2+w^2*z^2,w*x^2*y^2*z+2*w*x*y
 TEST ///
 R=QQ[x,y,z]
 I=ideal(x*y+x*z)
-assert(symbolicPower(I,2)==ideal(y^2+2*y*z+z^2))
+assert(symbolicPower(I,2)==ideal((x*y+x*z)^2))
 ///
 
 --isSymbPowerContainedinPower
@@ -1395,7 +1395,7 @@ R=QQ[x,y];
 
 I=ideal(x);
 
-assert(isSymbPowerContainedinPower(I,2,2)==true))
+assert(isSymbPowerContainedinPower(I,2,2)==true)
 ///
 
 TEST ///
@@ -1426,8 +1426,18 @@ assert(ContainmentProblem(I,2)==4)
 TEST ///
 R=ZZ/3[x,y]
 I=ideal(x*y^2+1,x^2)
-assert(frobeniusPower(I,9)=x^9*y^(19)+1,x^(18))
+assert(frobeniusPower(I,9)==ideal(x^9*y^(19)+1,x^(18)))
 ///
+
+--lowerBoundResurgence
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(lowerBoundResurgence(I,5)==6/5)
+///
+
+
+end
 
 --symbPowerPrimePosChar
 TEST ///
@@ -1449,14 +1459,16 @@ assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
 
 ///
 
---lowerBoundResurgence
-TEST ///
-R=QQ[x,y,z]
-I=ideal(x*y,x*z,y*z)
-assert(lowerBoundResurgence(I,5)==6/5)
-///
 
-end 
+
+end
+
+restart
+loadPackage"SymbolicPowers"
+R = QQ[x,y,z]
+I = ideal"x,y,z"
+symbolicPower(I,2)
+check"SymbolicPowers"
 
 -- branden
 restart
@@ -1500,3 +1512,4 @@ bigHeight(I)
 	r l)
 
 ?minors
+
