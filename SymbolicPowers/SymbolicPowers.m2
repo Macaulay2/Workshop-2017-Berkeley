@@ -74,18 +74,7 @@ isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
     
-    
 
-///
-symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
-    
-    
- Options => {UseMinimalPrimes => false}
-
-    if opts.UseMinimalPrimes then ;
-        
-    if not opts.UseMinimalPrimes then (   
-///
 
 
 isSymbPowerContainedinPower = method(TypicalValue => Boolean, Options => {UseMinimalPrimes => false})
@@ -97,9 +86,14 @@ isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
 	pow := fastPower(I,n); 
 	isSubset(symb,pow))))
 
-containmentProblem = method(TypicalValue => ZZ)
-containmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
-   while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
+
+
+
+containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (m := n;
+   while 
+   not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
+   do m = m+1;
     m)
 
 
