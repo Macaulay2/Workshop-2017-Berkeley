@@ -1,23 +1,45 @@
 -- -*- coding: utf-8 -*-
 -- licensed under GPL v2 or any later version
 newPackage(
-    "ParametricGB",
+    "ParametricGB_Weisfenning",
     Version => "0.4",
-    Date => "May 13, 2017",
-    Headline => "Common types for Lie groups and Lie algebras",
+    Date => "July 21, 2017",
+    Headline => "Implementing the Weisfenning algorithm for comprehensive Groebner basis",
     Authors => {
 	  {Name => "Dave Swinarski", Email => "dswinarski@fordham.edu"}
 	  }
     )
 
 export {
-    --for the LieAlgebra type:
-    "square",
-    "fakeParametricGB"
+    "fakeParametricGB",
+    "color",
+    "reducedPart",
+    "headMonomial",
+    "deterimineCover",
+    "determineCoverF",
+    "hDividesT",
+    "tOverh",
+    "reducedByP",
+    "normalForm",
+    "sPol",
+    "hasRedTerm",
+    "groebnerSystem"
     }
 
 color = method(
     TypicalValue => String    
+)
+
+reducedPart = method(
+    TypicalValue => PolynomialRing
+)
+
+headMonomial = method(
+    TypicalValue => List
+)
+
+determineCover = method(
+    TypicalValue => List
 )
 
 
@@ -59,6 +81,7 @@ headMonomial = memoize ((f,gamma) -> (
 ));
 
 --This function refines cover for a given polynomial and list of conditions.
+--This needs better implementation. This version will not eliminate inconsistant condition.
 determineCover = memoize ((f,GGamma) -> (
     g := 0;
     refinedGamma := {};
@@ -79,7 +102,7 @@ determineCover = memoize ((f,GGamma) -> (
     return unique(refinedGamma)
 ));
 
---This function refines cover for a set of polynomials and a list of conditions.
+--This function refines cover for a set of polynomials and a list of conditions uses determineCover recursively.
 determineCoverF = (F,GGamma) -> (
     for f in F do (
 	GGamma = determineCover(f,GGamma)
