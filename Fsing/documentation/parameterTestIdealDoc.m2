@@ -151,6 +151,37 @@ doc ///
             Finally, sometimes you would like to specify the ambient canonical module (and choice of u) across multiple calls of testModule.  Those are what the $canIdeal$ or $u1$ can be used to specify.
 ///
 
+doc ///
+    Key
+        parameterTestIdeal
+        (parameterTestIdeal, Ring)
+    Headline
+        computes the parameter test ideal of a Cohen-Macaulay ring
+    Usage
+        parameterTestIdeal(R)
+    Inputs
+        R:Ring
+    Outputs
+        :Ideal
+    Description
+        Text
+            This computes the parameter test ideal of a Cohen-Macaulay ring.  Technically, it computes $\tau(\omega) : \omega$ where $\omega$ is a canonical module and $\tau(\omega)$ it the (parameter) testModule as computed by @TO testModule@.  For example, the following example is F-rational and so has trivial parameter test ideal.
+        Example
+            T = ZZ/5[x,y];
+            S = ZZ/5[a,b,c,d];
+            g = map(T, S, {x^3, x^2*y, x*y^2, y^3});
+            R = S/(ker g);   
+            parameterTestIdeal(R)
+        Text
+            Consider now a non-F-rational Gorenstein ring where the @TO testIdeal@ and parameterTestIdeal coincide.
+        Example
+            R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
+            parameterTestIdeal(R)
+            testIdeal(R)
+    SeeAlso
+        testModule
+///        
+
 
 doc ///
     Key

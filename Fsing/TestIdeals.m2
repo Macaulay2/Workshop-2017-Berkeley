@@ -98,6 +98,7 @@ export{
 --    "randomSubset", probably should not be exported
     "testModule", --Karl (this subsumes a bunch of older functions)
     "MTries",
+    "parameterTestIdeal",
     
 -- Finjective.m2
     "HSLGModule", --produces the non-F-injective module, ie the submodule of the canonical module

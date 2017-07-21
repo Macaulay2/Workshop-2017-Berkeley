@@ -263,6 +263,16 @@ testModule(List, List) := o-> (ttList, ffList) ->(
 );
 
 
+--we also can compute the parameter test ideal (in a Cohen-Macaulay ring)
+
+parameterTestIdeal = method(Options => {FrobeniusRootStrategy => Substitution});
+
+parameterTestIdeal(Ring) := o-> (R1) -> (
+    testMod := testModule(R1);
+    (testMod#0) : (testMod#1)
+);
+
+
 --Below is an isCohenMacaulay function.  There are other implementations of this in the packages
 --Depth and LexIdeals.  This one has the advantage that it works even if the ring is not local/graded.
 --If you pass it the Local=>true option, then it calls the isCM function in Depth.
