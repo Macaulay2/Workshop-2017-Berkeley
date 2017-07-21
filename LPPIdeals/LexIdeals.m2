@@ -16,7 +16,7 @@ export {"macaulayRep", "macaulayBound", "macaulayLowerOperator", "isHF", "hilber
      "isCM", "lexIdeal", "isLexIdeal", "isPurePower", "LPP", "generateLPPs", "isLPP", "cancelAll",
      "multUpperHF", "multLowerBound", "multUpperBound", "multBounds", "PrintIdeals", "MaxDegree",
 		 --From Workshop-2017-Berkeley
-		 "LPPFromIdeal", "minDegRegularSeq", "isNonArtinianLPP", "heuristicCodim", "UseHeuristics"}
+		 "minDegRegularSeq", "heuristicCodim", "UseHeuristics", "FillPowers", "CheckArtinian"}
 
 --gives the d-th Macaulay representation of a.
 --use for finding upper bound for Hilbert function in degree d+1
@@ -242,9 +242,10 @@ isNonDec(List) := (li) -> (
 
 --compute the LPP ideal in R with HF hilb and power sequence powers
 --returns null if no such LPP ideal exists
-LPP = method(TypicalValue=>Ideal)
-LPP(PolynomialRing,List,List) := (R,hilb,powers) -> (
+LPP = method(TypicalValue=>Ideal, Options => {FillPowers => false, UseHeuristics => false})
+LPP(PolynomialRing,List,List) := o -> (R,hilb,powers) -> (
      numvars:=dim R;
+		 if o.FillPowers then (while (#powers < numvars) do (powers = append(powers, #hilb)););
      m:=ideal vars R;
      if #powers != numvars then return null;
      if not isNonDec(powers) then return null;
@@ -309,15 +310,15 @@ generateLPPs(PolynomialRing,List) := opts -> (ri,hilb) -> (
 )
 
 --tests whether an ideal I in a polynomial ring is an LPP ideal
-isLPP = method(TypicalValue=>Boolean)
-isLPP(Ideal) := (I) -> (
+isLPP = method(TypicalValue=>Boolean, Options=>{CheckArtinian=>false})
+isLPP(Ideal) := o -> (I) -> (
      ri:=ring I;
      numvars:=dim ri;
      m:=ideal vars ri;
      Igens:=first entries gens trim I;
      --check that the power sequence has right length and is nondecreasing
      powers:=select(Igens,i->isPurePower i);
-     if #powers != numvars then return false;
+     if (#powers != numvars and o.CheckArtinian) then return false;
      expon:=apply(sort apply(powers,i->purePowerIndex i),i->i#1);
      if not (isNonDec expon) then return false;
      --nonPowers are not a power of a variable
@@ -519,7 +520,8 @@ heuristicCodim(Ideal) := I -> (
   (
     CurrentDegree := first degree gen;
     if CurrentDegree > DoneDegree then (
-      newgen := randomIdealElement(CurrentDegree, I);
+    	newgen := randomIdealElement(CurrentDegree, I);
+			--newgen := gen;
       II := ideal(append(GoodGens, newgen) | take(GLFs, dimR - 1 - #GoodGens));
       if codim(II) < dimR then (
         DoneDegree = CurrentDegree
@@ -550,25 +552,17 @@ minDegRegularSeq(Ideal) := o -> (I) ->
 )
 
 
-
-NonArtinianLPP = method(TypicalValue=>Ideal)
-NonArtinianLPP(PolynomialRing,List,List) := (R,hilb,powers) -> (
-  numvars:=dim R;
-  while (#powers < numvars) do (powers = append(powers, #hilb));
-  LPP(R,hilb,powers)
-)
-LPPFromIdeal = method(TypicalValue=>Ideal)
-LPPFromIdeal(Ideal) := (I) -> (
-  powers := minDegRegularSeq(I);
+LPP(Ideal) := o -> (I) -> (
+  powers := minDegRegularSeq(I, UseHeuristics=>o.UseHeuristics);
   R:=ring I;
   if I == ideal(0_R) then return I;
-  if dim I == 0 then return NonArtinianLPP(R,hilbertFunct I,powers) else (
+  if dim I == 0 then return LPP(R,hilbertFunct I, powers, FillPowers => true) else (
        highGen:=max flatten degrees module ideal leadTerm I;
        deg:=highGen;
        done:=false;
        while done == false do (
           hilb:=hilbertFunct(I,MaxDegree=>deg+2);
-          artinian:=NonArtinianLPP(R,drop(hilb,{deg+2,deg+2}),powers);
+          artinian:=LPP(R,drop(hilb,{deg+2,deg+2}),powers, FillPowers => true);
     if not isIdeal artinian then return null;
           hfArtinian:=hilbertFunct(artinian,MaxDegree=>deg+1);
           lex:=ideal select(flatten entries gens artinian,i->first degree i <= deg);
@@ -578,39 +572,6 @@ LPPFromIdeal(Ideal) := (I) -> (
        return lex;
        );
   )
-  isNonArtinianLPP = method(TypicalValue=>Boolean)
-  isNonArtinianLPP(Ideal) := (I) -> (
-       ri:=ring I;
-       numvars:=dim ri;
-       m:=ideal vars ri;
-       Igens:=first entries gens trim I;
-       --check that the power sequence has right length and is nondecreasing
-       powers:=select(Igens,i->isPurePower i);
-       --if #powers != numvars then return false; --This is removed to make this work when the ideal
-       expon:=apply(sort apply(powers,i->purePowerIndex i),i->i#1);
-       if not (isNonDec expon) then return false;
-       --nonPowers are not a power of a variable
-       nonPowers:=select(Igens,i->not isPurePower i);
-       if nonPowers=={} then return true; --if a CI with nondec. powers
-       maxDeg:=first flatten max(apply(nonPowers,i->flatten degree i));
-       deg:=1;
-       while deg <= maxDeg do (
-  	  --get the minimal generators in degree deg and find the smallest
-  	  --in descending lex order that isn't a pure power
-  	  nonPowersDeg:=select(nonPowers,i->(first flatten degree i)==deg);
-  	  ringBasis:=flatten entries basis(deg,ri);
-  	  lastPos:=position(reverse ringBasis,i->member(i,nonPowersDeg));
-       	  if lastPos===null then deg=deg+1 else (
-  	       normalPos:=binomial(numvars-1+deg,deg)-1-lastPos;
-  	       lastGen:=ringBasis#normalPos;
-  	       --check that all mons > than lastGen in desc. lex order
-  	       --are in I
-  	       if not all(0..normalPos,i->((ringBasis#i) % I)==0) then return false else deg=deg+1;
-       	       );
-  	  );
-       true
-  )
-
 
 
 
