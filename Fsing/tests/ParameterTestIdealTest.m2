@@ -1,5 +1,5 @@
 
-load "c:/Berkeley-2017/Workshop-2017-Berkeley/Fsing/TestIdeals.m2"
+-- load "c:/Berkeley-2017/Workshop-2017-Berkeley/Fsing/TestIdeals.m2"
 TEST /// 
 
 p=2;
