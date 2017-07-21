@@ -176,7 +176,7 @@ load "./code/compatiblySplit.m2"
 
 --load "./code/FPure.m2"
 
-load "./code/FFiniteSupport.m2"
+--load "./code/FFiniteSupport.m2"
 
 load "./code/parameterTestIdeal.m2"
 

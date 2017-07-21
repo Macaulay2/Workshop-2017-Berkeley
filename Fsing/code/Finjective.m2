@@ -189,13 +189,14 @@ isFinjective(Ring) := o-> (R1) ->
     --if we assume Cohen-Macaulay, then we are already done
     if (o.AssumeCM == true) then return true;
     --otherwise we next construct G : R -> F_* R                
-    G := frobPFMap(1,R1);
+    G := null;
     
     if (o.AssumeNormal == true) then (d1 = d1 - 2) else if (o.AssumeReduced == true) then (d1 = d1-1);
     
     while ((i <= d1) and (flag == true)) do (
     	--if ambient pushforward is faster in the next line, use it instead
 	    if (Ext^i(S1^1/I1, S1^1) != 0) then (
+    	    if (G === null) then G = frobPFMap(1,R1);	    
 	        --note we only compute the Frobenius pushforward if the ring is not CM
             if (flagPushComputed == false) then (	            
                 FS = pushFwdToAmbient(R1,G);   --pushforward Frobenius
