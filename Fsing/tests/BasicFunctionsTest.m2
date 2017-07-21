@@ -33,25 +33,25 @@ assert(J == 2)
 
 -- divideFraction test#1 - (denominator a power of p)
 TEST ///
-time J = divideFraction(7, 19/49);
+time J = decomposeFraction(7, 19/49);
 assert(J == {19, 2, 0} )
 ///
 
 -- divideFraction test#2 - (denominator not power of p)
 TEST ///
-time J = divideFraction(2, 5/56);
+time J = decomposeFraction(2, 5/56);
 assert(J == {5, 3, 3} )
 ///
 
 -- divideFraction test#3 - (denominator not power of p)
 TEST ///
-time J = divideFraction(2, 5/24);
+time J = decomposeFraction(2, 5/24);
 assert(J == {5, 3, 2} )
 ///
 
 -- divideFraction test#4 - (negative)
 TEST ///
-time J = divideFraction(7, -19/49);
+time J = decomposeFraction(7, -19/49);
 assert(J == { -19, 2, 0} )
 ///
 
@@ -121,7 +121,7 @@ assert(J == 82/2401)
 
 TEST ///
 time J = adicTruncation(7, 4, {1/19, 1/29});
-assert(J == {18/343, 82/2401)
+assert(J == {18/343, 82/2401})
 ///
 
 
