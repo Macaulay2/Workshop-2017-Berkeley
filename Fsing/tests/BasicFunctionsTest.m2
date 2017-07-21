@@ -15,19 +15,19 @@ assert(J==0)
 ///
 
 
--- multOrder test#1 
+-- multiplicativeOrder test#1 
 TEST ///
-time J = multOrder(10, 7);
+time J = multiplicativeOrder(10, 7);
 assert(J == 6)
 ///
 
 TEST ///
-time J = multOrder(1, 1);
+time J = multiplicativeOrder(1, 1);
 assert(J == 1)
 ///
 
 TEST ///
-time J = multOrder(408, 409);
+time J = multiplicativeOrder(408, 409);
 assert(J == 2)
 ///
 

@@ -15,7 +15,7 @@ Exported
 "adicTruncation", DOCUMENTED
 "divideFraction", DOCUMENTED; CHANGE NAME to decomposeFraction?
 "floorLog", DOCUMENTED
-"multOrder",  DOCUMENTED; CHANGE NAME to multiplicativeOrder?
+"multiplicativeOrder",  DOCUMENTED 
 "NoZeroC", DOCUMENTED; CHANGE NAME?
 
 NOT exported

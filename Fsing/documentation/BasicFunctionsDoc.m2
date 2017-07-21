@@ -114,12 +114,12 @@ doc ///
     
 doc ///
     Key
-        multOrder
-        (multOrder, ZZ, ZZ)
+        multiplicativeOrder
+        (multiplicativeOrder, ZZ, ZZ)
     Headline
         computes the multiplicative order of an integer modulo another
     Usage
-        multOrder(a,b)
+        multiplicativeOrder(a,b)
     Inputs
         a:ZZ
         b:ZZ
@@ -131,9 +131,9 @@ doc ///
             This computes the multiplicative order of $a$ modulo $b$.  
             If $a$ and $b$ are not relatively prime, it returns an error.
         Example
-            multOrder(2, 11^2)
-            multOrder(3, 11^2)
-            multOrder(4, 11^2)
+            multiplicativeOrder(2, 11^2)
+            multiplicativeOrder(3, 11^2)
+            multiplicativeOrder(4, 11^2)
 ///
 
 doc ///
