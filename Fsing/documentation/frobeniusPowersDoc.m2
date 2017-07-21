@@ -184,6 +184,8 @@ doc ///
         Naive
     Headline
         a valid value for the option FrobeniusPowerStrategy
+    SeeAlso
+        FrobeniusPowerStrategy
 ///        
 
 doc ///
@@ -191,6 +193,8 @@ doc ///
         Safe
     Headline
         a valid value for the option FrobeniusPowerStrategy
+    SeeAlso
+        FrobeniusPowerStrategy        
 ///        
 
 doc ///
@@ -198,6 +202,11 @@ doc ///
         FrobeniusPowerStrategy
     Headline
         an option for frobeniusPower
+    Description
+        Text
+            Valid options are {\tt Naive} and {\tt Safe}.
+    SeeAlso
+        frobeniusPower
 ///        
 
 
