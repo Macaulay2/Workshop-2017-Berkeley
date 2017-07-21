@@ -29,6 +29,11 @@ Authors => {
      {Name => "Sara Malec",
      Email=> "smalec@gsu.edu"
      },
+     {Name => "Matthew Mastroeni"
+     },
+     {Name => "Maral Mostafazadehfard",
+     Email=> "maralmostafazadehfard@gmail.com"
+     },
      {Name => "Marcus Robinson",
      Email=> "robinson@math.utah.edu"
      },
@@ -53,9 +58,6 @@ DebuggingMode => true,
 Reload => true,
 AuxiliaryFiles=>false
 )
-
---- *** I SORTED THESE ALPHABETICALLY TO FIND MY WAY AROUND *** MK
---- *** Reorganized by subpackages, so we know where to find stuff *** PT
 
 export{
 --BasicFunctions (BasicFunctions.m2) 

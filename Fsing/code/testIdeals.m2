@@ -266,8 +266,7 @@ isFregular = method(Options => {MaxCartierIndex => 100, IsLocal=>false, Frobeniu
 isFregular(Ring) := o->R1 -> (
     tau := testIdeal(R1, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex );
     if (o.IsLocal == true) then (
-        maxIdeal:= ideal(first entries vars R1);  
-        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal( R1 ))) then true else false
     )
     else(
         if (isSubset(ideal(sub(1, R1)), tau)) then true else false
@@ -278,8 +277,7 @@ isFregular(QQ, RingElement) := o->(tt, ff) -> (
     R1 := ring ff;
     tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
     if (o.IsLocal == true) then (
-        maxIdeal:= ideal(first entries vars R1);  
-        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal( R1 ))) then true else false
     )
     else(
         if (isSubset(ideal(sub(1, R1)), tau)) then true else false
@@ -290,8 +288,7 @@ isFregular(ZZ, RingElement) := o->(tt, ff) -> (
     R1 := ring ff;
     tau := testIdeal(tt, ff, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
     if (o.IsLocal == true) then (
-        maxIdeal:= ideal(first entries vars R1);  
-        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal( R1 ))) then true else false
     )
     else(
         if (isSubset(ideal(sub(1, R1)), tau)) then true else false
@@ -302,8 +299,7 @@ isFregular(List, List) := o->(ttList, ffList) -> (
     R1 := ring (ffList#0);
     tau := testIdeal(ttList, ffList, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex);
     if (o.IsLocal == true) then (
-        maxIdeal:= ideal(first entries vars R1);  
-        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal)) then true else false
+        if (isSubset(ideal(sub(1, R1)), tau+maxIdeal( R1 ) )) then true else false
     )
     else(
         if (isSubset(ideal(sub(1, R1)), tau)) then true else false
@@ -331,17 +327,17 @@ isFpure(Ideal) := o->I1->(
     local answer;
     p1:=char ring I1;
     if (o.IsLocal == true) then (
-        maxIdeal:= monomialIdeal(first entries vars ring I1);  
+        maxideal:= maxIdeal I1;  
 
         local cond;
     
         if codim(I1)==numgens(I1) then(
 	        L:=flatten entries gens I1;
-	        cond = isSubset(ideal(product(#L, l-> fastExp(p1-1,L#l))),frobenius( maxIdeal ));
+	        cond = isSubset(ideal(product(#L, l-> fastExp(p1-1,L#l))),frobenius( maxideal ));
         	if(cond==false) then answer=true else answer=false;
     	)
         else(
-	        cond = isSubset((frobenius( I1 )):I1,frobenius( maxIdeal ));
+	        cond = isSubset((frobenius( I1 )):I1,frobenius( maxideal ));
         	if(cond==false) then answer=true else answer=false;
 	    );    
     )

@@ -199,7 +199,7 @@ doc ///
         (isFregular, QQ, RingElement)
         (isFregular, List, List)
     Headline
-        checks if a ring or pair is strongly F-regular
+        whether a ring or pair is strongly F-regular
     Usage
         isFregular(R)
         isFregular(t, f)
@@ -272,7 +272,7 @@ doc ///
         (isFpure, Ring)
         (isFpure, Ideal)        
     Headline
-        checks if a ring is F-pure
+        whether a ring is F-pure
     Usage
         isFpure(R)
         isFpure(I)
