@@ -8,9 +8,9 @@ Authors => {
      {Name => "Alberto F. Boix",
      Email => "alberto.fernandezb@upf.edu"
      },
-     {Name => "David J. Bruce",
-     Email => "djbruce@math.wisc.edu",
-     HomePage => "http://www.math.wisc.edu/~djbruce/"
+     {Name => "Juliette Bruce",
+     Email => "juliette.bruce@math.wisc.edu",
+     HomePage => "https://juliettebruce.github.io/"
      },
      {Name => "Drew Ellingson",
      Email => "drewtell@umich.edu"
@@ -27,7 +27,7 @@ Authors => {
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email => "smalec@gsu.edu"
+     Email => "malec@hood.edu"
      },
      {Name => "Matthew Mastroeni",
      Email => "mastroe2@illinois.edu"
@@ -39,7 +39,7 @@ Authors => {
      Email => "robinson@math.utah.edu"
      },
      {Name => "Karl Schwede",
-     Email => "schwede@math.psu.edu",
+     Email => "schwede@math.utah.edu",
      HomePage => "http://math.utah.edu/~schwede/"
      },
      {Name => "Dan Smolkin",
