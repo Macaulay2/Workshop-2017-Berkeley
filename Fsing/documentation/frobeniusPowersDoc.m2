@@ -6,12 +6,12 @@
 
 doc ///
     Key
-        fastExp
-        (fastExp, ZZ, RingElement)
+        fastExponentiation
+        (fastExponentiation, ZZ, RingElement)
     Headline
         computes powers of elements in rings of positive characteristic quickly.
     Usage
-        fastExp(n,f) 
+        fastExponentiation(n,f) 
     Inputs
         n:ZZ
             nonnegative
@@ -31,7 +31,7 @@ doc ///
             R = ZZ/5[x];
             f = sum( 10, i -> x^i );
             time f^321;
-            time fastExp(321,f);
+            time fastExponentiation(321,f);
 ///
 
 doc ///

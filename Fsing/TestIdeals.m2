@@ -3,10 +3,10 @@ Version => "0.1",
 Date => "May 30th, 2017", 
 Authors => {
      {Name => "Erin Bela",
-     Email=> "ebela@nd.edu"
+     Email => "ebela@nd.edu"
      },
      {Name => "Alberto F. Boix",
-     Email=> "alberto.fernandezb@upf.edu"
+     Email => "alberto.fernandezb@upf.edu"
      },
      {Name => "David J. Bruce",
      Email => "djbruce@math.wisc.edu",
@@ -23,34 +23,34 @@ Authors => {
      Email => "zhikadyr@umich.edu"
      },
      {Name => "Mordechai Katzman",
-     Email=> "m.katzman@sheffield.ac.uk",
-     HomePage=> "http://www.katzman.staff.shef.ac.uk/"
+     Email => "m.katzman@sheffield.ac.uk",
+     HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email=> "smalec@gsu.edu"
+     Email => "smalec@gsu.edu"
      },
      {Name => "Matthew Mastroeni",
-     Email=> "mastroe2@illinois.edu"
+     Email => "mastroe2@illinois.edu"
      },
      {Name => "Maral Mostafazadehfard",
-     Email=> "maralmostafazadehfard@gmail.com"
+     Email => "maralmostafazadehfard@gmail.com"
      },
      {Name => "Marcus Robinson",
-     Email=> "robinson@math.utah.edu"
+     Email => "robinson@math.utah.edu"
      },
      {Name => "Karl Schwede",
      Email => "schwede@math.psu.edu",
      HomePage => "http://math.utah.edu/~schwede/"
      },
      {Name => "Dan Smolkin",
-     Email=> "smolkin@math.utah.edu"
+     Email => "smolkin@math.utah.edu"
      },
      {Name => "Pedro Teixeira",
      Email => "pteixeir@knox.edu",
      HomePage => "http://www.knox.edu/academics/faculty/teixeira-pedro.html"
      },
      {Name=> "Emily Witt",
-     Email=> "witt@ku.edu",
+     Email => "witt@ku.edu",
      HomePage => "https://witt.faculty.ku.edu"
      }
 },
@@ -80,7 +80,7 @@ export{
     "Substitution",
     
 --Frobenius Powers (frobeniusPowers.m2)
-    "fastExp",
+    "fastExponentiation",
     "frobenius",
     "frobeniusPower",
     "FrobeniusPowerStrategy",

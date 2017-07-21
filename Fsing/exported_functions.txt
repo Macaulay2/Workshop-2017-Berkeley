@@ -55,7 +55,7 @@ Mstar
 
 Exported
 
-"fastExp",  DOCUMENTED; TESTED
+"fastExponentiation",  DOCUMENTED; TESTED
 "frobenius", DOCUMENTED
 "frobeniusPower", DOCUMENTED
 FrobeniusPowerStrategy DOCUMENTED

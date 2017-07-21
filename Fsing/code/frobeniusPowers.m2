@@ -11,13 +11,13 @@
 --N = N_0 + N_1 p + ... + N_e p^e, where 0 <= N_i < p, then this computes f^N as
 --f^(N_0) (f^(N_1))^p ... (f^(N_e))^(p^e). 
 
-fastExp = method( TypicalValue => RingElement )
+fastExponentiation = method( TypicalValue => RingElement )
 
-fastExp ( ZZ, RingElement ) := RingElement => ( N, f ) ->
+fastExponentiation ( ZZ, RingElement ) := RingElement => ( N, f ) ->
 (
-    if N < 0 then error "fastExp: first argument must be a polynomial over a nonnegative integer.";
+    if N < 0 then error "fastExponentiation: first argument must be a polynomial over a nonnegative integer.";
     if char ring f == 0 then 
-        error "fastExp: second argument must be a polynomial over a field of positive characteristic.";
+        error "fastExponentiation: second argument must be a polynomial over a field of positive characteristic.";
     p:=char ring f;
     E:=adicExpansion(p,N);
     product(#E, e -> sum( terms f^(E#e), g -> g^(p^e) ) )
@@ -38,7 +38,7 @@ frobeniusMethod ( ZZ, Ideal ) := Ideal => o -> ( e, I ) ->
     if e == 0 then return I;
     if e < 0 then return frobeniusRoot( -e, I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
     G := I_*;
-    if #G == 0 then ideal( 0_R ) else ideal( apply( G, j -> fastExp( p^e, j ) ) )
+    if #G == 0 then ideal( 0_R ) else ideal( apply( G, j -> fastExponentiation( p^e, j ) ) )
 )
 
 frobeniusMethod ( ZZ, Matrix ) := Matrix => o -> ( e, M ) ->
@@ -48,7 +48,7 @@ frobeniusMethod ( ZZ, Matrix ) := Matrix => o -> ( e, M ) ->
         error "frobeniusMethod: expected an matrix with entries in a ring of positive characteristic.";
     if e == 0 then return M;
     if e < 0 then error "frobenius: first argument must be nonnegative.";
-    matrix apply( entries M, u -> apply( u, j -> fastExp( p^e, j ) ) )
+    matrix apply( entries M, u -> apply( u, j -> fastExponentiation( p^e, j ) ) )
 )
 
 frobeniusMethod ( Ideal ) := Ideal => o -> I -> frobeniusMethod( 1, I, o )
@@ -99,7 +99,7 @@ frobeniusPower ( ZZ, Ideal ) := Ideal => opts -> ( N, I ) ->
         error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
     G := first entries mingens I;
     if #G == 0 then return ideal( 0_R );
-    if #G == 1 then return ideal( fastExp( N, G#0 ) );
+    if #G == 1 then return ideal( fastExponentiation( N, G#0 ) );
     E := adicExpansion( p, N );
     product( #E, m -> frobenius( m, I^( E#m ) ) )
 )
