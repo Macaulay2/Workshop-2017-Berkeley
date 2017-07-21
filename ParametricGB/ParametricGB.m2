@@ -147,12 +147,60 @@ sPol = (f,g,gamma) -> (
     return b*u*f - a*v*g
 );
 
-
+hasRedTerm = (f,gamma) -> (
+    T := terms(f);
+    for u in T do (
+    if color(u,gamma) == "red" then return true
+    );
+    return false
+);
 
 
 groebnerSystem = (F,B) -> (
     GGamma := flatten apply(B,b -> determineCoverF(F,{b}));
     GS := apply(GGamma, i -> {i,F});
+    P := flatten apply(subsets(F,2), i -> apply(GS, j -> join(j,i)));
+    gamma := {};
+    G := {};
+    f := 0;
+    g := 0; 
+    h := 0;
+    k := 0;
+    Delta0 := {};
+    Delta1 := {};
+    Delta2 := {};
+    GS1 := {};
+    GS2 := {};
+    P1 := {};
+    P2 := {};
+    P3 := {};
+    count := 0;
+    while P != {} do (
+	count = count + 1;
+	print concatenate("Loop ",toString(count)) << endl;
+	print toString(P_0) << endl;
+        gamma = P_0_0;
+	G = P_0_1;
+	f = P_0_2;
+	g = P_0_3;
+	GS = delete({gamma,G},GS);
+	P = drop(P,{0,0});
+	h = sPol(f,g,gamma);
+	k = (normalForm(h,G,gamma))_0;
+	print toString(k) << endl;
+	Delta0 = determineCover(k,{gamma});
+	Delta1 = select(Delta0, gamma -> hasRedTerm(k,gamma));
+	if Delta1 == {} then GS = append(GS,{gamma,G}) else (
+	    GS1 = apply(Delta1,gamma -> {gamma,append(G,k)});
+	    GS2 = delete(null,apply(Delta0,gamma -> if not hasRedTerm(k,gamma) then {gamma,G}));
+	    GS = join(GS,GS1,GS2);
+	    P1 = select(P,i -> {i_0,i_1} != {gamma,G});
+	    P2 = flatten apply(G,f1 -> apply(Delta1,delta -> {delta,append(G,k),f1,k}));
+	    P3 = flatten delete(null, apply(P,i -> if {i_0,i_1} == {gamma,G} then apply(Delta0,delta -> {delta,G,i_2,i_3})));
+	    P = join(P1,P2,P3)
+	);
+    );
+    return GS
 );
 
 -- Examples to test
@@ -177,9 +225,9 @@ reducedByP(f1,f2,gamma)
 tOverh(t,h)
 normalForm(f1,{f1},gamma)
 sPol(f2,f3+f2,gamma)
-B = {{{},{}}}
-F = {f1,f2,f3}
-
+B = {{{},{}}} 
+F =  {c_1*x_0*x_2-c_2*x_1^2,c_1*x_0*x_3-c_2*x_1*x_2,c_1*x_1*x_3-c_2*x_2^2}
+groebnerSystem(F,{{{},{}}})
 
 fakeParametricGB = method(
     TypicalValue => List    
