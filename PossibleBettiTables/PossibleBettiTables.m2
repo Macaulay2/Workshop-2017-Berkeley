@@ -179,19 +179,11 @@ possibleCancelations (HashTable) := H ->(
     -- This first sieves out tables whose alter. sums are not the same.
     X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
     C1 := (matrix M)*X1;
-    L1 := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
-    
-    -- This sieves out the tables whose consecutive sums are not the same.
-    l := {1,-1}|apply(min(pd,reg)-1,i->0);
-    X2 := apply(min(pd,reg),i->((apply(i,j->0))|drop(l,-i)));
-    C2 := (matrix M)*X2;
-    L2 := delete(,apply(L1,i->(if (matrix i)*X2 == C2 then i)));
-    
-    -- This sieves out the tables where zeros do not propogate.
-		
-    L3 := apply(L2,i->fromDiagMatrixToHash(matrix i,pd));
-    
-    apply(L3,i->
+    L1 = delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
+
+    -- This now sieves out the tables whose zeros do not propogate.		
+    L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
+    delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))
 	
     )
     
