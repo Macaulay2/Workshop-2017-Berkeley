@@ -165,7 +165,7 @@ testIdeal(Ring) := o->(R1) -> (
         
         runningIdeal := ideal(sub(0, R1));
         omegaAmb := sub(canIdeal, ambient R1) + ideal(R1);
-    	u1 := (findusOfIdeal(ideal R1, omegaAmb));
+    	u1 := (findSplittingsOfIdeal(ideal R1, omegaAmb));
     
 --    print gensList;
 --    1/0;
@@ -243,7 +243,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
         
         runningIdeal := ideal(sub(0, R1));
         omegaAmb := sub(canIdeal, ambient R1) + ideal(R1);
-    	u1 := (findusOfIdeal(ideal R1, omegaAmb));
+    	u1 := (findSplittingsOfIdeal(ideal R1, omegaAmb));
     	
         t2 := append(tList, 1/cartIndex);
         f2 := fList;
