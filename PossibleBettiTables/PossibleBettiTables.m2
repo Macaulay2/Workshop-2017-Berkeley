@@ -31,18 +31,11 @@ export {
     "possibleBettiTables"
     }
 
-maxBetti= method()
+maxBetti = method(Options => {Cyclic => false})
 ---the maximal betti table given a hilbert function and a ring
-maxBetti(ZZ,List) := (n,h) -> (
-       maxGradedBetti := (i,j)-> h_(j-i)*binomial(n,i);
-       L := flatten apply(n+1,p->(apply(#h,q->{(p,q), maxGradedBetti(p,p+q)})));
-       new HashTable from L
-       )
-     
-maxBettiCyclic= method()
----the maximal betti table of a cyclic zero dimensional module with a given hilbert function
-maxBettiCyclic(ZZ,List) := (n,h) -> (
-    M := new MutableHashTable from maxBetti(n,h);
+maxBetti(ZZ,List) := maxBetti => opts -> (n,h) -> (
+       if opts.Cyclic == true then (
+	   M := new MutableHashTable from maxBetti(n,h);
 -- zeroing out first column under (0,0)
     for j from 1 to #h-1 do 
          (M#(1,j-1)= M#(1,j-1)-M#(0,j);
@@ -71,10 +64,15 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
 		    );
 		);
 	    );
-	);
-	    
-    new HashTable from M 
-    )	
+	);	    
+    new HashTable from M 	   
+    )
+       else (
+	   maxGradedBetti := (i,j)-> h_(j-i)*binomial(n,i);
+	   L := flatten apply(n+1,p->(apply(#h,q->{(p,q), maxGradedBetti(p,p+q)})));
+	   new HashTable from L
+	   )
+       )
 
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
@@ -245,7 +243,7 @@ possibleBettiTables (BettiTally) := possibleBettiTables => opts -> B ->(
 
 possibleBettiTables (ZZ,List) := possibleBettiTables => opts -> (n,L) ->(
     if opts.Cyclic == true then (
-	possibleBettiTables(maxBettiCyclic(n,L))
+	possibleBettiTables(maxBetti(n,L,Cyclic=>true))
 	)
     else (
 	possibleBettiTables(maxBetti(n,L))
@@ -494,3 +492,17 @@ tb40 = new HashTable from {(5,2) => 0, (6,1) => 7920, (7,0) => 0, (8,0) => 0, (6
 H = new HashTable from {{(0,0),1},{(1,0),0},{(2,0),0},{(3,0),0},{(0,1),0}, {(1,1),3}, {(2,1),8}, {(3,1),3}, {(0,2),0},{(1,2),9}, {(2,2),9}, {(3,2),3}}
 
 maxBettiCyclic(3,{1,3,3})
+
+
+-- Demo of Features
+H = new HashTable from {{(0,0),1},{(1,0),0},{(2,0),0},{(3,0),0},{(0,1),0}, {(1,1),3}, {(2,1),8}, {(3,1),3}, {(0,2),0},{(1,2),9}, {(2,2),9}, {(3,2),3}}
+makeBettiFromHash H
+
+makeBettiFromHash maxBetti(3,{1,3,3})
+makeBettiFromHash maxBetti(3,{1,3,3},Cyclic=>true)
+
+netList possibleCancelations H
+#(possibleCancelations H)
+netList possibleBettiTables H
+#(possibleBettiTables H)
+netList possibleBettiTables(3,{1,3,3},Cyclic=>true)
