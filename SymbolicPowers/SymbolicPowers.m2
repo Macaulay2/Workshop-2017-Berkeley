@@ -15,18 +15,19 @@ newPackage(
 export {
     -- Options
     "UseMinimalPrimes",
+    "SampleSize",
     
     -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
-    "ContainmentProblem", 
+    "containmentProblem", 
     "bigHeight",
     "frobeniusPower", 
     "symbPowerPrimePosChar", 
-    "doSymbolicAndOrdinaryPowersCoincide",
+    "isSymbolicEqualOrdinary",
     "symbolicPowerJoin", 
     "joinIdeals", 
-    "ContainmentProblemGivenSymbolicPower",
+    "containmentProblemGivenSymbolicPower",
     "symbolicContainmentMonomialCurve", 
     "squarefreeGens", 
     "squarefreeInCodim",
@@ -41,6 +42,7 @@ export {
     "symbolicDefect",
     "symbolicPolyhedron", 
     "isGorenstein",
+    "unmixedPart"
     "waldschmidt",
     "asymptoticRegularity", 
     "SampleSize",
@@ -68,31 +70,40 @@ fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (for i from 2 to n do J = J*I);
 J)
 
-doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
-doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+isSymbolicEqualOrdinary = method(TypicalValue => Boolean)
+isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
     h := bigHeight(P);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
     
 
 
-isSymbPowerContainedinPower = method(TypicalValue => Boolean)
-isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeight I; 
+
+isSymbPowerContainedinPower = method(TypicalValue => Boolean, Options => {UseMinimalPrimes => false})
+isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
+    h := bigHeight I; 
     if m<n then false else (
 	if m>= h*n then true else (
-	symb := symbolicPower(I,m); pow := fastPower(I,n); isSubset(symb,pow))))
+	symb := symbolicPower(I,m, UseMinimalPrimes => opts.UseMinimalPrimes); 
+	pow := fastPower(I,n); 
+	isSubset(symb,pow))))
 
-ContainmentProblem = method(TypicalValue => ZZ)
-ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
-    while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
+
+
+
+containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (m := n;
+   while 
+   not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
+   do m = m+1;
     m)
 
 
 
-ContainmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
-ContainmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => (I,m) -> (h := bigHeight(I); 
+containmentProblemGivenSymbolicPower = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+containmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => opts -> (I,m) -> (h := bigHeight(I); 
     e := (m-m%h)/h; n := lift(e,ZZ);
-    while isSymbPowerContainedinPower(I,m,n+1) do n = n+1;
+    while isSymbPowerContainedinPower(I,m,n+1, UseMinimalPrimes => opts.UseMinimalPrimes) do n = n+1;
     n)
 
 
@@ -173,25 +184,35 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
 symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
 
-    if opts.UseMinimalPrimes then print "Hello Eloisa";
+    if opts.UseMinimalPrimes then return (unmixedPart fastPower(I,n));
         
     if not opts.UseMinimalPrimes then (    
     	if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)
+	    if depth (R/I) == 0 then return fastPower(I,n) else 
+		return symbPowerSat(I,n) 
 	    ) else (
 	    if (isPolynomialRing R and isMonomial I) then (
-		symbPowerMon(monomialIdeal(I),n)
+		return symbPowerMon(monomialIdeal(I),n)
 		) else (
-		    if isPrime I then symbPowerPrime(I,n) else 
-	    	    if isPrimary I then symbPowerPrimary(I,n) else symbPowerSlow(I,n)
+		    if isPrime I then return symbPowerPrime(I,n) else 
+	    	    if isPrimary I then return symbPowerPrimary(I,n) else 
+			return symbPowerSlow(I,n)
 	    	    )
-		)
-	    
+		)	    
+    )       
     )
-    
 
-        
-    )
+
+unmixedPart = method()
+unmixedPart(Ideal) := Ideal => I -> (minPrimes := minimalPrimes (I);
+    primDec := primaryDecomposition(I);
+    minComponents := {};
+    scan(primDec, i -> (rad := radical(i); scan(minPrimes, a -> 
+		if rad == a then 
+		(minComponents = append(minComponents,i); break))));
+    intersect(minComponents))
+
+
 
 
 
@@ -382,13 +403,14 @@ isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 ---------------------------------
 ---Symbolic Defect
 ---------------------------------
-symbolicDefect = method(TypicalValue => ZZ)
-symbolicDefect(Ideal,ZZ) := (I,n) -> (
+
+symbolicDefect = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+symbolicDefect(Ideal,ZZ) := opts -> (I,n) -> (
     R := ring I;
     Y := fastPower(I,n);
     S := R/Y;
     F := map(S,R);
-    X := symbolicPower(I,n);
+    X := symbolicPower(I,n, UseMinimalPrimes => opts.UseMinimalPrimes);
     # flatten entries mingens F(X)
       )
 
@@ -473,7 +495,7 @@ waldschmidt MonomialIdeal := opts -> I -> (
 
 lowerBoundResurgence = method(TypicalValue => QQ, Options =>{useWaldschmidt=>false})
 lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
-    l := max append(apply(toList(2 .. m),o -> (ContainmentProblem(I,o)-1)/o),1);
+    l := max append(apply(toList(2 .. m),o -> (containmentProblem(I,o)-1)/o),1);
     if opts#useWaldschmidt == false then return l
     else return max {l, alpha(I)/waldschmidt(I)}
     )
@@ -612,7 +634,7 @@ doc ///
 	 Text
 	      We can also test it a bit faster, without computing the symbolic powers of P:
 	 Example
-	      doSymbolicAndOrdinaryPowersCoincide(P,2)
+	      isSymbolicEqualOrdinary(P,2)
 
 ///
 
@@ -633,11 +655,11 @@ doc ///
      	 Text
 	      In our example, $I^{(4)}$ is the smallest symbolic power contained in $I^2$:
 	 Example
-	      ContainmentProblem(I,2)
+	      containmentProblem(I,2)
      	 Text
 	      We can ask the same question backwards: what is the largest power of I that contains $I^{(4)}$?
 	 Example
-	      ContainmentProblemGivenSymbolicPower(I,4)     
+	      containmentProblemGivenSymbolicPower(I,4)     
 ///
 
 
@@ -771,18 +793,18 @@ doc ///
      	   J = ideal(x,y)
     	   isSymbPowerContainedinPower(J,3,2)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 
 doc ///
    Key
-       ContainmentProblem
-       (ContainmentProblem, Ideal, ZZ)
+       containmentProblem
+       (containmentProblem, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the smallest symbolic power of I contained in I^n.
    Usage
-       ContainmentProblem(I,n)
+       containmentProblem(I,n)
    Inputs
 	I:Ideal
 	n:ZZ
@@ -794,21 +816,21 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   m = ContainmentProblem(I,2)
+	   m = containmentProblem(I,2)
    SeeAlso
        isSymbPowerContainedinPower
-       ContainmentProblemGivenSymbolicPower
+       containmentProblemGivenSymbolicPower
 ///
 
 
 doc ///
    Key
-       ContainmentProblemGivenSymbolicPower
-       (ContainmentProblemGivenSymbolicPower, Ideal, ZZ)
+       containmentProblemGivenSymbolicPower
+       (containmentProblemGivenSymbolicPower, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the largest power of I containing in I^{(n)}.
    Usage
-       ContainmentProblemGivenSymbolicPower(I,m)
+       containmentProblemGivenSymbolicPower(I,m)
    Inputs
 	I:Ideal
 	m:ZZ
@@ -820,9 +842,9 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   ContainmentProblemGivenSymbolicPower(I,3)
+	   containmentProblemGivenSymbolicPower(I,3)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 doc ///
@@ -916,12 +938,12 @@ doc ///
 
 doc ///
    Key
-       doSymbolicAndOrdinaryPowersCoincide
-       (doSymbolicAndOrdinaryPowersCoincide, Ideal, ZZ)
+       isSymbolicEqualOrdinary
+       (isSymbolicEqualOrdinary, Ideal, ZZ)
    Headline
-       Given a radical ideal I and an integer n, returns true iff $I^n=I^{(n)}$.
+       Given a radical ideal I and an integer n, returns true if and only if $I^n=I^{(n)}$.
    Usage
-       	doSymbolicAndOrdinaryPowersCoincide(I,n)
+       	isSymbolicEqualOrdinary(I,n)
    Inputs
         I:Ideal
 	n:ZZ
@@ -935,7 +957,7 @@ doc ///
               B = QQ[x,y,z];
 	      f = map(QQ[t],B,{t^3,t^4,t^5})
 	      I = ker f;
-	      doSymbolicAndOrdinaryPowersCoincide(I,2)
+	      isSymbolicEqualOrdinary(I,2)
    SeeAlso
       isSymbPowerContainedinPower
 ///
@@ -1046,7 +1068,7 @@ doc ///
        Example 
 	   symbolicPowerMonomialCurve({3,4,5},3) 
      SeeAlso 
-	  ContainmentProblem
+	  containmentProblem
 /// 
 
 
@@ -1473,13 +1495,13 @@ R=QQ[x,y,z];
 
 I=ideal(x*y,x*z,y*z);
 
-assert(ContainmentProblem(I,2)==3)
+assert(containmentProblem(I,2)==3)
 ///
 
 TEST ///
 R=QQ[x,y,z]
 I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
-assert(ContainmentProblem(I,2)==4)
+assert(containmentProblem(I,2)==4)
 ///
 
 --frobeniusPower
@@ -1496,29 +1518,88 @@ I=ideal(x*y,x*z,y*z)
 assert(lowerBoundResurgence(I,5)==6/5)
 ///
 
-
-end
-
---symbPowerPrimePosChar
+----doSymbolicAndOrdinaryPowersCoincide
 TEST ///
-R=QQ[x]
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(doSymbolicAndOrdinaryPowersCoincide(I,2)==false)
+///
+
+TEST ///
+R=ZZ/3[x,y]
 I=ideal(x)
-assert(symbPowerPrimePosChar(I,3)=="The characteristic must be positive")
+assert(doSymbolicAndOrdinaryPowersCoincide(I,3)==true)
 ///
 
 TEST ///
-R=ZZ/2[x,y]
-I=ideal(x*y)
-assert(symbPowerPrimePosChar(I,2)=="Not a prime ideal")
+R=QQ[x,y,z]
+I=ideal(x*z,y*z)
+assert(doSymbolicAndOrdinaryPowersCoincide(I,2)==true)
+///
+
+----joinIdeals
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y)
+J=ideal(x,z)
+assert(joinIdeals(I,J)==ideal(x))
+///
+
+----symbolicPowerJoin
+
+----ContainmentProblemGivenSymbolicPower
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(ContainmentProblemGivenSymbolicPower(I,4)==2)
+///
+
+----symbolicContainmentMonomialCurve
+TEST ///
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},4,5)==false)
 ///
 
 TEST ///
-R=ZZ/5[x,y,z]
-I=ideal(x+1,x+y+z)
-assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
-
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},5,4)==true)
 ///
 
+TEST ///
+assert(symbolicContainmentMonomialCurve(QQ[w,x,y,z],{2,3},3,2)==true)
+///
+----squarefreeGens
+TEST ///
+R=ZZ/5[w,x,y,z]
+I=ideal(y^2*z,x*y*w,z*w^3)
+assert(squarefreeGens(I)=={w*x*y})
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x^2*z,x*y^8,z^3)
+assert(squarefreeGens(I)=={})
+///
+
+----squarefreeInCodim
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y^2)
+assert(squarefreeInCodim I=={})
+///
+
+TEST ///
+R=ZZ/2[x,y,z]
+I=ideal(x,y)
+assert(squarefreeInCodim I=={x*y})
+///
+
+----symbolicPowerMonomialCurve
+TEST ///
+I= symbolicPowerMonomialCurve({1,2,1},2)
+R=ring I
+assert(I==ideal(R_0^2-2*R_0*R_2+R_2^2,R_0*R_2^2-R_2^3-R_0*R_1+R_1*R_2,R_2^4-2*R_1*R_2^2+R_1^2))
+///
 
 -- symbolicPolyhedron
 TEST ///
