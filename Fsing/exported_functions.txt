@@ -1,50 +1,59 @@
---============================================================
---============================================================
+--===========================================================
+--===========================================================
 
 TestIdeals Package
 
---============================================================
---============================================================
+--===========================================================
+--===========================================================
 
 --BasicFunctions (BasicFunctions.m2)
 
 Exported
 
+"adicDigit", DOCUMENTED	   
 "adicExpansion",    DOCUMENTED
-"digit",	   
-"divideFraction", DOCUMENTED
+"adicTruncation", DOCUMENTED
+"divideFraction", DOCUMENTED; CHANGE NAME to decomposeFraction?
 "floorLog", DOCUMENTED
-"multOrder",  DOCUMENTED; to be optimized
-"NoZeroC", DOCUMENTED
-"truncatedBasePExp", 
+"multOrder",  DOCUMENTED; CHANGE NAME to multiplicativeOrder?
+"NoZeroC", DOCUMENTED; CHANGE NAME?
 
 NOT exported
 
+[allPartitions] COMMENTED OUT
+[allPartitionsInnards] COMMENTED OUT
 baseP1
 denominator/numerator
 "fracPart",
-isPolynomial
-isPolynomialOverPosCharField
-isPolynomialOverFiniteField
-"maxIdeal",
-allPartitions
-allPartitionsInnards
+[isPolynomial] COMMENTED OUT
+[isPolynomialOverPosCharField] COMMENTED OUT
+[isPolynomialOverFiniteField] COMMENTED OUT
+"maxIdeal", 
 
 --===========================================================
 
 --ethRootFunctions (EthRoots.m2)
-    "ascendIdeal", --Karl (still needs more tests / documentation) -- ??
-    "AscentCount", -- ??
-    "boundLargestCompatible", ---MK --??
-    "ethRoot", 
-    "ethRootRingElements",   
-    "EthRootStrategy",  
-    "frobeniusRoot",  -- export; main
-    "FrobeniusRootStrategy",  -- export; main
-    "getFieldGenRoot",
-    "minimalCompatible", -- ??
-    "MonomialBasis",	 -- export; main
-    "Substitution", -- export; main
+
+Exported
+
+"ascendIdeal",  DOCUMENTED
+"AscentCount", DOCUMENTED
+"frobeniusRoot",  DOCUMENTED
+"FrobeniusRootStrategy",  DOCUMENTED
+"MonomialBasis", DOCUMENTED	
+"Substitution", DOCUMENTED
+
+NOT Exported
+
+frobeniusRootMonStrat
+frobeniusRootRingElements
+frobeniusRootSubStrat
+getExponents
+getFieldGenRoot
+mEthRoot
+mEthRootOfOneElement
+minimalCompatible
+Mstar
 
 --===========================================================
 --Frobenius Powers (frobeniusPowers.m2)
@@ -52,15 +61,17 @@ allPartitionsInnards
 Exported
 
 "fastExp",  DOCUMENTED; TESTED
-"frobenius", 
-"frobeniusPower",
-FrobeniusPowerStrategy
-"Naive", 
-"Safe",  
+"frobenius", DOCUMENTED
+"frobeniusPower", DOCUMENTED
+FrobeniusPowerStrategy DOCUMENTED
+"Naive",  DOCUMENTED
+"Safe",  DOCUMENTED
 
 NOT Exported
 
 frobeniusMethod
+FrobeniusOperator
+frobeniusPowerHelper
 stableIdeal
 
 --===========================================================

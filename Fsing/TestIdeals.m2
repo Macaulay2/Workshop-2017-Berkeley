@@ -108,7 +108,7 @@ export{
 -- testIdeals.m2
     "findQGorGen", --Karl (this finds y such that I^{[p^e]} : I = (y) + I^{[p^e]}, if it exists) **Documented**
     "testElement", --Karl (my students Marcus and Dan did some improvements on this recently, it doesn't compute the whole Jacobian, it just looks at random minors until it finds a good one, it can be much much faster) **Documented**
-    "MaxCartierIndex", --the cartier index limit in the test ideal method
+    "MaxCartierIndex", --the cartier index limfindAllCompatibleIdealsit in the test ideal method
     "testIdeal", --Karl (the new version)
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
     "isFregular",
