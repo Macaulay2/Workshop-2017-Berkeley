@@ -55,17 +55,17 @@ intersectIdeal=method(TypicalValue=>Ideal)
 intersectIdeal(Ideal) := I -> (
     R:=ring I;
     n:=#(gens R);
-    I:=ideal gens gb I;
-    J=I;
+    I=ideal gens gb I;
+    J:=I;
     K:=ideal 1_R;
     while (J:K)!=(ideal 1_R) do (
 	K=J;
 	J=intersect(K,randomCombo(I));
     );
     m := ideal gens R;
-    G := flatten entries gens (I:(ideal gens R));
+    G := flatten entries gens (J:(ideal gens R));
     d := 1 + max flatten for i in G list flatten degree i;
-    ideal gens gb (I+m^d)
+    ideal gens gb (J+m^d)
 )
 
 beginDocumentation()
@@ -94,9 +94,9 @@ for i from 1 to 12 list (
 
 tally for i from 0 to 9 list (
     print i;
-    R=ZZ/32003[x_{0}..x_{1}];
-    I=randomMonomialIdeal(apply(1+random(2),j->1+random(2)),R)
-        +ideal(apply(#(gens R),j->x_{j}^(1+random(2))));
+    R=ZZ/32003[x_{0}..x_{2}];
+    I=randomMonomialIdeal(apply(1+random(5),j->1+random(5)),R)
+        +ideal(apply(#(gens R),j->x_{j}^(1+random(5))));
     print I;
     intersectSteps(I)
 )
