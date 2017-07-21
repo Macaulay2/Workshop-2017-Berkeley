@@ -1,7 +1,7 @@
 newPackage(
 	"InverseSystems",
     	Version => "1.1", 
-    	Date => "July 20, 2017",
+    	Date => "July 21, 2017",
     	Authors => {{Name => "David Eisenbud", 
 		  Email => "de@msri.org",
 		  Name => "Matthew Mastroeni",
@@ -19,8 +19,8 @@ export {"inverseSystem",
         "fromDividedPowers",
 	"isStandardGradedPolynomialRing",
 	"contractInDegree",
-	"dividedKerInDegree",
-	"dividedImInDegree",
+	"contractKernelInDegree",
+	"contractImageInDegree",
 	--option names (symbols):
 	"PowerBound",
 	"DividedPowers",
@@ -194,33 +194,33 @@ contractInDegree (ZZ, List) := Matrix => (i, L) -> (
     concatMatrix
     )
 
-    
-dividedKerInDegree = method()        
-dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    K := gens ker contractInDegree(i, phi);
-    D := ring phi;
-    ideal mingens ideal( (super basis(i, D)) * K )
+contractKernelInDegree = method()
+
+contractKernelInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
+    I := inverseSystem(matrix{{phi}},DividedPowers=>true);
+    super basis(i,I)
     )
 
-dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
+contractKernelInDegree (ZZ, List) := Ideal => (i,L) -> (
     if any(L, phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
-    K := gens ker contractInDegree(i, L);
-    D := ring L#0;
-    ideal mingens ideal( (super basis(i, D)) * K )
+    I := inverseSystem(matrix{L},DividedPowers=> true);
+    super basis(i,I)
+    )
+ 
+ contractImageInDegree = method()
+
+contractImageInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
+    R := ring phi;
+    ideal contract(symmetricPower(i,vars R),phi)
     )
 
-dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
-    D := ring A;
-    n := numgens D;
-    d := 0;
-    while binomial(d-i + n -1, n-1) < numrows A do(
-	d = d + 1
-	); 
-    if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
-    ideal mingens ideal( (super basis(i, D) * A) )
+contractImageInDegree (ZZ, List) := Ideal => (i,L) -> (
+    R := ring L#0;
+    apply(L,phi -> ideal contract(symmetricPower(i,vars R),phi))
     )
+   
 
-
+{*
 dividedImInDegree = method()
 dividedImInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
     I := contractInDegree(i, phi);
@@ -245,7 +245,7 @@ dividedImInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
     if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
     ideal mingens ideal( (super basis(d - i, D) * A) )
     )
-
+*}
 
 beginDocumentation()
 
@@ -586,8 +586,8 @@ SeeAlso
  toDual
  isStandardGradedPolynomialRing
  contractInDegree
- dividedKerInDegree
- dividedImInDegree
+ contractKernelInDegree
+ contractImageInDegree
 ///
 
 doc ///
@@ -787,7 +787,7 @@ doc ///
    SeeAlso
     contract
      ///
-     
+{*     
 doc ///
    Key
     dividedKerInDegree
@@ -833,7 +833,44 @@ doc ///
      A = dividedActionInDegree(i,phi)
      psi = dividedKerInDegree(i,A)
      ///
+*}
 
+doc ///
+   Key
+    contractKernelInDegree
+    (contractKernelInDegree, ZZ, RingElement)
+    (contractKernelInDegree, ZZ, List)
+   Headline
+    Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+   Usage
+    I = contractKernelInDegree(i, phi)
+    I = contractKernelInDegree(i,L)
+   Inputs
+    i: ZZ
+     an integer
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous elements of a standard graded polynomial ring
+   Outputs
+    I: Ideal
+   Description
+    Text
+     Computes the degree i piece of the kernel of the map from symmetric powers to divided powers 
+     given by multiplication by the ring element or list of elements. 
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     psi = contractKernelInDegree(i,phi)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
+     psi = contractKernelInDegree(i,L)
+     ///
+
+{*
 doc ///
    Key
     dividedImInDegree
@@ -883,7 +920,43 @@ doc ///
      A = dividedActionInDegree(i,phi)
      U = dividedImInDegree(i,A)
      ///
+*}
 
+doc ///
+   Key
+    contractImageInDegree
+    (contractImageInDegree, ZZ, RingElement)
+    (contractImageInDegree, ZZ, List)
+   Headline
+    Computes the image of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+   Usage
+    I = contractImageInDegree(i, phi)
+    I = contractImageInDegree(i,L)
+   Inputs
+    i: ZZ
+     an integer
+    phi: RingElement
+     a homogeneous polynomial in a standard graded polynomial ring
+    L: List
+     a list of homogeneous elements of a standard graded polynomial ring
+   Outputs
+    I: List
+     a list of ideals
+   Description
+    Text
+     Computes the image of the map from the ith symmetric power to divided powers 
+     given by multiplication by the ring element or list of elements. 
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     psi = contractImageInDegree(i,phi)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
+     psi = contractImageInDegree(i,L)
+     ///
 
   
 TEST ///
@@ -891,8 +964,8 @@ TEST ///
 S = ZZ/5[x,y,z]; 
 phi = x^3+y^3+z^3;
 assert(contractInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
-assert(dividedKerInDegree(2, phi)==ideal(x*y,x*z,y*z))
-assert(dividedImInDegree(2, phi)==ideal(x,y,z))
+assert(contractKernelInDegree(2, phi)==ideal(x*y,x*z,y*z))
+assert(contractImageInDegree(2, phi)==ideal(x,y,z))
 
 ///
 
@@ -902,8 +975,8 @@ TEST ///
 R=ZZ/5[x,y,z];
 I=ideal(x^3+y^3+z^3,x*y^2+y*z^2+z*x^2);
 assert(contractInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
-assert(dividedKerInDegree(2,I_*)==ideal(0_R))
-assert(dividedImInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
+assert(contractKernelInDegree(2,I_*)==ideal(0_R))
+assert(contractImageInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
 
 ///
 

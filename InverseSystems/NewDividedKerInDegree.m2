@@ -1,26 +1,26 @@
 needsPackage "InverseSystems"
 
-contractionImageInDegree = method()
+contractImageInDegree = method()
 
-contractionImageInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
+contractImageInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
     R := ring phi;
     ideal contract(symmetricPower(i,vars R),phi)
     )
 
-contractionImageInDegree (ZZ, List) := Ideal => (i,L) -> (
+contractImageInDegree (ZZ, List) := Ideal => (i,L) -> (
     R := ring L#0;
     apply(L,phi -> ideal contract(symmetricPower(i,vars R),phi))
     )
 
 
-contractionKernelInDegree = method()
+contractKernelInDegree = method()
 
-contractionKernelInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
+contractKernelInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
     I := inverseSystem(matrix{{phi}},DividedPowers=>true);
     super basis(i,I)
     )
 
-contractionKernelInDegree (ZZ, List) := Ideal => (i,L) -> (
+contractKernelInDegree (ZZ, List) := Ideal => (i,L) -> (
     if any(L, phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
     I := inverseSystem(matrix{L},DividedPowers=> true);
     super basis(i,I)
@@ -28,14 +28,14 @@ contractionKernelInDegree (ZZ, List) := Ideal => (i,L) -> (
 
 doc ///
    Key
-    contractionImageInDegree
-    (contractionImageInDegree, ZZ, RingElement)
-    (contractionImageInDegree, ZZ, List)
+    contractImageInDegree
+    (contractImageInDegree, ZZ, RingElement)
+    (contractImageInDegree, ZZ, List)
    Headline
     Computes the image of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
    Usage
-    I = contractionImageInDegree(i, phi)
-    I = contractionImageInDegree(i,L)
+    I = contractImageInDegree(i, phi)
+    I = contractImageInDegree(i,L)
    Inputs
     i: ZZ
      an integer
@@ -54,25 +54,25 @@ doc ///
      S = ZZ/5[x,y,z]
      i = 2
      phi = x^3+y^3+z^3
-     psi = contractionImageInDegree(i,phi)
+     psi = contractImageInDegree(i,phi)
     Example
      S = ZZ/5[x,y,z]
      i = 2
      L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
-     psi = contractionImageInDegree(i,L)
+     psi = contractImageInDegree(i,L)
      ///
 
 
 doc ///
    Key
-    contractionKernelInDegree
-    (contractionKernelInDegree, ZZ, RingElement)
-    (contractionKernelInDegree, ZZ, List)
+    contractKernelInDegree
+    (contractKernelInDegree, ZZ, RingElement)
+    (contractKernelInDegree, ZZ, List)
    Headline
     Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
    Usage
-    I = contractionKernelInDegree(i, phi)
-    I = contractionKernelInDegree(i,L)
+    I = contractKernelInDegree(i, phi)
+    I = contractKernelInDegree(i,L)
    Inputs
     i: ZZ
      an integer
@@ -90,10 +90,10 @@ doc ///
      S = ZZ/5[x,y,z]
      i = 2
      phi = x^3+y^3+z^3
-     psi = contractionKernelInDegree(i,phi)
+     psi = contractKernelInDegree(i,phi)
     Example
      S = ZZ/5[x,y,z]
      i = 2
      L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
-     psi = contractionKernelInDegree(i,L)
+     psi = contractKernelInDegree(i,L)
      ///
