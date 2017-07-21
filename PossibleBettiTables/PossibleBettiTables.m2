@@ -192,8 +192,8 @@ sieveZeroPropogations = H ->(
     t
     )
 
-possibleCancelations = method()
-possibleCancelations (HashTable) := H ->(
+possibleCancelations = method(Options => {Cyclic => false})
+possibleCancelations (HashTable) := possibleCancelations => opts -> H ->(
     pd := (max(keys H))#0;
     reg := (max(keys H))#1;
     --
@@ -227,9 +227,18 @@ possibleCancelations (HashTable) := H ->(
 	)	    	 	
     )
 
-possibleCancelations (BettiTally) := B ->(
+possibleCancelations (BettiTally) := possibleCancelations => opts -> B ->(
     possibleCancelations(makeHashFromBetti(B))
     )
+
+possibleCancelations (ZZ,List) := possibleBettiTables => opts -> (n,L) ->(
+    if opts.Cyclic == true then (
+	possibleCancelations(maxBetti(n,L,Cyclic=>true))
+	)
+    else (
+	possibleCancelations(maxBetti(n,L))
+	)
+    ) 
    
 possibleBettiTables = method(Options => {Cyclic => false})
 
@@ -498,11 +507,11 @@ maxBettiCyclic(3,{1,3,3})
 H = new HashTable from {{(0,0),1},{(1,0),0},{(2,0),0},{(3,0),0},{(0,1),0}, {(1,1),3}, {(2,1),8}, {(3,1),3}, {(0,2),0},{(1,2),9}, {(2,2),9}, {(3,2),3}}
 makeBettiFromHash H
 
-makeBettiFromHash maxBetti(3,{1,3,3})
-makeBettiFromHash maxBetti(3,{1,3,3},Cyclic=>true)
+makeBettiFromHash maxBetti(3,{1,3,3,1})
+makeBettiFromHash maxBetti(3,{1,3,3,1},Cyclic=>true)
 
 netList possibleCancelations H
 #(possibleCancelations H)
 netList possibleBettiTables H
 #(possibleBettiTables H)
-netList possibleBettiTables(3,{1,3,3},Cyclic=>true)
+netList possibleBettiTables(3,{1,3,3,1},Cyclic=>true)
