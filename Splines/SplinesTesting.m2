@@ -2,7 +2,7 @@
 restart
 installPackage("AlgebraicSplines",FileName=>"~/Documents/Macaulay2/SplineCode/Workshop-2017-Berkeley/Splines/AlgebraicSplines.m2")
 V={{0,0,0},{1,0,0},{0,1,0},{0,0,1},{-1,0,0},{0,-1,0},{0,0,-1}};
-F={{0,1,2,3},{0,1,2,6},{0,2,3,4},{0,2,4,6}};
+F={{0,1,2,3},{0,1,2,6},{0,2,3,4},{0,2,4,6},{0,1,3,5},{0,3,4,5},{0,4,5,6},{0,1,5,6}};
 F={{0,1,2,3},{0,1,2,4}}
 getCodim1Intersections(F,InputType=>"Simplicial")
 cellularComplex(V,F)
