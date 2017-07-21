@@ -300,7 +300,7 @@ realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
     );
     error "not implemented yet for your type of surface"
 )
-realize AbstractDivisor := opts -> C -> realize(C,realize(C.AbstractSurface,Options=>opts))
+realize AbstractDivisor := opts -> C -> realize(C,realize(C.AbstractSurface))
 
 
 --Rao Module--
@@ -536,23 +536,22 @@ TEST ///
 end--------
 
 
---Generate curves on cubic surface
+--Generate divisors on cubic surface
 restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
-S = ZZ/32003[x_0..x_3]
-X = realize(abstractCubic, Ring => S)
 a = 6
 time Lrd = flatten apply({10,11,12}, d -> 
-    effectiveDivisors(X,{a,d}));  -- used 3.90876 seconds
-dgTable Lrd
-
---Generate curves on quadric surface
-restart
-needsPackage "SpaceCurves"
-S = ZZ/32003[x_0..x_3]	
-Y = realize(abstractQuadric, Ring => S)
-time Lrd = flatten apply(6, d -> effectiveDivisors(Y,{d+1}));
+    effectiveDivisorsOnCubic(abstractCubic,a,d));  -- used 3.90876 seconds
 dgTable Lrd
 
 --Generate complete intersection curves
+restart
+needsPackage "SpaceCurves"
+--check "SpaceCurves"
+time dT = flatten apply(10,d->effectiveDivisors(d+1)); -- used 225.955 seconds
+time rT = apply(dT, ad -> realize ad); -- used 47.5035 seconds
+time rB = apply(rT, rd -> betti res ideal rd);
+rBu = unique rB; #rBu
+netList rBu
+netList apply(rBu,b->(degree b,b))
