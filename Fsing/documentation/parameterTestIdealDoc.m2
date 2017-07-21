@@ -54,11 +54,11 @@ doc ///
 
 doc ///
     Key
-        findSplittingsOfIdeal
+        findCanonicalModuleFrobeniusTrace
     Headline
         finds the u, which in a polynomail ring, determines the Frobenius trace on canonical module of a quotient of that ring.
     Usage
-        findSplittingsOfIdeal(canIdeal, defIdeal)
+        findCanonicalModuleFrobeniusTrace(canIdeal, defIdeal)
     Inputs
         canIdeal:Ideal
         defIdeal:Ideal
@@ -77,7 +77,7 @@ doc ///
             R = S/defIdeal;
             J = canonicalIdeal(R);
             canIdeal = sub(J, S) + defIdeal;
-            findSplittingsOfIdeal(canIdeal, defIdeal)
+            findCanonicalModuleFrobeniusTrace(canIdeal, defIdeal)
 ///
 
 doc ///
@@ -107,7 +107,7 @@ doc ///
         :Sequence
     Description
         Text
-            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element u (or us) used to compute this ideal via the method findSplittingsOfIdeal.  
+            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element $u$ (or $u$s) used to compute this ideal via the method @TO findCanonicalModuleFrobeniusTrace@.  
         Example
             R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
             testModule(R)
@@ -198,7 +198,7 @@ doc ///
         :Boolean
     Description
         Text
-            Determines if a ring is Cohen-Macaulay.  If you pass the IsLocal parameter, this will simply call the isCM function in the Depth package, which checks whether the ring is CM at the origin.  
+            Determines if a ring is Cohen-Macaulay.  If you pass the {\tt IsLocal parameter}, this will simply call the @TO isCM@ function in the {\tt Depth} package, which checks whether the ring is Cohen-Macaulay at the origin.  
         Example
             T = ZZ/5[x,y];
             S = ZZ/5[a,b,c,d];
@@ -206,12 +206,12 @@ doc ///
             R = S/(ker g);
             isCohenMacaulay(R)
         Example
-            R = QQ[x,y,u,v]/(ideal(x*u, x*v, y*u, y*v))
+            R = QQ[x,y,u,v]/(ideal(x*u, x*v, y*u, y*v));
             isCohenMacaulay(R)
         Text
-            The function works as follows.  It considers R as a quotient of an ambient polynomial ring, R = S/I.  It takes a resolution of I.  If the resolution has length equal to dim R - dim S, then it is Cohen-Macaulay.  If the resolution has a different length, and I is homogeneous, then it is not Cohen-Macaulay.  Finally, if the resolution has a different length and I is not homogeneous, the function looks at the Ext groups which compute the depth.
+            The function works as follows.  It considers $R$ as a quotient of an ambient polynomial ring, $R = S/I$.  It takes a resolution of $I$.  If the resolution has length equal to dim $R$ - dim $S$, then it is Cohen-Macaulay.  If the resolution has a different length, and $I$ is homogeneous, then it is not Cohen-Macaulay.  Finally, if the resolution has a different length and I is not homogeneous, the function looks at the $Ext$ groups which compute the depth.
         Text
-            Warning, this function assumes that Spec R is connected.  In particular, if you pass it a non-equidimensional Cohen-Macaulay ring (for example, if Spec R has two connected components of different dimensions), this function will return false.  
+            Warning, this function assumes that Spec $R$ is connected.  In particular, if you pass it a non-equidimensional Cohen-Macaulay ring (for example, if Spec $R$ has two connected components of different dimensions), this function will return false.  
 ///
 
 doc ///

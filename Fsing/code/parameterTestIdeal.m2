@@ -49,7 +49,7 @@ finduOfIdeal(Ideal, Ideal) := (defIdeal, canIdeal) -> (
 --this function finds the generators of the intersection of 
 --J^{[p]} : J and I^{[p]} : I where I is the defining ideal and J is the canonical
 --ideal lifted to the ambient ring (in a maximal way).
-findSplittingsOfIdeal = (defIdeal, canIdeal) -> (
+findCanonicalModuleFrobeniusTrace = (defIdeal, canIdeal) -> (
 	Ip := frobenius( defIdeal );
 	tempIdeal := intersect( (frobenius( canIdeal )) : canIdeal, Ip : defIdeal );
 	
@@ -79,7 +79,7 @@ testModule(Ring, Ideal) := o->(R1, canIdeal) -> (
     J1 := sub(canIdeal, S1);
     C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
     
-    u1 := findSplittingsOfIdeal(I1, J1+I1);
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);
     tau := I1;
     if (#u1 > 1) then(
         print "testModule: Multiple trace map for omega generators (Macaulay2 failed to find the principal generator of a principal ideal).  Using them all.";
@@ -107,7 +107,7 @@ testModule(QQ, RingElement) := o-> (tt, ff) ->(
     canIdeal := canonicalIdeal(R1);
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findSplittingsOfIdeal(I1, J1+I1);
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);
     testModule(tt, ff, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
@@ -262,7 +262,7 @@ testModule(List, List) := o-> (ttList, ffList) ->(
     canIdeal := canonicalIdeal(R1);
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findSplittingsOfIdeal(I1, J1+I1);
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);
     testModule(ttList, ffList, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
