@@ -30,12 +30,20 @@ doc ///
         :List
     Description
         Text
-            adicExpansion(p,0) returns a list with one element, which is zero.  If N is nonzero, then adicExpansion(p,N) returns a list in which the i-th element is the coefficient of p^i in the base p expansion of N.  
+            {\tt adicExpansion(p,0)} returns $\{ 0 \}$.  
+            If $N$ is nonzero, then {\tt adicExpansion(p,N)} returns a list in 
+            which the $i$th element is the coefficient of $p^i$ in the base $p$ 
+            expansion of $N$.  
         Example
             5==1*2^0+0*2^1+1*2^2
             adicExpansion(2,5)
         Text
-            adicExpansion(p,e,0) returns a list with e elements, all of which are zero.  If x is nonzero, then adicExpansion(p,e,x) returns a list of size e in which the i-th element is the coefficient of p^(-i-1) in the unique nonterminating base p expansion of x.  For example, the non-terminating base 2 expansion of 1/2 is 1/2 = 0/2 + 1/4 + 1/8 + 1/16 + ... and so 
+            {\tt adicExpansion(p,e,0)} returns a list with $e$ elements, all of which
+            are zero. If $x$ is nonzero, then {\tt adicExpansion(p,e,x)} returns a 
+            list of size $e$ in which the $i$th element is the coefficient of 
+            $p^{-i-1}$ in the unique nonterminating base $p$ expansion of $x$.  
+            For example, the non-terminating base 2 expansion of 1/2 is 
+            $1/2 = 0/2 + 1/4 + 1/8 + 1/16 + \cdots$, and so 
         Example
             adicExpansion(2,4,1/2)
 ///
@@ -44,11 +52,11 @@ doc ///
 doc ///
     Key
         adicDigit
-        (adicDigit, ZZ, ZZ, QQ)
         (adicDigit, ZZ, ZZ, ZZ)
+        (adicDigit, ZZ, ZZ, QQ)
         (adicDigit, ZZ, ZZ, List)
     Headline
-        computes the digit of the non-terminating expansion of a number in (0,1] in a given base
+        computes the digit of the non-terminating expansion of a number in [0,1] in a given base
     Usage 
         adicExpansion(p,e,x)
         adicExpansion(p,e,L)
@@ -63,9 +71,18 @@ doc ///
         :ZZ
     Description
         Text    
-            The command adicDigit(p,e,0) returns 0.  If x is in (0,1], then adicDigit(p,e,x) returns the coefficient of p^(-e-1) in the non-terminating base p expansion of x.  If L is a list, this function returns a list where this function is applied to each element of the list. 
+            The command {\tt adicDigit(p,e,0)} returns 0.  If $x\in (0,1]$, 
+            then {\tt adicDigit(p,e,x)} returns the coefficient of $p^{-e-1}$ in 
+            the non-terminating base $p$ expansion of $x$.  
         Example
             adicDigit(5,4,1/3)
+        Text
+            If $L$ is a list
+            of numbers in the unit interval,  {\tt adicDigit(p,e,L)}
+            returns a list where this function is applied to each 
+            element of $L$. 
+        Example
+            adicDigit(5,4,{1/3,1/7,2/3})
 ///
 
 
@@ -76,7 +93,7 @@ doc ///
         floorLog
         (floorLog, ZZ, ZZ)
     Headline
-        Computes the floor of the log base b of x
+        computes the floor of the log base b of x
     Usage
      	floorLog(b,x)         
     Inputs
@@ -88,7 +105,8 @@ doc ///
         :ZZ
     Description
         Text
-            floorLog(b,x) computes floor(log_b(x)), correcting occasional errors due to rounding.
+            {\tt floorLog(b,x)} computes {\tt floor(log_b(x))}, correcting occasional 
+            errors due to rounding.
         Example
             floor( log_3 3^5 )
             floorLog( 3, 3^5 )
@@ -105,12 +123,13 @@ doc ///
     Inputs
         a:ZZ
         b:ZZ
-            prime to a		
+            prime to {\tt a}		
     Outputs
         :ZZ
     Description
         Text
-            This computes the multiplicative order of a modulo b.  If a and b are not relatively prime, it returns an error.
+            This computes the multiplicative order of $a$ modulo $b$.  
+            If $a$ and $b$ are not relatively prime, it returns an error.
         Example
             multOrder(2, 11^2)
             multOrder(3, 11^2)
@@ -123,7 +142,7 @@ doc ///
         (divideFraction, ZZ, QQ)
         (divideFraction, ZZ, ZZ)
     Headline
-        decompose a rational number into a/p^b(p^c-1)
+        decompose a rational number into a/(p^b(p^c-1))
     Usage
         L = divideFraction(p,t)
         L = divideFraction(p,n)
@@ -136,12 +155,15 @@ doc ///
         L:List
     Description
         Text
-            Given a rational number $t$ and a prime $p$, {\tt divideFraction(p,t)} returns a list {\tt \{a,b,c\}} of nonnegative integers such that $t = a/(p^b*(p^c-1))$.
+            Given a rational number $t$ and a prime $p$, {\tt divideFraction(p,t)} 
+            returns a list {\tt \{a,b,c\}} of nonnegative integers such that 
+            $t = a/(p^b(p^c-1))$.
         Example
             divideFraction( 3, 4/45 )
             4/45 == 64/( 3^2 * ( 3^4 -1 ) )
         Text
-            If the denominator is a pure power of $p$, then $t = a/p^b$ and the function returns {\tt c = 0}.  See the option {\tt NoZeroC} to avoid this.
+            If the denominator is a pure power of $p$, then $t = a/p^b$ and the 
+            function returns {\tt c = 0}. See the option @TO NoZeroC@ to avoid this.
         Example
             divideFraction( 3, 4/27 )
 ///
@@ -152,7 +174,7 @@ doc ///
     Headline
         decompose a rational number into a/p^b(p^c-1) and force c not equal to zero
     Usage
-        L = divideFraction(..., NoZeroC=>b)
+        L = divideFraction(..., NoZeroC => b)
     Inputs
         b:Boolean
     Outputs
@@ -205,13 +227,15 @@ doc ///
             the trunction
     Description
         Text
-            This function computes the rational number equal to the $e$th truncation of a rational number.  If you pass it zero, it returns zero.            
+            This function computes the rational number equal to the $e$th truncation 
+            of a rational number.  If you pass it zero, it returns zero.            
         Example
             adicTruncation(5, 2, 1/100)
             adicTruncation(5, 4, 1/100)
             adicTruncation(5, 5, 1/1000)
         Text
-            You can also pass it a list of numbers, in which case it returns the list of the truncations.
+            You can also pass it a list of numbers, in which case it returns the 
+            list of the truncations.
         Example
             adicTruncation(5, 5, {1/100, 1/1000})
 ///
