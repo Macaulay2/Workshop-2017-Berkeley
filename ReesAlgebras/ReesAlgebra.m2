@@ -658,19 +658,21 @@ kk = ZZ/101
 d = 3
 S = kk[x_0..x_(d-1)]
 mlin = transpose vars S
-mquad = random(S^d, S^{-1,-4,d-2:-2})
+mquad = random(S^d, S^{-1,-4,d-2:-2,-5})
 Irand = minors(d,mlin|mquad)
 X = vars S
 phi = syz gens Irand;
 psi = jacobianDual phi
 
+d2 = numcols vars ring psi
 
---ST = kk[x_0..x_(d-1), T_0..T_3] -- or
-ST = S[T_0..T_3]
-Ts = matrix{{T_0,T_1,T_2,T_3}}
-STS = map(ST,ring psi,toList(T_0..T_3)|toList(x_0..x_(d-1)))
+ST = kk[x_0..x_(d-1), T_0..T_(d2-1)] -- or
+--ST = S[T_0..T_(d)]
+Ts = matrix{{T_0..T_(d2-1)}}
+STS = map(ST,ring psi,toList(T_0..T_(d2-1))|toList(x_0..x_(d-1)))
 psi1 = jacobianDual(phi, X, Ts)
 (STS psi) - psi1 == 0
+
 ///
 
 beginDocumentation()
