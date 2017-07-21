@@ -1593,6 +1593,9 @@ assert(isLPP ideal(a^3,b^4,c^4,a^2*b,a^2*c^2)==true)
 assert(isLPP ideal(a^4,b^3,c^4,a^2*b,a^2*c^2)==false)
 assert(isLPP ideal(a^3,b^4,c^4)==true)
 assert(isLPP ideal(a^4,b^5,c^4)==false)
+assert(isLPP ideal(a^4,b^5,a^3*b)==false) --- new for options
+assert(isLPP( ideal(a^4,b^5,a^3*b), CheckArtinian => false)==true) --- new for options
+assert(isLPP LPP(ideal(b,c)*minors(2,genericSkewMatrix(R,3))) == false) -- new for options
 ///
 
 ----------------------------
