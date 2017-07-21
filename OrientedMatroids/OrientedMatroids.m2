@@ -33,7 +33,7 @@ net OrientedMatroid := X -> (
 
 
 -- constructor
-orientedMatroid = method(Options => {})
+
 
 -- still need to finish adapting
 orientedMatroid = method(Options => {symbol TargetRank => -1})
@@ -54,10 +54,10 @@ orientedMatroid (List, HashTable) := OrientedMatroid => opts -> (E, B) -> (
 )
 
 -- 2nd list is circuits
-orientedMatroid (List,List) := Matroid => opts -> (E, B) -> (
+orientedMatroid (List,List) := OrientedMatroid => opts -> (E, B) -> (
 	--if #B > 0 and not instance(B#0, Set) then B = B/(l -> set l)
 	--r := if opts.TargetRank >= 0 then opts.TargetRank else if #B > 0 then #(B#0) else -1 -- this seems wrong
-	r := if opts.TargetRank >= 0 then opts.TargetRank else #((keys B)_0); 
+	r := if opts.TargetRank >= 0 then opts.TargetRank else rankFromCircuits(B, #E); 
 	E' := set(0..<#E);
 	M := new OrientedMatroid from {
 		symbol ground => E',
@@ -65,11 +65,25 @@ orientedMatroid (List,List) := Matroid => opts -> (E, B) -> (
 		symbol rk => r , -- how to put this in?
 		cache => new CacheTable
 	};
-    	M.cache.chirotope = B;
-	if opts.EntryMethod == "circuits" then (
-		M.cache.circuits = B');  -- issue here chirotope is a hash table; circuits are vectors
+		M.cache.circuits = B;  -- issue here chirotope is a hash table; circuits are vectors
 	M
 )
+
+-- from a matrix
+matroid Matrix := Matroid => opts -> A -> (
+	E := entries transpose A/(v -> transpose matrix{v});
+	E' := set(0..<#E);
+	r := rank A;
+		M := new OrientedMatroid from {
+		symbol ground => E',
+		symbol groundSet => E,
+		symbol rk => r , -- how to put this in?
+		cache => new CacheTable
+	};
+		M.cache.matroidMatrix = A;  
+	M
+)
+
 
 
 rankFromCircuits = method(Options => {symbol TargetRank => -1})
