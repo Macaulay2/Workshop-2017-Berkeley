@@ -228,11 +228,29 @@ possibleCancelations (HashTable) := H ->(
 	delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then makeBettiFromHash(i))))
 	)	    	 	
     )
-    
-possibleBettiTables = method()
-possibleBettiTables (HashTable) := H ->(
+
+possibleCancelations (BettiTally) := B ->(
+    possibleCancelations(makeHashFromBetti(B))
+    )
+   
+possibleBettiTables = method(Options => {Cyclic => false})
+
+possibleBettiTables (HashTable) := possibleBettiTables => opts -> H ->(
     delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i))
-    )     
+    )  
+
+possibleBettiTables (BettiTally) := possibleBettiTables => opts -> B ->(
+    delete(,apply(possibleCancelations(B),i-> if isInCone(i)==true then i))
+    )
+
+possibleBettiTables (ZZ,List) := possibleBettiTables => opts -> (n,L) ->(
+    if opts.Cyclic == true then (
+	possibleBettiTables(maxBettiCyclic(n,L))
+	)
+    else (
+	possibleBettiTables(maxBetti(n,L))
+	)
+    )    
 end
 
 --------------------------------------------------------------------------------
