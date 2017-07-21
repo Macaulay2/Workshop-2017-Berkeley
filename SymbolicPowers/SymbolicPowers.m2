@@ -20,14 +20,14 @@ export {
     -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
-    "ContainmentProblem", 
+    "containmentProblem", 
     "bigHeight",
     "frobeniusPower", 
     "symbPowerPrimePosChar", 
     "isSymbolicEqualOrdinary",
     "symbolicPowerJoin", 
     "joinIdeals", 
-    "ContainmentProblemGivenSymbolicPower",
+    "containmentProblemGivenSymbolicPower",
     "symbolicContainmentMonomialCurve", 
     "squarefreeGens", 
     "squarefreeInCodim",
@@ -84,13 +84,13 @@ isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeigh
 
 containmentProblem = method(TypicalValue => ZZ)
 containmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
-s    while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
+   while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
     m)
 
 
 
-ContainmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
-ContainmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => (I,m) -> (h := bigHeight(I); 
+containmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
+containmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => (I,m) -> (h := bigHeight(I); 
     e := (m-m%h)/h; n := lift(e,ZZ);
     while isSymbPowerContainedinPower(I,m,n+1) do n = n+1;
     n)
@@ -173,7 +173,7 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
 symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
 symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
 
-    if opts.UseMinimalPrimes then return unmixedPart fastPower(I,n);
+    if opts.UseMinimalPrimes then return (unmixedPart fastPower(I,n));
         
     if not opts.UseMinimalPrimes then (    
     	if (codim I == dim R - 1 and isHomogeneous(I)) then (
@@ -490,7 +490,7 @@ waldschmidt MonomialIdeal := opts -> I -> (
 
 lowerBoundResurgence = method(TypicalValue => QQ, Options =>{useWaldschmidt=>false})
 lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
-    l := max append(apply(toList(2 .. m),o -> (ContainmentProblem(I,o)-1)/o),1);
+    l := max append(apply(toList(2 .. m),o -> (containmentProblem(I,o)-1)/o),1);
     if opts#useWaldschmidt == false then return l
     else return max {l, alpha(I)/waldschmidt(I)}
     )
@@ -644,7 +644,7 @@ doc ///
      	 Text
 	      We can ask the same question backwards: what is the largest power of I that contains $I^{(4)}$?
 	 Example
-	      ContainmentProblemGivenSymbolicPower(I,4)     
+	      containmentProblemGivenSymbolicPower(I,4)     
 ///
 
 
@@ -778,7 +778,7 @@ doc ///
      	   J = ideal(x,y)
     	   isSymbPowerContainedinPower(J,3,2)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 
@@ -804,18 +804,18 @@ doc ///
 	   m = containmentProblem(I,2)
    SeeAlso
        isSymbPowerContainedinPower
-       ContainmentProblemGivenSymbolicPower
+       containmentProblemGivenSymbolicPower
 ///
 
 
 doc ///
    Key
-       ContainmentProblemGivenSymbolicPower
-       (ContainmentProblemGivenSymbolicPower, Ideal, ZZ)
+       containmentProblemGivenSymbolicPower
+       (containmentProblemGivenSymbolicPower, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the largest power of I containing in I^{(n)}.
    Usage
-       ContainmentProblemGivenSymbolicPower(I,m)
+       containmentProblemGivenSymbolicPower(I,m)
    Inputs
 	I:Ideal
 	m:ZZ
@@ -827,7 +827,7 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   ContainmentProblemGivenSymbolicPower(I,3)
+	   containmentProblemGivenSymbolicPower(I,3)
    SeeAlso
        containmentProblem
 ///
@@ -1053,7 +1053,7 @@ doc ///
        Example 
 	   symbolicPowerMonomialCurve({3,4,5},3) 
      SeeAlso 
-	  ContainmentProblem
+	  containmentProblem
 /// 
 
 
@@ -1440,13 +1440,13 @@ R=QQ[x,y,z];
 
 I=ideal(x*y,x*z,y*z);
 
-assert(ContainmentProblem(I,2)==3)
+assert(containmentProblem(I,2)==3)
 ///
 
 TEST ///
 R=QQ[x,y,z]
 I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
-assert(ContainmentProblem(I,2)==4)
+assert(containmentProblem(I,2)==4)
 ///
 
 --frobeniusPower
