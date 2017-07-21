@@ -28,6 +28,7 @@
 
 
 findAllCompatibleIdeals = (u) ->(
+    if not isPolynomialOverPrimeField( u ) then error "findAllCompatibleIdeals: expected an element of a polynomial ring over a prime field ZZ/p";
 	L:={}; R:=ring u; p:=char R;
 	P:=ideal(0_R);
 	J:=frobeniusRoot(1,ideal(u));

@@ -134,15 +134,13 @@ doc ///
 
             There are many ways to call {\tt frobeniusRoot}. The simplest way is to call {\tt frobeniusRoot(e,I)}. For instance, 
         Example
-            kk = ZZ/5;
-            R = kk[x,y,z];
+            R = ZZ/5[x,y,z];
             I = ideal(x^50*z^95, y^100+z^27);
             frobeniusRoot(2, I)
         Text
             This computes $I^{[1/p^e]}$, i.e. the $p^e$-th root of $I$. Often, one wants to compute the frobeniusRoot of some product of ideals. This is best accomplished by calling the following version of frobeniusRoot:
         Example 
-            kk = ZZ/5;
-            R = kk[x,y,z];
+            R =  ZZ/5[x,y,z];
             I1 = ideal(x^10, y^10, z^10);
             I2 = ideal(x^20*y^100, x + z^100);
             I3 = ideal(x^50*y^50*z^50);

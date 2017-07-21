@@ -46,6 +46,9 @@ doc ///
             $1/2 = 0/2 + 1/4 + 1/8 + 1/16 + \cdots$, and so 
         Example
             adicExpansion(2,4,1/2)
+    SeeAlso
+        adicDigit
+        adicTruncation
 ///
 
 
@@ -83,6 +86,9 @@ doc ///
             element of $L$. 
         Example
             adicDigit(5,4,{1/3,1/7,2/3})
+    SeeAlso
+        adicExpansion
+        adicTruncation
 ///
 
 
@@ -240,4 +246,7 @@ doc ///
             list of the truncations.
         Example
             adicTruncation(5, 5, {1/100, 1/1000})
+    SeeAlso
+        adicExpansion
+        adicTruncation
 ///

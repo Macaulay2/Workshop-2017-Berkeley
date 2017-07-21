@@ -23,6 +23,10 @@ NOT exported
 baseP1
 denominator/numerator
 "fracPart",
+isPolynomial
+isPolynomialOverPosCharField
+isPolynomialOverFiniteField
+isPolynomialOverPrimeField
 "maxIdeal", 
 
 --===========================================================
@@ -253,9 +257,5 @@ Functions that were not being used or exported
 
 [allPartitions] 
 [allPartitionsInnards]
-
-[isPolynomial] 
-[isPolynomialOverPosCharField]  
-[isPolynomialOverFiniteField] 
 
 maxIdeal (RingElement)

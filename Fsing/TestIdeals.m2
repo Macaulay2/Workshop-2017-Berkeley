@@ -219,4 +219,6 @@ load "./tests/frobeniusPowersTest.m2"
 
 load "./tests/ParameterTestIdealTest.m2"
 
+load "./tests/CompatiblySplitTest.m2"
+
 end
