@@ -609,7 +609,7 @@ doc ///
        betti(fM=res M)
        r=rank fM_1-rank fM_0
        degs=sort flatten degrees fM_2
-       L=-{3,4}
+       L=-{3,3}
        G=S^L
        J=hilbertBurchComputation(M,G)
        M=hartshorneRaoModule J
