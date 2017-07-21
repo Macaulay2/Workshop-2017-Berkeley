@@ -42,6 +42,16 @@ TEST /// --HSLGModule cone over supersingular elliptic curve
     assert((HSLmod#0 == HSLmod#1));
 ///
 
-TEST /// --HSLGModule of ring with no variables
-    
+TEST /// --isFinjective of a ring with no variables
+    R = ZZ/17[];
+    assert(isFinjective(R));
+///
+
+TEST /// --checking brute force F-injective vs canonicalStrategy
+    R = ZZ/3[x,y,z]/ideal(y^2*z-x^3+x*y*z); --ordinary
+    assert(isFinjective(R));
+    assert(isFinjective(R, CanonicalStrategy=>null));
+    S = ZZ/3[x,y,z]/ideal(x^3+y^2*z-x*z^2); --supersingular
+    assert(not isFinjective(S));
+    assert(not isFinjective(S, CanonicalStrategy=>null));
 ///
