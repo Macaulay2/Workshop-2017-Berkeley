@@ -227,7 +227,6 @@ doc ///
 
 doc ///
     Key
-<<<<<<< HEAD
     	maxBetti
     Headline
     	creates HashTable representing a Betti table of the maximum
@@ -290,7 +289,6 @@ doc ///
 =======
     	makeBettiFromHash
 	(makeBettiFromHash,HashTable)
->>>>>>> PossibleBettiTables-2017
     Headline
     	turns the HashTable representing a Betti table into a BettiTally
     Usage
@@ -389,7 +387,6 @@ doc ///
 	    H = new HashTable from {(0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 6, (3,0) => 0, (2,1) => 8, (1,2) => 0, (3,1) => 3, (2,2) => 0, (3,2) => 0};
 	    makeBettiFromHash(H) 	
 ///
->>>>>>> PossibleBettiTables-2017
 
 TEST ///
     R = QQ[x_{0},x_{1},x_{2},x_{3}]
@@ -421,10 +418,6 @@ TEST ///
     assert(sort(pairs(H4)) == sort(pairs(maxBettiCyclic(4,{1,4,10}))))
 ///
 end
-
-maxBetti(3,{1,3,3})
-maxBettiCyclic(3,{1,3,3})
-maxBetti(4,{1,4,10})
 
 searchCone(H)
 
