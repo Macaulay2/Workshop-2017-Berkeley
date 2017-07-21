@@ -85,6 +85,10 @@ makeBettiFromHash = H ->(
     new BettiTally from apply(keys H, h-> (h_0,{h_0+h_1},h_0+h_1)=> H#h)
     )
 
+makeHashFromBetti = B -> (
+    H = new HashTable from apply(keys B, b-> (b_0,b_2-b_0) => B#b)
+    )
+
 fromHashToDiagMatrix = H ->(
     pd := (max(keys H))#0;
     reg := (max(keys H))#1;
@@ -100,13 +104,6 @@ fromHashToDiagMatrix = H ->(
 		    ))
 	    ));
     matrix (M1 | M2)
-    )
-
---------------------------------------------------------------------------
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-makeHashFromBetti = B -> (
-    H = new HashTable from apply(keys B, b-> (b_0,b_2-b_0) => B#b)
     )
 
 --------------------------------------------------------------------------
@@ -234,8 +231,8 @@ possibleCancelations (HashTable) := H ->(
     
 possibleBettiTables = method()
 possibleBettiTables (HashTable) := H ->(
-    delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i)))	
-    )      
+    delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i))
+    )     
 end
 
 --------------------------------------------------------------------------------
