@@ -777,7 +777,7 @@ doc///
      Key
      	  isCM
 	  (isCM,Ideal)
-     Headline
+	     Headline
      	  test whether a polynomial ring modulo a homogeneous ideal is Cohen-Macaulay
      Usage
      	  B=isCM I
@@ -920,7 +920,6 @@ doc///
 				(LPP, Ideal)
 				[LPP, FillPowers]
 				[LPP, UseHeuristics]
-
      Headline
      	  return the lex-plus-powers (LPP) ideal corresponding to a given Hilbert function and power sequence
      Usage
@@ -1079,10 +1078,8 @@ doc///
      	  isLPP
 	  (isLPP,Ideal)
 		[isLPP, CheckArtinian]
-
      Headline
      	  determine whether an ideal is an LPP ideal, default option is when ideal is Artinian.
-
      Usage
      	  B=isLPP I
      Inputs
