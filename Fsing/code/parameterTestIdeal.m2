@@ -55,7 +55,7 @@ findSplittingsOfIdeal = (defIdeal, canIdeal) -> (
 	first entries M1
 )
 
-testModule = method(Options => {FrobeniusRootStrategy => Substitution}); --a rewritten function to construct the (parameter) test (sub)module of a given ring.  
+testModule = method(Options => {FrobeniusRootStrategy => Substitution, AssumeDomain=>false}); --a rewritten function to construct the (parameter) test (sub)module of a given ring.  
                        --it returns two ideals and an element.  
                        --The first ideal is an ideal isomorphic to the test module and the
                        --and the second is an ideal isomorphic to the canonical module, in which the parameter
@@ -75,7 +75,7 @@ testModule(Ring, Ideal) := o->(R1, canIdeal) -> (
     S1 := ambient R1;
 	I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    C1 := testElement(R1);
+    C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
     
     u1 := findSplittingsOfIdeal(I1, J1+I1);
     tau := I1;
@@ -118,8 +118,9 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
     J1 := sub(canIdeal, S1);
     
     
-    C1 := testElement(R1);
+    C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
     fractionDivided := decomposeFraction(pp, tt);
+
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}
@@ -192,8 +193,9 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
     J1 := sub(canIdeal, S1);    
     
     ffList = apply(ffList, zz->sub(zz, S1));
-    C1 := testElement(R1);
+    C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
     fractionDividedList := apply(ttList, tt -> decomposeFraction(pp, tt));
+
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}
