@@ -28,7 +28,9 @@ newPackage(
 export {"simplicialJoin","poincareSphere","dunceHat","suspension",
     "projectivePlane","bjornerExample","hachimoriExample1",
     "hachimoriExample2","hachimoriExample3","hachimoriExample4","ringMap",
-    "simplicialComplexMap","SimplicialComplexMap","composition","skeleton"}
+    "simplicialComplexMap","SimplicialComplexMap","composition","skeleton","nerve","recrusiveNerve"}
+
+local nerveFacets
 
 -- Jason's area to work in
 
@@ -469,6 +471,49 @@ skeleton(ZZ,SimplicialComplex) := (n,S)->(
     if F == {} then simplicialComplex {0_R} else simplicialComplex F
 )
 
+
+
+nerve = method()
+nerve(SimplicialComplex) := (S)-> (
+    R := ring S;
+    n := dim R;
+    monF := flatten entries facets(S);
+    F := for monL in monF list(
+    	L := {};
+    	for i from 0 to n-1 do(
+    	    if monL%R_i==0 then L=L|{i} 
+            );
+    	set L
+	);
+    m := #F;
+    kk := coefficientRing R;
+    x := getSymbol "x";
+    Q := kk[x_0..x_(m-1)];
+    --HT=new MutableHashTable from {}
+    nerveFacets = {};
+    recursiveNerve({},F,Q,m);
+    simplicialComplex nerveFacets
+)    
+    
+
+recursiveNerve = (L,F,Q,m)-> (
+    	--if not HT#?L then (
+	k := max(L | {-1});
+	facet := true;
+	for i from k+1 to m-1 do(
+	    newL := L|{i};
+	    intersection := product apply(newL,j->F#j);
+	    if intersection=!=set{} then (
+		facet=false;
+		recursiveNerve(newL,F,Q,m);
+		);
+            );
+	if facet then (
+	    nerveFacets=nerveFacets|{product apply(L,j->Q_j)};
+	    --for U in subsets(L) do HT#U=1;
+	    );
+-- );
+);
 end
 
 
@@ -653,49 +698,17 @@ time gcd mons
 -----
 restart
 loadPackage "SimplicialComplexesTemp"
-S=projectivePlane(QQ)
-R=ring S;
-n=dim R;
-monF=flatten entries facets(S)
-F=for monL in monF list(
-    L := {};
-    for i from 0 to n-1 do(
-    	    if monL%R_i==0 then L=L|{i} 
-        );
-    set L
-)
-m=#F
-kk=coefficientRing R;
-x=getSymbol "x"
-Q=kk[x_0..x_(m-1)]
---HT=new MutableHashTable from {}
-nerveFacets={}
-nerve=method()
-nerve(List) := L-> (
-    print L;
-    --if not HT#?L then (
-	k := max(L | {-1});
-	facet := true;
-	for i from k+1 to m-1 do(
-	    newL := L|{i};
-	    intersection := product apply(newL,j->F#j);
-	    if intersection=!=set{} then (
-		facet=false;
-		nerve(newL);
-		);
-            );
-	if facet then (
-	    nerveFacets=nerveFacets|{product apply(L,j->Q_j)};
-	    --for U in subsets(L) do HT#U=1;
-	    );
--- );
-);
-nerve{}
-nerveFacets
 
-S=simplicialComplex nerveFacets
-isPure(S)
-fVector(S)
+S=projectivePlane(QQ)
+
+
+
+R=QQ[a..f]
+S=simplicialComplex{a*b*c,b*c*e,c*d*e,d*e*f,a*f}
+nerve(S)
+nerve oo
+nerve oo
 ------nerve 
 R=QQ[x_0..x_3]
 S=simplicialComplex monomialIdeal(x_0*x_1*x_2,x_0*x_1*x_3,x_0*x_2*x_3)
+nerve S
