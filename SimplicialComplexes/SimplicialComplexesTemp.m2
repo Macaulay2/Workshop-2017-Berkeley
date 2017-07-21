@@ -512,24 +512,16 @@ RS = ring S
 RT = ring T
 f = map(RS,RS)
 simplicialComplexMap(S,S,f)
+
 g = map(RT,RS,(toList(x_1..x_6)|{x_1,x_1}))
 simplicialComplexMap(T,S,g)
 
+chainComplex T
 
-zero HH_(-1) V
-zero HH_0 V
-zero HH_1 V
-zero HH_2 V
-zero HH_3 V
-fVector V
-transpose facets V
-prune HH_2(chainComplex U)
-S = poincareSphere(F,Variable => x)
-T = dunceHat(F,Variable => y)
-zero HH_1 S
-zero HH_2 S
-prune HH_3 S
+flatten entries faces(1,T)
+apply(flatten entries faces(1,S),X->for Y in flatten entries faces(1,T) list( if (f(X)) == Y then 1_(ring T) else 0_(ring T)))
 
+-- need f of a face
 
 -- end Jason test area
 
