@@ -16,4 +16,32 @@
     6. special, but h^1(OO_C(1)) <= 1.
 
 
-    
+-- TODO #2:
+
+--Abstract surfaces and divisors
+	   1. isAmple corollary 4.13 [H]
+	   2. isSmooth
+
+
+-- Long Term
+
+--Ruled cubic surface--
+Curves on a ruled cubic surface
+Generalized Divisors on Gorenstein Schemes: Prop 6.6
+degree 8 genus 5 sur la classification des courbes gauches  pg 178
+"Verify resolution"
+
+
+restart
+needsPackage "SpaceCurves"
+--check "SpaceCurves"
+time dT = flatten apply(10,d->effectiveDivisors(d+1)); -- used 225.955 seconds
+time rT = apply(dT, ad -> realize ad); -- used 47.5035 seconds
+time rB = apply(rT, rd -> betti res ideal rd);
+dgTable dT
+
+gAnds = method()
+gAnds (ZZ,List) := (d,L) -> (
+    Ld := select(L, rd -> degree rd == d);    
+    sort unique apply(Ld, rd -> (genus rd, min flatten degrees ideal rd))  
+)
