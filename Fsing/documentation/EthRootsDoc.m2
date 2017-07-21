@@ -129,7 +129,7 @@ doc ///
         :Ideal
     Description
         Text
-            In a polynomial ring k[x1, ..., xn], I^{[1/p^e]} is the smallest ideal J such that J^{[p^e]} = FrobeniusPower(J,e) \supseteq I.  This function computes it.
+            In a polynomial ring k[x1, ..., xn], I^{[1/p^e]} is the smallest ideal J such that J^{[p^e]} = FrobeniusPower(J,e) \supseteq I.  This function computes it.  Alternately it can be viewed as the image under the Cartier operator of the ideal I.
 
             There are many ways to call frobeniusRoot. The simplest way is to call frobeniusRoot(e, I). For instance, 
         Example
@@ -202,7 +202,9 @@ doc ///
         [isFpure, FrobeniusRootStrategy]
         [isFinjective, FrobeniusRootStrategy]
         [ascendIdeal, FrobeniusRootStrategy]
-        [testModule, FrobeniusRootStrategy]        
+        [testModule, FrobeniusRootStrategy]   
+        [frobenius, FrobeniusRootStrategy]
+        [frobeniusPower, FrobeniusRootStrategy]  
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
@@ -213,14 +215,32 @@ doc ///
         isFinjective(..., FrobeniusRootStrategy=>S)        
         ascendIdeal(..., FrobeniusRootStrategy=>S)
         testModule(..., FrobeniusRootStrategy=>S)
+        frobenius(..., FrobeniusRootStrategy=>S)
+        frobeniusPower(..., FrobeniusRootStrategy=>S)
+    Inputs
+        S: Symbol
+    Description
+        Text
+            Valid options are {\tt Substitution} and {\tt MonomialBasis}.  These options will be passed in various other internal function calls when calling {\tt frobeniusRoot}.
+    SeeAlso
+        [frobeniusRoot, FrobeniusRootStrategy]
+///
+
+doc ///
+    Key
+        [frobeniusRoot, FrobeniusRootStrategy]
+    Headline
+        controls what strategy Frobenius root uses.        
+    Usage
+        frobeniusRoot(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Outputs
         :Ideal
     Description
         Text
-            Valid options are Substitution and MonomialBasis.  These options will be passed in various other internal function calls.
-///
+            There are two valid inputs for {\tt FrobeniusRootStrategy}, namely {\tt Substitution} and {\tt MonomialBasis}.  In the end, for each generator $f$ of an ideal $I$, we are simply writing $f = \sum a_i^{p^e} m_i$ where $m$ is a monomial all of whose exponents are $< p^e$, then all the possible $a_i$ generate the {\tt frobeniusRoot}. {\tt Substitution} computes this by doing a Grobner basis computation in a ring with twice as many variables.  {\tt MonomialBasis} does this more directly and naively.  There does not appear to be a single case where one is much faster than the other.
+///    
 
 doc ///
     Key

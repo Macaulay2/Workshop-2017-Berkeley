@@ -141,7 +141,7 @@ export{
     "FFiniteSupport", ---MK
     "findAllCompatibleIdeals", ---MK	   
     "findGeneratingMorphisms", ---MK
-    "FPureIdeals",
+--    "FPureIdeals",
     "generatingMorphism", ---MK
     "generatingRoot" ---MK
 --    "paraTestModule", ---MK

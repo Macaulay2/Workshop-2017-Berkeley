@@ -148,5 +148,42 @@ doc ///
             frobeniusPower(t,I)
 ///
 
- 
- 
+doc ///
+    Key
+        [frobeniusPower, FrobeniusPowerStrategy]
+    Headline
+        control strategy for frobeniusPower
+    Usage
+        frobeniusPower(..., FrobeniusPowerStrategy=>S)
+    Inputs
+        S:Symbol
+    Outputs
+        :Ideal
+    Description
+        Text
+            Controls the strategy for computing the generalized Frobenius power $I^{[t]}$.  The two valid options are {\tt Safe} and {\tt Naive}, the default strategy is {\tt Naive}.
+///
+
+doc ///
+    Key
+        Naive
+    Headline
+        a valid value for the option FrobeniusPowerStrategy
+///        
+
+doc ///
+    Key
+        Safe
+    Headline
+        a valid value for the option FrobeniusPowerStrategy
+///        
+
+doc ///
+    Key
+        FrobeniusPowerStrategy
+    Headline
+        an option for frobeniusPower
+///        
+
+
+
