@@ -20,7 +20,6 @@ export {"inverseSystem",
 	"isStandardGradedPolynomialRing",
 	"contractInDegree",
 	"dividedKerInDegree",
-	"dividedKerToDegree",
 	"dividedImInDegree",
 	--option names (symbols):
 	"PowerBound",
@@ -198,14 +197,14 @@ contractInDegree (ZZ, List) := Matrix => (i, L) -> (
     
 dividedKerInDegree = method()        
 dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    K := gens ker dividedActionInDegree(i, phi);
+    K := gens ker contractInDegree(i, phi);
     D := ring phi;
     ideal mingens ideal( (super basis(i, D)) * K )
     )
 
 dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
     if any(L, phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
-    K := gens ker dividedActionInDegree(i, L);
+    K := gens ker contractInDegree(i, L);
     D := ring L#0;
     ideal mingens ideal( (super basis(i, D)) * K )
     )
@@ -222,22 +221,9 @@ dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
     )
 
 
-dividedKerToDegree = method()
-dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
-    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
-    D := ring phi;
-    ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, phi), D))
-    )
-
-dividedKerToDegree (ZZ, List) := Ideal => (i, L) -> (
-    D := ring L#0;
-    ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, L), D))
-    )
-
-
 dividedImInDegree = method()
 dividedImInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
-    I := dividedActionInDegree(i, phi);
+    I := contractInDegree(i, phi);
     D := ring phi;
     d := (degree phi)#0;
     ideal mingens ideal( (super basis(d-i, D)) * I )
@@ -600,6 +586,8 @@ SeeAlso
  toDual
  isStandardGradedPolynomialRing
  contractInDegree
+ dividedKerInDegree
+ dividedImInDegree
 ///
 
 doc ///
@@ -796,8 +784,8 @@ doc ///
      S = ZZ/5[x,y,z]
      phi = x^5*y^2 + y^5*z^2 + z^5*x^2
      contractInDegree(3, phi)
-    SeeAlso
-     contract
+   SeeAlso
+    contract
      ///
      
 doc ///
@@ -844,34 +832,6 @@ doc ///
      phi = x^3+y^3+z^3
      A = dividedActionInDegree(i,phi)
      psi = dividedKerInDegree(i,A)
-     ///
-     
-doc ///
-   Key
-    dividedKerToDegree
-    (dividedKerToDegree, ZZ, RingElement)
-    (dividedKerToDegree, ZZ, List)
-   Headline
-    Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra up to a given degree
-   Usage
-    I = dividedKerToDegree(i, phi)
-    I = dividedKerToDegree(i, L)
-   Inputs
-    i: ZZ
-    phi: RingElement
-     a homogeneous polynomial in a standard graded polynomial ring
-    L: List
-     a list of homogeneous polynomials in a standard graded polynomial ring 
-   Outputs
-    I: Ideal
-     a graded ideal that agrees with the kernel of the action on divided powers up to degree i
-   Description
-    Text
-     The polynomial f and the entries of L are interpreted as elements of the divided powers algebra.
-    Example
-     S = ZZ/5[x,y,z]
-     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
-     dividedKerToDegree(5, phi)
      ///
 
 doc ///
@@ -930,7 +890,7 @@ TEST ///
 
 S = ZZ/5[x,y,z]; 
 phi = x^3+y^3+z^3;
-assert(dividedActionInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
+assert(contractInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
 assert(dividedKerInDegree(2, phi)==ideal(x*y,x*z,y*z))
 assert(dividedImInDegree(2, phi)==ideal(x,y,z))
 
@@ -941,7 +901,7 @@ TEST ///
 
 R=ZZ/5[x,y,z];
 I=ideal(x^3+y^3+z^3,x*y^2+y*z^2+z*x^2);
-assert(dividedActionInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
+assert(contractInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
 assert(dividedKerInDegree(2,I_*)==ideal(0_R))
 assert(dividedImInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
 
