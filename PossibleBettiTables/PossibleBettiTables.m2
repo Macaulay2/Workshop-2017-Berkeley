@@ -190,17 +190,34 @@ possibleCancelations (HashTable) := H ->(
     pd := (max(keys H))#0;
     reg := (max(keys H))#1;
     --
-    M := entries fromHashToDiagMatrix(H);
-    Z := apply(M, i->apply(i,j->0));
-    --
-    -- This first sieves out tables whose alter. sums are not the same.
-    X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
-    C1 := (matrix M)*X1;
-    L1 := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
-    --
-    -- This now sieves out the tables whose zeros do not propogate.		
-    L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
-    delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))	
+    if unique apply(pd,p->(H#(p,0)))=={1,0} and reg == 2 then (
+    	M := apply(pd-1, i->H#(i+2,1));
+    	Z := apply(pd-1, i->0);
+    	L1 :=delete(,apply(toList(Z..M), k->(
+		    H1 := new MutableHashTable from H;
+		    apply(#k,i->(
+			    dif := H1#(i+1,2)-H1#(i+2,1);
+			    H1#(i+2,1)=(k#i);
+			    H1#(i+1,2)=(k#i)+dif;
+			    ));
+		    new HashTable from H1)));
+	--
+    	-- This now sieves out the tables whose zeros do not propogate.	
+	delete(,apply(L1,i->(if sieveZeroPropogations(i)==true then i)))
+	)
+    else (	
+    	M := entries fromHashToDiagMatrix(H);
+    	Z := apply(M, i->apply(i,j->0));
+    	--
+    	-- This first sieves out tables whose alter. sums are not the same.
+    	X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
+    	C1 := (matrix M)*X1;
+    	L1 := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));
+    	--
+    	-- This now sieves out the tables whose zeros do not propogate.	
+	L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
+	delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))
+	)	    	 	
     )
     
 possibleBettiTables = method()
@@ -354,7 +371,6 @@ doc ///
 	    list of all possible abstract Betti tables arrising via cancelations.
 
 	Example
-<<<<<<< HEAD
 	    segreIdeal({1,1})
 	    segreIdeal({1,2})  	
 
