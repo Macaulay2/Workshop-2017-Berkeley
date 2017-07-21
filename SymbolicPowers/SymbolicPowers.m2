@@ -178,18 +178,30 @@ symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
         
     if not opts.UseMinimalPrimes then (    
     	if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
-	    if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
-	    	if isPrime I then symbPowerPrime(I,n) else 
-	    	if isPrimary I then symbPowerPrimary(I,n) else
-	    	symbPowerSlow(I,n)
-	    ))
+	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)
+	    ) else (
+	    if (isPolynomialRing R and isMonomial I) then (
+		symbPowerMon(monomialIdeal(I),n)
+		) else (
+		    if isPrime I then symbPowerPrime(I,n) else 
+	    	    if isPrimary I then symbPowerPrimary(I,n) else symbPowerSlow(I,n)
+	    	    )
+		)
+	    
     )
     
 
         
     )
 
+///
+restart
+loadPackage"SymbolicPowers"
+R=QQ[x,y,z]
+I=ideal(x)
+symbolicPower(I,2)
+
+///
 
 joinIdeals = method(TypicalValue => Ideal)
 joinIdeals(Ideal,Ideal) := Ideal => (I,J) -> (R := ring I; k := coefficientRing(R);
@@ -1454,6 +1466,10 @@ I = ideal(apply(1..n, l -> x_1*x_l) )
 loadPackage"SymbolicPowers"
 symbolicPower(I,2)
 check "SymbolicPowers"
+
+R=QQ[x,y,z]
+I=ideal(x)
+symbolicPower(2,I)
 toString I
 primaryDecomposition I
 
