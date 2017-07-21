@@ -41,7 +41,8 @@ export {
     "symbolicDefect",
     "symbolicPolyhedron", 
     "isGorenstein",
-    "waldschmidt", 
+    "waldschmidt",
+    "asymptoticRegularity", 
     "SampleSize",
     "useWaldschmidt"
     }
@@ -192,14 +193,7 @@ symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
         
     )
 
-///
-restart
-loadPackage"SymbolicPowers"
-R=QQ[x,y,z]
-I=ideal(x)
-symbolicPower(I,2)
 
-///
 
 joinIdeals = method(TypicalValue => Ideal)
 joinIdeals(Ideal,Ideal) := Ideal => (I,J) -> (R := ring I; k := coefficientRing(R);
@@ -494,6 +488,16 @@ upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
 	    while isSymbPowerContainedinPower(I,k,o) do k = k-1;
 	    k/o
 	    )
+    ) 
+
+-- for this function I am assuming that the asymptotic regularity is an infimum
+-- this is more specific than being a limit
+-- I need to think if this is true (did not find it written in the literature)
+
+asymptoticRegularity = method(Options=>{SampleSize=>10});
+asymptoticRegularity Ideal := opts -> I -> (
+    print ("The asymptotic regularity is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list regularity(symbolicPower(I,i))/i
     ) 
 
 
@@ -1315,6 +1319,46 @@ doc ///
 	  symbolicPolyhedron
 ///
 
+
+doc ///
+     Key 
+         SampleSize
+     Headline 
+         An optional parameter used for approximating asymptotic invariants that are defined as limits.
+     Usage 
+         waldschmidt(I,SampleSize=>ZZ)
+     Description	  
+         Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize. Similarly the SampleSize is used to give an
+	   approximation for the asymptotic regularity by computing the smallest value of $\frac{reg(I^{(n)})}{n}$ for $n$ from
+	   1 to the SampleSize.
+     
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   waldschmidt(J, SampleSize=>5)
+///	   
+	   
+	   
+doc ///
+     Key 
+         asymptoticRegularity
+     Headline 
+         An asymptotic invariant defined as the limit of the regularity of the symbolic powers scaled by the symbolic exponent.
+     Usage 
+         asymptoticRegularity(I,SampleSize=>ZZ)
+     Description
+         Text	  
+       	   We give an approximation of the asymptotic regularity by taking the minimum value of $\frac{reg(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+     
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   asymptoticRegularity(J, SampleSize=>5)
+///
+
 doc ///
    Key
          symbolicDefect
@@ -1476,6 +1520,19 @@ assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
 ///
 
 
+-- symbolicPolyhedron
+TEST ///
+ R = QQ[x,y,z];
+ I = ideal(x*y,y*z,x*z);
+ assert((vertices symbolicPolyhedron I)== matrix{{1,1,0,1/2},{1,0,1,1/2},{0,1,1,1/2}})
+///
+
+-- waldschmidt
+TEST ///
+ R = QQ[x,y,z];
+ I = ideal(x*y,y*z,x*z);
+ assert(waldschmidt(I)==3/2)
+///
 
 end
 
