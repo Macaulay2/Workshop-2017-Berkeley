@@ -128,8 +128,8 @@ doc ///
         Text
             This function can be used to compute parameter test ideals in Cohen-Macaulay rings
         Example
-            R=ZZ/2[x_1..x_5]; 
-            E=matrix {{x_1,x_2,x_2,x_5},{x_4,x_4,x_3,x_1}};
+            R=ZZ/2[X_1..X_5]; 
+            E=matrix {{X_1,X_2,X_2,X_5},{X_4,X_4,X_3,X_1}};
             I=minors(2,E);
             tau=testModule(R/I);
             substitute( (tau#0):(tau#1),R)

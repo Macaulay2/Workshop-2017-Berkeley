@@ -63,16 +63,6 @@ multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
     error "Something went wrong, multOrder failed to find the multiplicative order";
 )     
 
---multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
---(
---    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
---    n := 1;
---    x := 1;
---    while (x = (x*a) % b) != 1 do n = n+1;
---    n	      
---)     
-
-
 --===================================================================================
 
 divideFraction = method( TypicalValue => List, Options => { NoZeroC => false } );
@@ -202,81 +192,7 @@ baseP1 = ( p, n, e ) ->
     answer
 )	
 
---===================================================================================
 
---*************************************************
---Tests for various types of polynomials   
---*************************************************
-{* 
--- not being used
---===================================================================================
-
---isPolynomial(F) checks if F is a polynomial
-isPolynomial = method( TypicalValue => Boolean )
-
-isPolynomial (RingElement) := Boolean => F -> isPolynomialRing( ring F ) 
-
---===================================================================================
-
---isPolynomialOverPosCharField(F) checks if F is a polynomial over a field
---of positive characteristic
-isPolynomialOverPosCharField = method( TypicalValue => Boolean )
-
-isPolynomialOverPosCharField (RingElement) := Boolean => F ->
-    isPolynomial F and isField( kk := coefficientRing ring F ) and ( char kk ) > 0
-
---===================================================================================
-
---isPolynomialOverFiniteField(F) checks if F is a polynomial over a finite field.
-isPolynomialOverFiniteField = method( TypicalValue => Boolean )
-
--- This was reverted so that users with older M2 version could load 
-
---isPolynomialOverFiniteField (RingElement) := Boolean => F ->
---    isPolynomialOverPosCharField( F ) and isFinitePrimeField(coefficientRing ring F)
-
-isPolynomialOverFiniteField (RingElement) := Boolean => F ->
-    isPolynomialOverPosCharField( F ) and  ( try (coefficientRing ring F)#order then true else false )
---===================================================================================
-*}
-
---*************************************************
---Partitions
---*************************************************
-
----------------------------------------------------------------------------------------
---- The following code was written in order to more quickly compute eth roots of (f^n*I)
---- It is used in fancyEthRoot
-----------------------------------------------------------------------------------------
---- Find all ORDERED partitions of n with k parts
-{* 
--- not used
-allPartitions = ( n, k )->
-(
-	PP0:=matrix{ toList(1..k) };
-	PP:=mutableMatrix PP0;
-	allPartitionsInnards (n,k,PP,{})
-)
-
-allPartitionsInnards = ( n, k, PP, answer)->
-(
-	local i;
-	if (k==1) then 
-	(
-		PP_(0,k-1)=n;
-		answer=append(answer,first entries (PP));
-	)
-	else
-	(
-		for i from 1 to n-(k-1) do
-		(
-			PP_(0,k-1)=i;
-			answer=allPartitionsInnards (n-i,k-1,PP,answer)	;	
-		);
-	);
-	answer
-)
-*}
 --===================================================================================
 
 --*************************************************

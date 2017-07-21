@@ -20,14 +20,9 @@ Exported
 
 NOT exported
 
-[allPartitions] COMMENTED OUT
-[allPartitionsInnards] COMMENTED OUT
 baseP1
 denominator/numerator
 "fracPart",
-[isPolynomial] COMMENTED OUT
-[isPolynomialOverPosCharField] COMMENTED OUT
-[isPolynomialOverFiniteField] COMMENTED OUT
 "maxIdeal", 
 
 --===========================================================
@@ -244,3 +239,23 @@ NOT Exported
  "isInUpperRegion",
  "setFTData",
  "splittingField",
+
+
+--============================================================
+--============================================================
+
+LEFTOVERS
+
+--============================================================
+--============================================================
+
+Functions that were not being used or exported
+
+[allPartitions] 
+[allPartitionsInnards]
+
+[isPolynomial] 
+[isPolynomialOverPosCharField]  
+[isPolynomialOverFiniteField] 
+
+maxIdeal (RingElement)
