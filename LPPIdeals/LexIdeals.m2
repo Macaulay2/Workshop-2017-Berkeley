@@ -917,6 +917,10 @@ doc///
      Key
      	  LPP
 	  (LPP,PolynomialRing,List,List)
+		(LPP, Ideal)
+		[LPP, FillPowers]
+		[LPP, UseHeuristics]
+
      Headline
      	  return the lex-plus-powers (LPP) ideal corresponding to a given Hilbert function and power sequence
      Usage
@@ -953,9 +957,29 @@ doc///
 	       LPP(R,{1,3,4,2,1},{2,3,5}) --an Artinian lex ideal
 	       LPP(R,{1,3,4,2,1},{2,4,3}) --exponents not in weakly increasing order
 	       LPP(R,{1,3,4,2,1},{2,2,3}) --no LPP ideal with this Hilbert function and power sequence
-     SeeAlso
-     	  generateLPPs
-	  isLPP
+
+		 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% M2 Workshop Berkeley, 2017
+		 Text
+		     In this version, the function LPP can have an ideal as its single input. That ideal doesn't
+				 need to be Artinian, however in that case the resulting LPP will not be Artinian either.
+
+         In the default behavior of the script, the pure powers are assumed to be in full length.
+				 If the pure powers length is not full, you may use the option "FillPowers => true",
+				 then it will be treated as full power case by adding high degrees.
+				 For certain ideals, the option "UseHeuristics => true" may speed up the computation.
+
+		Example
+				 R=ZZ/32003[a..d];
+				 I=ideal(a,b)
+				 LPP(I*I*I, UseHeuristics => true)
+
+				 R=ZZ/32003[a..c];
+	       LPP(R,{1,3,4,2,1,1,1,1,1,1},{2,3}, FillPowers => true)
+
+		 SeeAlso
+       generateLPPs
+	     isLPP
+			 minDegRegularSeq
 ///
 
 doc///
@@ -976,10 +1000,7 @@ doc///
      	  Text
 	       This function returns the (possibly non-artinian) LPP that has the power
 				 sequence given by minDegRegularSeq with the same hilbert function as {\tt I}
-	  Example
-	       R=ZZ/32003[a..d];
-				 I=ideal(a,b)
-	       LPP(I*I*I)
+
      SeeAlso
 		 		LPP
      	  minDegRegularSeq
@@ -1083,6 +1104,7 @@ doc///
      Key
      	  isLPP
 	  (isLPP,Ideal)
+		[isLPP, CheckArtinian]
      Headline
      	  determine whether an ideal is an LPP ideal
      Usage
@@ -1095,14 +1117,16 @@ doc///
 	       {\tt true} if {\tt I} is an LPP ideal in {\tt ring I} and {\tt false} otherwise
      Description
      	  Text
-	       Given an ideal {\tt I} in a polynomial ring {\tt R}, {\tt isLPP} checks that {\tt I} is Artinian and that the power
-	       sequence is weakly increasing. Then {\tt isLPP} computes bases of {\tt R/I} in each degree up through the maximum
+	       Given an ideal {\tt I} in a polynomial ring {\tt R}, the default {\tt isLPP} is {\tt CheckArtinian => true} and it checks that {\tt I} is Artinian
+				 and that the power sequence is weakly increasing. Otherwise, use option {\tt CheckArtinian => false} for working with non-Artinian ideals.
+				 Then {\tt isLPP} computes bases of {\tt R/I} in each degree up through the maximum
 	       degree of a minimal generator of {\tt I} to determine whether {\tt I} is an LPP ideal in {\tt R}.
      	  Example
 	       R=ZZ/32003[a..c];
 	       isLPP LPP(R,{1,3,4,3,2},{2,2,4})
 	       isLPP ideal(a^3,b^3,c^3,a^2*b,a^2*c,a*b^2*c^2)
-	       isLPP ideal(a^3,b^4) --not Artinian since no power of c
+				 isLPP(ideal(a^3,b^4)) -- not Artinian since no power of c, returns False
+	       isLPP(ideal(a^3,b^4), CheckArtinian => false) -- returns True
 	       isLPP ideal(a^3,b^4,c^3) --powers not weakly increasing
 	       isLPP ideal(a^3,b^3,c^3,a^2*b,a*b^2)
      SeeAlso
