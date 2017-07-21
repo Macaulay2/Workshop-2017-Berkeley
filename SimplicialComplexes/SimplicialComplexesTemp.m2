@@ -54,14 +54,39 @@ simplicialComplexMap (SimplicialComplex,SimplicialComplex,RingMap) := (T,S,f) ->
     if not RS === source f 
     then error "source complex's ring does not match source of ring map";
 
-    facetsT := apply(flatten entries facets T,fc->face(fc));
-    imageOfFacetsS := apply(flatten entries facets S,fc->face(f(fc)));
-    if not all(imageOfFacetsS,fs->(any(facetsT,ft->isSubface(fs,ft))))
-    then error "Given ring map does not induce a simplicial map";
-    
     newSimplicialComplexMap(T,S,f)
     )
 
+-- Check that map is well-defined
+isWellDefined (SimplicialComplexMap) := (f) -> (
+    facetsT := apply(flatten entries facets (f.target),fc->face(fc));
+    imageOfFacetsS := apply(flatten entries facets (f.source),fc->face(f(fc)));
+    if not all(imageOfFacetsS,fs->(any(facetsT,ft->isSubface(fs,ft))))
+    then return false;
+    true
+    )
+
+
+
+-- Find the image of a simplicial complex under a simplicial complex map
+--installMethod(symbol SPACE, SimplicialComplexMap, List, (f, S) -> (
+--  if f.source === S then error "source of map is not the given simplicial complex";
+  
+--  fc := facets S;
+--  f.ringMap
+--  return OO_X a))
+
+--installMethod(symbol SPACE, SimplicialComplexMap, SimplicialComplex, (f, S) -> (
+--  if f.source === S then error "source of map is not the given simplicial complex";
+--  
+--  fc := facets S;
+--  f.ringMap
+--  return OO_X a))
+
+
+
+
+-- List of fixed interesting simplicial complexes
 poincareSphere = method(Options=>{Variable => "x"})
 poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
     assert(isField F);
@@ -508,6 +533,7 @@ F = ZZ/2
 loadPackage "SimplicialComplexesTemp"
 S = dunceHat(F,Variable => y)
 T = projectivePlane(F)
+faces(2,T)
 RS = ring S
 RT = ring T
 f = map(RS,RS)
@@ -520,6 +546,8 @@ chainComplex T
 
 flatten entries faces(1,T)
 apply(flatten entries faces(1,S),X->for Y in flatten entries faces(1,T) list( if (f(X)) == Y then 1_(ring T) else 0_(ring T)))
+
+
 
 -- need f of a face
 
