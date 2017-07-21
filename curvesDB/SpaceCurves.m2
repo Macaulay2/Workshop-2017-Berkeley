@@ -307,6 +307,13 @@ realize AbstractDivisor := opts -> C -> realize(C,realize(C.AbstractSurface))
 
 
 minimalCurveInLiaisonClass=method()
+
+minimalCurveInLiaisonClass(Ideal):= J-> (
+    M := hartshorneRaoModule J;
+    minimalCurveInLiaisonClass(M)
+    )
+    
+
 minimalCurveInLiaisonClass(Module) := M -> (    
  -- a probalistic algorithm which over large finite fields will produce
  -- a minimal curve in the liaison class corresponding to M with high probability
@@ -317,7 +324,7 @@ minimalCurveInLiaisonClass(Module) := M -> (
     r:=rank fM_1-rank fM_0; -- rank of the 2nd syzygy module of M
     degs:=sort flatten degrees fM_2;
     degList:=unique subsets(degs,r-1);
-    --todo sort degList
+    degList=sort apply(degList,c->(sum c,c))/last;
     apply(#degList,i->sum degList_i);
     i:=0;
     while (
@@ -417,7 +424,201 @@ effectiveDivisors ZZ := d -> (
 )
 
 
+
 beginDocumentation()
+{*
+    "isSmooth",
+    "AbstractSurface",	  --type
+    "abstractSurface",	  --create an AbstractSurface
+    "AbstractDivisor",	  --type
+    "abstractDivisor",	  --create an AbstractDivisor	  
+    "RealizedSurface",	  --type
+    "RealizedDivisor",	  --type
+    "realize",
+    "abstractQuadric",
+    "abstractCubic",
+    "abstractHypersurface",
+    "irreducibleOnCubic",
+    "CanonicalClass",
+    "Hyperplane",
+    "DivisorClass",
+    "ExtraData",
+    "IntersectionPairing",
+    "dgTable",
+    "hartshorneRaoModule",
+    "hilbertBurchComputation",
+    "minimalCurveInLiaisonClass",
+    "Chi",
+    "effectiveDivisorsOnSurface",
+    "effectiveDivisorsOnCubic",
+    "completeIntersectionCurves",
+    "effectiveDivisors"
+*}    
+document { 
+Key => SpaceCurves,
+Headline => "Construction and Data base of space curves",
+"This package implements methods to collect data and examples of space curve",
+PARA{},
+SUBSECTION "Abstract surfaces and divisors",  
+UL{   TO "AbstractSurface",	  --type      
+      TO "AbstractDivisor",	  --type
+      TO "abstractSurface",	  --create an AbstractSurface
+      TO "abstractDivisor",	  --create an AbstractDivisor	   
+      TO "abstractQuadric",
+      TO "abstractCubic",
+      TO "abstractHypersurface",
+      TO "irreducibleOnCubic",
+      TO "CanonicalClass",
+      TO "Hyperplane",
+      TO "DivisorClass",
+      TO "ExtraData",
+      TO "IntersectionPairing",
+      TO "Chi"
+},
+PARA{},
+SUBSECTION "Realizations",  
+UL{     TO "RealizedSurface",	  --type
+        TO "RealizedDivisor",	  --type
+        TO "realize",
+	TO "isSmooth"
+},
+PARA{},
+SUBSECTION "Hartshorne-Rao module computations",  
+UL{   TO "hartshorneRaoModule",
+      TO "hilbertBurchComputation",
+      TO "minimalCurveInLiaisonClass"
+},
+PARA{},
+SUBSECTION "Collecting examples and information",  
+UL{   TO "dgTable",
+      TO "effectiveDivisorsOnSurface",
+      TO "effectiveDivisorsOnCubic",
+      TO "completeIntersectionCurves",
+      TO "effectiveDivisors"
+}
+}
+
+
+
+  
+doc ///
+  Key
+    hilbertBurchComputation
+    (hilbertBurchComputation, Module, Module)
+  Headline
+    choose a Hilbert-Burch morphism and compute the corresponding ideal   
+  Usage
+     I = hilbertBurchComputation(M,G)
+  Inputs
+    M: Module
+       of finite length
+    G: Module
+       a free module
+  Outputs
+     I: Ideal
+  Description
+     Text
+       Let $\mathcal F$ be sheafication of the second syzygy module syz_2 M of M, phi be a randomly choosen
+       morphism from G -> syz_2 M. The function computes the generators of the homogeneous ideal of coker phi.
+       If rank G != rank $\mathcal F$-1 or the morpism does not drop rank in codimension 2, we return null. 
+     Example
+       S = ZZ/32003[x_0..x_3]
+       M=coker matrix{{x_0,x_1,x_2^2,x_3^2}}
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       degs=sort flatten degrees fM_2
+       L=-{3,3}
+       G=S^L
+       I=hilbertBurchComputation(M,G)
+       betti res I
+       codim I == 2
+       (degree I,genus I) == (4,-1) 
+       cI=decompose I     
+       tally apply(cI,c->(degree c, genus c))
+       I=hilbertBurchComputation(M,S^2)
+       I==null
+  SeeAlso
+///
+
+doc ///
+  Key
+    hartshorneRaoModule
+    (hartshorneRaoModule, Ideal)
+  Headline
+    compute the Hartshorne-Rao module    
+  Usage
+     M = hartshorneRaoModule I
+  Inputs
+    I: Ideal
+       of a (locally) Cohen-Macaulay curve
+  Outputs
+     M: Module
+  Description
+     Text
+       Given I the homogeneous ideal of a (locally) Cohen-Macaulay curve in some projective space P^n, th function computes
+       the Hartshorne-Rao module
+       $$ M = \oplus H^1(P^r,\mathcal I(n)).$$  
+     Example
+       S = ZZ/32003[x_0..x_3]
+       M=coker random(S^{2:1},S^{5:0})
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       F=fM_2
+       degs=sort flatten degrees F
+       L=-degs_{0..r-2}
+       G=S^L
+       I=hilbertBurchComputation(M,G)
+       betti I
+       HRao = hartshorneRaoModule(I); betti HRao        
+       reduceHilbert hilbertSeries HRao === reduceHilbert hilbertSeries (M**S^{ -2})
+  SeeAlso
+///
+
+doc ///
+  Key
+    minimalCurveInLiaisonClass
+    ( minimalCurveInLiaisonClass, Module)
+    ( minimalCurveInLiaisonClass, Ideal)
+  Headline
+    probabilistic computation of a minimal curve in the even liaison class   
+  Usage
+     I = minimalCurveInLiaisonClass M
+     I = minimalCurveInLiaisonClass J
+  Inputs
+    M: Module
+       a given Hartshorne-Rao module, or
+    J: Ideal
+       of a CM curve in P^3
+  Outputs
+    I: Ideal
+        of a locally CM curve in P^3
+  Description
+     Text
+       Given M we compute a (locally) Cohen-Macaulay curve P^3 in the even liaison class represented by M
+       (of the curve defined by J).
+       The algorithm is only probalistic, i.e. with bad luck we might miss the minimal class due to the eandom choice for the Hilbert-Burch morphism.        
+     Example
+       S = ZZ/32003[x_0..x_3]
+       M=coker matrix{{x_0,x_1,x_2^2,x_3^2}}
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       degs=sort flatten degrees fM_2
+       L=-{3,4}
+       G=S^L
+       J=hilbertBurchComputation(M,G)
+       M=hartshorneRaoModule J
+       I=minimalCurveInLiaisonClass M
+       degree I, degree J
+  SeeAlso
+///
+
+-- TEST SECTION
 
 TEST ///
   X = abstractQuadric
@@ -534,6 +735,12 @@ TEST ///
 
 
 end--------
+restart
+uninstallPackage "SpaceCurves"
+restart
+installPackage "SpaceCurves"
+viewHelp "SpaceCurves"
+
 
 
 --Generate divisors on cubic surface
