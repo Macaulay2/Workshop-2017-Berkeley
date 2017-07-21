@@ -9,6 +9,7 @@ doc ///
         adicExpansion
         (adicExpansion, ZZ, ZZ)
         (adicExpansion, ZZ, ZZ, QQ)
+        (adicExpansion, ZZ, ZZ, ZZ)
     Headline
         computes base p expansions
     Usage
@@ -22,7 +23,9 @@ doc ///
         e:ZZ
 	    positive
         x:QQ
-	    in the interval [0,1]	
+	    in the interval [0,1]
+	    x:ZZ
+	    in the inverval [0,1]	
     Outputs
         :List
     Description

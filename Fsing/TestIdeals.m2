@@ -73,7 +73,6 @@ export{
     --"boundLargestCompatible", ---MK (now in Fpure)
     "FrobeniusRootStrategy",  
     "frobeniusRoot",  
-    "minimalCompatible",
     "MonomialBasis",	
     "Substitution",
     
