@@ -343,7 +343,7 @@ composition(o1,{K})
 -----------composition examples2
 
 
-
+o = getSymbol"o"
 O=QQ[o_1..o_2]
 R1=QQ[a,b]
 R2=QQ[c,d]
