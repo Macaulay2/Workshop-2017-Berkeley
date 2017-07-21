@@ -207,15 +207,27 @@ isCircuits = C -> (
 	)
     );    
     scan(#C, i -> scan(i+1..#C-1, j -> (   
-    	if C_i =!= (-1)*(C_j) and  #((set supp_pos(C_i))*(set supp_neg(C_i)))>0	then	     	   scan((set supp_pos(C_i))*(set supp_neg(C_i)), e -> (
+    	if C_i =!= (-1)*(C_j) and  #((set supp_pos(C_i))*(set supp_neg(C_i)))>0	then	     	   
+	scan((set supp_pos(C_i))*(set supp_neg(C_i)), e -> (
 		found := false;
-		scan(C, 
+		scan(C, Z -> (
+		    if isSubset(set supp_pos(Z), ((set supp_pos(C_i))+(set supp_pos(C_j))) - {e}) and isSubset(set supp_neg(Z), ((set supp_neg(C_i))+(set supp_neg(C_j))) - {e}) then (
+			found = true;
+			break;
+			);	
+			) 
+		    );
+		if not found then (
+		    print "Weak elimination axiom fails with the following circuits:\n";
+		    print (C_i, C_j);
+		    return false;
 		    );
 		)
 	    );
 		)
 	    )
 	);
+    return true;
     )
 
 end
