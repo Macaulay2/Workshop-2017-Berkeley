@@ -310,7 +310,7 @@ generateLPPs(PolynomialRing,List) := opts -> (ri,hilb) -> (
 )
 
 --tests whether an ideal I in a polynomial ring is an LPP ideal
-isLPP = method(TypicalValue=>Boolean, Options=>{CheckArtinian=>false})
+isLPP = method(TypicalValue=>Boolean, Options=>{CheckArtinian=>true})
 isLPP(Ideal) := o -> (I) -> (
      ri:=ring I;
      numvars:=dim ri;
@@ -916,10 +916,10 @@ doc///
 doc///
      Key
      	  LPP
-	  (LPP,PolynomialRing,List,List)
-		(LPP, Ideal)
-		[LPP, FillPowers]
-		[LPP, UseHeuristics]
+			  (LPP,PolynomialRing,List,List)
+				(LPP, Ideal)
+				[LPP, FillPowers]
+				[LPP, UseHeuristics]
 
      Headline
      	  return the lex-plus-powers (LPP) ideal corresponding to a given Hilbert function and power sequence
@@ -927,9 +927,9 @@ doc///
      	  L=LPP(R,hilb,power)
      Inputs
      	  R:PolynomialRing
-	  hilb:List
+	  		hilb:List
 	       a Hilbert function as a list
-	  power:List
+	  	 	power:List
 	       a list of positive integers in weakly increasing order
      Outputs
      	  L:Ideal
@@ -958,15 +958,14 @@ doc///
 	       LPP(R,{1,3,4,2,1},{2,4,3}) --exponents not in weakly increasing order
 	       LPP(R,{1,3,4,2,1},{2,2,3}) --no LPP ideal with this Hilbert function and power sequence
 
-		 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% M2 Workshop Berkeley, 2017
-		 Text
-		     In this version, the function LPP can have an ideal as its single input. That ideal doesn't
-				 need to be Artinian, however in that case the resulting LPP will not be Artinian either.
 
-         In the default behavior of the script, the pure powers are assumed to be in full length.
-				 If the pure powers length is not full, you may use the option "FillPowers => true",
+		 Text
+		     In this version, the function LPP can have an ideal {\tt I} as its single input. That ideal {\tt I} doesn't
+				 need to be Artinian, however in that case the resulting LPP won't be Artinian either.
+				 In the default behavior of the script, the pure powers are assumed to be in full length.
+				 If the pure powers length is not full, you may use the option {\tt FillPowers => true}
 				 then it will be treated as full power case by adding high degrees.
-				 For certain ideals, the option "UseHeuristics => true" may speed up the computation.
+				 For certain ideals, the option {\tt UseHeuristics => true} may speed up the computation.
 
 		Example
 				 R=ZZ/32003[a..d];
@@ -984,93 +983,68 @@ doc///
 
 doc///
      Key
-     	  LPPFromIdeal
-	  (LPPFromIdeal,Ideal)
-     Headline
-     	  return the (possibly non-artinian) lex-plus-powers (LPP) ideal corresponding to a given ideal
-     Usage
-     	  L=LPPFromIdeal(I)
-     Inputs
-     	  I:Ideal
-     Outputs
-     	  L:Ideal
-	       an LPP ideal with the desired Hilbert function and
-				 power sequence if one exists and {\tt null} otherwise
-     Description
-     	  Text
-	       This function returns the (possibly non-artinian) LPP that has the power
-				 sequence given by minDegRegularSeq with the same hilbert function as {\tt I}
-
-     SeeAlso
-		 		LPP
      	  minDegRegularSeq
-	  		LPPFromIdeal
-				isNonArtinianLPP
-///
-
-doc///
-     Key
-     	  isNonArtinianLPP
-	  (isNonArtinianLPP,Ideal)
+	      (minDegRegularSeq,Ideal)
+		    [minDegRegularSeq, UseHeuristics]
      Headline
-     	  determine whether an ideal is a (possibly non-artinian) LPP ideal
-     Usage
-     	  B=isNonArtinianLPP I
-     Inputs
-     	  I:Ideal
-	       an ideal in a polynomial ring
-     Outputs
-     	  B:Boolean
-	       {\tt true} if {\tt I} is a (possibly non-artinian) LPP ideal in {\tt ring I} and {\tt false} otherwise
-     Description
-     	  Text
-	       Given an ideal {\tt I} in a polynomial ring {\tt R}, {\tt isNonArtinianLPP} checks that the power
-	       sequence is weakly increasing. Then {\tt isNonArtinianLPP} computes bases of {\tt R/I} in each degree up through the maximum
-	       degree of a minimal generator of {\tt I} to determine whether {\tt I} is an LPP ideal in {\tt R}.
-     	  Example
-	       R=ZZ/32003[a..c];
-				 I=ideal(a,b)
-	       isNonArtinianLPP LPPFromIdeal(I*I*I)
-	       isNonArtinianLPP ideal(a^3,b^3,c^3,a^2*b,a^2*c,a*b^2*c^2)
-	       isNonArtinianLPP ideal(a^3,b^4) --not Artinian since no power of c
-	       isNonArtinianLPP ideal(a^3,b^4,c^3) --powers not weakly increasing
-	       isNonArtinianLPP ideal(a^3,b^3,c^3,a^2*b,a*b^2)
-     SeeAlso
-     	  isLPP
-	  		LPPFromIdeal
-///
-
-doc///
-     Key
-     	  minDegRegularSeq
-	  (minDegRegularSeq,Ideal)
-     Headline
-     	  Returns the degrees of the minimal regular sequence of an ideal.
+     	  Returns the minimal degrees of a regular sequence of an ideal.
      Usage
      	  deglist=minDegRegularSeq(I)
      Inputs
      	  I:Ideal
      Outputs
      	  deglist:List
-	       a list of the degrees of the minimal regular sequence of {\tt I}
+	       a list of minimal degrees of a regular sequence of {\tt I}
      Description
      	  Text
-	       This function returns the degrees of the minimal regular
+	       This function returns the minimal degrees of a regular
 				 sequence of {\tt I}. Note: this list may not be full:
 				 it may not have the same length as the number of variables.
+				 The option {\tt UseHeuristics => true} may speed up to computation
+				 using the function
+				 {\tt heuristicCodim}.
 	  Example
 	       R=ZZ/32003[a..d];
 				 I=ideal(a,b)
 	       minDegRegularSeq(I*I*I)
      SeeAlso
-	  		LPPFromIdeal
-				isNonArtinianLPP
+		    LPP
+				isLPP
+	  		heuristicCodim
+///
+
+doc///
+     Key
+     	  heuristicCodim
+	  (heuristicCodim,Ideal)
+     Headline
+     	  Computes the codimension of an ideal in a heuristic way.
+     Usage
+     	  d=heuristicCodim(I)
+     Inputs
+     	  I:Ideal
+     Outputs
+     	  d:ZZ
+	       codimension of {\tt I}
+    Description
+    Text
+	       In some complicated ideals, this function may significantly peed up the
+				 codimension computation.
+	  Example
+		   R=ZZ/101[x,y,a,b,c,d,e,f]
+		   I=ideal(x^6,y^6,x^2*a^4+y^2*b^4+x*y*(a^2*c^2+b^2*d^2+a*b*(c*e+d*f)))
+	     codim(I) -- very slow, very
+			 heuristicCodim(I) -- gets 2
+
+  SeeAlso
+		   minDegRegularSeq
+
 ///
 
 doc///
      Key
      	  generateLPPs
-	  (generateLPPs,PolynomialRing,List)
+	      (generateLPPs,PolynomialRing,List)
      Headline
      	  return all LPP ideals corresponding to a given Hilbert function
      Usage
@@ -1105,8 +1079,10 @@ doc///
      	  isLPP
 	  (isLPP,Ideal)
 		[isLPP, CheckArtinian]
+
      Headline
-     	  determine whether an ideal is an LPP ideal
+     	  determine whether an ideal is an LPP ideal, default option is when ideal is Artinian.
+
      Usage
      	  B=isLPP I
      Inputs
