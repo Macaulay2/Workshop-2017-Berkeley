@@ -32,16 +32,9 @@ degree 8 genus 5 sur la classification des courbes gauches  pg 178
 "Verify resolution"
 
 
-restart
-needsPackage "SpaceCurves"
---check "SpaceCurves"
-time dT = flatten apply(10,d->effectiveDivisors(d+1)); -- used 225.955 seconds
-time rT = apply(dT, ad -> realize ad); -- used 47.5035 seconds
-time rB = apply(rT, rd -> betti res ideal rd);
-dgTable dT
 
-gAnds = method()
-gAnds (ZZ,List) := (d,L) -> (
-    Ld := select(L, rd -> degree rd == d);    
-    sort unique apply(Ld, rd -> (genus rd, min flatten degrees ideal rd))  
-)
+Mengyuan Todo
+
+1. Simplify divisors on cubic surface
+2. Write ruled cubic
+3. read Rao's paper
