@@ -62,7 +62,7 @@ HSLGModule(QQ, RingElement) := o -> (tt, ff) -> (
     J1 := sub(canIdeal, S1);
     u1 := findusOfIdeal(I1, J1+I1);    
     pp := char S1;
-    fractionDivided := divideFraction(pp, tt);
+    fractionDivided := decomposeFraction(pp, tt);
         -- fraction divided writes tt = (a/(p^b(p^c-1))
     aa := fractionDivided#0;
     bb := fractionDivided#1;
@@ -101,7 +101,7 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
     J1 := sub(canIdeal, S1);
     u1 := findusOfIdeal(I1, J1+I1);    
     pp := char S1;
-    fractionDividedList2 := apply(tList, tt -> divideFraction(pp, tt));
+    fractionDividedList2 := apply(tList, tt -> decomposeFraction(pp, tt));
         -- fraction divided writes tt = (a/(p^b(p^c-1))
     fractionDividedList := apply(fractionDividedList2, myList -> ( if (myList#2 == 0) then {(pp-1)*(myList#0), myList#1, 1} else myList ) );
 --    aaList := apply(fractionDividedList, zz->zz#0);        

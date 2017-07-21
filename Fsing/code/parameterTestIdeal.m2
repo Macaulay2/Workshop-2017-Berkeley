@@ -119,7 +119,7 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
     
     
     C1 := testElement(R1);
-    fractionDivided := divideFraction(pp, tt);
+    fractionDivided := decomposeFraction(pp, tt);
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}
@@ -139,7 +139,7 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
         ttt = aa/(pp^cc-1);
         newIntegerPart = floor(ttt);
         newFractionalPart = ttt - newIntegerPart;
-        fractionDivided2 = divideFraction(pp, newFractionalPart);
+        fractionDivided2 = decomposeFraction(pp, newFractionalPart);
         aaa = fractionDivided2#0;
         ccc = fractionDivided2#2;
     )
@@ -193,7 +193,7 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
     
     ffList = apply(ffList, zz->sub(zz, S1));
     C1 := testElement(R1);
-    fractionDividedList := apply(ttList, tt -> divideFraction(pp, tt));
+    fractionDividedList := apply(ttList, tt -> decomposeFraction(pp, tt));
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}

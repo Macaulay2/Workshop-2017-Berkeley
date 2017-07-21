@@ -13,7 +13,7 @@ Exported
 "adicDigit", DOCUMENTED	   
 "adicExpansion",    DOCUMENTED
 "adicTruncation", DOCUMENTED
-"divideFraction", DOCUMENTED; CHANGE NAME to decomposeFraction?
+"decomposeFraction", DOCUMENTED; 
 "floorLog", DOCUMENTED
 "multiplicativeOrder",  DOCUMENTED 
 "NoZeroC", DOCUMENTED; CHANGE NAME?

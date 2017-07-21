@@ -65,7 +65,7 @@ export{
     "adicExpansion",    
     "adicDigit", 	   
     "adicTruncation",
-    "divideFraction",
+    "decomposeFraction",
     "floorLog",
     "multiplicativeOrder",
     "NoZeroC", --option to force certain behavior from a function
