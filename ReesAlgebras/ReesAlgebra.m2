@@ -1876,9 +1876,6 @@ end
 --symmetricKernel, reesIdeal, reesAlgebra, isLinearType, normalCone, 
 --specialFiberIdeal. (These are called GROUP1 below).
 
---Also together:
-distinguished, distinguishedAndMult
-
 --separately
 --universalEmbedding, multiplicity, analyticSpread
 
