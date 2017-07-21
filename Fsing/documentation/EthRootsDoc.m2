@@ -151,6 +151,9 @@ doc ///
             The above example computes the ideal {\tt (I1^4 I2^5 I3^6)^{[1/p]}}. For legacy reasons, you can specify the last ideal in your list using {\tt frobeniusRoot(e,exponentList,idealList,I)}. This last ideal is just raised to the first power. 
 
             You can also call {\tt frobeniusRoot(e,a,f)}. This computes the $e$th root of the principal ideal $(f^a)$. Calling {\tt frobeniusRoot(e,m,I)} computes the $e$th root of the ideal $I^m$, and calling {\tt frobeniusRoot(e,a,f,I)} computes the eth root of the product $f^a I$. Finally, you can also compute the $p^e$-th root of a matrix $A$ by calling {\tt frobeniusRoot(e,A)}.
+    SeeAlso
+        frobenius
+        frobeniusPower
 ///
 
 {*
