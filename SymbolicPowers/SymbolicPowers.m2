@@ -509,7 +509,24 @@ document {
   Key => SymbolicPowers,
   Headline => "A package for computing symbolic powers of ideals",
    
-   "This is an experimental version of the package. If you find any typos or errors, please let me know. The package was designed to compute symbolic powers of unmixed ideals in a polynomial ring. It might misbehave in other settings.", 
+   "This package gives the ability to compute symbolic powers of 
+   ideals in a polynomial ring or a quotient of a polynomial
+   ring. In particular, in the context of the default behavoir of ", 
+   TO "symbolicPower", " assumes the 
+   following definition of the symbolic power of an ideal ", TEX /// I ///, ",", 
+   TEX /// $$I^{(n)} = \cap_{p \in Ass(R/I)}(I^nR_p \cap R ),$$ ///,
+   "as defined by M. Hochster and C. Huneke.",
+
+   PARA {"Alternatively, as defined in Villarreal, ", TO "symbolicPower", " has the option to restrict to 
+       minimal primes versus use all associated primes with ", TO "UseMinimalPrimes", ".",
+       "In particular, the symbolic power of an ideal ", TEX /// I ///, " is defined as",
+       TEX /// $$I^{(n)} = \cap_{p \in Min(R/I)}(I^nR_p \cap R ),$$ ///,
+       "where ", TEX /// Min(R/I) ///, " is the set of minimal primes in ", 
+       TEX /// I ///, "."},
+   UL {
+       {"M. Hochster and C. Huneke.", EM " Comparison of symbolic and ordinary powers of ideals.", " Invent. Math. 147 (2002), no. 2, 349–369."},
+       {"R. Villarreal.", EM " Monomial algebras.", " Second edition. Monographs and Research Notes in Mathematics. CRC Press, Boca Raton, FL, 2015. xviii+686 pp. ISBN: 978-1-4822-3469-5."},
+      },
 
    SUBSECTION "A quick introduction to this package",
    UL {
@@ -1480,11 +1497,18 @@ assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
 end
 
 restart
+uninstallPackage"SymbolicPowers"
+restart
+installPackage"SymbolicPowers"
+viewHelp"SymbolicPowers"
+
+restart
 loadPackage"SymbolicPowers"
 R = QQ[x,y,z]
 I = ideal"x,y,z"
 symbolicPower(I,2)
 check"SymbolicPowers"
+
 
 -- branden
 restart
