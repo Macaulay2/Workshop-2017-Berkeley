@@ -28,7 +28,7 @@ newPackage(
 export {"simplicialJoin","poincareSphere","dunceHat","suspension",
     "projectivePlane","bjornerExample","hachimoriExample1",
     "hachimoriExample2","hachimoriExample3","hachimoriExample4","ringMap",
-    "simplicialComplexMap","SimplicialComplexMap"}
+    "simplicialComplexMap","SimplicialComplexMap","composition"}
 
 -- Jason's area to work in
 
@@ -357,8 +357,8 @@ hachimoriExample4(Ring) := SimplicialComplex => o -> (F) -> (
 {9,10,12},
 {10,11,12}};
     fac := apply(L,l->product apply(l,v->R_(v-1)));
-    simplicialComplex fac)
 
+    simplicialComplex fac)
 
 -- end Jason's work area
 
@@ -382,7 +382,10 @@ externalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) -> (
 	internalJoin(newS1,newS2)
 	)
     )
-
+---internal join of simplical complexes
+--given two simplicial complexes S1,S2, the internal join
+--computes the simplicical complex whose faces are the unions of
+--faces of S1 and S2
 internalJoin = method()
 internalJoin(SimplicialComplex,SimplicialComplex) := (S1,S2) ->
 (
@@ -411,6 +414,53 @@ suspension(SimplicialComplex):= (S)-> (
     points := simplicialComplex{Q_0,Q_1};
     S | points
     )
+
+
+
+
+composition = method()
+composition(SimplicialComplex, List) := (K,L)-> (
+    RK := ring K ;
+    m := numgens(RK); ---m is the size of the underlying set of the simplicial complex K
+    R := apply(L, i->ring i);
+    N := apply(R,i->numgens i);
+    aux := R#0;
+    for i from 1 to #R-1 do aux=aux**R#i ;
+    Q := aux;
+    ind := 0;
+    inc := for i from 0 to #R-1 list (
+    	I := apply(N#i, t->Q_(ind + t));
+    	ind=ind + N#i;
+    	map(Q,R#i, I  )
+    	);
+    listFacetsK := flatten entries facets(K);
+    simplicialComplex flatten for monF in listFacetsK list(
+    	F := {}; ---F is the index set of the facet of K corresponding to the monomial monF
+    	FC := {}; ---FC is the complement of F in {1,...,m}
+    	for i from 0 to m-1 do(
+    	    if monF%RK_i==0 then F=F|{i} 
+    	    else FC=FC|{i};
+        );
+        prodOverF := product for i in F list (inc#i)(product(gens(R#i)));
+	---prodOverF is the product of the simplices corresponding to the 
+	---simplicial complexes indexed by elements of F
+        auxset := set{infinity};
+    	for i in FC do(
+    	    set2 := set( flatten entries inc#i(facets(L#i)) );
+    	    auxset=auxset**set2;    
+    	    );
+    	tupfacets := toList auxset;
+    	for tup in tupfacets list(
+    	    auxtup := tup;
+    	    partialfacet := product while auxtup =!= infinity list (
+	    	auxfct := auxtup_1; auxtup = auxtup_0;auxfct);
+    	    partialfacet*prodOverF    
+    	    )
+	)
+)
+
+
+
 
 end
 
@@ -474,6 +524,13 @@ zero HH_3 V
 fVector V
 transpose facets V
 prune HH_2(chainComplex U)
+S = poincareSphere(F,Variable => x)
+T = dunceHat(F,Variable => y)
+zero HH_1 S
+zero HH_2 S
+prune HH_3 S
+
+
 -- end Jason test area
 
 
@@ -485,3 +542,45 @@ methods map
 code (map, Ring, Ring, Matrix)
 
 methods RingMap
+
+------Josh test area
+
+
+---composition
+restart
+loadPackage "SimplicialComplexesTemp"
+R=QQ[x_1,x_2,x_3,x_4]
+R1=QQ[a,b,c,d]
+R2=QQ[e,f,g]
+K=simplicialComplex {x_1,x_2,x_3*x_4}
+L1=simplicialComplex {a*b,b*d,d*c,a*c}
+L2=simplicialComplex {e*f,f*g}
+L={L1,L2,L2,L2}
+
+composition(K,L)
+
+
+
+
+-----------composition examples1
+R=QQ[x,y,z]
+O=QQ[o]
+o1=simplicialComplex(monomialIdeal flatten entries vars O)
+o1 = simplicialComplex{1_O}
+K=simplicialComplex {x,y*z}
+composition(K,splice{3:o1})
+composition(o1,{K})
+
+
+-----------composition examples2
+
+
+
+O=QQ[o_1..o_2]
+R1=QQ[a,b]
+R2=QQ[c,d]
+S1=simplicialComplex {a,b}
+S2=simplicialComplex {c,d}
+o2= simplicialComplex{1_O}
+composition(o2,{S1,S2})
+S1|S2
