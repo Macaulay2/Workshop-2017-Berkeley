@@ -15,9 +15,12 @@ F = ideal(f1,f2,f3,f4)
 g = random(3,R)
 I = F^2 + ideal(g^2)
 minDegRegularSeq(I)  -- {4,4,4,4,6}
-L = LPPFromIdeal(I)
+L = LPP(I, UseHeuristics => true)
 hilbertFunct(I)
 hilbertFunct(L)
 {betti res I, betti res L}
+isLPP(I, CheckArtinian => false) -- true
+isLPP(I, CheckArtinian => true)  -- false (since the ideal is not Artinian)
+
 
 ----------
