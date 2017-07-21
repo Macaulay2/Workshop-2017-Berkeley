@@ -34,7 +34,7 @@ doc ///
         :Ideal
     Description
         Text
-            Let $\phi$ be the $p^(-e)$ linear map obtained by multiplying $e$-th Frobenius trace on a polynomial ring by $h$.  Then this function finds the smallest $\phi$-stable ideal containing $J$.  The idea is to consider the ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), ...$  We return the stable value.  For instance, this can be used to compute the test ideal.  Note if the ideal $J$ is not an ideal in a polynomial ring, the function will do the computation with $e$-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
+            Let $\phi$ be the $p^{-e}$ linear map obtained by multiplying $e$-th Frobenius trace on a polynomial ring by $h$.  Then this function finds the smallest $\phi$-stable ideal containing $J$.  The idea is to consider the ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), \ldots$.  We return the stable value.  For instance, this can be used to compute the test ideal.  Note if the ideal $J$ is not an ideal in a polynomial ring, the function will do the computation with $e$-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;
@@ -43,7 +43,7 @@ doc ///
             ascendIdeal(1, h, ideal(y^3))
             ascendIdeal(1, h, ideal((sub(y, S))^3))          
         Text
-            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the h passed is a power, $h = h^a$.  If $a$ is large, we don't want to compute $h^a$, instead we try to keep the exponent small by only raising it to the minimal power.
+            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the polynomial passed is a power, $h^a$.  If $a$ is large, we don't want to compute $h^a$; instead we try to keep the exponent small by only raising it to the minimal power.
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;
@@ -51,7 +51,7 @@ doc ///
             ascendIdeal(1, 4, g, ideal(y^3))
             ascendIdeal(1, 4, g, ideal((sub(y, S))^3)) 
         Text
-            More generally, if the $h$ is a product of powers, $h = h_1^{a_1} h_2^{a_2} ...$ then you should pass {\tt ascendIdeal} the list of exponents and the list of bases.
+            More generally, if $h$ is a product of powers, $h = h_1^{a_1}\cdots h_n^{a_n}$, then you should pass {\tt ascendIdeal} the lists {\tt expList=\{a_1,\ldots,a_n\}} and {\tt \{h_1,\ldots,h_n\}} of exponents and bases.
         Text
             This method appared first in the work of Mordechai Katzman on star closure.  
 ///
@@ -70,7 +70,7 @@ doc ///
         :List
     Description
         Text
-            By default (when {\tt AscentCount => true}), ascendIdeal just returns the stable (ascended) ideal.  If instead you set {\tt AscentCount=>true} then it returns a list.  The first value is the stable ideal.  The second is how many steps it took to reach that ideal.
+            By default (when {\tt AscentCount => true}), {\tt ascendIdeal} just returns the stable (ascended) ideal.  If instead you set {\tt AscentCount=>true} then it returns a list.  The first value is the stable ideal.  The second is how many steps it took to reach that ideal.
         Example
             R = ZZ/5[x,y,z];
             J = ideal(x^12,y^15,z^21);
@@ -112,33 +112,34 @@ doc ///
         frobeniusRoot(e, A)
     Inputs
         e:ZZ
-            The power of p to which you're taking the ideal. E.g. to find the (p^2)th root of an ideal, set e = 2. 
+            the power of the characteristic $p$ to which you are taking the ideal. E.g., to find the $p^2$-th root of an ideal, set {\tt e = 2}
         I:Ideal
-            The ideal you're taking the root of.
+            an ideal in a polynomial ring over a perfect field
         idealList:List
-            A list of ideals whose product you want to take the root of. 
+            a list of ideals whose product you want to take the root of 
         exponentList:List
-            A list of exponents which you're raising idealList to. E.g. to find the root of I^2*J^3, set idealList = {I, J} and exponentList = {2, 3}. 
+            a list of exponents which you are raising idealList to. E.g., to find the root of {\tt I^2J^3}, set {\tt idealList = \{I, J\}} and {\tt exponentList = \{2, 3\}}
         a:ZZ
-            The exponent you're raising f to.
+            the exponent you are raising {\tt f} to
         f:RingElement
+            a polynomial 
         m:ZZ
-            The exponent you're raising I to. 
+            the exponent you are raising {\tt I} to
         A:Matrix
     Outputs
         :Ideal
     Description
         Text
-            In a polynomial ring k[x1, ..., xn], I^{[1/p^e]} is the smallest ideal J such that J^{[p^e]} = FrobeniusPower(J,e) \supseteq I.  This function computes it.  Alternately it can be viewed as the image under the Cartier operator of the ideal I.
+            In a polynomial ring $k[x_1, \ldots, x_n]$ with cofficients in a field of positive characteristic $p$, the Frobenius root $I^{[1/p^e]}$ is the smallest ideal $J$ such that $I\subseteq J^{[p^e]}$ ({\tt = frobeniusPower(J,e)} ).  This function computes it.  Alternately it can be viewed as the image under the Cartier operator of the ideal $I$.
 
-            There are many ways to call frobeniusRoot. The simplest way is to call frobeniusRoot(e, I). For instance, 
+            There are many ways to call {\tt frobeniusRoot}. The simplest way is to call {\tt frobeniusRoot(e,I)}. For instance, 
         Example
             kk = ZZ/5;
             R = kk[x,y,z];
             I = ideal(x^50*z^95, y^100+z^27);
             frobeniusRoot(2, I)
         Text
-            This computes I^{[1/p^e]}, i.e. the (p^e)th root of I. Often, one wants to compute the frobeniusRoot of some product of ideals. This is best accomplished by calling the following version of frobeniusRoot:
+            This computes $I^{[1/p^e]}$, i.e. the $p^e$-th root of $I$. Often, one wants to compute the frobeniusRoot of some product of ideals. This is best accomplished by calling the following version of frobeniusRoot:
         Example 
             kk = ZZ/5;
             R = kk[x,y,z];
@@ -147,12 +148,13 @@ doc ///
             I3 = ideal(x^50*y^50*z^50);
             frobeniusRoot(1, {4,5,6}, {I1, I2, I3})
         Text
-            The above example computes the ideal (I1^4*I2^5*I3^6)^{[1/p]}	. For legacy reasons, you can specify the last ideal in your list using frobeniusRoot(e, exponentList, idealList, I). This last ideal is just raised to the first power. 
+            The above example computes the ideal {\tt (I1^4 I2^5 I3^6)^{[1/p]}}. For legacy reasons, you can specify the last ideal in your list using {\tt frobeniusRoot(e,exponentList,idealList,I)}. This last ideal is just raised to the first power. 
 
-            Finally, you can also call frobeniusRoot(e, a, f). This computes the eth root of the principal ideal f^a. Calling frobeniusRoot(e, m, I) computes the eth root of the ideal I^m, and calling frobeniusRoot(e, a, f, I) computes the eth root of the product f^a*I. 
+            You can also call {\tt frobeniusRoot(e,a,f)}. This computes the $e$th root of the principal ideal $(f^a)$. Calling {\tt frobeniusRoot(e,m,I)} computes the $e$th root of the ideal $I^m$, and calling {\tt frobeniusRoot(e,a,f,I)} computes the eth root of the product $f^a I$. Finally, you can also compute the $p^e$-th root of a matrix $A$ by calling {\tt frobeniusRoot(e,A)}.
 ///
 
-
+{*
+-- not exported
 doc ///
     Key
         minimalCompatible
@@ -179,7 +181,10 @@ doc ///
             (2) finding the smallest submodule $V$ of a free module which satisfies $UV\subset V^{[p^e]}$ and image$(A)\subset V$ for given matrices $A$ and $U$. 
 
 ///
+*}
 
+{*
+-- not exported
 doc ///
     Key
         mEthRoot
@@ -193,6 +198,7 @@ doc ///
     Outputs
         :Matrix
 ///
+*}
 
 doc ///
     Key
@@ -239,7 +245,7 @@ doc ///
         :Ideal
     Description
         Text
-            There are two valid inputs for {\tt FrobeniusRootStrategy}, namely {\tt Substitution} and {\tt MonomialBasis}.  In the end, for each generator $f$ of an ideal $I$, we are simply writing $f = \sum a_i^{p^e} m_i$ where $m$ is a monomial all of whose exponents are $< p^e$, then all the possible $a_i$ generate the {\tt frobeniusRoot}. {\tt Substitution} computes this by doing a Grobner basis computation in a ring with twice as many variables.  {\tt MonomialBasis} does this more directly and naively.  There does not appear to be a single case where one is much faster than the other.
+            There are two valid inputs for {\tt FrobeniusRootStrategy}, namely {\tt Substitution} and {\tt MonomialBasis}.  In the end, for each generator $f$ of an ideal $I$, we are simply writing $f = \sum a_i^{p^e} m_i$ where $m$ is a monomial all of whose exponents are $< p^e$, then all the possible $a_i$ generate the {\tt frobeniusRoot}. {\tt Substitution} computes this by doing a Grobner basis computation in a ring with twice as many variables. {\tt MonomialBasis} does this more directly and naively.  There does not appear to be a single case where one is much faster than the other.
 ///    
 
 doc ///
