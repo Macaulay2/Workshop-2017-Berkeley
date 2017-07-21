@@ -203,7 +203,7 @@ possibleCancelations (HashTable) := H ->(
 		    new HashTable from H1)));
 	--
     	-- This now sieves out the tables whose zeros do not propogate.	
-	delete(,apply(L1,i->(if sieveZeroPropogations(i)==true then i)))
+	delete(,apply(L1,i->(if sieveZeroPropogations(i)==true then makeBettiFromHash(i))))
 	)
     else (	
     	M := entries fromHashToDiagMatrix(H);
@@ -216,13 +216,13 @@ possibleCancelations (HashTable) := H ->(
     	--
     	-- This now sieves out the tables whose zeros do not propogate.	
 	L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
-	delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))
+	delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then makeBettiFromHash(i))))
 	)	    	 	
     )
     
 possibleBettiTables = method()
 possibleBettiTables (HashTable) := H ->(
-    delete(,apply(possibleCancelations(H),i-> if isInCone(makeBettiFromHash(i))==true then makeBettiFromHash i))	
+    delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i)))	
     )      
 end
 
