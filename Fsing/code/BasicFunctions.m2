@@ -42,15 +42,15 @@ floorLog ( ZZ, ZZ ) := ZZ => ( b, x ) ->
 
 --===================================================================================
 
-multOrder = method( TypicalValue => ZZ )
+multiplicativeOrder = method( TypicalValue => ZZ )
 
 --eulerphi := n -> value(apply(factor n, i-> (i#0-1)*((i#0)^(i#1-1))))
 --cyclicOrdPGroup := (pp, nn) -> ( return (factor(pp-1))*(new Power from {pp, (nn-1)}) );
 
 --Finds the multiplicative order of a modulo b.
-multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
+multiplicativeOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
-    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
+    if gcd( a, b ) != 1 then error "multiplicativeOrder: Expected numbers to be relatively prime.";
     if b==1 then return 1;
     maxOrder := lcm(apply(toList apply(factor b, i-> factor ((i#0-1)*((i#0)^(i#1-1)))), tt -> value tt));
     primeFactorList := sort unique apply( subsets( flatten apply(toList factor maxOrder, myPower -> apply(myPower#1, tt->myPower#0))), tt -> product tt);
@@ -60,31 +60,21 @@ multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
         if (powermod(a, primeFactorList#i, b) == 1) then return primeFactorList#i;
         i = i + 1;
     );
-    error "Something went wrong, multOrder failed to find the multiplicative order";
+    error "Something went wrong, multiplicativeOrder failed to find the multiplicative order";
 )     
-
---multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
---(
---    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
---    n := 1;
---    x := 1;
---    while (x = (x*a) % b) != 1 do n = n+1;
---    n	      
---)     
-
 
 --===================================================================================
 
-divideFraction = method( TypicalValue => List, Options => { NoZeroC => false } );
+decomposeFraction = method( TypicalValue => List, Options => { NoZeroC => false } );
 
 -- This function takes in a fraction t and a prime p and spits out a list
 -- {a,b,c}, where t = a/(p^b*(p^c-1))
 -- if c = 0, then this means that t = a/p^b
 --alternately, if NoZeroC => true, then we will always write t = a/p^b(p^c - 1)
 --even if it means increasing a. 
-divideFraction( ZZ, QQ ) := List => o -> ( p, t ) -> 
+decomposeFraction( ZZ, QQ ) := List => o -> ( p, t ) -> 
 (
-    if not isPrime( p ) then error "divideFraction: first argument must be a prime number.";
+    if not isPrime( p ) then error "decomposeFraction: first argument must be a prime number.";
     a := numerator t; -- finding a is easy, for now
     den := denominator(t);
     b := 1;
@@ -94,7 +84,7 @@ divideFraction( ZZ, QQ ) := List => o -> ( p, t ) ->
     local c;
     if (temp == 1) then c = 0 else 
     (
-        c = multOrder( p, temp );  
+        c = multiplicativeOrder( p, temp );  
         a = lift( a*(p^c-1)/temp, ZZ ); -- fix a
     );
     if o.NoZeroC and c == 0 then 
@@ -105,7 +95,7 @@ divideFraction( ZZ, QQ ) := List => o -> ( p, t ) ->
     {a,b,c}
 )
 
-divideFraction( ZZ, ZZ ) := List => o -> (p, t) -> divideFraction(p, t/1, o)
+decomposeFraction( ZZ, ZZ ) := List => o -> (p, t) -> decomposeFraction(p, t/1, o)
 
 
 --===================================================================================
@@ -202,81 +192,7 @@ baseP1 = ( p, n, e ) ->
     answer
 )	
 
---===================================================================================
 
---*************************************************
---Tests for various types of polynomials   
---*************************************************
-{* 
--- not being used
---===================================================================================
-
---isPolynomial(F) checks if F is a polynomial
-isPolynomial = method( TypicalValue => Boolean )
-
-isPolynomial (RingElement) := Boolean => F -> isPolynomialRing( ring F ) 
-
---===================================================================================
-
---isPolynomialOverPosCharField(F) checks if F is a polynomial over a field
---of positive characteristic
-isPolynomialOverPosCharField = method( TypicalValue => Boolean )
-
-isPolynomialOverPosCharField (RingElement) := Boolean => F ->
-    isPolynomial F and isField( kk := coefficientRing ring F ) and ( char kk ) > 0
-
---===================================================================================
-
---isPolynomialOverFiniteField(F) checks if F is a polynomial over a finite field.
-isPolynomialOverFiniteField = method( TypicalValue => Boolean )
-
--- This was reverted so that users with older M2 version could load 
-
---isPolynomialOverFiniteField (RingElement) := Boolean => F ->
---    isPolynomialOverPosCharField( F ) and isFinitePrimeField(coefficientRing ring F)
-
-isPolynomialOverFiniteField (RingElement) := Boolean => F ->
-    isPolynomialOverPosCharField( F ) and  ( try (coefficientRing ring F)#order then true else false )
---===================================================================================
-*}
-
---*************************************************
---Partitions
---*************************************************
-
----------------------------------------------------------------------------------------
---- The following code was written in order to more quickly compute eth roots of (f^n*I)
---- It is used in fancyEthRoot
-----------------------------------------------------------------------------------------
---- Find all ORDERED partitions of n with k parts
-{* 
--- not used
-allPartitions = ( n, k )->
-(
-	PP0:=matrix{ toList(1..k) };
-	PP:=mutableMatrix PP0;
-	allPartitionsInnards (n,k,PP,{})
-)
-
-allPartitionsInnards = ( n, k, PP, answer)->
-(
-	local i;
-	if (k==1) then 
-	(
-		PP_(0,k-1)=n;
-		answer=append(answer,first entries (PP));
-	)
-	else
-	(
-		for i from 1 to n-(k-1) do
-		(
-			PP_(0,k-1)=i;
-			answer=allPartitionsInnards (n-i,k-1,PP,answer)	;	
-		);
-	);
-	answer
-)
-*}
 --===================================================================================
 
 --*************************************************

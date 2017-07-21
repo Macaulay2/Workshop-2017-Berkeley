@@ -54,11 +54,11 @@ doc ///
 
 doc ///
     Key
-        findusOfIdeal
+        findSplittingsOfIdeal
     Headline
         finds the u, which in a polynomail ring, determines the Frobenius trace on canonical module of a quotient of that ring.
     Usage
-        findusOfIdeal(canIdeal, defIdeal)
+        findSplittingsOfIdeal(canIdeal, defIdeal)
     Inputs
         canIdeal:Ideal
         defIdeal:Ideal
@@ -77,7 +77,7 @@ doc ///
             R = S/defIdeal;
             J = canonicalIdeal(R);
             canIdeal = sub(J, S) + defIdeal;
-            findusOfIdeal(canIdeal, defIdeal)
+            findSplittingsOfIdeal(canIdeal, defIdeal)
 ///
 
 doc ///
@@ -107,7 +107,7 @@ doc ///
         :Sequence
     Description
         Text
-            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element u (or us) used to compute this ideal via the method findusOfIdeal.  
+            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element u (or us) used to compute this ideal via the method findSplittingsOfIdeal.  
         Example
             R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
             testModule(R)
@@ -125,6 +125,14 @@ doc ///
             R = ZZ/5[x,y,z]/ideal(y*z, x*z, x*y);
             paraTestMod = testModule(R)
             (paraTestMod#0) : (paraTestMod#1)
+        Text
+            This function can be used to compute parameter test ideals in Cohen-Macaulay rings
+        Example
+            R=ZZ/2[X_1..X_5]; 
+            E=matrix {{X_1,X_2,X_2,X_5},{X_4,X_4,X_3,X_1}};
+            I=minors(2,E);
+            tau=testModule(R/I);
+            substitute( (tau#0):(tau#1),R)
         Text
             This function can also be used to compute the parameter test module of a pair $(R, f^t)$.
         Example

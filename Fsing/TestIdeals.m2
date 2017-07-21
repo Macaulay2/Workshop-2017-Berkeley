@@ -3,10 +3,10 @@ Version => "0.1",
 Date => "May 30th, 2017", 
 Authors => {
      {Name => "Erin Bela",
-     Email=> "ebela@nd.edu"
+     Email => "ebela@nd.edu"
      },
      {Name => "Alberto F. Boix",
-     Email=> "alberto.fernandezb@upf.edu"
+     Email => "alberto.fernandezb@upf.edu"
      },
      {Name => "David J. Bruce",
      Email => "djbruce@math.wisc.edu",
@@ -16,41 +16,42 @@ Authors => {
      Email => "drewtell@umich.edu"
      },
      {Name => "Daniel Hernandez",
-     Email => "dhernan@math.utah.edu",
-     HomePage => "http://math.utah.edu/~dhernan/"
+     Email => "hernandez@ku.edu",
+     HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
      },
      {Name => "Mordechai Katzman",
-     Email=> "m.katzman@sheffield.ac.uk",
-     HomePage=> "http://www.katzman.staff.shef.ac.uk/"
+     Email => "m.katzman@sheffield.ac.uk",
+     HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email=> "smalec@gsu.edu"
+     Email => "smalec@gsu.edu"
      },
-     {Name => "Matthew Mastroeni"
+     {Name => "Matthew Mastroeni",
+     Email => "mastroe2@illinois.edu"
      },
      {Name => "Maral Mostafazadehfard",
-     Email=> "maralmostafazadehfard@gmail.com"
+     Email => "maralmostafazadehfard@gmail.com"
      },
      {Name => "Marcus Robinson",
-     Email=> "robinson@math.utah.edu"
+     Email => "robinson@math.utah.edu"
      },
      {Name => "Karl Schwede",
      Email => "schwede@math.psu.edu",
      HomePage => "http://math.utah.edu/~schwede/"
      },
      {Name => "Dan Smolkin",
-     Email=> "smolkin@math.utah.edu"
+     Email => "smolkin@math.utah.edu"
      },
      {Name => "Pedro Teixeira",
      Email => "pteixeir@knox.edu",
      HomePage => "http://www.knox.edu/academics/faculty/teixeira-pedro.html"
      },
      {Name=> "Emily Witt",
-     Email=> "ewitt@umn.edu",
-     HomePage => "http://math.umn.edu/~ewitt/"
+     Email => "witt@ku.edu",
+     HomePage => "https://witt.faculty.ku.edu"
      }
 },
 Headline => "A package for calculations of singularities in positive characteristic", 
@@ -64,9 +65,9 @@ export{
     "adicExpansion",    
     "adicDigit", 	   
     "adicTruncation",
-    "divideFraction",
+    "decomposeFraction",
     "floorLog",
-    "multOrder",
+    "multiplicativeOrder",
     "NoZeroC", --option to force certain behavior from a function
         
 --ethRootFunctions (EthRoots.m2)
@@ -79,7 +80,7 @@ export{
     "Substitution",
     
 --Frobenius Powers (frobeniusPowers.m2)
-    "fastExp",
+    "fastExponentiation",
     "frobenius",
     "frobeniusPower",
     "FrobeniusPowerStrategy",
@@ -92,7 +93,7 @@ export{
     "AssumeNormal", --an option telling functions to assume a ring is normal.
     "AssumeDomain", --an option telling functions to assume a ring is a domain.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
-    "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "findSplittingsOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
     "isFrational", --Karl (added recently).
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.

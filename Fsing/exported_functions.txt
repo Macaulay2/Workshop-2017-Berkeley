@@ -13,21 +13,16 @@ Exported
 "adicDigit", DOCUMENTED	   
 "adicExpansion",    DOCUMENTED
 "adicTruncation", DOCUMENTED
-"divideFraction", DOCUMENTED; CHANGE NAME to decomposeFraction?
+"decomposeFraction", DOCUMENTED; 
 "floorLog", DOCUMENTED
-"multOrder",  DOCUMENTED; CHANGE NAME to multiplicativeOrder?
+"multiplicativeOrder",  DOCUMENTED 
 "NoZeroC", DOCUMENTED; CHANGE NAME?
 
 NOT exported
 
-[allPartitions] COMMENTED OUT
-[allPartitionsInnards] COMMENTED OUT
 baseP1
 denominator/numerator
 "fracPart",
-[isPolynomial] COMMENTED OUT
-[isPolynomialOverPosCharField] COMMENTED OUT
-[isPolynomialOverFiniteField] COMMENTED OUT
 "maxIdeal", 
 
 --===========================================================
@@ -60,7 +55,7 @@ Mstar
 
 Exported
 
-"fastExp",  DOCUMENTED; TESTED
+"fastExponentiation",  DOCUMENTED; TESTED
 "frobenius", DOCUMENTED
 "frobeniusPower", DOCUMENTED
 FrobeniusPowerStrategy DOCUMENTED
@@ -82,7 +77,7 @@ stableIdeal
     "AssumeReduced", --an option telling functions to assume a ring is reduced.
     "AssumeNormal", --an option telling functions to assume a ring is normal.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
-    "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "findSplittingsOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
     "isFrational", --Karl (added recently).
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
@@ -244,3 +239,23 @@ NOT Exported
  "isInUpperRegion",
  "setFTData",
  "splittingField",
+
+
+--============================================================
+--============================================================
+
+LEFTOVERS
+
+--============================================================
+--============================================================
+
+Functions that were not being used or exported
+
+[allPartitions] 
+[allPartitionsInnards]
+
+[isPolynomial] 
+[isPolynomialOverPosCharField]  
+[isPolynomialOverFiniteField] 
+
+maxIdeal (RingElement)

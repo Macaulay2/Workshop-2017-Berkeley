@@ -47,7 +47,7 @@ finduOfIdeal(Ideal, Ideal) := (defIdeal, canIdeal) -> (
 --this function finds the generators of the intersection of 
 --J^{[p]} : J and I^{[p]} : I where I is the defining ideal and J is the canonical
 --ideal lifted to the ambient ring (in a maximal way).
-findusOfIdeal = (defIdeal, canIdeal) -> (
+findSplittingsOfIdeal = (defIdeal, canIdeal) -> (
 	Ip := frobenius( defIdeal );
 	tempIdeal := intersect( (frobenius( canIdeal )) : canIdeal, Ip : defIdeal );
 	
@@ -77,7 +77,7 @@ testModule(Ring, Ideal) := o->(R1, canIdeal) -> (
     J1 := sub(canIdeal, S1);
     C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
     
-    u1 := findusOfIdeal(I1, J1+I1);
+    u1 := findSplittingsOfIdeal(I1, J1+I1);
     tau := I1;
     if (#u1 > 1) then(
         print "testModule: Multiple trace map for omega generators (Macaulay2 failed to find the principal generator of a principal ideal).  Using them all.";
@@ -105,7 +105,7 @@ testModule(QQ, RingElement) := o-> (tt, ff) ->(
     canIdeal := canonicalIdeal(R1);
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findusOfIdeal(I1, J1+I1);
+    u1 := findSplittingsOfIdeal(I1, J1+I1);
     testModule(tt, ff, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
@@ -119,7 +119,8 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
     
     
     C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
-    fractionDivided := divideFraction(pp, tt);
+    fractionDivided := decomposeFraction(pp, tt);
+
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}
@@ -139,7 +140,7 @@ testModule(QQ, RingElement, Ideal, List) := o -> (tt, ff, canIdeal, u1) -> (
         ttt = aa/(pp^cc-1);
         newIntegerPart = floor(ttt);
         newFractionalPart = ttt - newIntegerPart;
-        fractionDivided2 = divideFraction(pp, newFractionalPart);
+        fractionDivided2 = decomposeFraction(pp, newFractionalPart);
         aaa = fractionDivided2#0;
         ccc = fractionDivided2#2;
     )
@@ -193,7 +194,8 @@ testModule(List, List, Ideal, List) := o -> (ttList, ffList, canIdeal, u1) -> (
     
     ffList = apply(ffList, zz->sub(zz, S1));
     C1 := testElement(R1, AssumeDomain=>o.AssumeDomain);
-    fractionDividedList := apply(ttList, tt -> divideFraction(pp, tt));
+    fractionDividedList := apply(ttList, tt -> decomposeFraction(pp, tt));
+
     -- fraction divided writes tt = (a/(p^b(p^c-1))
     -- the point is that
     -- tau(\omega, f^t) = (tau( omega, f^{a/(p^c-1)}) * u1^{(p^b-1)/(p-1)} )^{[1/p^b]}
@@ -258,7 +260,7 @@ testModule(List, List) := o-> (ttList, ffList) ->(
     canIdeal := canonicalIdeal(R1);
     I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findusOfIdeal(I1, J1+I1);
+    u1 := findSplittingsOfIdeal(I1, J1+I1);
     testModule(ttList, ffList, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy)    
 );
 
