@@ -33,7 +33,6 @@ maxBetti= method()
 ---the maximal betti table given a hilbert function and a ring
 maxBetti(ZZ,List) := (n,h) -> (
        maxGradedBetti := (i,j)-> h_(j-i)*binomial(n,i);
-       maxBettiList := {};
        L := flatten apply(n+1,p->(apply(#h,q->{(p,q), maxGradedBetti(p,p+q)})));
        new HashTable from L
        )
@@ -276,11 +275,35 @@ TEST ///
     I = ideal(x_{1}*x_{2}-x_{0}*x_{3}
     assert ( sub(segreIdeal({1,1}),R) == I)
 
+    H1 = new HashTable from {(0, 0) => 1, (0, 1) => 3, (0, 2) => 3,
+	 (1, 0) => 3, (1, 1) => 9, (1, 2) => 9, (2, 0) => 3, (2, 1) => 9,
+	 (2, 2) => 9, (3, 0) => 1, (3, 1) => 3, (3, 2) => 3}
+    assert(sort(pairs(H1)) == sort(pairs(maxBetti(3,{1,3,3}))))
+    
+    H2 = new HashTable from {(0, 0) => 1, (0, 1) => 0,
+	 (0, 2) => 0, (1, 0) => 0, (1, 1) => 3, (1, 2) => 9, (2, 0) => 0,
+	 (2, 1) => 8, (2, 2) => 9, (3, 0) => 0, (3, 1) => 3, (3, 2) => 3}
+    assert(sort(pairs(H2)) == sort(pairs(maxBettiCyclic(3,{1,3,3}))))
+     
+    H3 = new HashTable from {(0, 0) => 1, (0, 1) => 4,
+	 (0, 2) => 10, (1, 0) => 4, (1, 1) => 16, (1, 2) => 40, 
+	 (2, 0) => 6, (2, 1) => 24, (2, 2) => 60, (3, 0) => 4,
+	 (3, 1) => 16, (3, 2) => 40, (4, 0) => 1, (4, 1) => 4,
+	 (4, 2) => 10}
+    assert(sort(pairs(H3)) == sort(pairs(maxBetti(4,{1,4,10}))))
+    
+    H4 = new HashTable from {(0, 0) => 1, (0, 1) => 0,
+	 (0, 2) => 0, (1, 0) => 0, (1, 1) => 0, (1, 2) => 20, 
+	 (2, 0) => 0, (2, 1) => 0, (2, 2) => 45, (3, 0) => 0,
+	 (3, 1) => 0, (3, 2) => 36, (4, 0) => 0, (4, 1) => 0,
+	 (4, 2) => 10}
+    assert(sort(pairs(H4)) == sort(pairs(maxBettiCyclic(4,{1,4,10}))))
 ///
 end
 
 maxBetti(3,{1,3,3})
 maxBettiCyclic(3,{1,3,3})
+maxBetti(4,{1,4,10})
 
 searchCone(H)
 
