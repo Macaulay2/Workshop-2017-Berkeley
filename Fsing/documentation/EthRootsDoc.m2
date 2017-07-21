@@ -18,7 +18,7 @@ doc ///
         (ascendIdeal, ZZ, ZZ, RingElement, Ideal)
         (ascendIdeal, ZZ, BasicList, BasicList, Ideal)
     Headline
-        Finds the smallest phi-stable ideal containing a given ideal in a quotient of a polynomial ring.
+        finds the smallest phi-stable ideal containing a given ideal in a quotient of a polynomial ring.
     Usage
         ascendIdeal(e, h, J)
         ascendIdeal(e, a, h, J)
@@ -101,7 +101,7 @@ doc ///
         (frobeniusRoot, ZZ, List, List, Ideal)
         (frobeniusRoot, ZZ, Matrix)
     Headline
-        Computes $I^{[1/p^e]}$ in a polynomial ring over a perfect field
+        computes $I^{[1/p^e]}$ in a polynomial ring over a perfect field
     Usage
         frobeniusRoot(e, I) 
         frobeniusRoot(e, exponentList, idealList)
@@ -159,7 +159,7 @@ doc ///
     Key
         minimalCompatible
     Headline
-        This function computes minimal compatible ideals and submodules. 
+        computes minimal compatible ideals and submodules. 
     Usage
         J = minimalCompatible(e, f, I)
         J = minimalCompatible(a, e, f, I)
@@ -189,7 +189,7 @@ doc ///
     Key
         mEthRoot
     Headline
-        This function computes p^eth roots of matrices
+        computes p^eth roots of matrices
     Usage
         mEthRoot(e, A)
     Inputs

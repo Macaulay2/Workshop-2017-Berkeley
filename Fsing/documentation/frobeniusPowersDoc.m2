@@ -9,7 +9,7 @@ doc ///
         fastExp
         (fastExp, ZZ, RingElement)
     Headline
-        Computes powers of elements in rings of positive characteristic quickly.
+        computes powers of elements in rings of positive characteristic quickly.
     Usage
         fastExp(n,f) 
     Inputs

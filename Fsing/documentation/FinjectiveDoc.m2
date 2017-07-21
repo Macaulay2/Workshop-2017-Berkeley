@@ -63,7 +63,7 @@ doc ///
         isFinjective
         (isFinjective, Ring)     
     Headline
-        checks if a ring is F-injective
+        whether a ring is F-injective
     Usage
         isFinjective(R)
     Inputs
