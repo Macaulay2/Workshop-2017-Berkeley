@@ -18,8 +18,7 @@ export {"inverseSystem",
         "toDividedPowers",
         "fromDividedPowers",
 	"isStandardGradedPolynomialRing",
-	"lowerExponent",
-	"dividedActionInDegree",
+	"contractInDegree",
 	"dividedKerInDegree",
 	"dividedKerToDegree",
 	"dividedImInDegree",
@@ -164,31 +163,8 @@ inverseSystem RingElement := o-> M -> (
     ideal fromDual(M, DividedPowers => o.DividedPowers)
     )
 
-
-lowerExponent = method()
-lowerExponent (RingElement, List) := RingElement => (phi,l) -> (
-    D := ring phi;
-    if not isStandardGradedPolynomialRing D then (error "Expected a polynomial in a standard graded polynomial ring.");
-    if not #l == numgens D then (error "Expected the length of the list to be equal to the number of variables.");
-    if any(l, i -> not instance(i, ZZ) or i < 0) then (error "Expected a list of non-negative integers.");
-    expList := exponents(phi);
-    expList = select(expList, e->all(e-l,i->(i>=0)));
-    sum(apply(expList,e->coefficient(D_e,phi)*D_(e-l)))
-    )
-  
-lowerExponent (RingElement, RingElement) := RingElement => (phi, f) -> (
-    D := ring phi;
-    S := ring f;
-    if not isStandardGradedPolynomialRing S then (error "Expected a polynomial in a standard graded polynomial ring.");
-    if not numgens D == numgens S then (error "Expected the rings of the polynomials to have the same number of variables."); 
-    exps := exponents(f);
-    coeffs := (coefficients f)_1;
-    ((matrix {apply(exps, l -> lowerExponent(phi, l))})*coeffs)_0_0
-    )
-    
-
-dividedActionInDegree = method()
-dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
+contractInDegree = method()
+contractInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
     if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
     D := ring phi;
     d := (degree phi)#0;
@@ -196,12 +172,12 @@ dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
     if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
     matrix apply(flatten entries super basis(d - i, D), 
 	m -> apply(flatten entries super basis(i, D),
-	    u -> coefficient(m, lowerExponent(phi, u))
+	    u -> coefficient(m, contract(u, phi))
 	    )
 	)
     )
 
-dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
+contractInDegree (ZZ, List) := Matrix => (i, L) -> (
     if any (L,phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
     D := ring L#0;
     if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
@@ -209,7 +185,7 @@ dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
     s := flatten (L/degree);
     d := max s;
     if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
-    matrixList := apply(#s,j -> dividedActionInDegree(i,L#j));
+    matrixList := apply(#s,j -> contractInDegree(i,L#j));
     concatMatrix := matrixList#0;
     matrixList = remove(matrixList,0);
     while matrixList =!= {} do (
@@ -494,7 +470,7 @@ SeeAlso
  DividedPowers
  fromDividedPowers
  toDividedPowers
- lowerExponent
+ 
 ///
 
 doc ///
@@ -623,6 +599,7 @@ SeeAlso
  fromDual
  toDual
  isStandardGradedPolynomialRing
+ contractInDegree
 ///
 
 doc ///
@@ -798,46 +775,14 @@ doc ///
 
 doc ///
    Key
-    lowerExponent
-    (lowerExponent, RingElement, List)
-    (lowerExponent, RingElement, RingElement) 
+    contractInDegree
+    (contractInDegree, ZZ, RingElement)
+    (contractInDegree, ZZ, List)
    Headline
-    Computes the action of polynomials on elements of the divided powers algebra
+    Computes the contraction with an element of the divided powers algebra in a given degree
    Usage
-    psi = lowerExponent(phi, l)
-    psi = lowerExponent(phi, f)
-   Inputs
-    phi: RingElement
-     a polynomial in a standard graded polynomial ring
-    l: List
-     a list of non-negative integers representing the exponent of a monomial in the polynomial ring
-    f: RingElement
-     a polynomial in the same standard graded polynomial
-   Outputs
-    psi: RingElement
-   Description
-    Example
-     S = ZZ/5[x,y,z]
-     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
-     l = {0,1,1}
-     psi = lowerExponent(phi, l)
-    Example
-     S = ZZ/3[x,y,z]
-     phi = x^2*y^2*z + x*y*z^5
-     f = x*y*z+y*z^2
-     psi = lowerExponent(phi, f)
-     ///
-
-doc ///
-   Key
-    dividedActionInDegree
-    (dividedActionInDegree, ZZ, RingElement)
-    (dividedActionInDegree, ZZ, List)
-   Headline
-    Computes the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
-   Usage
-    M = dividedActionInDegree(i, phi)
-    M = dividedActionInDegree(i, L)
+    M = contractInDegree(i, phi)
+    M = contractInDegree(i, L)
    Inputs
     i: ZZ
     phi: RingElement
@@ -846,46 +791,15 @@ doc ///
      a list of homogeneous polynomials in a standard graded polynomial ring 
    Outputs
     M: Matrix
-   Description
-    Text
-     The polynomial f and the entries of are interpreted as elements of the divided powers algebra.  Computes the action of
-     homogeneous polynomials of degree i on divided powers as a matrix over the ground field in the monomial and divided powers
-     bases. 
+   Description 
     Example
      S = ZZ/5[x,y,z]
      phi = x^5*y^2 + y^5*z^2 + z^5*x^2
-     dividedActionInDegree(3, phi)
+     contractInDegree(3, phi)
+    SeeAlso
+     contract
      ///
      
-doc ///
-   Key
-    dividedActionInDegree
-    (dividedActionInDegree, ZZ, RingElement)
-    (dividedActionInDegree, ZZ, List)
-   Headline
-    Computes the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
-   Usage
-    M = dividedActionInDegree(i, phi)
-    M = dividedActionInDegree(i, L)
-   Inputs
-    i: ZZ
-    phi: RingElement
-     a homogeneous polynomial in a standard graded polynomial ring
-    L: List
-     a list of homogeneous polynomials in a standard graded polynomial ring 
-   Outputs
-    M: Matrix
-   Description
-    Text
-     The polynomial f and the entries of L are interpreted as elements of the divided powers algebra.  Computes the action of
-     homogeneous polynomials of degree i on divided powers as a matrix over the ground field in the monomial and divided powers
-     bases. 
-    Example
-     S = ZZ/5[x,y,z]
-     phi = x^5*y^2 + y^5*z^2 + z^5*x^2
-     dividedActionInDegree(3, phi)
-     ///
-
 doc ///
    Key
     dividedKerInDegree
