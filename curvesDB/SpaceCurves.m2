@@ -417,7 +417,118 @@ effectiveDivisors ZZ := d -> (
 )
 
 
+
 beginDocumentation()
+{*
+    "isSmooth",
+    "AbstractSurface",	  --type
+    "abstractSurface",	  --create an AbstractSurface
+    "AbstractDivisor",	  --type
+    "abstractDivisor",	  --create an AbstractDivisor	  
+    "RealizedSurface",	  --type
+    "RealizedDivisor",	  --type
+    "realize",
+    "abstractQuadric",
+    "abstractCubic",
+    "abstractHypersurface",
+    "irreducibleOnCubic",
+    "CanonicalClass",
+    "Hyperplane",
+    "DivisorClass",
+    "ExtraData",
+    "IntersectionPairing",
+    "dgTable",
+    "hartshorneRaoModule",
+    "hilbertBurchComputation",
+    "minimalCurveInLiaisonClass",
+    "Chi",
+    "effectiveDivisorsOnSurface",
+    "effectiveDivisorsOnCubic",
+    "completeIntersectionCurves",
+    "effectiveDivisors"
+*}    
+document { 
+Key => SpaceCurves,
+Headline => "Construction and Data base of space curves",
+"This package implements methods to collect data and examples of space curve",
+PARA{},
+SUBSECTION "Abstract surfaces and divisors",  
+UL{   TO "AbstractSurface",	  --type      
+      TO "AbstractDivisor",	  --type
+      TO "abstractSurface",	  --create an AbstractSurface
+      TO "abstractDivisor",	  --create an AbstractDivisor	   
+      TO "abstractQuadric",
+      TO "abstractCubic",
+      TO "abstractHypersurface",
+      TO "irreducibleOnCubic",
+      TO "CanonicalClass",
+      TO "Hyperplane",
+      TO "DivisorClass",
+      TO "ExtraData",
+      TO "IntersectionPairing",
+      TO "Chi"
+},
+PARA{},
+SUBSECTION "Realizations",  
+UL{     TO "RealizedSurface",	  --type
+        TO "RealizedDivisor",	  --type
+        TO "realize",
+	TO "isSmooth"
+},
+PARA{},
+SUBSECTION "Hartshorne-Rao module computations",  
+UL{   TO "hartshorneRaoModule",
+      TO "hilbertBurchComputation",
+      TO "minimalCurveInLiaisonClass"
+},
+PARA{},
+SUBSECTION "Collecting examples and information",  
+UL{   TO "dgTable",
+      TO "effectiveDivisorsOnSurface",
+      TO "effectiveDivisorsOnCubic",
+      TO "completeIntersectionCurves",
+      TO "effectiveDivisors"
+}
+}
+
+
+
+{*  
+doc ///
+  Key
+    matrixFactorizationFromModule
+    (matrixFactorizationFromModule, Module)
+    (matrixFactorizationFromModule, Ideal)
+  Headline
+    a matrix factorization induced by a quotient ring on a supporting hypersurface  
+  Usage
+    matrixFactorizationFromModule M
+    matrixFactorizationFromModule I
+  Inputs
+    M: Module
+       over a ring of polynomials R
+    I: Ideal
+       in a ring of polynomials R
+  Outputs
+     : Sequence
+  Description
+     Text
+       The function takes a random element f of minimal degree in the support of the annihilator
+       of the module M (or in the ideal I) and produces the matrix factorization of f given by the
+       periodic part of the R/f-resolution of M (or R/I)
+     Example
+       S = ZZ/32009[x_0..x_3];
+       I = minors(3,random(S^4,S^{1:-1,2:-2}));
+       betti res I
+       (phi, psi)=matrixFactorizationFromModule I;
+       betti res ((S^1/I) ** (ring phi))
+       betti phi, betti psi
+       SX = ring psi;
+       phi*psi
+///
+*}
+
+-- TEST SECTION
 
 TEST ///
   X = abstractQuadric
@@ -534,6 +645,12 @@ TEST ///
 
 
 end--------
+restart
+uninstallPackage "SpaceCurves"
+restart
+installPackage "SpaceCurves"
+viewHelp "SpaceCurves"
+
 
 
 --Generate divisors on cubic surface
