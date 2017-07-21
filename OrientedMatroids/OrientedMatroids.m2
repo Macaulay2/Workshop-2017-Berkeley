@@ -102,6 +102,7 @@ supp_neg = (circ) ->(  -- negative elements
     )
 
 
+
 -- sign function
 -- CAVEAT: may give random output if not in an ordered ring/field
 sign = x ->
