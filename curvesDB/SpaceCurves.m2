@@ -153,7 +153,7 @@ dgTable List := L ->(
     gmin := min apply(Ldg,dg->last dg);
     M := mutableMatrix map(ZZ^(gmax-gmin+1),ZZ^(dmax-dmin+1),0);
     for dg in Ldg do (
-	j := dmax - first dg;
+	j := first dg - dmin;
 	i := gmax - last dg;
     	M_(i,j) = M_(i,j)+1;		
     );
@@ -287,7 +287,8 @@ effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
     if X.AbstractSurface === abstractQuadric then (
 	--Data = {degree}
 	assert(#Data == 1);
-	return for a from 0 to first Data list (
+	maxdeg := floor(1/2*first Data);
+	return for a from 1 to maxdeg list (
        	    C := abstractDivisor({a,first Data - a},abstractQuadric);
 	    realize(C,X)
 	)
