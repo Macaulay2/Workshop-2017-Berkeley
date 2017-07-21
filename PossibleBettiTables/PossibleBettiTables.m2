@@ -12,7 +12,7 @@ newPackage(
 	    HomePage => "http://www.math.umn.edu/~loper012"},
 	{
 	    Name => "Michael Perlman",
-	    Email => "",
+	    Email => "mperlman@nd.edu",
 	    HomePage => ""}}
     Headline => "computes family of all possible Betti tables of a 0-dimensional grade module",
     DebuggingMode => true
@@ -22,11 +22,12 @@ needsPackage "SimpleDoc"
 needsPackage "BoijSoederberg";
 
 export {
-    "makeBetti",
-    "isValidTable",
-    "searchCone"
     "maxBetti",
-    "maxBettiCyclic"
+    "maxBettiCyclic",
+    "makeBettiFromHash",
+    "isInCone",
+    "possibleCancelations",
+    "possibleBettiTables"
     }
 
 maxBetti= method()
@@ -74,17 +75,63 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
     new HashTable from M 
     )	
 
-makeBetti = H ->(
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+
+makeBettiFromHash = H ->(
     new BettiTally from apply(keys H, h-> (h_0,{h_0+h_1},h_0+h_1)=> H#h)
     )
+
+fromHashToDiagMatrix = H ->(
+    pd := (max(keys H))#0;
+    reg := (max(keys H))#1;
+    
+    M1 := apply(pd+1, p->(apply(min(pd,reg)+1,i->(
+		    if isSubset({(p-i,i)},keys H)==true then H#(p-i,i)
+		    else 0
+		    ))
+	    ));
+    M2 := reverse apply(reg, q->(apply(min(pd,reg)+1,i->(
+		    if isSubset({(pd-i,reg-q+i)},keys H)==true then H#(pd-i,reg-q+i)
+		    else 0
+		    ))
+	    ));
+    matrix (M1 | M2)
+    )
+
+-- we need to tell it the projective dimension.
+fromDiagMatrixToHash = (M,d) ->(
+    -- m is equal to min(pd,reg)+1
+    m := #flatten entries M^{0};
+    n := #flatten entries M_{0};
+    reg := n - (d+1);
+    H := new MutableHashTable;
+    apply(d+1, p->(
+	    apply(m,i->(
+		if (p-i)>-1 then (H#(p-i,i)=M_(p,i))
+		))
+	    ));
+    apply(reg, q->(apply(m,i->(
+			H#(d-i,q+i+1)=M_(d+1+q,i)
+			))
+		));
+    new HashTable from H
+    )
+
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 
 isStrictlyIncreasing = L->(
      t:=true;
      for i from 0 to #L-2 do t=(t and (L_i<L_(i+1)));
      t)
 
-isValidTable = method() 
-isValidTable BettiTally := B -> (
+isInCone = method() 
+isInCone BettiTally := B -> (
     t := true;
     B1 := new MutableHashTable from B;
     while min values B1 >= 0 and max values B1 > 0 and t==true do (
@@ -105,24 +152,61 @@ isValidTable BettiTally := B -> (
     t
     )
 
-searchCone = method()
-searchCone (HashTable) := H ->(
-    PD := (max(keys H))#0;
-    U := apply(PD-1, i->H#(i+2,1));
-    L := apply(PD-1, i->0);
-    range := toList(L..U);
-    delete(,apply(range, k->(
-	M := new MutableHashTable from H;  
-	apply(#k,i->(
-		dif := M#(i+1,2)-M#(i+2,1);
-	        M#(i+2,1)=(k#i);
-		M#(i+1,2)=(k#i)+dif;
-		));
-	M = new HashTable from M;
-	if isValidTable(makeBetti(M))==true then makeBetti M
-    )))
-)
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
+--------------------------------------------------------------------------------------
 
+sieveZeroPropogations = H ->(
+    pd := (max(keys H))#0;
+    reg := (max(keys H))#1;
+    t := true;
+    
+    apply(reg, q->(
+	    if t == true then (
+		apply(pd,p->(
+			if t == false then t = false
+			else (
+			    if H#(pd-(p+1),q) == 0 and H#(pd-p,q) != 0 then (
+				if unique apply(q,i->(H#(pd-(p+1),i)==0))=={true} then (
+				    t = false
+				    )
+				else (
+				    t = true
+				    )
+				)
+			    else ( 
+				t = true
+				)
+			    )
+			));
+		)));
+    t
+    )
+
+possibleCancelations = method()
+possibleCancelations (HashTable) := H ->(
+    pd := (max(keys H))#0;
+    reg := (max(keys H))#1;
+    
+    M := entries fromHashToDiagMatrix(H);
+    Z := apply(M, i->apply(i,j->0));
+    
+    -- This first sieves out tables whose alter. sums are not the same.
+    X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
+    C1 := (matrix M)*X1;
+    L1 = delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
+
+    -- This now sieves out the tables whose zeros do not propogate.		
+    L2 := apply(L1,i->fromDiagMatrixToHash(matrix i,pd));
+    delete(,apply(L2,i->(if sieveZeroPropogations(i)==true then i)))
+	
+    )
+    
+possibleBettiTables = method()
+possibleBettiTables (HashTable) := H ->(
+    delete(,apply(possibleCancelations(H),i-> if isInCone(makeBettiFromHash(i))==true then makeBettiFromHash i))	
+    )      
 end
 
 --------------------------------------------------------------------------------
@@ -143,6 +227,7 @@ doc ///
 
 doc ///
     Key
+<<<<<<< HEAD
     	maxBetti
     Headline
     	creates HashTable representing a Betti table of the maximum
@@ -202,10 +287,14 @@ doc ///
     Key
     	makeBetti
 	(makeBetti,HashTable)
+=======
+    	makeBettiFromHash
+	(makeBettiFromHash,HashTable)
+>>>>>>> PossibleBettiTables-2017
     Headline
     	turns the HashTable representing a Betti table into a BettiTally
     Usage
-    	B = segreIdeal(H)
+    	B = makeBettiFromHash(H)
     Inputs
     	H:HashTable
 	    representing a Betti table
@@ -219,17 +308,17 @@ doc ///
 	    
 	Example
 	    H = new HashTable from {(0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 6, (3,0) => 0, (2,1) => 8, (1,2) => 0, (3,1) => 3, (2,2) => 0, (3,2) => 0};
-	    makeBetti(H) 	
+	    makeBettiFromHash(H) 	
 ///
 
 doc ///
     Key
-    	isValidTable
-	(isValidTable,BettiTally)
+    	isInCone
+	(isInCone,BettiTally)
     Headline
     	determines whether a given abstract Betti table is in the B-S cone
     Usage
-    	t = isValidTable(B)
+    	t = isInCone(B)
     Inputs
     	B:BettiTally
 	    representing an abstract Betti table
@@ -248,27 +337,59 @@ doc ///
 
 doc ///
     Key
-    	isValidTable
-	(isValidTable,BettiTally)
+    	possibleCancelations
+	(possibleCancelations,HashTable)
     Headline
-    	determines whether a given abstract Betti table is in the B-S cone
+    	returns the list of all possible abstract Betti tables, as HashTables, arrising from 
+	a particular table via cancelations
     Usage
-    	t = isValidTable(B)
+    	L = possibleCancelations(H)
     Inputs
-    	B:BettiTally
-	    representing an abstract Betti table
+    	H:HashTable
+	    representing a Betti table
     Outputs
-    	t:Boolean
-	    stating whether the given table is in the B-S cone	    
+    	L:List
+	    containing the possible abstract Betti tables arrising via cancelations
     Description
     	Text
-	    Given an abstract Betti table this returns True or False 
-	    depending on whether or not the table lies in the B-S cone.
-	    
+	    Given a HashTable representing an (abstract) Betti table this returns the 
+	    list of all possible abstract Betti tables arrising via cancelations.
+
 	Example
+<<<<<<< HEAD
 	    segreIdeal({1,1})
 	    segreIdeal({1,2})  	
 
+=======
+	    H = new HashTable from {(0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 6, (3,0) => 0, (2,1) => 8, (1,2) => 0, (3,1) => 3, (2,2) => 0, (3,2) => 0};
+	    makeBettiFromHash(H) 	
+///
+
+doc ///
+    Key
+    	possibleBettiTables
+	(possibleBettiTables,HashTable)
+    Headline
+    	returns the list of all possible abstract Betti tables, as HashTables, arrising from 
+	a particular table via cancelations
+    Usage
+    	L = possibleBettiTables(H)
+    Inputs
+    	H:HashTable
+	    representing a Betti table
+    Outputs
+    	L:List
+	    containing the possible abstract Betti tables arrising via cancelations
+    Description
+    	Text
+	    Given a HashTable representing an (abstract) Betti table this returns the 
+	    list of all possible abstract Betti tables arrising via cancelations.
+
+	Example
+	    H = new HashTable from {(0,0) => 1, (0,1) => 0, (1,0) => 0, (2,0) => 0, (0,2) => 0, (1,1) => 6, (3,0) => 0, (2,1) => 8, (1,2) => 0, (3,1) => 3, (2,2) => 0, (3,2) => 0};
+	    makeBettiFromHash(H) 	
+///
+>>>>>>> PossibleBettiTables-2017
 
 TEST ///
     R = QQ[x_{0},x_{1},x_{2},x_{3}]
