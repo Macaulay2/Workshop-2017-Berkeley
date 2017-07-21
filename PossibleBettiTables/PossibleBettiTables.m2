@@ -141,6 +141,33 @@ isInCone BettiTally := B -> (
 --------------------------------------------------------------------------------------
 --------------------------------------------------------------------------------------
 
+sieveZeroPropogations = H ->(
+    pd := (max(keys H))#0;
+    reg := (max(keys H))#1;
+    t := true;
+    
+    apply(reg, q->(
+	    if t == true then (
+		apply(pd,p->(
+			if t == false then t = false
+			else (
+			    if H#(pd-(p+1),q) == 0 and H#(pd-p,q) != 0 then (
+				if unique apply(q,i->(H#(pd-(p+1),i)==0))=={true} then (
+				    t = false
+				    )
+				else (
+				    t = true
+				    )
+				)
+			    else ( 
+				t = true
+				)
+			    )
+			));
+		)));
+    t
+    )
+
 possibleCancelations = method()
 possibleCancelations (HashTable) := H ->(
     pd := (max(keys H))#0;
@@ -149,12 +176,23 @@ possibleCancelations (HashTable) := H ->(
     M := entries fromHashToDiagMatrix(H);
     Z := apply(M, i->apply(i,j->0));
     
-    X := matrix apply(min(pd,reg)+1,i->{(-1)^i});
-    C := (matrix M)*X;
+    -- This first sieves out tables whose alter. sums are not the same.
+    X1 := matrix apply(min(pd,reg)+1,i->{(-1)^i});
+    C1 := (matrix M)*X1;
+    L1 := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X1 == C1 then i)));	    
     
-    L := delete(,apply(drop(toList(Z..M),0),i->(if (matrix i)*X == C then i)));	    
+    -- This sieves out the tables whose consecutive sums are not the same.
+    l := {1,-1}|apply(min(pd,reg)-1,i->0);
+    X2 := apply(min(pd,reg),i->((apply(i,j->0))|drop(l,-i)));
+    C2 := (matrix M)*X2;
+    L2 := delete(,apply(L1,i->(if (matrix i)*X2 == C2 then i)));
     
-    apply(L,i->fromDiagMatrixToHash(matrix i,pd))
+    -- This sieves out the tables where zeros do not propogate.
+		
+    L3 := apply(L2,i->fromDiagMatrixToHash(matrix i,pd));
+    
+    apply(L3,i->
+	
     )
     
 possibleBettiTables = method()
