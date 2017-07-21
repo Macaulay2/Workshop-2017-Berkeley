@@ -383,13 +383,17 @@ effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
     	return apply(Lad, ad -> realize(ad,X));
     );
     if X.AbstractSurface === abstractQuadric then (
-	--Data = {degree}
+	--Data = {degree}: creates all diviors (a,b) where a+b = degree
 	assert(#Data == 1);
-	maxdeg := floor(1/2*first Data);
+	maxdeg := ceiling(1/2*first Data);
 	return for a from 1 to maxdeg list (
        	    C := abstractDivisor({a,first Data - a},abstractQuadric);
 	    realize(C,X)
 	)
+    );
+    if select("Hypersurface",toString X.AbstractSurface.IntersectionPairing) =!= {} then (
+    	--Data = {maxdeg}: creates divisors of degree 1..maxdeg
+	return apply(first Data, d -> realize(abstractDivisor({d+1},X.AbstractSurface),X));
     );
     error "not implemented yet for your type of surface"	
 )
@@ -451,6 +455,8 @@ TEST ///
     rC = realize(C,X)
     degree rC
     genus rC
+    Ld = effectiveDivisors(X,{5});
+    dgTable Ld
 ///
 
 TEST ///
