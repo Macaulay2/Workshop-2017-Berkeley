@@ -27,12 +27,15 @@ export {
     "DivisorClass",
     "ExtraData",
     "IntersectionPairing",
-    "effectiveDivisors",
     "dgTable",
     "hartshorneRaoModule",
     "hilbertBurchComputation",
     "minimalCurveInLiaisonClass",
-    "Chi"
+    "Chi",
+    "effectiveDivisorsOnSurface",
+    "effectiveDivisorsOnCubic",
+    "completeIntersectionCurves",
+    "effectiveDivisors"
     }
 
 
@@ -368,41 +371,51 @@ dgTable List := L ->(
     return matrix M;
 )
 
-effectiveDivisors = method()
-effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
-    --List all RealizedDivisors of the RealizedSurface X satisfying Data
-    if X.AbstractSurface.Name == "Cubic surface" then (
-	--Data = {degree of plane model,space degree}
-	assert(#Data == 2);
-	a := Data#0;
-    	d := Data#1;
-    	dlist := apply(select(partitions(3*a-d),p->#p<=6),q-> {a} | toList q | splice{(6-#q):0});    
-    	Lad := apply(dlist,L -> abstractDivisor(L,abstractCubic));
-    	Lad = select(Lad, ad-> irreducibleOnCubic ad);
-    	return apply(Lad, ad -> realize(ad,X));
+effectiveDivisorsOnCubic = method()
+effectiveDivisorsOnCubic (AbstractSurface,ZZ,ZZ) := (X,a,d) -> (
+    if X.Name == "Cubic surface" then (
+    	dlist := apply(select(partitions(3*a-d),p->#p<=6),q -> 
+	    {a} | toList q | splice{(6-#q):0});    
+    	Lad := apply(dlist,L -> abstractDivisor(L,X));
+    	return select(Lad, ad-> irreducibleOnCubic ad);
+    );    
+    error "Not a cubic surface";
+)
+
+effectiveDivisorsOnSurface = method()
+effectiveDivisorsOnSurface (AbstractSurface,ZZ) := (X,d) -> (
+    --List all divisors of degree d on X
+    if X.Name == "Cubic surface" then (
+    	return flatten apply(toList(floor(d/3)..2*d), a -> effectiveDivisorsOnCubic(X,a,d)); 	
     );
-    if X.AbstractSurface.Name == "Quadric surface" then (
+    if X.Name == "Quadric surface" then (
 	--Data = {degree}: creates all diviors (a,b) where a+b = degree
-	assert(#Data == 1);
-	maxdeg := ceiling(1/2*first Data);
-	return for a from 1 to maxdeg list (
-       	    C := abstractDivisor({a,first Data - a},abstractQuadric);
-	    realize(C,X)
-	)
+	maxdeg := ceiling(1/2*d);
+	return for a from 1 to maxdeg list abstractDivisor({a,d - a},X);
     );
-    if X.AbstractSurface.Name == "Hypersurface" then (
-	--creates divisors of degrees > deg X for degrees in Data 
-	dX := 4 + first X.AbstractSurface.CanonicalClass;
-	dL := select(Data,dC -> dC >= dX);
-	return apply(dL, dC -> realize(abstractDivisor({dC},X.AbstractSurface),X));
+    if X.Name == "Hypersurface" then (
+	surfd := 4 + first X.CanonicalClass;
+	if d % surfd =!= 0 then return {};
+	return abstractDivisor({d // surfd},X);
     );
     error "not implemented yet for your type of surface"	
 )
 
 completeIntersectionCurves  = method()
-completeIntersectionCurves ZZ := deg -> (
-    --produce all types of c.i curves of given degree    
+completeIntersectionCurves ZZ := d -> (
+    --produce all ci curves of degree d
+    div := for i from 1 to floor sqrt d when d % i == 0 list i;
+    return apply(div, deg -> 
+	abstractDivisor({d // deg},abstractHypersurface(deg)));            
 )
+
+effectiveDivisors = method()
+effectiveDivisors ZZ := d -> (
+    effectiveDivisorsOnSurface(abstractCubic,d) |
+    effectiveDivisorsOnSurface(abstractQuadric,d) |
+    completeIntersectionCurves(d)    
+)
+
 
 beginDocumentation()
 
