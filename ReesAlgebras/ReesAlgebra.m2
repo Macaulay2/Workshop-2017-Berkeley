@@ -1847,24 +1847,21 @@ end
 
 TEST///
 --Test for distinguished
-   Example
-     setRandomSeed 0
-     T = ZZ/101[c,d];
-     D = 4;
-     P = product(D, i -> random(1,T))
-     R = ZZ/101[a,b,c,d]
-     I = ideal(a^2, a*b*(substitute(P,R)), b^2)
-   Text
-     There is one minimal associated prime (a thick line in $P^3$) and $D$
-     embedded primes (points on the line).
-   Example
-     ass I 
-     primaryDecomposition I
-   Text
-     Only the minimal prime is a distinguished component, and it has multiplicity 2.
-   Example
-     distinguished(I)
+R=ZZ/101[x,y,u,v]
+I=ideal(x^2, x*y*u^2+2*x*y*u*v+x*y*v^2,y^2)
+assert(distinguished I === {ideal (y, x)})
 ///
+
+
+TEST///
+--Test for distinguishedAndMult
+R=ZZ/101[x,y,u,v]
+I=ideal(x^2, x*y*u^2+2*x*y*u*v+x*y*v^2,y^2)
+assert(distinguishedAndMult I == {{2, ideal (y, x)}})
+distinguishedAndMult I
+///
+
+
 restart
 uninstallPackage "ReesAlgebra"
 installPackage "ReesAlgebra"
