@@ -29,7 +29,7 @@ Authors => {
      {Name => "Sara Malec",
      Email=> "smalec@gsu.edu"
      },
-     {Name => "Matthew Mastroeni"
+     {Name => "Matthew Mastroeni",
      Email=> "mastroe2@illinois.edu"
      },
      {Name => "Maral Mostafazadehfard",
