@@ -138,16 +138,16 @@ normalForm = (f,P,gamma) -> (
 sPol = (f,g,gamma) -> (
     s := first headMonomial(f,gamma);
     a := leadCoefficient(s);
-    s = leadMonomial(s);
+    if s == 0 then return g else s = leadMonomial(s);
     t := first headMonomial(g,gamma);
     b := leadCoefficient(t);
-    t = leadMonomial(t);
+    if t == 0 then return f else t = leadMonomial(t);
     e1 := first exponents(s);
     e2 := first exponents(t);
     R := ring(s);
     u := product apply(#e1, i -> (R_i)^(max(e1_i,e2_i)-e1_i));
     v := product apply(#e2, i -> (R_i)^(max(e1_i,e2_i)-e2_i));
-    return b*u*f - a*v*g
+return b*u*f - a*v*g
 );
 
 hasRedTerm = (f,gamma) -> (
@@ -221,7 +221,7 @@ color(f2,gamma)
 color(f3,gamma)
 color(f1,gamma)
 headMonomial(f1+f2,gamma)
-headMOnomial(f1+f3,gamma)
+headMonomial(f1+f3,gamma)
 determineCover(f1+f2,{})
 determineCover(f1+f2+f3,determineCover(f1+f3,{gamma}))
 reducedByP(f1,f2,gamma)
@@ -230,7 +230,17 @@ normalForm(f1,{f1},gamma)
 sPol(f2,f3+f2,gamma)
 B = {{{},{}}} 
 F =  {c_1*x_0*x_2-c_2*x_1^2,c_1*x_0*x_3-c_2*x_1*x_2,c_1*x_1*x_3-c_2*x_2^2}
-groebnerSystem(F,{{{},{}}})
+R = QQ[a_0,a_1,a_2,b_0,b_1,b_2][x]
+f = a_0*x^2  + a_1*x + a_2
+g = b_0*x^2 + b_1*x + b_2
+F = {f,g}
+time A = groebnerSystem(F,{{{},{}}})
+L = unique flatten apply(A,i -> last i)
+# L
+first A
+L = apply(A, i -> ideal(i_0_0));
+#unique L
+unique L
 
 fakeParametricGB = method(
     TypicalValue => List    
