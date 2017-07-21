@@ -28,7 +28,7 @@ newPackage(
 export {"simplicialJoin","poincareSphere","dunceHat","suspension",
     "projectivePlane","bjornerExample","hachimoriExample1",
     "hachimoriExample2","hachimoriExample3","hachimoriExample4","ringMap",
-    "simplicialComplexMap","SimplicialComplexMap","composition"}
+    "simplicialComplexMap","SimplicialComplexMap","composition","skeleton"}
 
 -- Jason's area to work in
 
@@ -487,6 +487,13 @@ composition(SimplicialComplex, List) := (K,L)-> (
 
 
 
+skeleton = method()
+skeleton(ZZ,SimplicialComplex) := (n,S)->(
+    F := flatten entries faces(n,S);  
+    R := ring S;
+    if F == {} then simplicialComplex {0_R} else simplicialComplex F
+)
+
 end
 
 
@@ -595,7 +602,7 @@ composition(o1,{K})
 -----------composition examples2
 
 
-
+o = getSymbol"o"
 O=QQ[o_1..o_2]
 R1=QQ[a,b]
 R2=QQ[c,d]
@@ -604,3 +611,111 @@ S2=simplicialComplex {c,d}
 o2= simplicialComplex{1_O}
 composition(o2,{S1,S2})
 S1|S2
+
+
+
+
+--------n-skeleton examples
+
+
+restart
+loadPackage "SimplicialComplexesTemp"
+R=QQ[x_1,x_2,x_3,x_4]
+R1=QQ[a,b,c,d]
+R2=QQ[e,f,g]
+K=simplicialComplex {x_1,x_2,x_3*x_4}
+faces(1,K)
+faces(0,K)
+
+skeleton(1,K)
+
+skeleton(0,K)
+skeleton(5,K)
+skeleton(-1,K)
+skeleton(-2,K)
+
+
+
+------testing skeleton function for void complex
+V=simplicialComplex{0_R}
+skeleton(-1,V)
+skeleton(0,V)
+skeleton(2,V)
+
+
+-------testing skeleton function for empty set complex
+T=simplicialComplex{1_R}
+skeleton(-1,T)
+skeleton(0,T)
+
+
+
+
+
+
+
+
+-------
+
+R=QQ[a,b,c,d]
+viewHelp gcd 
+gcd{a*b,b*c,c*d}
+time gcd{a*b,b*c,a*c,a*d,b*d,c*d}
+time gcd{a^3*b,b^5*c^3,c*d^4,a^5*c^6}
+time product{set{a,b},set{b,c},set{a,c},set{a,d},set{b,d},set{c,d}}
+time product apply(subsets(50,4), l->set l)
+S = QQ[x_0..x_49]
+mons = apply(subsets(50,4), l->product apply(l,i->x_i));
+time gcd mons
+
+
+
+-----
+restart
+loadPackage "SimplicialComplexesTemp"
+S=projectivePlane(QQ)
+R=ring S;
+n=dim R;
+monF=flatten entries facets(S)
+F=for monL in monF list(
+    L := {};
+    for i from 0 to n-1 do(
+    	    if monL%R_i==0 then L=L|{i} 
+        );
+    set L
+)
+m=#F
+kk=coefficientRing R;
+x=getSymbol "x"
+Q=kk[x_0..x_(m-1)]
+--HT=new MutableHashTable from {}
+nerveFacets={}
+nerve=method()
+nerve(List) := L-> (
+    print L;
+    --if not HT#?L then (
+	k := max(L | {-1});
+	facet := true;
+	for i from k+1 to m-1 do(
+	    newL := L|{i};
+	    intersection := product apply(newL,j->F#j);
+	    if intersection=!=set{} then (
+		facet=false;
+		nerve(newL);
+		);
+            );
+	if facet then (
+	    nerveFacets=nerveFacets|{product apply(L,j->Q_j)};
+	    --for U in subsets(L) do HT#U=1;
+	    );
+-- );
+);
+nerve{}
+nerveFacets
+
+S=simplicialComplex nerveFacets
+isPure(S)
+fVector(S)
+------nerve 
+R=QQ[x_0..x_3]
+S=simplicialComplex monomialIdeal(x_0*x_1*x_2,x_0*x_1*x_3,x_0*x_2*x_3)
