@@ -25,9 +25,42 @@ newPackage(
     	)
 
 
-export {"simplicialJoin","poincareSphere","dunceHat","suspension","composition"}
+export {"simplicialJoin","poincareSphere","dunceHat","suspension",
+    "projectivePlane","bjornerExample","hachimoriExample1",
+    "hachimoriExample2","hachimoriExample3","hachimoriExample4","ringMap",
+    "simplicialComplexMap","SimplicialComplexMap","composition"}
 
 -- Jason's area to work in
+
+-- New Type to keep track of simplicial maps
+SimplicialComplexMap = new Type of HashTable
+simplicialComplexMap = method(TypicalValue => SimplicialComplexMap)
+
+-- Internal simplicial map constructor
+newSimplicialComplexMap := (T,S,f) ->
+     new SimplicialComplexMap from {
+	  symbol target => T,
+	  symbol source => S,
+	  ringMap => f,
+	  symbol cache => new CacheTable
+	  }
+
+-- How to make a new simplicial map with some error checking
+simplicialComplexMap (SimplicialComplex,SimplicialComplex,RingMap) := (T,S,f) -> (
+    RT := ring T;
+    RS := ring S;
+    if not RT === target f 
+    then error "target complex's ring does not match target of ring map";
+    if not RS === source f 
+    then error "source complex's ring does not match source of ring map";
+
+    facetsT := apply(flatten entries facets T,fc->face(fc));
+    imageOfFacetsS := apply(flatten entries facets S,fc->face(f(fc)));
+    if not all(imageOfFacetsS,fs->(any(facetsT,ft->isSubface(fs,ft))))
+    then error "Given ring map does not induce a simplicial map";
+    
+    newSimplicialComplexMap(T,S,f)
+    )
 
 poincareSphere = method(Options=>{Variable => "x"})
 poincareSphere(Ring) := SimplicialComplex => o -> (F) -> (
@@ -133,7 +166,7 @@ dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
     assert(isField F);
     x := o.Variable;
     if instance(x,String) then x = getSymbol x;
-    R := F[x_1..x_16];
+    R := F[x_1..x_8];
     L := {{1,2,4},
 {1,2,7},
 {1,2,8},
@@ -152,6 +185,179 @@ dunceHat(Ring) := SimplicialComplex => o -> (F) -> (
 {4,6,8},
 {6,7,8}};
     fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+projectivePlane = method(Options=>{Variable => "x"})
+projectivePlane(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_6];
+    L := {{1,2,4},
+{1,2,6},
+{1,3,4},
+{1,3,5},
+{1,5,6},
+{2,3,5},
+{2,3,6},
+{2,4,5},
+{3,4,6},
+{4,5,6}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+bjornerExample = method(Options=>{Variable => "x"})
+bjornerExample(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_6];
+    L := {{1,2,3},
+{1,2,5},
+{1,2,6},
+{1,3,4},
+{1,3,6},
+{1,4,5},
+{2,3,4},
+{2,3,5},
+{2,4,6},
+{3,5,6},
+{4,5,6}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+hachimoriExample1 = method(Options=>{Variable => "x"})
+hachimoriExample1(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_7];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,4,5},
+{1,6,7},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{4,5,7},
+{5,6,7}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+hachimoriExample2 = method(Options=>{Variable => "x"})
+hachimoriExample2(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+hachimoriExample3 = method(Options=>{Variable => "x"})
+hachimoriExample3(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+    simplicialComplex fac)
+
+
+
+hachimoriExample4 = method(Options=>{Variable => "x"})
+hachimoriExample4(Ring) := SimplicialComplex => o -> (F) -> (
+    assert(isField F);
+    x := o.Variable;
+    if instance(x,String) then x = getSymbol x;
+    R := F[x_1..x_12];
+    L := {{1,2,5},
+{1,2,6},
+{1,2,7},
+{1,3,4},
+{1,3,9},
+{1,4,5},
+{1,6,7},
+{1,8,10},
+{1,8,11},
+{1,8,12},
+{1,9,10},
+{1,11,12},
+{2,3,4},
+{2,3,5},
+{2,3,6},
+{2,4,7},
+{3,5,6},
+{3,8,9},
+{3,8,10},
+{3,8,11},
+{3,10,11},
+{4,5,7},
+{5,6,7},
+{8,9,12},
+{9,10,12},
+{10,11,12}};
+    fac := apply(L,l->product apply(l,v->R_(v-1)));
+
     simplicialComplex fac)
 
 -- end Jason's work area
@@ -300,6 +506,24 @@ i1(R1_0) - i2(R2_0)
 restart
 F = ZZ/2
 loadPackage "SimplicialComplexesTemp"
+S = dunceHat(F,Variable => y)
+T = projectivePlane(F)
+RS = ring S
+RT = ring T
+f = map(RS,RS)
+simplicialComplexMap(S,S,f)
+g = map(RT,RS,(toList(x_1..x_6)|{x_1,x_1}))
+simplicialComplexMap(T,S,g)
+
+
+zero HH_(-1) V
+zero HH_0 V
+zero HH_1 V
+zero HH_2 V
+zero HH_3 V
+fVector V
+transpose facets V
+prune HH_2(chainComplex U)
 S = poincareSphere(F,Variable => x)
 T = dunceHat(F,Variable => y)
 zero HH_1 S
@@ -310,6 +534,14 @@ prune HH_3 S
 -- end Jason test area
 
 
+R = QQ[x,y,z]
+
+factor(x*y*z)
+index(y)
+methods map
+code (map, Ring, Ring, Matrix)
+
+methods RingMap
 
 ------Josh test area
 
