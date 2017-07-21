@@ -4,6 +4,17 @@ time J = floorLog(2,3);
 assert(J == 1)
 ///
 
+TEST ///
+time J = floorLog(5,26);
+assert(J==2)
+///
+
+TEST ///
+time J = floorLog(5,2);
+assert(J==0)
+///
+
+
 -- multOrder test#1 
 TEST ///
 time J = multOrder(10, 7);
