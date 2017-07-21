@@ -19,10 +19,12 @@ canonicalIdeal(Ring) := o->(R1) -> (
 	dS := dim S1;
 	varList := first entries vars S1;
 	degList := {};
-	if (#(degree(varList#0)) == 1) then (
-		degList = apply(varList, q -> (degree(q))#0); )
-	else (
-		degList = apply(varList, q -> (degree(q))); );
+	if (#varList > 0) then (
+    	if (#(degree(varList#0)) == 1) then (
+	    	degList = apply(varList, q -> (degree(q))#0); )
+    	else (
+	    	degList = apply(varList, q -> (degree(q))); );
+    );	    	
 	M1 := (Ext^(dS - dR)(S1^1/I1, S1^{-(sum degList)}))**R1;
 	embedAsIdeal(M1, MTries=>o.MTries)
 );

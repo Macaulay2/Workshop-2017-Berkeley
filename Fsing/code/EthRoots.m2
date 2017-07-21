@@ -205,7 +205,7 @@ frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
     --still recognized as variables of R and not S, and the code will not break if the variables in R happen to be called
     --Y_i also.  
     Svars := S_*;
-    J := ideal(apply(n,i->Svars#(n+i) - Svars#i^(p^e)));
+    J := ideal(apply(n,i->Svars#(n+i) - Svars#i^(p^e)))*S;
     H := apply((substitute(I,S))_*, f -> f % J);
     --If we denote the variables in R as X_1 .. X_n, then this replaces each occurrence of X_i^(p^e) in the polynomial f
     --with a Y_i.
