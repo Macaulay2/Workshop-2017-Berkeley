@@ -92,8 +92,15 @@ rankFromCircuits (List, ZZ) := (List, ZZ) => opts -> (C, n) -> (
 
 -- support function returns nonzero spots in +/-/0 vector
 supp = (circ) ->(
-    select(unique apply(#circ, spot-> if circ_spot != 0 then spot), elt-> elt =!= null)
+    positions(circ, a -> a != 0)
     )
+supp_pos = (circ) ->(  -- positive elements
+    positions(circ, a -> a > 0)
+    )
+supp_neg = (circ) ->(  -- negative elements
+    positions(circ, a -> a < 0)
+    )
+
 
 -- sign function
 -- CAVEAT: may give random output if not in an ordered ring/field
@@ -156,6 +163,44 @@ circuitsFromChirotope = (H, n, r) -> (
 prod = (v1, v2) -> (
     if #v1 =!= #v2 then error "The lists must have the same length"
     else apply(#v1, i -> if v1_i =!= 0 then v1_i else v2_i)
+    )
+
+
+-- check circuit axioms
+-- C is a proposed list of signed circuits (a list of lists of 0/1/-1)
+-- n is the size of the ground set
+isCircuits = C -> (
+    n := #(C_0); -- size of the ground set
+    z := apply(n,i-> 0); -- zero vector
+    posZero := position(C, c -> c == z);
+    if(posZero =!= null) then (
+	print "The zero vector is not a circuit.\n"; 
+	return false;
+	);
+    minusC := apply(C, c-> -1 * c);
+    if((set minusC) =!= (set C)) then (
+	print "The negative of any circuit must also be a circuit.\n";
+	return false;
+	);
+    scan(#C, i -> scan(i+1..#C-1, j -> (
+	    if (isSubset(set supp(C_i), set supp(C_j)) or isSubset(set supp(C_j), set supp(C_i))) and C_i =!= (-1)*(C_j) then (
+		print "Incomparability axiom fails with the following circuits\n";
+	    	print (C_i, C_j);	
+	    	return false;       		
+		); 
+	    )
+	)
+    );    
+    scan(#C, i -> scan(i+1..#C-1, j -> (   
+    	if C_i =!= (-1)*(C_j) and  #((set supp_pos(C_i))*(set supp_neg(C_i)))>0	then	     	   scan((set supp_pos(C_i))*(set supp_neg(C_i)), e -> (
+		found := false;
+		scan(C, 
+		    );
+		)
+	    );
+		)
+	    )
+	);
     )
 
 end
