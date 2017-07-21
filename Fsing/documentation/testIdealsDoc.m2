@@ -51,7 +51,37 @@ doc ///
             testElement(R)
 ///
 
+doc ///
+    Key
+        [testElement, AssumeDomain]
+    Headline
+        assumes the ring is a domain when finding a test element
+    Description
+        Text
+            If {\tt AssumeDomain => true} then testElement doesn't have to compute the minimal primes of the ring.  This can result in a substantial speedup in some cases.  The default value is {\tt false}.
+    SeeAlso
+        testElement
+///
 
+doc ///
+    Key
+        [testIdeal, AssumeDomain]
+        [testModule, AssumeDomain]
+    Headline
+        assume the ring is a domain
+    Description
+        Text
+            Set {\tt AssumeDomain => true} during the step of finding a test element.  The default value is {\tt false}.
+    SeeAlso
+        [testElement, AssumeDomain]
+///
+
+doc ///
+    Key
+        AssumeDomain
+    Headline
+        an option to assume a ring is a domain
+///        
 
 doc ///
     Key

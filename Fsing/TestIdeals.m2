@@ -90,6 +90,7 @@ export{
     "AssumeCM", --an option for function, if true, then the function will do less work.
     "AssumeReduced", --an option telling functions to assume a ring is reduced.
     "AssumeNormal", --an option telling functions to assume a ring is normal.
+    "AssumeDomain", --an option telling functions to assume a ring is a domain.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
     "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
