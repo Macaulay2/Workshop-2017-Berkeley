@@ -161,7 +161,7 @@ export{
     "AssumeReduced", --an option telling functions to assume a ring is reduced.
     "AssumeNormal", --an option telling functions to assume a ring is normal.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
-    "findusOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "findSplittingsOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
     "isFrational", --Karl (added recently).
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
