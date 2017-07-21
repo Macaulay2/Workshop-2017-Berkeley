@@ -16,8 +16,8 @@ Authors => {
      Email => "drewtell@umich.edu"
      },
      {Name => "Daniel Hernandez",
-     Email => "dhernan@math.utah.edu",
-     HomePage => "http://math.utah.edu/~dhernan/"
+     Email => "hernandez@ku.edu",
+     HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
@@ -29,7 +29,8 @@ Authors => {
      {Name => "Sara Malec",
      Email=> "smalec@gsu.edu"
      },
-     {Name => "Matthew Mastroeni"
+     {Name => "Matthew Mastroeni",
+     Email=> "mastroe2@illinois.edu"
      },
      {Name => "Maral Mostafazadehfard",
      Email=> "maralmostafazadehfard@gmail.com"
@@ -49,8 +50,8 @@ Authors => {
      HomePage => "http://www.knox.edu/academics/faculty/teixeira-pedro.html"
      },
      {Name=> "Emily Witt",
-     Email=> "ewitt@umn.edu",
-     HomePage => "http://math.umn.edu/~ewitt/"
+     Email=> "witt@ku.edu",
+     HomePage => "https://witt.faculty.ku.edu"
      }
 },
 Headline => "A package for calculations of singularities in positive characteristic", 
