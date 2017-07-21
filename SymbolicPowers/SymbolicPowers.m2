@@ -1466,29 +1466,88 @@ I=ideal(x*y,x*z,y*z)
 assert(lowerBoundResurgence(I,5)==6/5)
 ///
 
-
-end
-
---symbPowerPrimePosChar
+----doSymbolicAndOrdinaryPowersCoincide
 TEST ///
-R=QQ[x]
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(doSymbolicAndOrdinaryPowersCoincide(I,2)==false)
+///
+
+TEST ///
+R=ZZ/3[x,y]
 I=ideal(x)
-assert(symbPowerPrimePosChar(I,3)=="The characteristic must be positive")
+assert(doSymbolicAndOrdinaryPowersCoincide(I,3)==true)
 ///
 
 TEST ///
-R=ZZ/2[x,y]
-I=ideal(x*y)
-assert(symbPowerPrimePosChar(I,2)=="Not a prime ideal")
+R=QQ[x,y,z]
+I=ideal(x*z,y*z)
+assert(doSymbolicAndOrdinaryPowersCoincide(I,2)==true)
+///
+
+----joinIdeals
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y)
+J=ideal(x,z)
+assert(joinIdeals(I,J)==ideal(x))
+///
+
+----symbolicPowerJoin
+
+----ContainmentProblemGivenSymbolicPower
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(ContainmentProblemGivenSymbolicPower(I,4)==2)
+///
+
+----symbolicContainmentMonomialCurve
+TEST ///
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},4,5)==false)
 ///
 
 TEST ///
-R=ZZ/5[x,y,z]
-I=ideal(x+1,x+y+z)
-assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
-
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},5,4)==true)
 ///
 
+TEST ///
+assert(symbolicContainmentMonomialCurve(QQ[w,x,y,z],{2,3},3,2)==true)
+///
+----squarefreeGens
+TEST ///
+R=ZZ/5[w,x,y,z]
+I=ideal(y^2*z,x*y*w,z*w^3)
+assert(squarefreeGens(I)=={w*x*y})
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x^2*z,x*y^8,z^3)
+assert(squarefreeGens(I)=={})
+///
+
+----squarefreeInCodim
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y^2)
+assert(squarefreeInCodim I=={})
+///
+
+TEST ///
+R=ZZ/2[x,y,z]
+I=ideal(x,y)
+assert(squarefreeInCodim I=={x*y})
+///
+
+----symbolicPowerMonomialCurve
+TEST ///
+I= symbolicPowerMonomialCurve({1,2,1},2)
+R=ring I
+assert(I==ideal(R_0^2-2*R_0*R_2+R_2^2,R_0*R_2^2-R_2^3-R_0*R_1+R_1*R_2,R_2^4-2*R_1*R_2^2+R_1^2))
+///
 
 
 end
