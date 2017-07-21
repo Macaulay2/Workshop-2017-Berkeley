@@ -44,10 +44,10 @@ findQGorGen ( Ring ) := R -> findQGorGen( 1, R )
 --instead, if we just find one element of the Jacobian not in I, then that would also work
 --and perhaps be substantially faster
 --it assumes that R is a reduced ring.
-testElement = method()
+testElement = method(Options=>{AssumeDomain=>false});
 randomSubset = method()
 
-testElement(Ring) := (R1) ->
+testElement(Ring) := o->(R1) ->
 ( --Marcus I believe wrote this code to look at random minors instead of all minors
 --note in the current version this will not terminate if the ring is not generically reduced
 	I1 := ideal R1;
@@ -56,7 +56,8 @@ testElement(Ring) := (R1) ->
 	r1 := rank target M1;
 	c1 := rank source M1;
 	testEle := sub(0,ambient R1);
-	primesList := minimalPrimes I1;
+	primesList := {};
+	if (o.AssumeDomain == true) then primesList = {I1} else primesList = minimalPrimes I1;
     curMinor := ideal(sub(0, ambient R1));
 	while(any(primesList, II->isSubset(ideal(testEle), II))) do(
 	    curMinor = first entries gens  minors(n1,M1, First =>{randomSubset(r1,n1),randomSubset(c1,n1)}, Limit =>1);
@@ -121,7 +122,7 @@ isLocallyPrincipalIdeal := (I2) -> (
 
 --the following is the new function for computing test ideals written by Karl.
 
-testIdeal = method(Options => {MaxCartierIndex => 100, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0});
+testIdeal = method(Options => {MaxCartierIndex => 10, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0, AssumeDomain=>false});
 
 testIdeal(Ring) := o->(R1) -> (
     canIdeal := canonicalIdeal(R1);
@@ -147,7 +148,7 @@ testIdeal(Ring) := o->(R1) -> (
     );
     if (cartIndex <= 0) then error "testIdeal: Ring does not appear to be Q-Gorenstein, perhaps increase the option MaxCartierIndex";
     if ((pp-1)%cartIndex == 0) then ( 
-        J1 := testElement( R1 );
+        J1 := testElement( R1, AssumeDomain=>o.AssumeDomain );
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
             computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1), FrobeniusRootStrategy => o.FrobeniusRootStrategy);
@@ -170,7 +171,7 @@ testIdeal(Ring) := o->(R1) -> (
 --    print gensList;
 --    1/0;
         for x in gensList do (
-            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy))#0;        
+            runningIdeal = runningIdeal + (testModule(1/cartIndex, sub(x, R1), canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AssumeDomain=>o.AssumeDomain))#0;        
         );
 --    1/0;
     
@@ -230,7 +231,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
         h1 := sub(0, ambient R1);
         try (h1 = findQGorGen( 1, R1)) then (
             --do stuff
-            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, FrobeniusRootStrategy => o.FrobeniusRootStrategy);
+            computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AssumeDomain=>o.AssumeDomain);
         ) else (
             computedFlag = false;
         );
@@ -250,7 +251,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
     
         for x in gensList do (
             f2 = append(fList, x);
-            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy))#0;        
+            runningIdeal = runningIdeal + (testModule(t2, f2, canIdeal, u1, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AssumeDomain=>o.AssumeDomain))#0;        
         );
     
         newDenom := reflexify(canIdeal*dualCanIdeal);

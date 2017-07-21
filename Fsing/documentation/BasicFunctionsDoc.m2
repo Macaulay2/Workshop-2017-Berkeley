@@ -144,14 +144,14 @@ doc ///
 
 doc ///
     Key
-        divideFraction
-        (divideFraction, ZZ, QQ)
-        (divideFraction, ZZ, ZZ)
+        decomposeFraction
+        (decomposeFraction, ZZ, QQ)
+        (decomposeFraction, ZZ, ZZ)
     Headline
         decompose a rational number into a/(p^b(p^c-1))
     Usage
-        L = divideFraction(p,t)
-        L = divideFraction(p,n)
+        L = decomposeFraction(p,t)
+        L = decomposeFraction(p,n)
     Inputs
         p:ZZ
             a prime
@@ -161,26 +161,26 @@ doc ///
         L:List
     Description
         Text
-            Given a rational number $t$ and a prime $p$, {\tt divideFraction(p,t)} 
+            Given a rational number $t$ and a prime $p$, {\tt decomposeFraction(p,t)} 
             returns a list {\tt \{a,b,c\}} of nonnegative integers such that 
             $t = a/(p^b(p^c-1))$.
         Example
-            divideFraction( 3, 4/45 )
+            decomposeFraction( 3, 4/45 )
             4/45 == 64/( 3^2 * ( 3^4 -1 ) )
         Text
             If the denominator is a pure power of $p$, then $t = a/p^b$ and the 
             function returns {\tt c = 0}. See the option @TO NoZeroC@ to avoid this.
         Example
-            divideFraction( 3, 4/27 )
+            decomposeFraction( 3, 4/27 )
 ///
 
 doc ///
     Key
-        [divideFraction, NoZeroC]
+        [decomposeFraction, NoZeroC]
     Headline
         decompose a rational number into a/p^b(p^c-1) and force c not equal to zero
     Usage
-        L = divideFraction(..., NoZeroC => b)
+        L = decomposeFraction(..., NoZeroC => b)
     Inputs
         b:Boolean
     Outputs
@@ -193,8 +193,8 @@ doc ///
             forces the third entry of the output list to be nonzero, even if
             that means increasing the first entry.
         Example
-            divideFraction( 3, 4/27)
-            divideFraction( 3, 4/27, NoZeroC => true )
+            decomposeFraction( 3, 4/27)
+            decomposeFraction( 3, 4/27, NoZeroC => true )
             4/27 == 8/( 3^3 * ( 3 - 1 ) )
 ///   
 
@@ -202,12 +202,12 @@ doc ///
     Key
         NoZeroC
     Headline
-        an option for divideFraction
+        an option for decomposeFraction
     Description
         Text
             Valid values are {\tt true} or {\tt false}.
     SeeAlso
-        divideFraction
+        decomposeFraction
 ///         
 
  

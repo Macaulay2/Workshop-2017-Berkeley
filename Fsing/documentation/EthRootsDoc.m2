@@ -212,6 +212,7 @@ doc ///
         [testModule, FrobeniusRootStrategy]   
         [frobenius, FrobeniusRootStrategy]
         [frobeniusPower, FrobeniusRootStrategy]  
+        [parameterTestIdeal, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
@@ -224,6 +225,7 @@ doc ///
         testModule(..., FrobeniusRootStrategy=>S)
         frobenius(..., FrobeniusRootStrategy=>S)
         frobeniusPower(..., FrobeniusRootStrategy=>S)
+        parameterTestIdeal(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Description

@@ -1043,7 +1043,7 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	p := char ring f;
 	if (o.Origin == true) then org := ideal(vars (ring f));
 	--this writes t = a/(p^b(p^c-1))
-	(a,b,c) := toSequence divideFraction( p, t );
+	(a,b,c) := toSequence decomposeFraction( p, t );
 	mySigma := ideal(f);
 	myTau := ideal(sub(1, ring f));
 	myA := a;
@@ -1088,7 +1088,7 @@ isFJumpingNumberPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 (
 	p := char ring f;
 	--this writes t = a/(p^b(p^c-1))
-	(a,b,c) := toSequence divideFraction( p, t );
+	(a,b,c) := toSequence decomposeFraction( p, t );
 	mySigma := ideal(f);
 	myTau := frobeniusRoot(b, testIdeal(t*p^b, f) );
 	if (o.Verbose==true) then print "higher tau Computed";

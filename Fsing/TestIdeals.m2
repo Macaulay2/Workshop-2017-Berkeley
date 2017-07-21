@@ -8,9 +8,9 @@ Authors => {
      {Name => "Alberto F. Boix",
      Email => "alberto.fernandezb@upf.edu"
      },
-     {Name => "David J. Bruce",
-     Email => "djbruce@math.wisc.edu",
-     HomePage => "http://www.math.wisc.edu/~djbruce/"
+     {Name => "Juliette Bruce",
+     Email => "juliette.bruce@math.wisc.edu",
+     HomePage => "https://juliettebruce.github.io/"
      },
      {Name => "Drew Ellingson",
      Email => "drewtell@umich.edu"
@@ -27,7 +27,7 @@ Authors => {
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email => "smalec@gsu.edu"
+     Email => "malec@hood.edu"
      },
      {Name => "Matthew Mastroeni",
      Email => "mastroe2@illinois.edu"
@@ -39,7 +39,7 @@ Authors => {
      Email => "robinson@math.utah.edu"
      },
      {Name => "Karl Schwede",
-     Email => "schwede@math.psu.edu",
+     Email => "schwede@math.utah.edu",
      HomePage => "http://math.utah.edu/~schwede/"
      },
      {Name => "Dan Smolkin",
@@ -65,7 +65,7 @@ export{
     "adicExpansion",    
     "adicDigit", 	   
     "adicTruncation",
-    "divideFraction",
+    "decomposeFraction",
     "floorLog",
     "multiplicativeOrder",
     "NoZeroC", --option to force certain behavior from a function
@@ -91,6 +91,7 @@ export{
     "AssumeCM", --an option for function, if true, then the function will do less work.
     "AssumeReduced", --an option telling functions to assume a ring is reduced.
     "AssumeNormal", --an option telling functions to assume a ring is normal.
+    "AssumeDomain", --an option telling functions to assume a ring is a domain.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
     "findSplittingsOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
