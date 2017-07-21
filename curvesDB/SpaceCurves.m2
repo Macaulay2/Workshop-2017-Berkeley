@@ -357,7 +357,7 @@ dgTable = method()
 dgTable List := L ->(
     --Takes a list of AbstractDivisors or RealizedDivisors
     --returns a (degree, genus)    
-    Ldg := apply(L, C -> (degree C, genus C));
+    Ldg := apply(L, C -> (lift(degree C,ZZ), lift(genus C,ZZ)));
     dmax := max apply(Ldg,dg->first dg);
     dmin := min apply(Ldg,dg->first dg);
     gmax := max apply(Ldg,dg->last dg);
@@ -472,20 +472,10 @@ TEST ///
     degree C
     genus C
     rC = realize(C,X)
-    degree rC
-    genus rC
-    Ld = effectiveDivisors(X,{2,4,5});
-    dgTable Ld
+    assert(degree rC == degree C);
+    assert(genus rC == genus C);
 ///
 
-TEST ///
-  S = ZZ/32003[x_0..x_3];
-  X = realize(abstractCubic, Ring => S);
-  a = 6;
-  d = 9;
-  Ld = effectiveDivisors(X,{a,d});   
-  dgTable Ld
-///
 
 TEST ///
   S = ZZ/32003[x_0..x_3]
@@ -502,7 +492,7 @@ TEST ///
   betti I
   assert( codim I == 2)
   assert((degree I,genus I) == (7,2))
-  I=hilbertBurchComputation(M,S^3)
+--I=hilbertBurchComputation(M,S^3)
   I=hilbertBurchComputation(M,S^2)
   I==null
 ///
@@ -513,15 +503,15 @@ TEST ///
   betti M
   dim M == 0
   time I=minimalCurveInLiaisonClass M; -- used 0.58667 seconds
-  L
   assert( (degree I, genus I) == (43, 168) )
-  betti res I
+{*
   omega=Ext^2(S^1/I,S^{-4});
   fomega=res omega
   betti fomega
   HRao= coker(Hom(fomega.dd_2_{0..(rank fomega_2-2)},S^{-4}))
   reduceHilbert hilbertSeries HRao
   reduceHilbert hilbertSeries M
+*}
 ///	
 
 
