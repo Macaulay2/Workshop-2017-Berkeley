@@ -323,7 +323,7 @@ isFrational(Ring) := o->(R1) ->(
         MList := testModule(R1);
         if (o.IsLocal == true) then (
             paraTestIdeal := (MList#0):(MList#1);
-            maxIdeal := sub(ideal(first entries vars ambient R1), R1);
+            maxIdeal := sub(maxIdeal(ambient R1), R1);
             flag = isSubset(paraTestIdeal, maxIdeal);
         ) 
         else (
