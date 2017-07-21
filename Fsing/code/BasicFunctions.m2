@@ -42,15 +42,15 @@ floorLog ( ZZ, ZZ ) := ZZ => ( b, x ) ->
 
 --===================================================================================
 
-multOrder = method( TypicalValue => ZZ )
+multiplicativeOrder = method( TypicalValue => ZZ )
 
 --eulerphi := n -> value(apply(factor n, i-> (i#0-1)*((i#0)^(i#1-1))))
 --cyclicOrdPGroup := (pp, nn) -> ( return (factor(pp-1))*(new Power from {pp, (nn-1)}) );
 
 --Finds the multiplicative order of a modulo b.
-multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
+multiplicativeOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
 (
-    if gcd( a, b ) != 1 then error "multOrder: Expected numbers to be relatively prime.";
+    if gcd( a, b ) != 1 then error "multiplicativeOrder: Expected numbers to be relatively prime.";
     if b==1 then return 1;
     maxOrder := lcm(apply(toList apply(factor b, i-> factor ((i#0-1)*((i#0)^(i#1-1)))), tt -> value tt));
     primeFactorList := sort unique apply( subsets( flatten apply(toList factor maxOrder, myPower -> apply(myPower#1, tt->myPower#0))), tt -> product tt);
@@ -60,7 +60,7 @@ multOrder( ZZ, ZZ ) := ZZ => ( a, b ) ->
         if (powermod(a, primeFactorList#i, b) == 1) then return primeFactorList#i;
         i = i + 1;
     );
-    error "Something went wrong, multOrder failed to find the multiplicative order";
+    error "Something went wrong, multiplicativeOrder failed to find the multiplicative order";
 )     
 
 --===================================================================================
@@ -84,7 +84,7 @@ divideFraction( ZZ, QQ ) := List => o -> ( p, t ) ->
     local c;
     if (temp == 1) then c = 0 else 
     (
-        c = multOrder( p, temp );  
+        c = multiplicativeOrder( p, temp );  
         a = lift( a*(p^c-1)/temp, ZZ ); -- fix a
     );
     if o.NoZeroC and c == 0 then 

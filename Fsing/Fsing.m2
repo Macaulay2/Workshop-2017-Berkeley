@@ -72,7 +72,7 @@ export{
     "getCanVector",
     "getNumAndDenom", 
     "maxIdeal", 
-    "multOrder",
+    "multiplicativeOrder",
     "NoZeroC", --option to force certain behavior from a function
     "num",
     "taxicabNorm",

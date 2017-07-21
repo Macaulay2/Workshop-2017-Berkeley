@@ -67,7 +67,7 @@ export{
     "adicTruncation",
     "divideFraction",
     "floorLog",
-    "multOrder",
+    "multiplicativeOrder",
     "NoZeroC", --option to force certain behavior from a function
         
 --ethRootFunctions (EthRoots.m2)
