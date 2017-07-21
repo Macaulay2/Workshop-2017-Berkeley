@@ -13,6 +13,10 @@ newPackage(
 
 
 export {
+    -- Options
+    "UseMinimalPrimes",
+    
+    -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
     "ContainmentProblem", 
@@ -167,16 +171,37 @@ symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
     intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
-symbolicPower = method(TypicalValue => Ideal)
-symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I)) then (
-	if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)) else (
-	if (isPolynomialRing R and isMonomial I) then symbPowerMon(monomialIdeal(I),n) else (
-	    if isPrime I then symbPowerPrime(I,n) else 
-	    if isPrimary I then symbPowerPrimary(I,n) else
-	    symbPowerSlow(I,n)
-	    )))
+symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
+symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
 
+    if opts.UseMinimalPrimes then print "Hello Eloisa";
+        
+    if not opts.UseMinimalPrimes then (    
+    	if (codim I == dim R - 1 and isHomogeneous(I)) then (
+	    if depth (R/I) == 0 then fastPower(I,n) else symbPowerSat(I,n)
+	    ) else (
+	    if (isPolynomialRing R and isMonomial I) then (
+		symbPowerMon(monomialIdeal(I),n)
+		) else (
+		    if isPrime I then symbPowerPrime(I,n) else 
+	    	    if isPrimary I then symbPowerPrimary(I,n) else symbPowerSlow(I,n)
+	    	    )
+		)
+	    
+    )
+    
+
+        
+    )
+
+///
+restart
+loadPackage"SymbolicPowers"
+R=QQ[x,y,z]
+I=ideal(x)
+symbolicPower(I,2)
+
+///
 
 joinIdeals = method(TypicalValue => Ideal)
 joinIdeals(Ideal,Ideal) := Ideal => (I,J) -> (R := ring I; k := coefficientRing(R);
@@ -1435,6 +1460,7 @@ assert(symbPowerPrimePosChar(I,2)==ideal(y^2-2*y+1,x*y-x+y-1,x^2+2*x+1))
 ///
 
 
+
 end
 
 restart
@@ -1443,3 +1469,47 @@ R = QQ[x,y,z]
 I = ideal"x,y,z"
 symbolicPower(I,2)
 check"SymbolicPowers"
+
+-- branden
+restart
+n = 3
+R = ZZ/101[x_1..x_n]
+I = ideal(apply(1..n, l -> x_1*x_l) )
+loadPackage"SymbolicPowers"
+symbolicPower(I,2)
+check "SymbolicPowers"
+
+R=QQ[x,y,z]
+I=ideal(x)
+symbolicPower(2,I)
+toString I
+primaryDecomposition I
+
+F = res(R^1/I)
+c = codim(R^1/I) 
+p = F.Resolution.length
+rk = apply(p, l -> r_l = rank(F_l))
+rko = select(rk,odd)
+rke = select(rk,even)
+rk
+
+
+rj = sum_{i=j}^p (-1)^{i-j} rk_i
+r := j -> (
+    ind = apply(p-j, l-> j+l);
+    sum apply(ind, l -> if odd(l-j) then -1*rank(F_l) else rank(F_l))
+    )
+apply((c+1)..(p-1), l -> (
+	if 
+	l = 3
+	height 
+	r l
+	F.dd#l
+	minors(r l, F.dd#l)
+loadPackage"SymbolicPowers"
+bigHeight(I)
+	)
+	r l)
+
+?minors
+
