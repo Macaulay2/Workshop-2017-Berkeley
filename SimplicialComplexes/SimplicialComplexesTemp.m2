@@ -514,13 +514,60 @@ recursiveNerve = (L,F,Q,m)-> (
 	    );
 -- );
 );
+
+
+-----------Documentation------------
+------------------------------------
+
+beginDocumentation()
+
+doc ///
+    Key
+    	(cone,SimplicialComplex)
+    Headline 
+    	construct a cone of a simplicial complex
+    Usage 
+    	c = cone(S)
+    Inputs
+    	S:SimplicialComplex
+    Outputs
+    	c:SimplicialComplex
+    Description
+    	Text
+	    Given a simplicial complex S we compute the cone, c, of S.	
+	Example
+    	    R=QQ[a,b,c];
+	    S=simplicialComplex {a*b,c};
+	    c=cone(S) 
+    SeeAlso
+    	join
+	suspension
+	composition
+///
+
+
+----test cone
+
+TEST ///
+R = QQ[x,y,z]
+S = simplicialComplex{1_R}
+c = cone(S)
+assert(dim c == 0)
+S1 = simplicialComplex{x*y,z}
+c1 = cone(S1)
+assert(dim c1 == dim S1 + 1)
+assert(dim c1 == 2)
+///
 end
 
 
 ----Claudiu's Test Area
 restart
+uninstallPackage"SimplicialComplexesTemp"
 installPackage"SimplicialComplexesTemp"
+check SimplicialComplexesTemp
 
+viewHelp SimplicialComplexesTemp
 r1 = QQ[a,b]
 s1 = simplicialComplex {a,b}
 r2 = QQ[a,c]
