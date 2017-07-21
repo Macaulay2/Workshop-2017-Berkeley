@@ -671,6 +671,9 @@ doc///
 	  isHF
 ///
 
+
+
+
 doc///
      Key
      	  macaulayLowerOperator
@@ -773,31 +776,8 @@ doc///
 	  lexIdeal
 ///
 
-doc///
-     Key
-     	  isCM
-	  (isCM,Ideal)
-	     Headline
-     	  test whether a polynomial ring modulo a homogeneous ideal is Cohen-Macaulay
-     Usage
-     	  B=isCM I
-     Inputs
-     	  I:Ideal
-	       a homogeneous ideal in a polynomial ring
-     Outputs
-     	  B:Boolean
-	       {\tt true} if {\tt (ring I)/I} is Cohen-Macaulay and {\tt false} otherwise
-     Description
-     	  Text
-	       {\tt isCM} takes a homogeneous ideal {\tt I} in a polynomial ring {\tt R} and, by computing the
-	       projective dimension and codimension of {\tt I}, determines whether {\tt R/I} is Cohen-Macaulay.
-	       Of course, {\tt isCM} works only if Macaulay 2 can compute the projective dimension of {\tt I}.
-	  Example
-	       R=ZZ/32003[a..c];
-	       isCM(ideal(a^2,b^4)) --complete intersection
-	       isCM(ideal(a^3,b^5,c^4,a*c^3)) --Artinian
-	       isCM(ideal(a^3,a*b^2))
-///
+
+
 
 doc///
      Key
@@ -853,6 +833,8 @@ doc///
 	  isLexIdeal
 ///
 
+
+
 doc///
      Key
      	  isLexIdeal
@@ -884,6 +866,8 @@ doc///
      SeeAlso
      	  lexIdeal
 ///
+
+
 
 doc///
      Key
@@ -958,8 +942,8 @@ doc///
 	       LPP(R,{1,3,4,2,1},{2,2,3}) --no LPP ideal with this Hilbert function and power sequence
 
 
-		 Text
-		     In this version, the function LPP can have an ideal {\tt I} as its single input. That ideal {\tt I} doesn't
+		Text
+		     In this version, the function LPP can have an ideal I as its single input. That ideal I doesn't
 				 need to be Artinian, however in that case the resulting LPP won't be Artinian either.
 				 In the default behavior of the script, the pure powers are assumed to be in full length.
 				 If the pure powers length is not full, you may use the option {\tt FillPowers => true}
@@ -970,15 +954,15 @@ doc///
 				 R=ZZ/32003[a..d];
 				 I=ideal(a,b)
 				 LPP(I*I*I, UseHeuristics => true)
-
 				 R=ZZ/32003[a..c];
 	       LPP(R,{1,3,4,2,1,1,1,1,1,1},{2,3}, FillPowers => true)
-
-		 SeeAlso
-       generateLPPs
+		SeeAlso
 	     isLPP
 			 minDegRegularSeq
 ///
+
+
+
 
 doc///
      Key
@@ -1006,11 +990,13 @@ doc///
 	       R=ZZ/32003[a..d];
 				 I=ideal(a,b)
 	       minDegRegularSeq(I*I*I)
-     SeeAlso
+    SeeAlso
 		    LPP
 				isLPP
 	  		heuristicCodim
 ///
+
+
 
 doc///
      Key
@@ -1026,10 +1012,10 @@ doc///
      	  d:ZZ
 	       codimension of {\tt I}
     Description
-    Text
+     Text
 	       In some complicated ideals, this function may significantly peed up the
 				 codimension computation.
-	  Example
+	   Example
 		   R=ZZ/101[x,y,a,b,c,d,e,f]
 		   I=ideal(x^6,y^6,x^2*a^4+y^2*b^4+x*y*(a^2*c^2+b^2*d^2+a*b*(c*e+d*f)))
 	     codim(I) -- very slow, very
@@ -1039,6 +1025,8 @@ doc///
 		   minDegRegularSeq
 
 ///
+
+
 
 doc///
      Key
@@ -1057,21 +1045,23 @@ doc///
 	       a list of the form {{powers, LPP ideal}, {powers, LPP ideal}, ...}
      Description
      	  Text
-	       Given a polynomial ring {\tt R} and a Hilbert function {\tt hilb} for {\tt R} modulo a homogeneous
-	       ideal, {\tt generateLPPs} generates all the LPP ideals corresponding to {\tt hilb}. The power sequences
-	       and ideals are returned in a list. If the user sets the {\tt PrintIdeals} option to {\tt true}, the power sequences
-	       and ideals are printed on the screen in a nice format.
-	  Example
-	       R=ZZ/32003[a..c];
-     	       generateLPPs(R,{1,3,4,3,2})
+		       Given a polynomial ring {\tt R} and a Hilbert function {\tt hilb} for {\tt R} modulo a homogeneous
+		       ideal, {\tt generateLPPs} generates all the LPP ideals corresponding to {\tt hilb}. The power sequences
+		       and ideals are returned in a list. If the user sets the {\tt PrintIdeals} option to {\tt true}, the power sequences
+		       and ideals are printed on the screen in a nice format.
+	      Example
+	      	R=ZZ/32003[a..c];
+     	    generateLPPs(R,{1,3,4,3,2})
      	  Text
-	       Same example with the {\tt PrintIdeals} option set to {\tt true}:
+	        Same example with the {\tt PrintIdeals} option set to {\tt true}:
      	  Example
-	       generateLPPs(R,{1,3,4,3,2},PrintIdeals=>true)
+	        generateLPPs(R,{1,3,4,3,2},PrintIdeals=>true)
      SeeAlso
      	  LPP
 	  isLPP
 ///
+
+
 
 doc///
      Key
@@ -1107,6 +1097,8 @@ doc///
 	  LPP
 	  generateLPPs
 ///
+
+
 
 doc///
      Key
@@ -1172,7 +1164,7 @@ doc///
 	       then returns the shifts in a list of lists.
 
 	       See C. Francisco, New approaches to bounding the multiplicity of an ideal, {\em J. Algebra} {\bf 299} (2006), no. 1, 309-328.
-	  Example
+	      Example
 	       R=ZZ/32003[a..c];
 	       L=lexIdeal(R,{1,3,6,9,9,6,2});
 	       betti res L
@@ -1339,7 +1331,7 @@ doc///
      Description
      	  Text
 	       Let {\tt I} be a homogeneous ideal of codimension {\tt c} in a polynomial ring {\tt R} such that {\tt R/I} is Cohen-Macaulay.
-	       Herzog, Huneke, and Srinivasan conjectured that if {\tt R/I} is Cohen-Macaulay, then
+	       Herzog, Huneke, and Srinivasan conjectured that if {\tt R/I} -Macaulay, then
 
 	       {\tt m_1 ... m_c / c! <= e(R/I) <= M_1 ... M_c / c!},
 
