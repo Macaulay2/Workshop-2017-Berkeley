@@ -20,6 +20,7 @@ export {
     "realize",
     "abstractQuadric",
     "abstractCubic",
+    "abstractHypersurface",
     "irreducibleOnCubic",
     "Chi",
     "CanonicalClass",
@@ -30,7 +31,7 @@ export {
     "effectiveDivisors",
     "dgTable",
     "hartshorneRaoModule",
-    "hilbertBuchComputation",
+    "hilbertBurchComputation",
     "minimalCurveInLiaisonClass"
     }
 
@@ -55,6 +56,8 @@ RealizedDivisor = new Type of HashTable
 
 ideal RealizedSurface := X -> X.Ideal
 ideal RealizedDivisor := C -> C.Ideal
+
+--AbstractSurfaces--
 
 abstractSurface = method()
 abstractSurface RealizedSurface := X -> X.AbstractSurface
@@ -95,6 +98,17 @@ linesOnCubic = () -> (
             )
         )
     )
+abstractHypersurface = method()
+abstractHypersurface ZZ := d -> (
+    return new AbstractSurface from {
+    	symbol IntersectionPairing => "Hypersurface of degree " | toString(d),
+	symbol Hyperplane => {1},    --This means O(1)
+	symbol CanonicalClass => {-4+d},    --This means O(-4+d)
+	symbol Chi => 1+binomial(d-1,3)
+    };
+)
+
+--AbstractDivisors--
 
 abstractDivisor = method()
 abstractDivisor(List, AbstractSurface) := (C, X) -> (
@@ -119,20 +133,31 @@ AbstractDivisor - AbstractDivisor := (C,D) -> (
     assert(C.AbstractSurface === D.AbstractSurface);
     abstractDivisor(C.DivisorClass - D.DivisorClass, D.AbstractSurface)
     )
-
 AbstractDivisor * AbstractDivisor := (C,D) -> (
     X := C.AbstractSurface;
     assert(X === D.AbstractSurface);
+    if class X.IntersectionPairing =!= Matrix then error "IntersectionPairing not given";
     (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{D.DivisorClass})_(0,0)
+    )
+AbstractDivisor == AbstractDivisor := (C,D) -> (
+    C.AbstractSurface === D.AbstractSurface and C.DivisorClass == D.DivisorClass
     )
 
 degree AbstractDivisor := C -> (
     X := C.AbstractSurface;
+    if select("Hypersurface",toString X.IntersectionPairing) =!= {} then (
+    	return (first C.DivisorClass)*(4+first X.CanonicalClass);	
+    );
     (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0)
     )
 degree RealizedDivisor := C -> degree ideal C
 genus AbstractDivisor := C -> (
     X := C.AbstractSurface;
+    if select("Hypersurface",toString X.IntersectionPairing) =!= {} then (
+	d := first C.DivisorClass;
+	e := 4 + first X.CanonicalClass;
+    	return 1/2*d*e*(d+e-4)+1;	
+    );
     K := abstractDivisor(X.CanonicalClass,X);
     1/2*((K+C)*C)+1
     )
@@ -142,23 +167,9 @@ chi AbstractDivisor := C -> (
     K := abstractDivisor(X.CanonicalClass,X);
     1/2 * (C * (C-K)) + X.Chi
     )
-dgTable = method()
-dgTable List := L ->(
-    --Takes a list of AbstractDivisors or RealizedDivisors
-    --returns a (degree, genus)    
-    Ldg := apply(L, C -> (degree C, genus C));
-    dmax := max apply(Ldg,dg->first dg);
-    dmin := min apply(Ldg,dg->first dg);
-    gmax := max apply(Ldg,dg->last dg);
-    gmin := min apply(Ldg,dg->last dg);
-    M := mutableMatrix map(ZZ^(gmax-gmin+1),ZZ^(dmax-dmin+1),0);
-    for dg in Ldg do (
-	j := first dg - dmin;
-	i := gmax - last dg;
-    	M_(i,j) = M_(i,j)+1;		
-    );
-    return matrix M;
-)
+
+--Smoothness and irreducibility--
+
 isSmooth = method()
 isSmooth Ideal := (I) -> (
     c := codim I;
@@ -167,9 +178,9 @@ isSmooth Ideal := (I) -> (
 isSmooth RealizedSurface := X -> isSmooth ideal X
 isSmooth RealizedDivisor := C -> isSmooth ideal C
 
--- Checks whether a divisor class on the abstract cubic is irreducible
 irreducibleOnCubic = method()
 irreducibleOnCubic AbstractDivisor := Boolean => (C) -> (
+    --Checks whether a divisor class on the abstract cubic is irreducible
     X := C.AbstractSurface;
     if X =!= abstractCubic then error "expected a divisor class on the cubic surface";
     H := abstractDivisor(X.Hyperplane,X);
@@ -183,6 +194,8 @@ irreducibleOnCubic AbstractDivisor := Boolean => (C) -> (
      C*C > 0
      )
     )
+
+--Realize--
 
 realize = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
 realize AbstractSurface := opts -> X -> (
@@ -225,6 +238,13 @@ realize AbstractSurface := opts -> X -> (
 	    symbol ExtraData => (ideal(R_0,R_1),ideal(R_0,R_2))
 	    }
         );
+    if select("Hypersurface",X.IntersectionPairing) =!= {} then (        
+	return new RealizedSurface from {
+	    symbol AbstractSurface => X,
+	    symbol Ideal => ideal random(4+first X.CanonicalClass,R),
+	    symbol ExtraData => null
+	    }    	
+    );
     error "Not implemented yet";
     )
 realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
@@ -264,12 +284,90 @@ realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
 	    symbol Ideal => kernel map(cox/I,RC,segre)
 	};
     ); 
+    if select("Hypersurface",toString X.AbstractSurface.IntersectionPairing) =!= {} then (
+    	SP := ambient ring ideal X;
+	f := sub((ideal X)_0,SP);
+	return new RealizedDivisor from {
+	    symbol AbstractDivisor => C,
+	    symbol RealizedSurface => X,
+	    symbol Ideal => ideal(random(first C.DivisorClass,SP),f)   
+	};	
+    );
     error "not implemented yet for your type of surface"
 )
 realize AbstractDivisor := opts -> C -> (
     X := realize C.AbstractSurface;
     realize(C,X)
     )
+
+
+--Rao Module--
+
+
+minimalCurveInLiaisonClass=method()
+minimalCurveInLiaisonClass(Module) := M -> (    
+ -- a probalistic algorithm which over large finite fields will produce
+ -- a minimal curve in the liaison class corresponding to M with high probability
+    S := ring M; 
+    assert(dim M ==0);  
+    fM:= res(M,LengthLimit=>2); 
+    --betti fM
+    r:=rank fM_1-rank fM_0; -- rank of the 2nd syzygy module of M
+    degs:=sort flatten degrees fM_2;
+    degList:=unique subsets(degs,r-1);
+    --todo sort degList
+    apply(#degList,i->sum degList_i);
+    i:=0;
+    while (
+	L:=-degList_i;
+	G:=S^L;
+	I:=hilbertBurchComputation(M,G);
+	class I === class null)
+        do (i=i+1);
+    --betti I, L
+    return I)
+
+hilbertBurchComputation=method()
+hilbertBurchComputation(Module,Module) := (M,G) -> (
+    if not ring M === ring G then error "expected modules over the same polynomial ring";
+    -- add check: isFree G == true
+    fM:=res(M,LengthLimit=>2);
+    if not 1+rank fM_0-rank fM_1 +rank G == 0 then error "the free module has the wrong rank";
+    hom:=random(fM_2,G);
+    hilbBurch := fM.dd_2*hom;
+    degLim := -sum( -flatten degrees G) + sum(-flatten degrees fM_1)-sum(-flatten degrees fM_0);
+    syzHilbBurch := syz(transpose hilbBurch,DegreeLimit=>degLim);
+    ok := rank source syzHilbBurch == rank fM_0+1 and degrees source syzHilbBurch ==(-degrees fM_0|{{degLim}});
+    if ok then return trim ideal(transpose syzHilbBurch_{ rank fM_0} * fM.dd_2) else return null)
+
+hartshorneRaoModule=method()
+hartshorneRaoModule(Ideal) := I -> (
+    S:=ring I;
+    d:= dim S;
+    assert( dim I == 2);
+    omega:=Ext^(d-2)(S^1/I,S^{-d});
+    fomega := res omega;
+    HRao := coker(Hom(fomega.dd_(d-2)_{0..(rank fomega_(d-2)-2)},S^{-d}));
+    return HRao)
+
+--Generation and Plotting--
+dgTable = method()
+dgTable List := L ->(
+    --Takes a list of AbstractDivisors or RealizedDivisors
+    --returns a (degree, genus)    
+    Ldg := apply(L, C -> (degree C, genus C));
+    dmax := max apply(Ldg,dg->first dg);
+    dmin := min apply(Ldg,dg->first dg);
+    gmax := max apply(Ldg,dg->last dg);
+    gmin := min apply(Ldg,dg->last dg);
+    M := mutableMatrix map(ZZ^(gmax-gmin+1),ZZ^(dmax-dmin+1),0);
+    for dg in Ldg do (
+	j := first dg - dmin;
+	i := gmax - last dg;
+    	M_(i,j) = M_(i,j)+1;		
+    );
+    return matrix M;
+)
 
 effectiveDivisors = method()
 effectiveDivisors (RealizedSurface,List) := (X,Data) -> (
@@ -336,12 +434,23 @@ TEST ///
   C = abstractDivisor({2,1,1,1,0,0,0},abstractCubic)
   irreducibleOnCubic C
   (degree C, genus C)
-  I = realize(C,X)
-  betti ideal I
-  isSmooth ideal I
-  betti res ideal I
-  assert(degree ideal I == degree C)
-  assert(genus ideal I == genus C)
+  rC = realize(C,X)
+  betti ideal rC
+  isSmooth rC
+  betti res ideal rC
+  assert(degree rC == degree C)
+  assert(genus rC == genus C)
+///
+
+TEST ///
+    S = ZZ/101[x_0..x_3];
+    X = realize(abstractHypersurface(4), Ring => S)
+    C = abstractDivisor({3},X.AbstractSurface)
+    degree C
+    genus C
+    rC = realize(C,X)
+    degree rC
+    genus rC
 ///
 
 TEST ///
@@ -352,102 +461,60 @@ TEST ///
   Ld = effectiveDivisors(X,{a,d});   
   dgTable Ld
 ///
-hilbertBurchComputation=method()
-hilbertBurchComputation(Module,Module) := (M,G) -> (
-    if not ring M === ring G then error "expected modules over the same polynomial ring";
-    -- add check: isFree G == true
-    fM:=res(M,LengthLimit=>2);
-    if not 1+rank fM_0-rank fM_1 +rank G == 0 then error "the free module has the wrong rank";
-    hom:=random(fM_2,G);
-    hilbBurch := fM.dd_2*hom;
-    degLim := -sum( -flatten degrees G) + sum(-flatten degrees fM_1)-sum(-flatten degrees fM_0);
-    syzHilbBurch := syz(transpose hilbBurch,DegreeLimit=>degLim);
-    ok := rank source syzHilbBurch == rank fM_0+1 and degrees source syzHilbBurch ==(-degrees fM_0|{{degLim}});
-    if ok then return trim ideal(transpose syzHilbBurch_{ rank fM_0} * fM.dd_2) else return null)
 
 TEST ///
-S = ZZ/32003[x_0..x_3]
-M=coker random(S^{2:1},S^{5:0})
-dim M
-reduceHilbert hilbertSeries M
-betti(fM=res M)
-r=rank fM_1-rank fM_0
-F= fM_2
-degs=sort flatten degrees F
-L=-degs_{0..r-2}
-G=S^L
-I=hilbertBurchComputation(M,G)
-betti I
-assert( codim I == 2)
-assert((degree I,genus I) == (7,2))
-I=hilbertBurchComputation(M,S^3)
-I=hilbertBurchComputation(M,S^2)
-I==null
+  S = ZZ/32003[x_0..x_3]
+  M=coker random(S^{2:1},S^{5:0})
+  dim M
+  reduceHilbert hilbertSeries M
+  betti(fM=res M)
+  r=rank fM_1-rank fM_0
+  F= fM_2
+  degs=sort flatten degrees F
+  L=-degs_{0..r-2}
+  G=S^L
+  I=hilbertBurchComputation(M,G)
+  betti I
+  assert( codim I == 2)
+  assert((degree I,genus I) == (7,2))
+  I=hilbertBurchComputation(M,S^3)
+  I=hilbertBurchComputation(M,S^2)
+  I==null
 ///
-minimalCurveInLiaisonClass=method()
-minimalCurveInLiaisonClass(Module) := M -> (    
- -- a probalistic algorithm which over large finite fields will produce
- -- a minimal curve in the liaison class corresponding to M with high probability
-    S := ring M; 
-    assert(dim M ==0);  
-    fM:= res(M,LengthLimit=>2); 
-    --betti fM
-    r:=rank fM_1-rank fM_0; -- rank of the 2nd syzygy module of M
-    degs:=sort flatten degrees fM_2;
-    degList:=unique subsets(degs,r-1);
-    --todo sort degList
-    apply(#degList,i->sum degList_i);
-    i:=0;
-    while (
-	L:=-degList_i;
-	G:=S^L;
-	I:=hilbertBurchComputation(M,G);
-	class I === class null)
-        do (i=i+1);
-    --betti I, L
-    return I)
+
 TEST ///
-S = ZZ/32003[x_0..x_3]
-M=coker (koszul(2,vars S)|random(S^{4:-1},S^{4:-3}));
-betti M
-dim M == 0
-time I=minimalCurveInLiaisonClass M; -- used 0.58667 seconds
-L
-assert( (degree I, genus I) == (43, 168) )
-betti res I
-omega=Ext^2(S^1/I,S^{-4});
-fomega=res omega
-betti fomega
-HRao= coker(Hom(fomega.dd_2_{0..(rank fomega_2-2)},S^{-4}))
-reduceHilbert hilbertSeries HRao
-reduceHilbert hilbertSeries M
+  S = ZZ/32003[x_0..x_3]
+  M=coker (koszul(2,vars S)|random(S^{4:-1},S^{4:-3}));
+  betti M
+  dim M == 0
+  time I=minimalCurveInLiaisonClass M; -- used 0.58667 seconds
+  L
+  assert( (degree I, genus I) == (43, 168) )
+  betti res I
+  omega=Ext^2(S^1/I,S^{-4});
+  fomega=res omega
+  betti fomega
+  HRao= coker(Hom(fomega.dd_2_{0..(rank fomega_2-2)},S^{-4}))
+  reduceHilbert hilbertSeries HRao
+  reduceHilbert hilbertSeries M
 ///	
 
-hartshorneRaoModule=method()
-hartshorneRaoModule(Ideal) := I -> (
-    S:=ring I;
-    d:= dim S;
-    assert( dim I == 2);
-    omega:=Ext^(d-2)(S^1/I,S^{-d});
-    fomega := res omega;
-    HRao := coker(Hom(fomega.dd_(d-2)_{0..(rank fomega_(d-2)-2)},S^{-d}));
-    return HRao)
 
 TEST ///
-S = ZZ/32003[x_0..x_3]
-M=coker random(S^{2:1},S^{5:0})
-dim M
-reduceHilbert hilbertSeries M
-betti(fM=res M)
-r=rank fM_1-rank fM_0
-F= fM_2
-degs=sort flatten degrees F
-L=-degs_{0..r-2}
-G=S^L
-I=hilbertBurchComputation(M,G)
-betti I
-HRao = hartshorneRaoModule(I)        
-assert(reduceHilbert hilbertSeries HRao === reduceHilbert hilbertSeries (M**S^{ -2}))
+  S = ZZ/32003[x_0..x_3]
+  M=coker random(S^{2:1},S^{5:0})
+  dim M
+  reduceHilbert hilbertSeries M
+  betti(fM=res M)
+  r=rank fM_1-rank fM_0
+  F= fM_2
+  degs=sort flatten degrees F
+  L=-degs_{0..r-2}
+  G=S^L
+  I=hilbertBurchComputation(M,G)
+  betti I
+  HRao = hartshorneRaoModule(I)        
+  assert(reduceHilbert hilbertSeries HRao === reduceHilbert hilbertSeries (M**S^{ -2}))
 ///
 
 
