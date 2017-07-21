@@ -222,4 +222,6 @@ load "./tests/ParameterTestIdealTest.m2"
 
 load "./tests/CompatiblySplitTest.m2"
 
+load "./tests/testIdealTest.m2"
+
 end

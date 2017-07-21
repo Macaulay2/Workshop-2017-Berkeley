@@ -79,6 +79,11 @@ frobeniusRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
 
     --include the following line to set a break point: 
     --error "break here";
+--    if (#idealList > 0) then (
+--        if (instance(idealList#0, RingElement)) then (
+--            return 
+--        );
+--    );
     I := null;
     if e == 0 then (
         I = idealList#0^(exponentList#0);
@@ -168,7 +173,7 @@ getFieldGenRoot = (e,p,q,k) -> (
 
 -----------------------------------------------------------------------------
 
-frobeniusRootMonStrat = (e,p,q,k,f,R) -> (
+frobeniusRootMonStrat = (e,p,q,k,f,R) -> ( --print "MonStrat";
     -- e = exponent, p = prime, q = size of coeff field, k = coeff field, 
 	-- f = a generator of the ideal in question, R = the ring
 	-- to use this strategy to find the p^eth root of an ideal, you need to apply this
@@ -195,7 +200,7 @@ frobeniusRootMonStrat = (e,p,q,k,f,R) -> (
 
 -----------------------------------------------------------------------------
 
-frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
+frobeniusRootSubStrat = (e,p,q,k,I,R) -> ( --print "SubStrat";
     n := numgens R;
     Rvars := R_*;
     Y := local Y;
