@@ -493,40 +493,48 @@ UL{   TO "dgTable",
 
 
 
-{*  
+  
 doc ///
   Key
-    matrixFactorizationFromModule
-    (matrixFactorizationFromModule, Module)
-    (matrixFactorizationFromModule, Ideal)
+    hilbertBurchComputation
+    (hilbertBurchComputation, Module, Module)
   Headline
-    a matrix factorization induced by a quotient ring on a supporting hypersurface  
+    choose a Hilbert-Burch morphism and compute the corresponding ideal   
   Usage
-    matrixFactorizationFromModule M
-    matrixFactorizationFromModule I
+     I = hilbertBurchComputation(M,G)
   Inputs
     M: Module
-       over a ring of polynomials R
-    I: Ideal
-       in a ring of polynomials R
+       of finite length
+    G: Module
+       a free module
   Outputs
-     : Sequence
+     I: Ideal
   Description
      Text
-       The function takes a random element f of minimal degree in the support of the annihilator
-       of the module M (or in the ideal I) and produces the matrix factorization of f given by the
-       periodic part of the R/f-resolution of M (or R/I)
+       Let $\mathcal F$ be sheafication of the second syzygy module syz_2 M of M, phi be a randomly choosen
+       morphism from G -> syz_2 M. The function computes the generators of the homogeneous ideal of coker phi.
+       If rank G != rank $\mathcal F$-1 or the morpism does not drop rank in codimension 2, we return null. 
      Example
-       S = ZZ/32009[x_0..x_3];
-       I = minors(3,random(S^4,S^{1:-1,2:-2}));
+       S = ZZ/32003[x_0..x_3]
+       M=coker matrix{{x_0,x_1,x_2^2,x_3^2}}
+       dim M
+       reduceHilbert hilbertSeries M
+       betti(fM=res M)
+       r=rank fM_1-rank fM_0
+       degs=sort flatten degrees fM_2
+       L=-{3,3}
+       G=S^L
+       I=hilbertBurchComputation(M,G)
        betti res I
-       (phi, psi)=matrixFactorizationFromModule I;
-       betti res ((S^1/I) ** (ring phi))
-       betti phi, betti psi
-       SX = ring psi;
-       phi*psi
+       codim I == 2
+       (degree I,genus I) == (4,-1) 
+       cI=decompose I     
+       tally apply(cI,c->(degree c, genus c))
+       I=hilbertBurchComputation(M,S^2)
+       I==null
+  SeeAlso
 ///
-*}
+
 
 -- TEST SECTION
 
