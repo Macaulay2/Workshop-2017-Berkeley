@@ -98,10 +98,10 @@ containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (m := n;
 
 
 
-containmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
-containmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => (I,m) -> (h := bigHeight(I); 
+containmentProblemGivenSymbolicPower = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+containmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => opts -> (I,m) -> (h := bigHeight(I); 
     e := (m-m%h)/h; n := lift(e,ZZ);
-    while isSymbPowerContainedinPower(I,m,n+1) do n = n+1;
+    while isSymbPowerContainedinPower(I,m,n+1, UseMinimalPrimes => opts.UseMinimalPrimes) do n = n+1;
     n)
 
 
@@ -408,13 +408,14 @@ isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 ---------------------------------
 ---Symbolic Defect
 ---------------------------------
-symbolicDefect = method(TypicalValue => ZZ)
-symbolicDefect(Ideal,ZZ) := (I,n) -> (
+
+symbolicDefect = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+symbolicDefect(Ideal,ZZ) := opts -> (I,n) -> (
     R := ring I;
     Y := fastPower(I,n);
     S := R/Y;
     F := map(S,R);
-    X := symbolicPower(I,n);
+    X := symbolicPower(I,n, UseMinimalPrimes => opts.UseMinimalPrimes);
     # flatten entries mingens F(X)
       )
 
