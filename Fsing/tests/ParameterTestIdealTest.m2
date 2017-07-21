@@ -1,5 +1,5 @@
 
---load "c:/New Berkeley 2017/Workshop-2017-Berkeley/Fsing/TestIdeals.m2"
+load "c:/Berkeley-2017/Workshop-2017-Berkeley/Fsing/TestIdeals.m2"
 TEST /// 
 
 p=2;
@@ -10,10 +10,12 @@ I=minors(2,E);
 time assert(isCohenMacaulay(R/I) == true);
 
 Omega=canonicalIdeal(R/I);
-time assert(Omega==ideal(x_1, x_4, x_5));
-u=finduOfIdeal(I,Omega);
-time assert(u== x_1^3*x_2*x_3+x_1^3*x_2*x_4+x_1^2*x_3*x_4*x_5+x_1*x_2*x_3*x_4*x_5+x_1*x_2*x_4^2*x_5+x_2^2*x_4^2*x_5+x_3*x_4^2*x_5^2+x_4^3*x_5^2); 
-time assert(testModule(R,I)==ideal(x_3+x_4, x_2, x_1, x_4*x_5));
+time assert(substitute(Omega,R)==ideal(x_1, x_4, x_5));
+--u=finduOfIdeal(I,Omega);
+time tau=testModule(R/I);
+assert((tau#1)==Omega);
+assert((tau#2)== x_1^3*x_2*x_3+x_1^3*x_2*x_4+x_1^2*x_3*x_4*x_5+x_1*x_2*x_3*x_4*x_5+x_1*x_2*x_4^2*x_5+x_2^2*x_4^2*x_5+x_3*x_4^2*x_5^2+x_4^3*x_5^2); 
+assert(substitute( (tau#0):(tau#1),R)==ideal(x_1, x_2, x_3+x_4));
 time assert(isFrational(R/I)==false);
 
 
@@ -23,12 +25,13 @@ time assert(isCohenMacaulay(S) == true);
 J=ideal(x-a^4, y-a^3*b, u-a*b^3, v-b^4);
 G=gens gb J;
 K=selectInSubring(1,G);
-time assert(isCohenMacaulay(S/K) == false);
+time assert(isCohenMacaulay(S/ideal(K)) == false);
 
 pp=11;
-R=ZZ/pp[x_1..x_3];
-I=ideal(x_1^3+x_2^3+x_3^3);
-time assert(testModule(R/I)==ideal(x_1, x_2, x_3));
+R=ZZ/pp[X_1..X_3];
+I=ideal(X_1^3+X_2^3+X_3^3);
+tau=testModule(R/I);
+time assert(substitute( tau#0,R)==ideal(X_1, X_2, X_3));
 time assert(isFrational(R/I)==false);
 
 
