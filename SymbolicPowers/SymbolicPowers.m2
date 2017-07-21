@@ -38,7 +38,8 @@ export {
     "symbolicPolyhedron", 
     "isGorenstein",
     "waldschmidt", 
-    "SampleSize"
+    "SampleSize",
+    "useWaldschmidt"
     }
 
 
@@ -81,9 +82,6 @@ ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
     while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
     m)
 
-lowerBoundResurgence = method(TypicalValue => QQ)
-lowerBoundResurgence(Ideal, ZZ) := QQ => (I,m) -> 
-max apply(toList(1 .. m),o -> (ContainmentProblem(I,o)-1)/o);
 
 
 ContainmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
@@ -454,6 +452,24 @@ waldschmidt MonomialIdeal := opts -> I -> (
     return min apply (entries transpose vertices N, a-> sum  a)
     )
 
+lowerBoundResurgence = method(TypicalValue => QQ, Options =>{useWaldschmidt=>false})
+lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
+    l := max append(apply(toList(2 .. m),o -> (ContainmentProblem(I,o)-1)/o),1);
+    if opts#useWaldschmidt == false then return l
+    else return max {l, alpha(I)/waldschmidt(I)}
+    )
+
+upperBoundResurgence = method(TypicalValue => QQ)
+upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
+    h := bigHeight I;
+    if m <= 1 then return h 
+    else return 
+    max for o from 2 to m list (
+	    k := h*o-1;  
+	    while isSymbPowerContainedinPower(I,k,o) do k = k-1;
+	    k/o
+	    )
+    ) 
 
 
 -----------------------------------------------------------
@@ -942,7 +958,7 @@ doc ///
 	   
 	   This is the algorithm in Seth Sullivant's "Combinatorial symbolic powers", J. Algebra 319 (2008), no. 1, 115--142.
        Example 
-	   A = QQ[x,y,z]
+	   A = QQ[x,y,z];
 	   symbolicPowerJoin(ideal(x,y),2) 
      SeeAlso 
 	  joinIdeals
@@ -1024,8 +1040,8 @@ doc ///
        Text
 	   Given a monomial ideal I, returns all square-free monomials in a minimal generating set of I.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x^2)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x^2);
 	   squarefreeGens(I) 
      SeeAlso 
 	  squarefreeInCodim
@@ -1047,8 +1063,8 @@ doc ///
        Text
 	   Given a monomial ideal I, returns all square-free monomials in a minimal generating set of I^c.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   squarefreeInCodim(I) 
      SeeAlso 
 	  squarefreeGens
@@ -1074,8 +1090,8 @@ doc ///
        Text
 	   A square-free monomial ideal I of codimension c is Konig if it contains a regular sequence of monomials of length c.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   isKonig(I) 
      SeeAlso 
 	  squarefreeGens
@@ -1099,8 +1115,8 @@ doc ///
        Text
 	   A square-free monomial ideal I of codimension c is packed if every ideal obtained from it by replacing any number of variables by 1 or 0 is Konig.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   isPacked(I) 
      SeeAlso 
 	  squarefreeGens
@@ -1125,8 +1141,8 @@ doc ///
        Text
 	   Determines only one such substitutions, even though others may exist.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   noPackedSub(I) 
      SeeAlso 
 	  isPacked	  
@@ -1149,8 +1165,8 @@ doc ///
        Text
 	   Given an ideal that is not packed, returns a list with all substitution of variables by 0 and/or 1 that produces an ideal that is not Konig.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   noPackedAllSubs(I) 
      SeeAlso 
 	  noPackedSub
@@ -1174,7 +1190,7 @@ doc ///
        Text
 	   Given an ideal $I$ and an integer $n$, returns the minimal degree of an element in $I^{(n)}$.
        Example 
-	   T = QQ[x,y,z]
+	   T = QQ[x,y,z];
 	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
 	   minDegreeSymbPower(I,2)
 
@@ -1195,9 +1211,9 @@ doc ///
           :QQ
      Description	  
        Text
-	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \geq n$.
+	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$.
        Example 
-	   T = QQ[x,y,z]
+	   T = QQ[x,y,z];
 	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
 	   lowerBoundResurgence(I,5)
 
@@ -1226,8 +1242,8 @@ doc ///
        	   This function uses the Polyhedra package and returns an object of type Polyhedron.
        
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   symbolicPolyhedron(I)
         
      SeeAlso 
@@ -1262,14 +1278,14 @@ doc ///
 	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
        
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   waldschmidt(I)
 	   
        Example 
-	   R = QQ[x,y,z]
-	   J = (ideal(x,y))^2+ ideal(x*z+y*z)
-	   waldschmidt(J)
+	   R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   waldschmidt(J, SampleSize=>5)
         
      SeeAlso 
 	  symbolicPolyhedron
