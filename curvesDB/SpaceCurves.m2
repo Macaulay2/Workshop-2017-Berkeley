@@ -20,8 +20,9 @@ export {
     "realize",
     "abstractQuadric",
     "abstractCubic",
+    "linesOnCubic",
     "abstractHypersurface",
-    "irreducibleOnCubic",
+    "isIrreducible",
     "CanonicalClass",
     "Hyperplane",
     "DivisorClass",
@@ -102,7 +103,7 @@ linesOnCubic = () -> (
 abstractHypersurface = method()
 abstractHypersurface ZZ := d -> abstractSurface(
 	{"Hypersurface",
-	 matrix{{0}},
+	 matrix{{d}},
 	 {1},	 --Hyperplane class O(1) is denoted by 1
 	 {-4+d}, --CanonicalClass is O(-d+4)
 	 1+binomial(d-1,3)
@@ -146,26 +147,15 @@ AbstractDivisor == AbstractDivisor := (C,D) -> (
 
 degree AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    if X.Name == "Hypersurface" then (
-    	return (first C.DivisorClass)*(4+first X.CanonicalClass);	
-    );
     return (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0);
     )
 genus AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    if X.Name == "Hypersurface"  then (
-	d := first C.DivisorClass;
-	e := 4 + first X.CanonicalClass;
-    	return 1/2*d*e*(d+e-4)+1;	
-    );
     K := abstractDivisor(X.CanonicalClass,X);
     return 1/2*((K+C)*C)+1;
     )
 chi AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    if X.Name == "Hypersurface" then (
-    	return (1 - genus C);	
-    );
     K := abstractDivisor(X.CanonicalClass,X);
     1/2 * (C * (C-K)) + X.Chi
     )
@@ -183,22 +173,32 @@ isSmooth Ideal := (I) -> (
 isSmooth RealizedSurface := X -> isSmooth ideal X
 isSmooth RealizedDivisor := C -> isSmooth ideal C
 
-irreducibleOnCubic = method()
-irreducibleOnCubic AbstractDivisor := Boolean => (C) -> (
-    --Checks whether a divisor class on the abstract cubic is irreducible
+isIrreducible = method()
+isIrreducible AbstractDivisor := Boolean => C -> (
+    --Checks whether a divisor class contains an irreducible curve
     X := C.AbstractSurface;
-    if X =!= abstractCubic then error "expected a divisor class on the cubic surface";
-    H := abstractDivisor(X.Hyperplane,X);
-    twentysevenLines := linesOnCubic();
-    any(twentysevenLines, L -> L.DivisorClass == C.DivisorClass)
-    or -- these are the conics:
-    any(twentysevenLines, L -> (H-L).DivisorClass == C.DivisorClass)
-    or (
-     all(twentysevenLines, L -> L * C >= 0)
-      and
-     C*C > 0
-     )
-    )
+    if X.Name == "Cubic surface" then (
+    	H := abstractDivisor(X.Hyperplane,X);
+    	twentysevenLines := linesOnCubic();
+    	return any(twentysevenLines, L -> L.DivisorClass == C.DivisorClass)
+	or -- these are the conics:
+    	any(twentysevenLines, L -> (H-L).DivisorClass == C.DivisorClass)
+    	or (
+     	    all(twentysevenLines, L -> L * C >= 0)
+      	    and
+     	    C*C > 0
+     	);
+    );
+    if X.Name == "Quadric surface" then (
+    	a := first C.DivisorClass;
+	b := last C.DivisorClass;
+	if a > 0 and b > 0 then return true;
+	if a*b == 0 and a+b == 1 then return true;
+	return false;	
+    );
+    error "Not implemented for your type of surface yet";
+)
+isIrreducible RealizedDivisor := Boolean => C -> isPrime ideal C 
 
 --Realize--
 
@@ -384,7 +384,7 @@ effectiveDivisorsOnCubic (AbstractSurface,ZZ,ZZ) := (X,a,d) -> (
     	dlist := apply(select(partitions(3*a-d),p->#p<=6),q -> 
 	    {a} | toList q | splice{(6-#q):0});    
     	Lad := apply(dlist,L -> abstractDivisor(L,X));
-    	return select(Lad, ad-> irreducibleOnCubic ad);
+    	return select(Lad, ad-> isIrreducible ad);
     );    
     error "Not a cubic surface";
 )
@@ -438,7 +438,7 @@ beginDocumentation()
     "abstractQuadric",
     "abstractCubic",
     "abstractHypersurface",
-    "irreducibleOnCubic",
+    "isIrreducible",
     "CanonicalClass",
     "Hyperplane",
     "DivisorClass",
@@ -456,7 +456,7 @@ beginDocumentation()
 *}    
 document { 
 Key => SpaceCurves,
-Headline => "Construction and Data base of space curves",
+Headline => "Construction and Database of space curves",
 "This package implements methods to collect data and examples of space curve",
 PARA{},
 SUBSECTION "Abstract surfaces and divisors",  
@@ -467,7 +467,7 @@ UL{   TO "AbstractSurface",	  --type
       TO "abstractQuadric",
       TO "abstractCubic",
       TO "abstractHypersurface",
-      TO "irreducibleOnCubic",
+      TO "isIrreducible",
       TO "CanonicalClass",
       TO "Hyperplane",
       TO "DivisorClass",
@@ -498,9 +498,84 @@ UL{   TO "dgTable",
 }
 }
 
+doc ///
+  Key
+    abstractDivisor
+    (abstractDivisor,List,AbstractSurface)
+  Headline
+    Creates an AbstractDivisor on an AbstractSurface   
+  Usage
+     C = abstractDivisor(L,X)
+  Inputs
+    L: List
+       of coordinates of a divisor class in Num(X)
+    X: Module
+       an AbstractSurface
+  Outputs
+    C: AbstractDivisor
+  Description
+     Text
+       Given a List of coordinates of a divisor class and an AbstractSurface X,
+       creates an AbstractDivisor.  
+     Example
+       abstractDivisor({1,3},abstractQuadric)
+       abstractDivisor({3,1,1,1,1,1,1},abstractCubic)
+  SeeAlso
+///
 
+{* It gives an error I cannot debug:
+doc ///
+  Key
+    abstractHypersurface
+    (abstractHypersurface, ZZ)
+  Headline
+    Creates an AbstractSurface corresponding to a hypersurface   
+  Usage
+     X = abstractHypersurface(d)
+  Inputs
+    d: ZZ
+       degree of the hypersurface
+  Outputs
+    X: AbstractSurface
+  Description
+     Text
+       Creates a hypersurface of degree d in $$P^3$$ as an AbstractSurface.  
+     Example
+       abstractHypersurface(4)
+  SeeAlso
+      AbstractSurface
+      abstractQuadric
+      abstractCubic
+///
+*}
 
-  
+doc ///
+  Key
+    isIrreducible
+    (isIrreducible,AbstractDivisor)
+    (isIrreducible,RealizedDivisor)
+  Headline
+    Checks whether a divisor is irreducible  
+  Usage
+     B = isIrreducible(C)
+  Inputs
+    C: AbstractDivisor
+    C: RealizedDivisor
+  Outputs
+    B: Boolean
+  Description
+     Text
+       If the input is an AbstractDivisor, uses numerical criteria to determine 
+       whether the divisor class contains an irreducible curve.
+       If the input is a RealizedDivisor, checks if its ideal is prime.
+     Example
+       X = abstractCubic
+       C = abstractDivisor(X.Hyperplane,X)
+       isIrreducible C
+       isIrreducible realize C
+  SeeAlso
+///
+
 doc ///
   Key
     hilbertBurchComputation
@@ -642,7 +717,7 @@ TEST ///
   S = ZZ/32003[a..d]
   X = realize(abstractCubic, Ring => S)
   C = abstractDivisor({3,1,1,1,0,0,0},abstractCubic)
-  irreducibleOnCubic C
+  isIrreducible C
   assert(degree C == 6)
   assert(genus C == 1)
   I = realize(C,X)
@@ -656,7 +731,7 @@ TEST ///
   S = ZZ/32003[a..d]
   X = realize(abstractCubic, Ring => S)
   C = abstractDivisor({2,1,1,1,0,0,0},abstractCubic)
-  irreducibleOnCubic C
+  isIrreducible C
   (degree C, genus C)
   rC = realize(C,X)
   betti ideal rC
@@ -734,7 +809,7 @@ TEST ///
 ///
 
 
-end--------
+end----------------------------------------------------
 restart
 uninstallPackage "SpaceCurves"
 restart
