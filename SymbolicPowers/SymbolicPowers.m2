@@ -3,8 +3,7 @@ newPackage(
 	Version => "1.0", 
 	Date => "May 14th, 2017",
 	Authors => {
-	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"},
-	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"}
 	    },
 	Headline => "Calculations involving symbolic powers",
 	DebuggingMode => false,
@@ -16,8 +15,9 @@ export {
     -- Options
     "UseMinimalPrimes",
     "SampleSize",
-    "useWaldschmidt",
+    "UseWaldschmidt",
     "InSymbolic", 
+    
     -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
@@ -38,6 +38,7 @@ export {
     "noPackedAllSubs",
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
+    --"upperBoundResurgence",
     "exponentsMonomialGens", 
     "symbolicDefect",
     "symbolicPolyhedron", 
@@ -493,13 +494,15 @@ waldschmidt MonomialIdeal := opts -> I -> (
     return min apply (entries transpose vertices N, a-> sum  a)
     )
 
-lowerBoundResurgence = method(TypicalValue => QQ, Options =>{useWaldschmidt=>false})
+lowerBoundResurgence = method(TypicalValue => QQ, Options =>{UseWaldschmidt=>false})
 lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
     l := max append(apply(toList(2 .. m),o -> (containmentProblem(I,o)-1)/o),1);
-    if opts#useWaldschmidt == false then return l
+    if opts#UseWaldschmidt == false then return l
     else return max {l, alpha(I)/waldschmidt(I)}
     )
 
+--this is not correct
+{*
 upperBoundResurgence = method(TypicalValue => QQ)
 upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
     h := bigHeight I;
@@ -511,6 +514,7 @@ upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
 	    k/o
 	    )
     ) 
+*}
 
 -- for this function I am assuming that the asymptotic regularity is an infimum
 -- this is more specific than being a limit
@@ -535,26 +539,49 @@ document {
   Key => SymbolicPowers,
   Headline => "A package for computing symbolic powers of ideals",
    
-   "This is an experimental version of the package. If you find any typos or errors, please let me know. The package was designed to compute symbolic powers of unmixed ideals in a polynomial ring. It might misbehave in other settings.", 
+   "This package gives the ability to compute symbolic powers, and related invarients,
+   of ideals in a polynomial ring or a quotient of a polynomial
+   ring. For example, in the context of the default behavoir of ", 
+   TO "symbolicPower", " assumes the following definition of the symbolic power of an ideal ", TEX /// I ///, ",", 
+   TEX /// $$I^{(n)} = \cap_{p \in Ass(R/I)}(I^nR_p \cap R ),$$ ///,
+   "as defined by M. Hochster and C. Huneke.",
 
-   SUBSECTION "A quick introduction to this package",
+   PARA {"Alternatively, as defined in Villarreal, ", TO "symbolicPower", " has the option to restrict to 
+       minimal primes versus use all associated primes with ", TO "UseMinimalPrimes", ".",
+       "In particular, the symbolic power of an ideal ", TEX /// I ///, " is defined as",
+       TEX /// $$I^{(n)} = \cap_{p \in Min(R/I)}(I^nR_p \cap R ),$$ ///,
+       "where ", TEX /// Min(R/I) ///, " is the set of minimal primes in ", 
+       TEX /// I ///, "."},
+   UL {
+       {"M. Hochster and C. Huneke.", EM " Comparison of symbolic and ordinary powers of ideals.", " Invent. Math. 147 (2002), no. 2, 349–369."},
+       {"R. Villarreal.", EM " Monomial algebras.", " Second edition. Monographs and Research Notes in Mathematics. CRC Press, Boca Raton, FL, 2015. xviii+686 pp. ISBN: 978-1-4822-3469-5."},
+      },
+  
+   SUBSECTION "Contributors",     
+   "The following people have generously contributed code or worked on our code at various
+   Macaulay2 workshops.",
+     
+     UL {
+	 "Ben Drabkin",
+	 "Alexandra Seceleanu",
+	 "Branden Stone"
+	},
+
+   SUBSECTION "A Quick Introduction",
    UL {
     TO "Computing symbolic powers of an ideal",
     TO "Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"
     },
     
  
-  SUBSECTION "Other examples which illustrate this package",
+  SUBSECTION "Other Related Examples",
   UL {
     TO "The Containment Problem",
     TO "Sullivant's algorithm for primes in a polynomial ring",
-    TO "Monomial Curves"
-  },
+    TO "Monomial Curves",
+    TO "The Packing Problem"    
+  }
 
-  SUBSECTION "The Packing Problem",
-  UL {
-    TO "The Packing Problem"
-  },
 }  
 
 
@@ -1263,10 +1290,36 @@ doc ///
 	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$.
        Example 
 	   T = QQ[x,y,z];
-	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
 	   lowerBoundResurgence(I,5)
 
 ///
+
+doc ///
+     Key 
+         UseWaldschmidt
+     Headline 
+         Optional input for computing a lower bound for the resurgence of a given ideal
+     Usage 
+         lowerBoundResurgence(Ideal,ZZ,UseWaldschmidt=>true)
+     Inputs 
+     	  I:Ideal
+	  n:ZZ
+     Outputs
+          :QQ
+     Description	  
+       Text
+	   Given an ideal $I$ and an integer $n$, returns the larger value between the 
+	   maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$ 
+	   and $\frac{\alpha(I)}{waldschmidt(I)}. 
+       Example 
+	   T = QQ[x,y,z];
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
+	   lowerBoundResurgence(I,5,UseWaldschmidt=>true)
+
+///
+
+
 
 doc ///
      Key 
@@ -1634,11 +1687,18 @@ TEST ///
 end
 
 restart
+uninstallPackage"SymbolicPowers"
+restart
+installPackage"SymbolicPowers"
+viewHelp"SymbolicPowers"
+
+restart
 loadPackage"SymbolicPowers"
 R = QQ[x,y,z]
 I = ideal"x,y,z"
 symbolicPower(I,2)
 check"SymbolicPowers"
+
 
 -- branden
 restart
