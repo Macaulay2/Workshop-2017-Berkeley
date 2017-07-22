@@ -190,8 +190,8 @@ isProper ToricMap := Boolean => f -> (
 	raysOverTau := entries transpose rayMatrixX_indicesOverTau;
 	conesOverTau := apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)));
 	varietyOverTau := normalToricVariety(raysOverTau, conesOverTau); 
-	boundaries := select(orbits(varietyOverTau,1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2);
 	liftTau := rayMatrixY_tau//A | K | -K;
+	boundaries := select(orbits(varietyOverTau,dim X - rank liftTau + 1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2);	
 	for C in boundaries do (
 		supportHyperplanes := first fourierMotzkin liftTau;
 		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then return false;
@@ -353,8 +353,30 @@ assert isProper h
 X = normalToricVariety({{1,0,0},{0,1,0},{0,0,1},{-1,0,0},{0,0,-1}},{{0,1},{1,2,3},{1,3,4}})
 Y = (projectiveSpace 1) ** (affineSpace 1)
 f = map(Y,X,matrix{{1,0,0},{0,1,0}})
-isWellDefined f
-isProper f
+assert isWellDefined f
+assert not isProper f
+
+X = normalToricVariety({{0,-1,0},{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0},{1,4},{2,3,4},{2,3,5}})
+Y = normalToricVariety({{0,-1},{1,0},{0,1},{-1,0}},{{0},{1},{2,3}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+X' = normalToricVariety(rays X, append(max X, {1,5}))
+f = map(Y,X',A)
+assert isWellDefined f
+assert not isProper f
+
+X'' = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{0,4},{1,2,3},{1,2,4}})
+Y' = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y',X'',A)
+assert isWellDefined f
+assert isProper f
+
+
+
 ///
 
 
@@ -365,7 +387,56 @@ restart
 installPackage "ToricMaps"
 
 
+needsPackage "FourierMotzkin"
+X'' = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{0,4},{1,2,3},{1,2,4}})
+Y' = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y',X'',A)
+assert isWellDefined f
+assert isProper f
 
+    X = source f
+    Y = target f
+    if isComplete X then return true
+    if (isComplete Y and not isComplete X) then return false
+    A = matrix f
+    rayMatrixX = transpose matrix rays X
+    rayMatrixY = transpose matrix rays Y
+    coneTable = new MutableHashTable
+    for sigma in max X do (
+	for tau in max Y do ( 
+      	if all(flatten entries (outerNormals(Y, tau) * A * rayMatrixX_sigma), i -> i <= 0) then (
+	    if not coneTable#?tau then coneTable#tau = {sigma}
+	    else coneTable#tau = coneTable#tau|{sigma}
+	    )
+	)
+    )
+    K = mingens ker A
+    tau = (max Y)_0
+    	indicesOverTau = unique flatten coneTable#tau
+	raysOverTau = entries transpose rayMatrixX_indicesOverTau
+	conesOverTau = apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)))
+	varietyOverTau = normalToricVariety(raysOverTau, conesOverTau) 
+	liftTau = rayMatrixY_tau//A | K | -K
+	boundaries = select(orbits(varietyOverTau,dim X - rank liftTau +1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2)
+	
+	for C in boundaries do (
+		supportHyperplanes = first fourierMotzkin liftTau;
+		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then print "crap"
+	)
+
+ tau = (max Y)_1
+    	indicesOverTau = unique flatten coneTable#tau
+	raysOverTau = entries transpose rayMatrixX_indicesOverTau
+	conesOverTau = apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)))
+	varietyOverTau = normalToricVariety(raysOverTau, conesOverTau) 
+	liftTau = rayMatrixY_tau//A | K | -K
+	boundaries = select(orbits(varietyOverTau,dim X - rank liftTau +1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2)
+	
+	for C in boundaries do (
+		supportHyperplanes = first fourierMotzkin liftTau;
+		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then print "crap"
+	)
 
 
 
