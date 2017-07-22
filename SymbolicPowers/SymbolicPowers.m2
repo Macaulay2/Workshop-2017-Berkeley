@@ -38,7 +38,7 @@ export {
     "noPackedAllSubs",
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
-    "upperBoundResurgence",
+    --"upperBoundResurgence",
     "exponentsMonomialGens", 
     "symbolicDefect",
     "symbolicPolyhedron", 
