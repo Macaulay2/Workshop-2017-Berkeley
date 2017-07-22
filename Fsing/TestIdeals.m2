@@ -1,3 +1,14 @@
+--*************************************************
+--*************************************************
+--This is the revised (and cleaned up) version
+--of the PosChar package, which has been under 
+--continuous development since the Wake Forest 
+--Macaulay2 workshop of August 2012.
+--Only well documented and working functions are 
+--migrated to this package.
+--*************************************************
+--*************************************************
+
 newPackage( "TestIdeals",
 Version => "0.1", 
 Date => "May 30th, 2017", 
@@ -153,16 +164,6 @@ export{
 
 }
 
---*************************************************
---*************************************************
---This is the revised (and cleaned up) version
---of the PosChar package, which has been under 
---continuous development since the Wake Forest 
---Macaulay2 workshop of August 2012.
---Only well documented and working functions are 
---migrated to this package.
---*************************************************
---*************************************************
 
 load "./code/BasicFunctions.m2"
 
