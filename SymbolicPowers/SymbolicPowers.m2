@@ -3,8 +3,7 @@ newPackage(
 	Version => "1.0", 
 	Date => "May 14th, 2017",
 	Authors => {
-	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"},
-	    {Name => "Branden Stone", Email => "bstone@adelphi.edu", HomePage => "http://math.adelpi.edu/~bstone/"}
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"}
 	    },
 	Headline => "Calculations involving symbolic powers",
 	DebuggingMode => false,
@@ -537,26 +536,49 @@ document {
   Key => SymbolicPowers,
   Headline => "A package for computing symbolic powers of ideals",
    
-   "This is an experimental version of the package. If you find any typos or errors, please let me know. The package was designed to compute symbolic powers of unmixed ideals in a polynomial ring. It might misbehave in other settings.", 
+   "This package gives the ability to compute symbolic powers, and related invarients,
+   of ideals in a polynomial ring or a quotient of a polynomial
+   ring. For example, in the context of the default behavoir of ", 
+   TO "symbolicPower", " assumes the following definition of the symbolic power of an ideal ", TEX /// I ///, ",", 
+   TEX /// $$I^{(n)} = \cap_{p \in Ass(R/I)}(I^nR_p \cap R ),$$ ///,
+   "as defined by M. Hochster and C. Huneke.",
 
-   SUBSECTION "A quick introduction to this package",
+   PARA {"Alternatively, as defined in Villarreal, ", TO "symbolicPower", " has the option to restrict to 
+       minimal primes versus use all associated primes with ", TO "UseMinimalPrimes", ".",
+       "In particular, the symbolic power of an ideal ", TEX /// I ///, " is defined as",
+       TEX /// $$I^{(n)} = \cap_{p \in Min(R/I)}(I^nR_p \cap R ),$$ ///,
+       "where ", TEX /// Min(R/I) ///, " is the set of minimal primes in ", 
+       TEX /// I ///, "."},
+   UL {
+       {"M. Hochster and C. Huneke.", EM " Comparison of symbolic and ordinary powers of ideals.", " Invent. Math. 147 (2002), no. 2, 349–369."},
+       {"R. Villarreal.", EM " Monomial algebras.", " Second edition. Monographs and Research Notes in Mathematics. CRC Press, Boca Raton, FL, 2015. xviii+686 pp. ISBN: 978-1-4822-3469-5."},
+      },
+  
+   SUBSECTION "Contributors",     
+   "The following people have generously contributed code or worked on our code at various
+   Macaulay2 workshops.",
+     
+     UL {
+	 "Ben Drabkin",
+	 "Alexandra Seceleanu",
+	 "Branden Stone"
+	},
+
+   SUBSECTION "A Quick Introduction",
    UL {
     TO "Computing symbolic powers of an ideal",
     TO "Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"
     },
     
  
-  SUBSECTION "Other examples which illustrate this package",
+  SUBSECTION "Other Related Examples",
   UL {
     TO "The Containment Problem",
     TO "Sullivant's algorithm for primes in a polynomial ring",
-    TO "Monomial Curves"
-  },
+    TO "Monomial Curves",
+    TO "The Packing Problem"    
+  }
 
-  SUBSECTION "The Packing Problem",
-  UL {
-    TO "The Packing Problem"
-  },
 }  
 
 
@@ -1646,11 +1668,18 @@ TEST ///
 end
 
 restart
+uninstallPackage"SymbolicPowers"
+restart
+installPackage"SymbolicPowers"
+viewHelp"SymbolicPowers"
+
+restart
 loadPackage"SymbolicPowers"
 R = QQ[x,y,z]
 I = ideal"x,y,z"
 symbolicPower(I,2)
 check"SymbolicPowers"
+
 
 -- branden
 restart
