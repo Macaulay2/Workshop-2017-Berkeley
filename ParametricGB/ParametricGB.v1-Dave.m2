@@ -1,10 +1,38 @@
+<<<<<<< HEAD
+=======
+-- -*- coding: utf-8 -*-
+-- licensed under GPL v2 or any later version
+newPackage(
+    "ParametricGB",
+    Version => "0.4",
+    Date => "May 13, 2017",
+    Headline => "Common types for Lie groups and Lie algebras",
+    Authors => {
+	  {Name => "Dave Swinarski", Email => "dswinarski@fordham.edu"}
+	  }
+    )
+
+export {
+    --for the LieAlgebra type:
+    "square",
+    "fakeParametricGB"
+    }
+
+color = method(
+    TypicalValue => String    
+)
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 
 
 -- We followed the definition in Weispfenning1992 paper.
 color = memoize ((f,gamma) -> (
     Z:=gamma_0;
     NZ:=gamma_1;
+<<<<<<< HEAD
     a:=leadCoefficient(f);
+=======
+    if f != 0 then a:=leadCoefficient(f) else return "green";
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
     K:=coefficientRing(ring a);    
     if Z != {} then a = a % (ideal(Z));
     if a==0 then return "green";
@@ -18,7 +46,11 @@ color = memoize ((f,gamma) -> (
 reducedPart = memoize ((f,gamma) -> (
     Z:=gamma_0;
     NZ:=gamma_1;
+<<<<<<< HEAD
     a:=leadCoefficient(f);    
+=======
+    if f != 0 then a:=leadCoefficient(f) else return f;    
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
     if Z != {} then a = a % (ideal(Z));
     for j from 0 to #NZ-1 do (
         while (a % ideal(NZ_j))==0 do a = lift(a/(NZ_j),ring(a))
@@ -37,6 +69,10 @@ headMonomial = memoize ((f,gamma) -> (
     return {leadTerm(f),color(f,gamma)}
 ));
 
+<<<<<<< HEAD
+=======
+--This function refines cover for a given polynomial and list of conditions.
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 determineCover = memoize ((f,GGamma) -> (
     g := 0;
     refinedGamma := {};
@@ -57,6 +93,10 @@ determineCover = memoize ((f,GGamma) -> (
     return unique(refinedGamma)
 ));
 
+<<<<<<< HEAD
+=======
+--This function refines cover for a set of polynomials and a list of conditions.
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 determineCoverF = (F,GGamma) -> (
     for f in F do (
 	GGamma = determineCover(f,GGamma)
@@ -64,6 +104,10 @@ determineCoverF = (F,GGamma) -> (
     return GGamma
 );
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 hDividesT = (h,t) -> (
     e1 := first exponents(h);
     e2 := first exponents(t);
@@ -114,16 +158,27 @@ normalForm = (f,P,gamma) -> (
 sPol = (f,g,gamma) -> (
     s := first headMonomial(f,gamma);
     a := leadCoefficient(s);
+<<<<<<< HEAD
     s = leadMonomial(s);
     t := first headMonomial(g,gamma);
     b := leadCoefficient(t);
     t = leadMonomial(t);
+=======
+    if s == 0 then return g else s = leadMonomial(s);
+    t := first headMonomial(g,gamma);
+    b := leadCoefficient(t);
+    if t == 0 then return f else t = leadMonomial(t);
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
     e1 := first exponents(s);
     e2 := first exponents(t);
     R := ring(s);
     u := product apply(#e1, i -> (R_i)^(max(e1_i,e2_i)-e1_i));
     v := product apply(#e2, i -> (R_i)^(max(e1_i,e2_i)-e2_i));
+<<<<<<< HEAD
     return b*u*f - a*v*g
+=======
+return b*u*f - a*v*g
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 );
 
 hasRedTerm = (f,gamma) -> (
@@ -182,6 +237,7 @@ groebnerSystem = (F,B) -> (
     return GS
 );
 
+<<<<<<< HEAD
 end
 
 restart
@@ -189,6 +245,8 @@ load "ParametricGB.m2"
 
 
 
+=======
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 -- Examples to test
 R=QQ[c_1,c_2][x_0,x_1,x_2,x_3]
 Z={c_1}
@@ -203,9 +261,15 @@ color(f4,{{},{}})
 color(f2,gamma)
 color(f3,gamma)
 color(f1,gamma)
+<<<<<<< HEAD
 headTerm(f1+f2,gamma)
 headTerm(f1+f3,gamma)
 determineCover(f1+f2,)
+=======
+headMonomial(f1+f2,gamma)
+headMonomial(f1+f3,gamma)
+determineCover(f1+f2,{})
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 determineCover(f1+f2+f3,determineCover(f1+f3,{gamma}))
 reducedByP(f1,f2,gamma)
 tOverh(t,h)
@@ -213,7 +277,21 @@ normalForm(f1,{f1},gamma)
 sPol(f2,f3+f2,gamma)
 B = {{{},{}}} 
 F =  {c_1*x_0*x_2-c_2*x_1^2,c_1*x_0*x_3-c_2*x_1*x_2,c_1*x_1*x_3-c_2*x_2^2}
+<<<<<<< HEAD
 groebnerSystem(F,{{{},{}}})
+=======
+R = QQ[a_0,a_1,a_2,b_0,b_1,b_2][x]
+f = a_0*x^2  + a_1*x + a_2
+g = b_0*x^2 + b_1*x + b_2
+F = {f,g}
+time A = groebnerSystem(F,{{{},{}}})
+L = unique flatten apply(A,i -> last i)
+# L
+first A
+L = apply(A, i -> ideal(i_0_0));
+#unique L
+unique L
+>>>>>>> 2274f8a3c6be251cd660dd3cff7c68ad9fb89d54
 
 fakeParametricGB = method(
     TypicalValue => List    

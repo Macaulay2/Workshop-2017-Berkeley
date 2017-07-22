@@ -25,7 +25,7 @@ color = method(
 color = memoize ((f,gamma) -> (
     Z:=gamma_0;
     NZ:=gamma_1;
-    a:=leadCoefficient(f);
+    if f != 0 then a:=leadCoefficient(f) else return "green";
     K:=coefficientRing(ring a);    
     if Z != {} then a = a % (ideal(Z));
     if a==0 then return "green";
@@ -39,7 +39,7 @@ color = memoize ((f,gamma) -> (
 reducedPart = memoize ((f,gamma) -> (
     Z:=gamma_0;
     NZ:=gamma_1;
-    a:=leadCoefficient(f);    
+    if f != 0 then a:=leadCoefficient(f) else return f;    
     if Z != {} then a = a % (ideal(Z));
     for j from 0 to #NZ-1 do (
         while (a % ideal(NZ_j))==0 do a = lift(a/(NZ_j),ring(a))
@@ -58,6 +58,7 @@ headMonomial = memoize ((f,gamma) -> (
     return {leadTerm(f),color(f,gamma)}
 ));
 
+--This function refines cover for a given polynomial and list of conditions.
 determineCover = memoize ((f,GGamma) -> (
     g := 0;
     refinedGamma := {};
@@ -78,12 +79,14 @@ determineCover = memoize ((f,GGamma) -> (
     return unique(refinedGamma)
 ));
 
+--This function refines cover for a set of polynomials and a list of conditions.
 determineCoverF = (F,GGamma) -> (
     for f in F do (
 	GGamma = determineCover(f,GGamma)
     );
     return GGamma
 );
+
 
 hDividesT = (h,t) -> (
     e1 := first exponents(h);
@@ -217,9 +220,9 @@ color(f4,{{},{}})
 color(f2,gamma)
 color(f3,gamma)
 color(f1,gamma)
-headTerm(f1+f2,gamma)
-headTerm(f1+f3,gamma)
-determineCover(f1+f2,)
+headMonomial(f1+f2,gamma)
+headMOnomial(f1+f3,gamma)
+determineCover(f1+f2,{})
 determineCover(f1+f2+f3,determineCover(f1+f3,{gamma}))
 reducedByP(f1,f2,gamma)
 tOverh(t,h)
