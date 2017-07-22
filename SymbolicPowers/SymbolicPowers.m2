@@ -1310,8 +1310,8 @@ doc ///
      Description	  
        Text
 	   Given an ideal $I$ and an integer $n$, returns the larger value between the 
-	   maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$ 
-	   and $\frac{\alpha(I)}{waldschmidt(I)}. 
+	   maximum of the quotiens $m/k$ that fail $I^{(m)} \subseteq I^k$ with $k \leq n$ 
+	   and $\frac{\alpha(I)}{waldschmidt(I)}$. 
        Example 
 	   T = QQ[x,y,z];
 	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
