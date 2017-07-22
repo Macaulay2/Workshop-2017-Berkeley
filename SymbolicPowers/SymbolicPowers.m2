@@ -38,6 +38,7 @@ export {
     "noPackedAllSubs",
     "minDegreeSymbPower", 
     "lowerBoundResurgence",
+    "upperBoundResurgence",
     "exponentsMonomialGens", 
     "symbolicDefect",
     "symbolicPolyhedron", 
@@ -498,6 +499,8 @@ lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
     else return max {l, alpha(I)/waldschmidt(I)}
     )
 
+--this is not correct
+{*
 upperBoundResurgence = method(TypicalValue => QQ)
 upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
     h := bigHeight I;
@@ -509,6 +512,7 @@ upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
 	    k/o
 	    )
     ) 
+*}
 
 -- for this function I am assuming that the asymptotic regularity is an infimum
 -- this is more specific than being a limit
@@ -1266,6 +1270,8 @@ doc ///
 	   lowerBoundResurgence(I,5)
 
 ///
+
+
 
 doc ///
      Key 
