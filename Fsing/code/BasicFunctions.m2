@@ -106,7 +106,7 @@ decomposeFraction( ZZ, ZZ ) := List => o -> (p, t) -> decomposeFraction(p, t/1, 
 
 --===================================================================================
 
-adicDigit = method( TypicalValue => ZZ )
+adicDigit = method( )
 
 --Gives the e-th digit of the non-terminating base p expansion of x in [0,1].
 adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
@@ -152,7 +152,7 @@ adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) ->
 
 --===================================================================================
 
-adicTruncation = method( TypicalValue => QQ )
+adicTruncation = method( )
 
 --Gives the e-th truncation of the non-terminating base p expansion of a rational 
 -- number, unless that number is zero.

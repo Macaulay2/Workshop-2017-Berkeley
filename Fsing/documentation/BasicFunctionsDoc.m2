@@ -11,10 +11,10 @@ doc ///
         (adicDigit, ZZ, ZZ, QQ)
         (adicDigit, ZZ, ZZ, List)
     Headline
-        computes the digit of the non-terminating expansion of a number in [0,1] in a given base
+        digit of the non-terminating expansion of a number in [0,1] in a given base
     Usage 
-        adicDigit(p,e,x)
-        adicDigit(p,e,L)
+        d=adicDigit(p,e,x)
+        D=adicDigit(p,e,L)
     Inputs
         p:ZZ
             greater than 1
@@ -22,16 +22,15 @@ doc ///
             positive
         x:QQ
             in the interval [0,1]
-        x:ZZ
-	    either 0 or 1
         L:List
             a list of rational numbers in the interval [0,1]
     Outputs   
-        :ZZ
+        d:ZZ
+        D:List
     Description
         Text    
             The command {\tt adicDigit(p,e,0)} returns 0.  If $x\in (0,1]$, 
-            then {\tt adicDigit(p,e,x)} returns the coefficient of $p^{-e-1}$ in 
+            then {\tt adicDigit(p,e,x)} returns the coefficient of $p^{-e}$ in 
             the non-terminating base $p$ expansion of $x$.  
         Example
             adicDigit(5,4,1/3)
@@ -54,7 +53,7 @@ doc ///
         (adicExpansion, ZZ, ZZ, QQ)
         (adicExpansion, ZZ, ZZ, ZZ)
     Headline
-        computes adic expansions
+        compute adic expansion
     Usage
         adicExpansion(p,N)
         adicExpansion(p,e,x)
@@ -67,8 +66,6 @@ doc ///
 	    positive
         x:QQ
 	    in the interval [0,1]
-        x:ZZ
-	    either 0 or 1
     Outputs
         :List
     Description
@@ -101,10 +98,10 @@ doc ///
         (adicTruncation, ZZ, ZZ, QQ)
         (adicTruncation, ZZ, ZZ, List)
     Headline
-        computes a truncation of a non-terminating adic expansion of a rational number
+        truncation of a non-terminating adic expansion
     Usage
-        adicTruncation(p, e, r)
-        adicTruncation(p, e, L)
+        t=adicTruncation(p, e, r)
+        T=adicTruncation(p, e, L)
     Inputs
         p:ZZ
             greater than 1
@@ -115,8 +112,11 @@ doc ///
         L:List
             containing nonnegative rational numbers to compute the truncation of
     Outputs
-        :QQ
-            the trunction
+        t:QQ
+            the {\tt e}-th truncation of x (base {\tt p})
+        T:List
+            containing the {\tt e}-th truncations (base {\tt p}) 
+            of the elements of {\tt L}    
     Description
         Text
             This function computes the $e$th truncation of the $p$-adic expansion of
@@ -145,7 +145,7 @@ doc ///
         floorLog
         (floorLog, ZZ, ZZ)
     Headline
-        computes the floor of the log base b of x
+        floor of the log base b of x
     Usage
      	floorLog(b,x)         
     Inputs
@@ -169,7 +169,7 @@ doc ///
         multiplicativeOrder
         (multiplicativeOrder, ZZ, ZZ)
     Headline
-        computes the multiplicative order of an integer modulo another
+        multiplicative order of an integer modulo another
     Usage
         multiplicativeOrder(a,b)
     Inputs
@@ -208,8 +208,8 @@ doc ///
     Description
         Text
             Given a rational number $t$ and a prime $p$, {\tt decomposeFraction(p,t)} 
-            returns a list {\tt \{a,b,c\}} of nonnegative integers such that 
-            $t = a/(p^b(p^c-1))$.
+            returns a list {\tt \{a,b,c\}} of integers, with $b$ and $c$ nonnegative,
+            such that $t = a/(p^b(p^c-1))$.
         Example
             decomposeFraction( 3, 4/45 )
             4/45 == 64/( 3^2 * ( 3^4 -1 ) )
