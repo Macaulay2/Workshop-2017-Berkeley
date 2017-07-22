@@ -16,7 +16,8 @@ export {
     -- Options
     "UseMinimalPrimes",
     "SampleSize",
-     "useWaldschmidt",
+    "useWaldschmidt",
+    "InSymbolic", 
     -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
@@ -26,8 +27,7 @@ export {
     "symbPowerPrimePosChar", 
     "isSymbolicEqualOrdinary",
     "symbolicPowerJoin", 
-    "joinIdeals", 
-    "containmentProblemGivenSymbolicPower",
+    "joinIdeals",
     "symbolicContainmentMonomialCurve", 
     "squarefreeGens", 
     "squarefreeInCodim",
@@ -89,20 +89,22 @@ isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
 
 
 
-containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
-containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (m := n;
-   while 
-   not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
-   do m = m+1;
-    m)
+containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false,InSymbolic => false})
+containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (
 
-
-
-containmentProblemGivenSymbolicPower = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
-containmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => opts -> (I,m) -> (h := bigHeight(I); 
-    e := (m-m%h)/h; n := lift(e,ZZ);
-    while isSymbPowerContainedinPower(I,m,n+1, UseMinimalPrimes => opts.UseMinimalPrimes) do n = n+1;
-    n)
+    if not(opts.InSymbolic) then (
+	m := n; 
+	while 
+	not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
+	do m = m+1; return(m));
+    
+    if opts.InSymbolic then (
+    h := bigHeight(I);
+    e := (n-n%h)/h; 
+    l := lift(e,ZZ);
+    while isSymbPowerContainedinPower(I,n,l+1,
+	UseMinimalPrimes => opts.UseMinimalPrimes) do l = l+1;
+    return l))
 
 
 --Given an ideal I and q=p^e, computes the e-th Frobenius power of I
@@ -657,7 +659,7 @@ doc ///
      	 Text
 	      We can ask the same question backwards: what is the largest power of I that contains $I^{(4)}$?
 	 Example
-	      containmentProblemGivenSymbolicPower(I,4)     
+	      containmentProblem(I,4,InSymbolic => true)     
 ///
 
 
@@ -817,11 +819,10 @@ doc ///
 	   m = containmentProblem(I,2)
    SeeAlso
        isSymbPowerContainedinPower
-       containmentProblemGivenSymbolicPower
 ///
 
-
-doc ///
+--To delete and include in containmentProblem
+///
    Key
        containmentProblemGivenSymbolicPower
        (containmentProblemGivenSymbolicPower, Ideal, ZZ)
@@ -1359,7 +1360,24 @@ doc ///
 	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
 	   waldschmidt(J, SampleSize=>5)
 ///	   
-	   
+
+
+doc ///
+     Key 
+         InSymbolic
+     Headline 
+         An optional parameter used in containmentProblem
+     Usage 
+         containmentProblem(I,n,InSymbolic => true)
+     Description	  
+         Text
+       	   Given an ideal I and an integer n, InSymbolic is used to ask the following question:
+	   What is the largest power cointained in the symbolic power $I^{(n)}$?
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   containmentProblem(J,3,InSymbolic => true)
+///	   
 	   
 doc ///
      Key 
@@ -1516,7 +1534,7 @@ I=ideal(x*y,x*z,y*z)
 assert(lowerBoundResurgence(I,5)==6/5)
 ///
 
-----doSymbolicAndOrdinaryPowersCoincide
+----isSymbolicEqualOrdinary
 TEST ///
 R=QQ[x,y,z]
 I=ideal(x*y,x*z,y*z)
@@ -1545,11 +1563,11 @@ assert(joinIdeals(I,J)==ideal(x))
 
 ----symbolicPowerJoin
 
-----ContainmentProblemGivenSymbolicPower
+----containmentProblem given Symbolic Power
 TEST ///
 R=QQ[x,y,z]
 I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
-assert(containmentProblemGivenSymbolicPower(I,4)==2)
+assert(containmentProblem(I,4,InSymbolic => true)==2)
 ///
 
 ----symbolicContainmentMonomialCurve
