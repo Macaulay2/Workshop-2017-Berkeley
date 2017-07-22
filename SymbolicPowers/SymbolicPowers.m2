@@ -16,7 +16,7 @@ export {
     -- Options
     "UseMinimalPrimes",
     "SampleSize",
-     "useWaldschmidt",
+     "UseWaldschmidt",
     -- Methods
     "symbolicPower", 
     "isSymbPowerContainedinPower", 
@@ -492,10 +492,10 @@ waldschmidt MonomialIdeal := opts -> I -> (
     return min apply (entries transpose vertices N, a-> sum  a)
     )
 
-lowerBoundResurgence = method(TypicalValue => QQ, Options =>{useWaldschmidt=>false})
+lowerBoundResurgence = method(TypicalValue => QQ, Options =>{UseWaldschmidt=>false})
 lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
     l := max append(apply(toList(2 .. m),o -> (containmentProblem(I,o)-1)/o),1);
-    if opts#useWaldschmidt == false then return l
+    if opts#UseWaldschmidt == false then return l
     else return max {l, alpha(I)/waldschmidt(I)}
     )
 
@@ -1266,8 +1266,32 @@ doc ///
 	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$.
        Example 
 	   T = QQ[x,y,z];
-	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
 	   lowerBoundResurgence(I,5)
+
+///
+
+doc ///
+     Key 
+         UseWaldschmidt
+     Headline 
+         Optional input for computing a lower bound for the resurgence of a given ideal
+     Usage 
+         lowerBoundResurgence(Ideal,ZZ,UseWaldschmidt=>true)
+     Inputs 
+     	  I:Ideal
+	  n:ZZ
+     Outputs
+          :QQ
+     Description	  
+       Text
+	   Given an ideal $I$ and an integer $n$, returns the larger value between the 
+	   maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$ 
+	   and $\frac{\alpha(I)}{waldschmidt(I)}. 
+       Example 
+	   T = QQ[x,y,z];
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
+	   lowerBoundResurgence(I,5,UseWaldschmidt=>true)
 
 ///
 
