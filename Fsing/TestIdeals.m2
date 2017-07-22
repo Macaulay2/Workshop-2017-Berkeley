@@ -192,7 +192,7 @@ load "./documentation/BasicFunctionsDoc.m2"
 
 load "./documentation/frobeniusPowersDoc.m2"
 
-load "./documentation/FsingDoc.m2"
+load "./documentation/TestIdealDoc.m2"
 
 load "./documentation/EthRootsDoc.m2"
 

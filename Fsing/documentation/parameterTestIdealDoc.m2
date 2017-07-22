@@ -240,7 +240,7 @@ doc ///
         :Boolean
     Description
         Text
-            Determines if a ring is F-rational.  If you pass it IsLocal=>true, it will only check if the ring is F-rational at the origin (this can be slower).  If you pass it AssumeCM=>true, it will not verify that the ring is Cohen-Macaulay.
+            Determines if a ring is F-rational.  If you pass it {\tt IsLocal=>true}, it will only check if the ring is F-rational at the origin (this can be slower).  If you pass it {\tt AssumeCM=>true}, it will not verify that the ring is Cohen-Macaulay.
         Example
             T = ZZ/5[x,y];
             S = ZZ/5[a,b,c,d];
@@ -261,5 +261,5 @@ doc ///
              R = S/I;
              isFrational(R)
         Text
-            Warning, this function assumes that Spec R is connected.  Like isCohenMacaulay, if you pass it a non-equidimensional F-rational ring (for example, if Spec R has two connected components of different dimensions), this function will return false.  
+            Warning, this function assumes that Spec R is connected.  Like {\tt isCohenMacaulay}, if you pass it a non-equidimensional F-rational ring (for example, if Spec R has two connected components of different dimensions), this function will return false.  
 ///

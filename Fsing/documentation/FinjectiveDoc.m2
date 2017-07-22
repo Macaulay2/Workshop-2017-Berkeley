@@ -100,6 +100,8 @@ doc ///
             R = S/(ker f);
             isFinjective(R)
             isFpure(R)
+    SeeAlso
+        isFpure            
 ///
 
 doc ///
