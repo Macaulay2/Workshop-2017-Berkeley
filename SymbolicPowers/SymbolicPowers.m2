@@ -1550,6 +1550,62 @@ assert(I==ideal(R_0^2-2*R_0*R_2+R_2^2,R_0*R_2^2-R_2^3-R_0*R_1+R_1*R_2,R_2^4-2*R_
 ///
 
 
+
+----isKonig
+TEST ///
+R=ZZ/17[x]
+I=ideal(1_R)
+assert(isKonig(I)==true)
+///
+
+TEST ///
+R=QQ[y,z]
+I=ideal(0_R)
+assert(isKonig(I)==true)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(isKonig(I)==false)
+///
+
+----isPacked
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(isPacked(I)==false)
+///
+
+
+TEST ///
+R=QQ[x,y,z,a,b]
+I=intersect(ideal(x,y),ideal(x,z),ideal(z,a),ideal(y,a),ideal(x,b))
+assert(isPacked(I)==true)
+///
+
+----noPackedSub
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(noPackedSub(I)=="The ideal itself is not Konig!")
+///
+
+
+----noPackedAllSubs
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(noPackedAllSubs I=="Only I is not Konig -- all proper substitutions are Konig.")
+///
+
+TEST ///
+R=QQ[x_1..x_6]
+I=intersect(ideal(x_1,x_2),ideal(x_2,x_3),ideal(x_3,x_1),ideal(x_3,x_4),ideal(x_4,x_5),ideal(x_5,x_6),ideal(x_6,x_4))
+assert(noPackedAllSubs I=={{"x_1=>0", "x_2=>1", "x_3=>1"}, {"x_2=>0", "x_1=>1", "x_3=>1"}, {"x_5=>0", "x_4=>1", "x_6=>1"}, {"x_6=>0", "x_4=>1", "x_5=>1"}})
+///
+
 end
 
 restart
