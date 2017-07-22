@@ -9,7 +9,7 @@
 document {
     Key => TestIdeals,
     Headline => "a package for calculations of singularities in positive characteristic ",
-    EM "TestIdeals", " is a package for basic computations of F-singularities.  It is focused on computing computing test ideals and related objects.  It does this via ", TO "frobeniusRoot", " which computes I^{[1/p^e]} as introduced by Blickle-Mustata-Smith (this is equivalent to the image of an ideal under the Cartier operator in a polynomial ring).",
+    EM "TestIdeals", " is a package for basic computations of F-singularities.  It is focused on computing test ideals and related objects. It does this via ", TO "frobeniusRoot", " which computes I^{[1/p^e]} as introduced by Blickle-Mustata-Smith (this is equivalent to the image of an ideal under the Cartier operator in a polynomial ring).",
     BR{},BR{},
     "We describe some notable functions below.",    
     BR{},BR{},

@@ -108,16 +108,17 @@ decomposeFraction( ZZ, ZZ ) := List => o -> (p, t) -> decomposeFraction(p, t/1, 
 
 adicDigit = method( TypicalValue => ZZ )
 
---Gives the e-th digit of the non-terminating base p expansion of x in (0,1].
+--Gives the e-th digit of the non-terminating base p expansion of x in [0,1].
 adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) -> 
-    ( 
-        if x < 0 or x > 1 then error "adicDigit: Expected last argument in [0,1]";
-        if x==0 then return 0;
-        (adicTruncation(p, e, x) - adicTruncation(p, e-1, x))*p^e
-    )
+( 
+    if p <= 1 then error "adicDigit: Expected first argument to be greater than 1";
+    if e <= 0 then error "adicDigit: Expected second argument to be positive";
+    if x < 0 or x > 1 then error "adicDigit: Expected last argument in [0,1]";
+    if x == 0 then return 0;
+    ( adicTruncation(p, e, x) - adicTruncation(p, e-1, x) ) * p^e
+)
 
-adicDigit ( ZZ, ZZ, ZZ ) := ZZ => ( p, e, x ) ->
-        adicDigit(p,e,x/1)
+adicDigit ( ZZ, ZZ, ZZ ) := ZZ => ( p, e, x ) -> adicDigit( p, e, x/1 )
 
 --Creates list containing e-th digits of non-terminating base p expansion of list of numbers.
 adicDigit ( ZZ, ZZ, List ) := ZZ => ( p, e, u ) -> apply( u, x -> adicDigit( p, e, x ) )
@@ -132,19 +133,19 @@ adicExpansion = method( TypicalValue => List );
 
 adicExpansion( ZZ, ZZ ) := List => ( p, N ) ->
 (
-    if p <= 0 then error "adicExpansion: Expected first argument to be positive";
+    if p <= 1 then error "adicExpansion: Expected first argument to be greater than 1";
     if N < 0 then error "adicExpansion: Expected second argument to be nonnegative";
     if N < p then { N } else prepend( N % p, adicExpansion( p, N // p ) ) 
     -- would this be faster if it were tail-recursive? we could do this w/ a helper function.
 )
 
---Special case for adic expansion of integers
-adicExpansion( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
-    adicExpansion(p,e,x/1)
+--Special case for adic expansion of integers 0 or 1
+adicExpansion( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> adicExpansion( p, e, x/1 )
 
 --Creates a list of the first e digits of the non-terminating base p expansion of x in [0,1].
 adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) -> 
 (
+    if p <= 1 then error "adicExpansion: Expected first argument to be greater than 1";
     if x < 0 or x > 1 then error "adicExpansion: Expected x in [0,1]";
     apply( e, i -> adicDigit( p, i+1, x ) )
 )
@@ -153,17 +154,18 @@ adicExpansion( ZZ, ZZ, QQ ) := List => ( p, e, x ) ->
 
 adicTruncation = method( TypicalValue => QQ )
 
---Gives the e-th truncation of the non-terminating base p expansion of a rational number, unless that number is zero.
+--Gives the e-th truncation of the non-terminating base p expansion of a rational 
+-- number, unless that number is zero.
 
 adicTruncation ( ZZ, ZZ, QQ ) := QQ => ( p, e, x ) -> 
 (
-    if x < 0 then error "adicTruncation: Expected x nonnegative";
-    if x==0 then 0 else
-    ( ceiling( p^e*x ) - 1 )/p^e    	
+    if p <= 1 then error "adicTruncation: Expected first argument to be greater than 1";
+    if e < 0 then error "adicTruncation: Expected second argument to be nonnegative";
+    if x < 0 then error "adicTruncation: Expected third argument to be nonnegative (or a list of nonegative numbers)";
+    if x == 0 then 0 else ( ceiling( p^e*x ) - 1 ) / p^e    	
 )
 
-adicTruncation( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> 
-    adicTruncation(p,e,x/1)
+adicTruncation( ZZ, ZZ, ZZ ) := List => ( p, e, x ) -> adicTruncation( p, e, x/1 )
 
 --truncation threads over lists.
 adicTruncation ( ZZ, ZZ, List ) := List => ( p, e, u ) -> 
