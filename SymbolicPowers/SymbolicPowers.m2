@@ -1,7 +1,7 @@
 newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
-	Date => "May 14th, 2017",
+	Date => "July 21st, 2017",
 	Authors => {
 	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"}
 	    },
