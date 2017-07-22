@@ -79,6 +79,11 @@ frobeniusRoot(ZZ, List, List) := opts -> (e, exponentList, idealList) -> (
 
     --include the following line to set a break point: 
     --error "break here";
+--    if (#idealList > 0) then (
+--        if (instance(idealList#0, RingElement)) then (
+--            return 
+--        );
+--    );
     I := null;
     if e == 0 then (
         I = idealList#0^(exponentList#0);
@@ -168,7 +173,7 @@ getFieldGenRoot = (e,p,q,k) -> (
 
 -----------------------------------------------------------------------------
 
-frobeniusRootMonStrat = (e,p,q,k,f,R) -> (
+frobeniusRootMonStrat = (e,p,q,k,f,R) -> ( --print "MonStrat";
     -- e = exponent, p = prime, q = size of coeff field, k = coeff field, 
 	-- f = a generator of the ideal in question, R = the ring
 	-- to use this strategy to find the p^eth root of an ideal, you need to apply this
@@ -195,7 +200,7 @@ frobeniusRootMonStrat = (e,p,q,k,f,R) -> (
 
 -----------------------------------------------------------------------------
 
-frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
+frobeniusRootSubStrat = (e,p,q,k,I,R) -> ( --print "SubStrat";
     n := numgens R;
     Rvars := R_*;
     Y := local Y;
@@ -205,7 +210,7 @@ frobeniusRootSubStrat = (e,p,q,k,I,R) -> (
     --still recognized as variables of R and not S, and the code will not break if the variables in R happen to be called
     --Y_i also.  
     Svars := S_*;
-    J := ideal(apply(n,i->Svars#(n+i) - Svars#i^(p^e)));
+    J := ideal(apply(n,i->Svars#(n+i) - Svars#i^(p^e)))*S;
     H := apply((substitute(I,S))_*, f -> f % J);
     --If we denote the variables in R as X_1 .. X_n, then this replaces each occurrence of X_i^(p^e) in the polynomial f
     --with a Y_i.

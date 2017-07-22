@@ -23,11 +23,11 @@ assert(frobeniusRoot(3,I) == ideal(1_R))
 assert(frobeniusRoot(3,I,FrobeniusRootStrategy => MonomialBasis) == ideal(1_R))    
 ///
 
-TEST ///  -- test 2
-    kk = GF(5^4);
-    fg = (gens kk)#0;
-    assert( (getFieldGenRoot(6,5,5^4, kk))^(5^6) == fg)
-///
+--TEST ///  -- test 2
+--    kk = GF(5^4);
+--    fg = (gens kk)#0;
+--    assert( (getFieldGenRoot(6,5,5^4, kk))^(5^6) == fg)
+--///
 
 TEST /// -- test 3 (ascend ideal test)
     pp = 5;
@@ -70,7 +70,7 @@ TEST /// --test6 (compare frobeniusRoot vs frobeniusRootRingElements)
     ff = random(3, R) + random(5, R) + random(6, R);
     ak = 55+random(10);
     out1 = time frobeniusRoot(2, {ak}, {ff});
-    out2 = time frobeniusRootRingElements(2, ak, ff); 
+    out2 = time frobeniusRoot(2, ak, ff, FrobeniusRootStrategy=>MonomialBasis); 
     assert( out1 == out2 )
 ///
 

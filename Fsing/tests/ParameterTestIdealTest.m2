@@ -36,3 +36,26 @@ time assert(isFrational(R/I)==false);
 
 
 ///
+
+TEST /// --an easy veronese
+    T = ZZ/5[x,y];
+    S = ZZ/5[a,b,c,d];
+    g = map(T, S, {x^3, x^2*y, x*y^2, y^3});
+    R = S/(ker g);
+    assert( isCohenMacaulay(R) );
+    assert( isFrational(R) );
+///
+
+TEST /// --test for weird user inputs
+    R = ZZ/11[];
+    assert(isFrational(R));
+///
+
+TEST /// --an old F-rational but not F-regular Hochster-Huneke example "Tight closure of parameter ideals and splitting in module-Finite extensions"
+    T = ZZ/7[x,y,z]/ideal(x^3-y*z*(y+z));    
+    S = ZZ/7[a,b,c,d,e];
+    g = map(T, S, {x, y^3, y^2*z, y*z^2, z^3});
+    R = S/(ker g);
+    assert(isFrational(R));
+    assert(not isFregular(R));
+///

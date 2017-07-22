@@ -29,7 +29,7 @@ HSLGModule(Ring, Ideal) := o-> (R1, canIdeal) -> (
     S1 := ambient R1;
 	I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findSplittingsOfIdeal(I1, J1+I1);    
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);    
 --    powList := apply(u1, zz->1);
     --NEED TO CHANGE (and below), we should not have the full list of us there.
     curIdeal := ideal(sub(0, R1));
@@ -60,7 +60,7 @@ HSLGModule(QQ, RingElement) := o -> (tt, ff) -> (
     S1 := ambient R1;
 	I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findSplittingsOfIdeal(I1, J1+I1);    
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);    
     pp := char S1;
     fractionDivided := decomposeFraction(pp, tt);
         -- fraction divided writes tt = (a/(p^b(p^c-1))
@@ -99,7 +99,7 @@ HSLGModule(List, List) := o -> (tList, fList) -> (
     S1 := ambient R1;
 	I1 := ideal R1;
     J1 := sub(canIdeal, S1);
-    u1 := findSplittingsOfIdeal(I1, J1+I1);    
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);    
     pp := char S1;
     fractionDividedList2 := apply(tList, tt -> decomposeFraction(pp, tt));
         -- fraction divided writes tt = (a/(p^b(p^c-1))
@@ -189,13 +189,14 @@ isFinjective(Ring) := o-> (R1) ->
     --if we assume Cohen-Macaulay, then we are already done
     if (o.AssumeCM == true) then return true;
     --otherwise we next construct G : R -> F_* R                
-    G := frobPFMap(1,R1);
+    G := null;
     
     if (o.AssumeNormal == true) then (d1 = d1 - 2) else if (o.AssumeReduced == true) then (d1 = d1-1);
     
     while ((i <= d1) and (flag == true)) do (
     	--if ambient pushforward is faster in the next line, use it instead
 	    if (Ext^i(S1^1/I1, S1^1) != 0) then (
+    	    if (G === null) then G = frobPFMap(1,R1);	    
 	        --note we only compute the Frobenius pushforward if the ring is not CM
             if (flagPushComputed == false) then (	            
                 FS = pushFwdToAmbient(R1,G);   --pushforward Frobenius
@@ -218,7 +219,7 @@ isFinjectiveCanonicalStrategy(Ring) := o->(R1) -> (
 	I1 := ideal R1;
 	canIdeal := trim canonicalIdeal(R1);
     J1 := sub(canIdeal, S1) + I1;
-    u1 := findSplittingsOfIdeal(I1, J1+I1);    
+    u1 := findCanonicalModuleFrobeniusTrace(I1, J1+I1);    
     curIdeal := ideal(sub(0, S1));  
     i := 0;
     while (i < #u1) do (
