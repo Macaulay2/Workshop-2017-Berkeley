@@ -1055,6 +1055,7 @@ doc///
      	  Text
 	        Same example with the {\tt PrintIdeals} option set to {\tt true}:
      	  Example
+	      	R=ZZ/32003[a..c];
 	        generateLPPs(R,{1,3,4,3,2},PrintIdeals=>true)
      SeeAlso
      	  LPP
