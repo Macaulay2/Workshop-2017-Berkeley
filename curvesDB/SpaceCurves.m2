@@ -10,7 +10,6 @@ newPackage(
         )
 
 export {
-    "isSmooth",
     "AbstractSurface",	  --type
     "abstractSurface",	  --create an AbstractSurface
     "AbstractDivisor",	  --type
@@ -23,6 +22,7 @@ export {
     "linesOnCubic",
     "abstractHypersurface",
     "isIrreducible",
+    "isSmooth",
     "CanonicalClass",
     "Hyperplane",
     "DivisorClass",
@@ -33,10 +33,8 @@ export {
     "hilbertBurchComputation",
     "minimalCurveInLiaisonClass",
     "Chi",
-    "effectiveDivisorsOnSurface",
-    "effectiveDivisorsOnCubic",
-    "completeIntersectionCurves",
-    "effectiveDivisors"
+    "irreducibleDivisors",
+    "completeIntersectionCurves"
     }
 
 
@@ -172,6 +170,12 @@ isSmooth Ideal := (I) -> (
     )
 isSmooth RealizedSurface := X -> isSmooth ideal X
 isSmooth RealizedDivisor := C -> isSmooth ideal C
+isSmooth AbstractDivisor := C -> (
+    if C.AbstractSurface.Name == "Quadric surface" then return isIrreducible C;
+    if C.AbstractSurface.Name == "Cubic surface" then return isIrreducible C;
+    if C.AbstractSurface.Name == "Hypersurface" then return true;
+    error "Not implemented yet for this type of surface";  
+)
 
 isIrreducible = method()
 isIrreducible AbstractDivisor := Boolean => C -> (
@@ -378,26 +382,21 @@ dgTable List := L ->(
     return matrix M;
 )
 
-effectiveDivisorsOnCubic = method()
-effectiveDivisorsOnCubic (AbstractSurface,ZZ,ZZ) := (X,a,d) -> (
+irreducibleDivisors = method()
+irreducibleDivisors (ZZ, AbstractSurface) := (d,X) -> (
+    --List all irreducible abstract divisors of degree d on X
     if X.Name == "Cubic surface" then (
-    	dlist := apply(select(partitions(3*a-d),p->#p<=6),q -> 
-	    {a} | toList q | splice{(6-#q):0});    
-    	Lad := apply(dlist,L -> abstractDivisor(L,X));
-    	return select(Lad, ad-> isIrreducible ad);
-    );    
-    error "Not a cubic surface";
-)
-
-effectiveDivisorsOnSurface = method()
-effectiveDivisorsOnSurface (AbstractSurface,ZZ) := (X,d) -> (
-    --List all divisors of degree d on X
-    if X.Name == "Cubic surface" then (
-    	return flatten apply(toList(floor(d/3)..2*d), a -> effectiveDivisorsOnCubic(X,a,d)); 	
+	return flatten for a from ceiling(d/3) to d list (
+	    degreeList := apply(select(partitions(3*a-d),p->#p<=6),q ->
+		{a} | toList q | splice{(6-#q):0});
+	    --This gives unqiue representation up to change of 6 points
+	    degreeList = select(degreeList, L -> L#0 >= L#1+L#2+L#3); 
+	    divisorList := apply(degreeList, L-> abstractDivisor(L,X));
+	    select(divisorList, D -> isIrreducible D)   
+	);
     );
     if X.Name == "Quadric surface" then (
-	--Data = {degree}: creates all diviors (a,b) where a+b = degree
-	maxdeg := ceiling(1/2*d);
+	maxdeg := floor(1/2*d);
 	return for a from 1 to maxdeg list abstractDivisor({a,d - a},X);
     );
     if X.Name == "Hypersurface" then (
@@ -405,55 +404,25 @@ effectiveDivisorsOnSurface (AbstractSurface,ZZ) := (X,d) -> (
 	if d % surfd =!= 0 then return {};
 	return abstractDivisor({d // surfd},X);
     );
-    error "not implemented yet for your type of surface"	
+    error "not implemented yet for your type of surface";	
 )
-
+irreducibleDivisors (ZZ, RealizedSurface) := (d,X) -> (
+    --List all irreducible curves of degree d on X
+   return apply(irreducibleDivisors(d,X.AbstractSurface), aD -> 
+       realize(aD,X));	
+)
 completeIntersectionCurves  = method()
 completeIntersectionCurves ZZ := d -> (
     --produce all ci curves of degree d
-    div := for i from 1 to floor sqrt d when d % i == 0 list i;
+    div := for i from 2 to floor sqrt d when d % i == 0 list i;
     return apply(div, deg -> 
 	abstractDivisor({d // deg},abstractHypersurface(deg)));            
 )
 
-effectiveDivisors = method()
-effectiveDivisors ZZ := d -> (
-    effectiveDivisorsOnSurface(abstractCubic,d) |
-    effectiveDivisorsOnSurface(abstractQuadric,d) |
-    completeIntersectionCurves(d)    
-)
 
 
 
 beginDocumentation()
-{*
-    "isSmooth",
-    "AbstractSurface",	  --type
-    "abstractSurface",	  --create an AbstractSurface
-    "AbstractDivisor",	  --type
-    "abstractDivisor",	  --create an AbstractDivisor	  
-    "RealizedSurface",	  --type
-    "RealizedDivisor",	  --type
-    "realize",
-    "abstractQuadric",
-    "abstractCubic",
-    "abstractHypersurface",
-    "isIrreducible",
-    "CanonicalClass",
-    "Hyperplane",
-    "DivisorClass",
-    "ExtraData",
-    "IntersectionPairing",
-    "dgTable",
-    "hartshorneRaoModule",
-    "hilbertBurchComputation",
-    "minimalCurveInLiaisonClass",
-    "Chi",
-    "effectiveDivisorsOnSurface",
-    "effectiveDivisorsOnCubic",
-    "completeIntersectionCurves",
-    "effectiveDivisors"
-*}    
 document { 
 Key => SpaceCurves,
 Headline => "Construction and Database of space curves",
@@ -467,20 +436,20 @@ UL{   TO "AbstractSurface",	  --type
       TO "abstractQuadric",
       TO "abstractCubic",
       TO "abstractHypersurface",
-      TO "isIrreducible",
       TO "CanonicalClass",
       TO "Hyperplane",
       TO "DivisorClass",
       TO "ExtraData",
       TO "IntersectionPairing",
-      TO "Chi"
+      TO "Chi",
+      TO "isIrreducible",
+      TO "isSmooth"
 },
 PARA{},
 SUBSECTION "Realizations",  
 UL{     TO "RealizedSurface",	  --type
         TO "RealizedDivisor",	  --type
-        TO "realize",
-	TO "isSmooth"
+        TO "realize"
 },
 PARA{},
 SUBSECTION "Hartshorne-Rao module computations",  
@@ -491,10 +460,8 @@ UL{   TO "hartshorneRaoModule",
 PARA{},
 SUBSECTION "Collecting examples and information",  
 UL{   TO "dgTable",
-      TO "effectiveDivisorsOnSurface",
-      TO "effectiveDivisorsOnCubic",
-      TO "completeIntersectionCurves",
-      TO "effectiveDivisors"
+      TO "irreducibleDivisors",
+      TO "completeIntersectionCurves"
 }
 }
 
@@ -523,31 +490,62 @@ doc ///
   SeeAlso
 ///
 
-{* It gives an error I cannot debug:
+doc ///
+    Key
+      abstractHypersurface
+      (abstractHypersurface, ZZ)
+    Headline
+      creates an AbstractSurface corresponding to a hypersurace	
+    Usage
+      X = abstractHypersurface(d)
+    Inputs
+      d: ZZ
+        a degree
+    Outputs
+      X: AbstractSurface
+    Description
+    	Text
+	  Creates a hypersurface of degree d of type AbstractSurface.
+	Example
+	  abstractHypersurface(4)
+    SeeAlso
+///
+
 doc ///
   Key
-    abstractHypersurface
-    (abstractHypersurface, ZZ)
+    isSmooth
+    (isSmooth, AbstractDivisor)
+    (isSmooth, RealizedDivisor)
+    (isSmooth, RealizedSurface)
+    (isSmooth, Ideal)
   Headline
-    Creates an AbstractSurface corresponding to a hypersurface   
+    checks whether a divisor or a surface is smooth  
   Usage
-     X = abstractHypersurface(d)
+     B = isSmooth(C)
+     B = isSmooth(X)
+     B = isSmooth(I)
   Inputs
-    d: ZZ
-       degree of the hypersurface
+    C: AbstractDivisor
+    C: RealizedDivisor
+    X: RealizedSurface
+    I: Ideal
   Outputs
-    X: AbstractSurface
+    B: Boolean
   Description
      Text
-       Creates a hypersurface of degree d in $$P^3$$ as an AbstractSurface.  
+       If the input is an AbstractDivisor, uses numerical criteria to determine 
+       whether the divisor class contains an irreducible smooth curve.
+       If the input is a RealizedDivisor or a RealizedSurface,
+       checks if its ideal is smooth.
      Example
-       abstractHypersurface(4)
+       X = abstractCubic
+       C = abstractDivisor(X.Hyperplane,X)
+       isSmooth C
+       rC = realize C
+       isSmooth rC
+       isSmooth rC.RealizedSurface
   SeeAlso
-      AbstractSurface
-      abstractQuadric
-      abstractCubic
 ///
-*}
 
 doc ///
   Key
@@ -555,7 +553,7 @@ doc ///
     (isIrreducible,AbstractDivisor)
     (isIrreducible,RealizedDivisor)
   Headline
-    Checks whether a divisor is irreducible  
+    checks whether a divisor is irreducible  
   Usage
      B = isIrreducible(C)
   Inputs
@@ -574,6 +572,40 @@ doc ///
        isIrreducible C
        isIrreducible realize C
   SeeAlso
+///
+
+
+doc ///
+    Key
+    	realize
+	(realize, AbstractSurface)
+	(realize, AbstractDivisor, RealizedSurface)
+	(realize, AbstractDivisor)
+    Headline
+    	realizes an AbstractSurface or an AbstractDivisor
+    Usage
+    	rX = realize(aX)
+	rC = realize(aC,rX)
+	rC = realize(aC)
+    Inputs
+    	aX: AbstractSurface
+	aC: AbstractDivisor
+	rX: RealizedSurface
+    Outputs
+    	rX: RealizedSurface
+	rC: RealizedDivisor
+    Description
+    	Text
+	    Constructs a RealizedSurface given an AbstractSurface. 
+	    Constructs a RealizedDivisor given an AbstractDivisor 
+	    on a RealizedSurface, if the RealizedSurface is not given,
+	    then constructs the RealizedSurface first.
+    	Example
+	    R = ZZ/101[x_0..x_3]; aC = abstractDivisor({2,3},abstractQuadric);
+	    aX = realize(abstractQuadric, Ring=>R)
+	    realize(aC,aX);
+	    realize(aC);
+    SeeAlso    	      
 ///
 
 doc ///
@@ -693,7 +725,86 @@ doc ///
   SeeAlso
 ///
 
--- TEST SECTION
+doc ///
+  Key
+    irreducibleDivisors
+    (irreducibleDivisors, ZZ, AbstractSurface)
+    (irreducibleDivisors, ZZ, RealizedSurface)
+  Headline
+    creates irreducible divisors of a fixed degree on a given surface   
+  Usage
+     L = irreducibleDivisors(d,X)
+  Inputs
+    d: ZZ
+       a degree
+    X: AbstractSurface
+    X: RealizedSurface
+  Outputs
+    L: List
+        of AbstractDivisors or RealizedDivisors of degree d on X 
+  Description
+     Text
+       Produces all irreducible divisors of degree d on a given surface X.
+       If X is an AbstractSurface, returns a list of AbstractDivisors.
+       if X is a RealizedSurface, returns a list of RealizedDivisors.          
+     Example
+       S = ZZ/32003[x_0..x_3]
+       irreducibleDivisors(4,abstractCubic)
+       irreducibleDivisors(4,realize(abstractCubic, Ring=> S))
+  SeeAlso
+      completeIntersectionCurves
+///
+
+doc ///
+  Key
+    completeIntersectionCurves
+    (completeIntersectionCurves, ZZ)
+  Headline
+    creates all complete intersection curves of a fixed degree in P^3   
+  Usage
+     L = completeIntersectionCurves(d)
+  Inputs
+    d: ZZ
+       a degree
+  Outputs
+    L: List
+        of AbstractDivisors on hypersurfaces
+  Description
+     Text
+       Produces all degree d complete intersection curves in P^3. 
+       The list consists of divisors of degree a on hypersurfaces of degree b
+       where b <= a and a*b = d.          
+     Example
+       completeIntersectionCurves(4)
+  SeeAlso
+///
+
+doc ///
+  Key
+    dgTable
+    (dgTable, List)
+  Headline
+    records occurancecs of (degree,genus) pair from a list of divisors   
+  Usage
+    M = dgTable(L)
+  Inputs
+    L: List
+       of AbstractDivisors or RealizedDivisors
+  Outputs
+    M: Matrix
+        of occurencies of a (degree,genus) pair 
+  Description
+     Text
+       Produces from a list of divisors an occurence matrix, 
+       the rows are indexed by genus and the columns by degree.          
+     Example
+       R = ZZ/101[x_0..x_3];
+       L = flatten apply({2,3,4}, d->irreducibleDivisors(d,abstractQuadric));
+       dgTable L
+       dgTable (L / realize)   
+  SeeAlso
+///
+--TEST SECTION
 
 TEST ///
   X = abstractQuadric
@@ -809,7 +920,7 @@ TEST ///
 ///
 
 
-end----------------------------------------------------
+end--
 restart
 uninstallPackage "SpaceCurves"
 restart
@@ -818,22 +929,24 @@ viewHelp "SpaceCurves"
 
 
 
---Generate divisors on cubic surface
+--Generate all divisors of degree d
 restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
-a = 6
-time Lrd = flatten apply({10,11,12}, d -> 
-    effectiveDivisorsOnCubic(abstractCubic,a,d));  -- used 3.90876 seconds
-dgTable Lrd
 
---Generate complete intersection curves
-restart
-needsPackage "SpaceCurves"
---check "SpaceCurves"
-time dT = flatten apply(10,d->effectiveDivisors(d+1)); -- used 225.955 seconds
-time rT = apply(dT, ad -> realize ad); -- used 47.5035 seconds
-time rB = apply(rT, rd -> betti res ideal rd);
-rBu = unique rB; #rBu
-netList rBu
-netList apply(rBu,b->(degree b,b))
+dmax = 12
+--AbstractDivisors
+time adList = flatten apply(dmax, d-> 	  -- used 8.09871 seconds
+    irreducibleDivisors(d+1,abstractQuadric) |
+    irreducibleDivisors(d+1,abstractCubic)   |
+    completeIntersectionCurves(d+1)	
+    );
+--RealizedDivisors
+x = getSymbol "x";
+R = ZZ/101[x_0..x_3]	  
+time rdList = flatten apply(dmax, d-> 	-- used 10.9523 seconds
+    irreducibleDivisors(d+1,realize(abstractQuadric,Ring => R)) |
+    irreducibleDivisors(d+1,realize(abstractCubic,Ring=>R))   |
+    apply(completeIntersectionCurves(d+1), ci->realize(ci,Ring=>R))	
+    );	  
+dgTable adList, dgTable rdList
