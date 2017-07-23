@@ -17,16 +17,18 @@ doc ///
         D=adicDigit(p,e,L)
     Inputs
         p:ZZ
-            greater than 1
+            greater than 1; the desired base
         e:ZZ
-            positive
+            positive, which specifies which digit is desired
         x:QQ
-            in the interval [0,1]
+            in the interval [0,1]; the number whose digit is to be computed
         L:List
             a list of rational numbers in the interval [0,1]
     Outputs   
         d:ZZ
+            the $e$-th digit of the base $p$ expansion of $x$
         D:List
+            consisting of the $e$-th digits of the base $p$ expansion of the elements of $L$
     Description
         Text    
             The command {\tt adicDigit(p,e,0)} returns 0.  If $x\in (0,1]$, 
@@ -55,19 +57,23 @@ doc ///
     Headline
         compute adic expansion
     Usage
-        adicExpansion(p,N)
-        adicExpansion(p,e,x)
+        L1 = adicExpansion(p,N)
+        L2 = adicExpansion(p,e,x)
     Inputs 
         p:ZZ
-	    greater than 1
+	    greater than 1; the desired base
         N:ZZ
-	    positive	
+	    positive, whose base $p$ expansion is to be computed	
         e:ZZ
-	    positive
+	    positive, which specifies how many digits are to be computed
         x:QQ
-	    in the interval [0,1]
+	    in the interval [0,1], whose base $p$ expansion is to be computed
     Outputs
-        :List
+        L1:List
+            consisting of all digits of the terminating base $p$ expansion of $N$ 
+        L2:List
+            consisting of the first $e$ digits of the {\em non}-terminating base 
+            $p$ expansion of $x$ 
     Description
         Text
             {\tt adicExpansion(p,0)} returns $\{ 0 \}$.  
@@ -104,11 +110,11 @@ doc ///
         T=adicTruncation(p, e, L)
     Inputs
         p:ZZ
-            greater than 1
+            greater than 1; the desired base
         e:ZZ
-            nonnegative
+            nonnegative, which specifies where to truncate
         r:QQ
-            nonnegative, to compute the truncation of
+            nonnegative; the number whose truncation is to be computed
         L:List
             containing nonnegative rational numbers to compute the truncation of
     Outputs
@@ -119,7 +125,7 @@ doc ///
             of the elements of {\tt L}    
     Description
         Text
-            This function computes the $e$th truncation of the $p$-adic expansion of
+            This function computes the $e$-th truncation of the $p$-adic expansion of
             a rational number.             
         Example
             adicTruncation(5, 2, 1/100)
@@ -145,12 +151,12 @@ doc ///
         floorLog
         (floorLog, ZZ, ZZ)
     Headline
-        floor of the log base b of x
+        floor of a logarithm
     Usage
      	floorLog(b,x)         
     Inputs
         b:ZZ
-            greater than 1
+            greater than 1; the base of the logarithm
         x:ZZ
 	    positive
     Outputs
@@ -174,18 +180,21 @@ doc ///
         multiplicativeOrder(a,b)
     Inputs
         a:ZZ
+            the number whose multiplicative order is to be computed
         b:ZZ
-            prime to {\tt a}		
+            prime to $a$; the modulus		
     Outputs
         :ZZ
+            the multiplicative order of $a$ mod $b$.
     Description
         Text
             This computes the multiplicative order of $a$ modulo $b$.  
-            If $a$ and $b$ are not relatively prime, it returns an error.
         Example
             multiplicativeOrder(2, 11^2)
             multiplicativeOrder(3, 11^2)
             multiplicativeOrder(4, 11^2)
+        Text
+            If $a$ and $b$ are not relatively prime, it returns an error.
 ///
 
 doc ///

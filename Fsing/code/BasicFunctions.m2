@@ -125,7 +125,7 @@ adicDigit ( ZZ, ZZ, List ) := ZZ => ( p, e, u ) -> apply( u, x -> adicDigit( p, 
 
 --===================================================================================
 
-adicExpansion = method( TypicalValue => List ); 
+adicExpansion = method( ); 
 
 --Computes the terminating base p expansion of a positive integer.
 --Gives expansion in reverse... so from left to right it gives
