@@ -134,7 +134,15 @@ universalEmbedding(Module) := Matrix => (M) -> (
 --           streamlined, skipping the unneccessary versal computation as in that 
 --           case the inclusion map is a versal map.
 
-reesIdeal = method(Options => {Variable => "w"})
+reesIdeal = method(Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  })
+  
 reesAlgebraIdeal = reesIdeal
 
 fixupw = w -> if instance(w,String) then getSymbol w else w
@@ -149,7 +157,7 @@ reesIdeal(Ideal) := Ideal => o-> (J) -> (
      symmetricKernel(gens J, Variable => fixupw o.Variable)
      )
 
----- needs user-provided non-zerodivisor. 
+-- needs user-provided non-zerodivisor a such that M[a^{-1}] is of linear type.
 
 reesIdeal (Module, RingElement) := Ideal =>
 reesIdeal (Module, RingElement) := Ideal => o -> (M,a) -> (
@@ -806,6 +814,17 @@ doc ///
        that require a Rees algebra.  The included functions are listed
        below. Examples of the use of each of the functions are included with
        their documentation.
+       
+      {\bf Historical Background}: The Rees Algebra of an ideal is the basic
+      commutative algebra analogue of the blow up operation in algebraic
+      geometry. It has many applications, and a great deal of modern work in
+      commutative algebra has been devoted to it.  The term ``Rees Algebra'' (of
+      an ideal $I$ in a ring $R$, say) is used here to refer to the ring
+      $R[It]\subset R[t]$ which is sometimes called the ``blowup algebra''
+      instead. (The origin of the name may be traced to a paper by David Rees
+      ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
+      used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
+      Algebra.'')
 ///
 
 doc ///
@@ -1090,6 +1109,11 @@ doc ///
     (reesIdeal, Module)
     (reesIdeal,Ideal, RingElement)
     (reesIdeal,Module, RingElement)
+    [reesIdeal, DegreeLimit]
+    [reesIdeal, Strategy]    	  
+    [reesIdeal, BasisElementLimit]
+    [reesIdeal, PairLimit]
+    [reesIdeal, MinimalGenerators]
   Headline
     compute the defining ideal of the Rees Algebra
   Usage
@@ -1099,7 +1123,7 @@ doc ///
     M:Module
       or @ofClass Ideal@ of a quotient polynomial ring $R$
     f:RingElement
-      any non-zero divisor modulo the ideal or module.  Optional
+      any non-zerodivisor in ideal or the first Fitting ideal of the module.  Optional
   Outputs
     :Ideal
       defining the Rees algebra of M
@@ -1137,16 +1161,6 @@ doc ///
       gives the correct answer even under the slightly weaker hypothesis that
       $M[a^{-1}]$ is ``of linear type''. (See also @TO isLinearType@.)
 
-      {\bf Historical Background}: The Rees Algebra of an ideal is the basic
-      commutative algebra analogue of the blow up operation in algebraic
-      geometry. It has many applications, and a great deal of modern work in
-      commutative algebra has been devoted to it.  The term ``Rees Algebra'' (of
-      an ideal $I$ in a ring $R$, say) is used here to refer to the ring
-      $R[It]\subset R[t]$ which is sometimes called the ``blowup algebra''
-      instead. (The origin of the name may be traced to a paper by David Rees
-      ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
-      used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
-      Algebra.'')
    Example
       kk = ZZ/101;
       S=kk[x_0..x_4];
@@ -1231,7 +1245,7 @@ doc ///
     M:Module
       or @ofClass Ideal@ of a quotient polynomial ring $R$
     f:RingElement
-      any non-zero divisor modulo the ideal or module.  Optional
+      any non-zerodivisor in ideal or the first Fitting ideal of the module.  Optional
   Outputs
     :Ring
       defining the Rees algebra of M
@@ -1279,7 +1293,7 @@ doc ///
      M:Module
        or @ofClass Ideal@
      f:RingElement
-       an optional element, which is a non-zerodivisor modulo {\tt M} and the ring of {\tt M}
+      any non-zero divisor modulo the ideal or module.  Optional
   Outputs
      :Boolean
        true if {\tt M} is of linear type, false otherwise
@@ -1324,8 +1338,7 @@ doc ///
      I:Ideal
      J:Ideal
      f:RingElement
-       an optional element, which is a non-zerodivisor modulo {\tt J} 
-       which is a member of {\tt I}.
+       an optional element, which is a non-zerodivisor modulo {\tt M} and the ring of {\tt M}
   Outputs
      t:Boolean
        true if {\tt J} is a reduction of {\tt I}, false otherwise
@@ -1461,7 +1474,7 @@ doc ///
      M:Module
        or @ofClass Ideal@
      f:RingElement
-       an optional element, which is a non-zerodivisor such that $M[f^{-1}]$ is a free module when $M$ is a module, an element in $M$ when $M$ is an ideal
+     a non-zerodivisor such that $M[f^{-1}]$ is a free module when $M$ is a module, an element in $M$ when $M$ is an ideal
   Outputs
      :Ideal
   Description
@@ -2259,11 +2272,11 @@ end--
 restart
 uninstallPackage "ReesAlgebra"
 loadPackage("ReesAlgebra", Reload=>true)
-installPackage("ReesAlgebra", FileName =>"~/git repositories/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
+installPackage("ReesAlgebra")
 check "ReesAlgebra"
 
 viewHelp installPackage
-viewHelp reesAlgebra
+viewHelp reesIdeal
 
 -- Local Variables:
 -- compile-command: "make -C $M2BUILDDIR/Macaulay2/packages PACKAGES=ReesAlgebra RemakeAllDocumentation=true IgnoreExampleErrors=false"
