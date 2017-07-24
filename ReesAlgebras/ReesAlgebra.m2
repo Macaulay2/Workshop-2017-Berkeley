@@ -134,7 +134,15 @@ universalEmbedding(Module) := Matrix => (M) -> (
 --           streamlined, skipping the unneccessary versal computation as in that 
 --           case the inclusion map is a versal map.
 
-reesIdeal = method(Options => {Variable => "w"})
+reesIdeal = method(Options => 
+         Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
 reesAlgebraIdeal = reesIdeal
 
 fixupw = w -> if instance(w,String) then getSymbol w else w
@@ -1090,6 +1098,11 @@ doc ///
     (reesIdeal, Module)
     (reesIdeal,Ideal, RingElement)
     (reesIdeal,Module, RingElement)
+    [reesIdeal, DegreeLimit]
+    [reesIdeal, Strategy]    	  
+    [reesIdeal, BasisElementLimit]
+    [reesIdeal, PairLimit]
+    [reesIdeal, MinimalGenerators]
   Headline
     compute the defining ideal of the Rees Algebra
   Usage
@@ -1147,6 +1160,7 @@ doc ///
       ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
       used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
       Algebra.'')
+      
    Example
       kk = ZZ/101;
       S=kk[x_0..x_4];
