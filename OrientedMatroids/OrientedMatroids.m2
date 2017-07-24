@@ -9,7 +9,7 @@ newPackage("OrientedMatroids",
 	DebuggingMode => true
 )
 export {
-
+    
     }
 needsPackage "Graphs"
 
@@ -156,7 +156,7 @@ circuitsFromMatrix = A -> (
 
 ------------------------------------------
 
--- input: B is a hash table whose keys are r-element subsets of {0,1,..,n}, whose values are +/-/0
+-- input: H is a hash table whose keys are r-element subsets of {0,1,..,n}, whose values are +/-/0
 -- r = rank
 -- n = size of ground set
 circuitsFromChirotope = (H, n, r) -> (
@@ -171,6 +171,126 @@ circuitsFromChirotope = (H, n, r) -> (
 	);
     sort unique(C | apply(C, c -> -1 * c))
     )
+
+------------------------------------------
+-- input: C = signed circuits of oriented matroid
+-- r = rank
+-- n = size of ground set
+chirotopeFromCircuits = (C, n, r) -> (
+    if #C==0 then return new HashTable from {toList(0..n-1)=>1};
+    UC := unique apply(C,c->supp(c));--undirected circuits
+    Sb := subsets(n,r);
+    H := new MutableHashTable;--initialize hash table to store chirotope--
+    Bases := {};
+    ind := 0;
+    --assign 0 to non-bases, collect bases
+    while (ind<#Sb) do(
+       current := Sb_ind;
+       if any(UC,e->isSubset(e,set current)) then(
+	   --assign 0 to current non-basis
+	   H#current = 0;
+	   ind = ind+1
+	   )else(
+	   Bases = append(Bases, current);
+	   ind = ind+1
+	   ));
+   --initialize same and different sign graphs--
+   sameSign := {};
+   diffSign := {};
+   E := toList(0..n-1);
+   --get graphs of bases with same and different signs based on circuits--
+   scan(UC, uc->(
+	   circ := first select(1,C,c->(supp(c)==uc));
+	   comp := E-set(uc);
+	   scan(subsets(comp,r+1-(#uc)), T->(
+		   R := sort join(uc,T);--circ is the unique circuit in R
+		   --initialize positive and negative lists--
+		   Pos := {};
+		   Neg := {};
+		   --separate relevant bases into negative and positive based on circ--
+		   scan(uc,j->(
+			   BN := R-set({j});
+			   p=position(R,l->(l==j));
+			   if (-1)^p*(circ_j)>0 then (Pos=append(Pos,BN)) else (Neg=append(Neg,BN));
+			   ));
+		   --put relevant bases into same sign and different sign graphs--
+		   sameSign = join(sameSign,subsets(Pos,2),subsets(Neg,2));
+		   diffSign = join(diffSign,flatten table(#Pos,#Neg,(i,j)->{Pos_i,Neg_j}));
+		   ));
+	   ));
+   --Assign +1 to first basis
+   H#(Bases_0) = 1;
+   --Initialize list of bases already signed
+   signed := {Bases_0};
+   --initialize list of signed bases all of whose neighbors
+   --have not yet been processed
+   boundary := signed;
+   notSigned := Bases-set(signed);
+   while (#notSigned)>0 do(
+       newBoundary := {};
+       --flag to detect if boundary has no new neighbors
+       qnb :=0;
+       scan(boundary,B1->(
+	       nbs := (unique flatten select(sameSign,e->isSubset({B1},e)))-set(signed);
+	       nbd := (unique flatten select(diffSign,e->isSubset({B1},e)))-set(signed)-set(nbs);
+	       newBoundary = unique join(newBoundary,nbs,nbd);
+	       --increment flag if B1 has no unsigned neighbors
+	       if (#(nbs)==0 and #(nbd)==0)then(
+		   qnb =qnb+1;
+		   )else(
+		   --sign the unsigned neighbors of boundary basis B1
+		   scan(nbs, B2->(
+			   H#B2 = H#B1;
+			   signed = append(signed,B2);
+			   notSigned = notSigned-set({B2})
+			   ));
+		   scan(nbd, B2->(
+			   H#B2=-(H#B1);
+			   signed = append(signed,B2);
+			   notSigned = notSigned-set({B2});
+			   ));
+		   )));
+       --if newBoundary is empty and there are still unsigned bases then exchange condition
+       --is violated
+       if (qnb==length boundary) then (
+	   error "Exchange condition on matroid bases is not satisfied"
+	   )else(
+	   boundary=newBoundary
+	   )
+       );
+    --return the completed hashtable function
+    new HashTable from H
+    )
+
+------------------------------------------
+
+--Input: E, list of (oriented) edges of digraph
+--Output: cellular differential from edges to vertices
+
+matrixFromDigraph = E ->(
+    V := unique flatten E;
+    matrix table(V,E,(v,e)->(
+	    if v==(first e) then (
+		return -1
+		)else(
+		if v==(last e) then (
+		    return 1
+		    )else(
+		    0
+		    ))))
+    )
+
+------------------------------------------
+
+--input: E, edges of digraph
+--output: directed circuits of associated oriented matroid
+
+circuitsFromDigraph = E->(
+    M := matrixFromDigraph(E);
+    circuitsFromMatrix(M)
+    )
+
+
 
 ------------------------------------------
 
@@ -249,3 +369,25 @@ M.cache.chirotope
 
 C = circuitsFromChirotope (H, n, r)
 prod (C_0, C_1)
+
+--check output from chirotopeFromCircuits function--
+--random matrix
+M=matrix {{-1, 2, 3, -1, 0}, {-1, 2, 0, 0, 1}};
+--acyclic digraph on K4
+E=sort subsets(4,2)
+M=matrixFromDigraph(E)
+--a simple digraph
+E={{0,1},{0,2},{2,1},{2,3},{3,2}};
+M=matrixFromDigraph E
+--two disjoint three-cycles
+E={{0,1},{1,2},{2,0},{3,4},{4,5},{5,3}};
+M=matrixFromDigraph E
+
+--checking chirotopeFromCircuits against chirotopeFromMatrix
+r=rank M;
+n=numcols M;
+H1=chirotopeFromMatrix(M);
+C = circuitsFromMatrix(M);
+H2=chirotopeFromCircuits(C,n,r)
+--may only be true up to sign...
+H1===H2
