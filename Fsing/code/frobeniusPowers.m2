@@ -15,10 +15,9 @@ fastExponentiation = method( TypicalValue => RingElement )
 
 fastExponentiation ( ZZ, RingElement ) := RingElement => ( N, f ) ->
 (
-    if N < 0 then error "fastExponentiation: first argument must be a polynomial over a nonnegative integer.";
-    if char ring f == 0 then 
-        error "fastExponentiation: second argument must be a polynomial over a field of positive characteristic.";
-    p:=char ring f;
+    if N < 0 then error "fastExponentiation: first argument must a nonnegative integer.";
+    p := char ring f;
+    if p == 0 then return f^N; 
     E:=adicExpansion(p,N);
     product(#E, e -> sum( terms f^(E#e), g -> g^(p^e) ) )
 )
@@ -27,7 +26,7 @@ fastExponentiation ( ZZ, RingElement ) := RingElement => ( N, f ) ->
 
 --Outputs the p^e-th Frobenius power of an ideal, or the p^e-th (entry-wise) Frobenius power of a matrix.
 
-frobeniusMethod =  method( TypicalValue => Ideal, Options => { FrobeniusRootStrategy => Substitution } );
+frobeniusMethod =  method( Options => { FrobeniusRootStrategy => Substitution } );
 
 frobeniusMethod ( ZZ, Ideal ) := Ideal => o -> ( e, I ) ->
 (
@@ -45,7 +44,7 @@ frobeniusMethod ( ZZ, Matrix ) := Matrix => o -> ( e, M ) ->
 (
     p := char ring M;
     if p == 0 then 
-        error "frobeniusMethod: expected an matrix with entries in a ring of positive characteristic.";
+        error "frobenius: expected an matrix with entries in a ring of positive characteristic.";
     if e == 0 then return M;
     if e < 0 then error "frobenius: first argument must be nonnegative.";
     matrix apply( entries M, u -> apply( u, j -> fastExponentiation( p^e, j ) ) )
@@ -63,7 +62,7 @@ FrobeniusOperator ^ ZZ := ( f, n ) -> ( x -> f( n, x ) )
 
 --------------------------------------------------------------------------------------------------------
 
---This is an internal function.  Given ideals I,J and a positive integer e, consider
+--This is an internal function. Given ideals I, J and a positive integer e, consider
 --the following chain of ideals:
 --K_1 = (I*J)^[1/p^e] and K_{s+1} = (I*K_s)^[1/p^e]
 --This chain is ascending, and has the property that once two consecutive terms
@@ -91,7 +90,7 @@ frobeniusPower = method(
 );
 
 --Computes the integral generalized Frobenius power I^[N]
-frobeniusPower ( ZZ, Ideal ) := Ideal => opts -> ( N, I ) -> 
+frobeniusPower ( ZZ, Ideal ) := Ideal => o -> ( N, I ) -> 
 (
     R := ring I;
     p := char R;
@@ -126,19 +125,19 @@ frobeniusPowerHelper = { FrobeniusPowerStrategy => Naive, FrobeniusRootStrategy 
 )
 
 --Computes the generalized Frobenius power I^[t] for a rational number t 
-frobeniusPower( QQ, Ideal ) := Ideal => opts -> ( t, I ) ->
+frobeniusPower( QQ, Ideal ) := Ideal => o -> ( t, I ) ->
 (
-    if t < 0 then error "frobeniusPower: expected nonnegative number(s).";
+    if t < 0 then error "frobeniusPower: expected a nonnegative exponent.";
     p := char ring I;
     if p == 0 then 
         error "frobeniusPower: expected an ideal in a ring of positive characteristic.";
     ( a, b, c ) := toSequence decomposeFraction( p, t ); --write t = a/(p^b*(p^c-1))
-    if c == 0 then frobeniusPowerHelper( b, a, I, opts )  --if c = 0, call simpler function
+    if c == 0 then frobeniusPowerHelper( b, a, I, o )  --if c = 0, call simpler function
         else 
 	(
 	    rem := a % ( p^c - 1 );      
 	    quot := a // ( p^c - 1 );     
-	    J := stableIdeal( c, frobeniusPower( rem, I ), I, FrobeniusRootStrategy => opts.FrobeniusRootStrategy );
-	    frobeniusRoot( b, frobeniusPower( quot, I ) * J, FrobeniusRootStrategy => opts.FrobeniusRootStrategy )
+	    J := stableIdeal( c, frobeniusPower( rem, I ), I, FrobeniusRootStrategy => o.FrobeniusRootStrategy );
+	    frobeniusRoot( b, frobeniusPower( quot, I ) * J, FrobeniusRootStrategy => o.FrobeniusRootStrategy )
         )
 )

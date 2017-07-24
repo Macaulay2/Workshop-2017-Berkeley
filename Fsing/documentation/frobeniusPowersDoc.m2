@@ -19,10 +19,10 @@ doc ///
             in positive characteristic
     Outputs
         :RingElement
-            the {\tt n}-th power of {\tt f}
+            the $n$-th power of $f$
     Description
         Text
-            In prime characteristic $p > 0$, raising a sum $a+b$ to the $p$th power 
+            In prime characteristic $p > 0$, raising a sum $a+b$ to the $p$-th power 
             is more quickly done by simply computing $a^p$ and $b^p$ and adding them. 
             The basic strategy is to break up the exponent into its base $p$ 
             expansion, and then use the exponent rules. For example, 
@@ -32,6 +32,9 @@ doc ///
             f = sum( 10, i -> x^i );
             time f^321;
             time fastExponentiation(321,f);
+        Text
+            If an element in a ring of characteristic 0 is passed, 
+            {\tt fastExponentiation(n,f)} simply computes $f^n$ in the usual way.
 ///
 
 doc ///

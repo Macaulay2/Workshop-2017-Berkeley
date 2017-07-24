@@ -220,13 +220,9 @@ isPolynomialOverPosCharField (RingElement) := Boolean => F ->
 --isPolynomialOverFiniteField(F) checks if F is a polynomial over a finite field.
 isPolynomialOverFiniteField = method( TypicalValue => Boolean )
 
--- This was reverted so that users with older M2 version could load 
-
---isPolynomialOverFiniteField (RingElement) := Boolean => F ->
---    isPolynomialOverPosCharField( F ) and isFinitePrimeField(coefficientRing ring F)
-
 isPolynomialOverFiniteField (RingElement) := Boolean => F ->
-    isPolynomialOverPosCharField( F ) and  ( try (coefficientRing ring F)#order then true else false )
+    isPolynomialOverPosCharField( F ) and  (coefficientRing ring F)#?order
+    
 --===================================================================================
 
 
@@ -235,6 +231,8 @@ isPolynomialOverPrimeField = method( TypicalValue => Boolean )
 
 isPolynomialOverPrimeField (RingElement) := Boolean => F ->
     isPolynomial( F ) and  (coefficientRing ring F) === ZZ/(char ring F)
+
+-- use isFinitePrimeField
     
 --===================================================================================
 

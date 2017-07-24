@@ -188,13 +188,15 @@ doc ///
             the multiplicative order of $a$ mod $b$.
     Description
         Text
-            This computes the multiplicative order of $a$ modulo $b$.  
+            {\tt multiplicativeOrder(a,b)} computes the multiplicative order 
+            of $a$ modulo $b$.  
         Example
             multiplicativeOrder(2, 11^2)
             multiplicativeOrder(3, 11^2)
             multiplicativeOrder(4, 11^2)
         Text
-            If $a$ and $b$ are not relatively prime, it returns an error.
+            If $a$ and $b$ are not relatively prime,  {\tt multiplicativeOrder(a,b)} 
+            returns an error.
 ///
 
 doc ///
