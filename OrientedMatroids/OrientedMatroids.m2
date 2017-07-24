@@ -9,7 +9,32 @@ newPackage("OrientedMatroids",
 	DebuggingMode => true
 )
 export {
-    
+    --Symbols--
+    "rk",--(already exported in Matroids)
+    "TargetRank",--(already exported in Matroids)
+    "chirotope",
+    "circuits",--(already exported in Matroids)
+    "groundSet",--(already exported in Matroids)
+    "ground",--(already exported in Matroids)
+    "matroidMatrix",
+    --Types--
+    "Matroid",--(already exported in Matroids)
+    "OrientedMatroid",
+    --Functions--
+    "orientedMatroid",
+    "rankFromCircuits",
+    "supp",
+    "suppPos",
+    "suppNeg",
+    "sign",
+    "chirotopeFromMatrix",
+    "circuitsFromMatrix",
+    "circuitsFromChirotope",
+    "chirotopeFromCircuits",
+    "matrixFromDigraph",
+    "circuitsFromDigraph",
+    "prod",
+    "isCircuits"
     }
 needsPackage "Graphs"
 
@@ -90,7 +115,7 @@ rankFromCircuits = method(Options => {symbol TargetRank => -1})
 rankFromCircuits (List, ZZ) := (List, ZZ) => opts -> (C, n) -> (
 	E := set(0..<n);
 	t := if opts.TargetRank >= 0 then opts.TargetRank + 1 else max(C/(c -> #supp(c))); -- count nonzero entries of each circuit
-        C'= unique(C/(c-> set supp(c)));
+        C':= unique(C/(c-> set supp(c)));
 	N := toList set flatten((select(C', c -> #c < t))/(c -> subsets(E - c, t - 1 - #c)/(s -> c + s))); -- fills up small circuits to be of size t-1 which can't be bases
 	if opts.TargetRank >= 0 then  return opts.TargetRank;
 	D := toList set flatten(N/(c -> subsets(E - c, 1)/(s -> c + s))); -- gives us things of size t that are not bases
@@ -210,7 +235,7 @@ chirotopeFromCircuits = (C, n, r) -> (
 		   --separate relevant bases into negative and positive based on circ--
 		   scan(uc,j->(
 			   BN := R-set({j});
-			   p=position(R,l->(l==j));
+			   p := position(R,l->(l==j));
 			   if (-1)^p*(circ_j)>0 then (Pos=append(Pos,BN)) else (Neg=append(Neg,BN));
 			   ));
 		   --put relevant bases into same sign and different sign graphs--
@@ -360,8 +385,8 @@ B = transpose gens kernel A
 net matrix circuitsFromMatrix A
 net matrix circuitsFromMatrix B
 
-C = matrix{{0,0,0,0,1},{0,0,0,1,1},{1,2,3,4,5}}
-matrix circuitsFromMatrix C
+A = matrix{{0,0,0,0,1},{0,0,0,1,1},{1,2,3,4,5}}
+matrix circuitsFromMatrix A
 n = numColumns A; r = rank A;
 H = chirotopeFromMatrix A
 M =orientedMatroid(entries transpose A, H)
@@ -384,10 +409,10 @@ E={{0,1},{1,2},{2,0},{3,4},{4,5},{5,3}};
 M=matrixFromDigraph E
 
 --checking chirotopeFromCircuits against chirotopeFromMatrix
-r=rank M;
-n=numcols M;
-H1=chirotopeFromMatrix(M);
-C = circuitsFromMatrix(M);
+r=rank M
+n=numcols M
+H1=chirotopeFromMatrix(M)
+C = circuitsFromMatrix(M)
 H2=chirotopeFromCircuits(C,n,r)
 --may only be true up to sign...
 H1===H2
