@@ -1,5 +1,5 @@
 newPackage(
-    "PotentialBettiTables",
+    "PossibleBettiTables",
     Version => "0.1",
     Date => "July 19, 2017",
     Authors => {{
@@ -13,7 +13,7 @@ newPackage(
 	{
 	    Name => "Michael Perlman",
 	    Email => "mperlman@nd.edu",
-	    HomePage => ""}}
+	    HomePage => ""}},
     Headline => "computes family of all possible Betti tables of a 0-dimensional grade module",
     DebuggingMode => true
   )
@@ -54,7 +54,7 @@ maxBettiCyclic(ZZ,List) := (n,h) -> (
     for j from 0 to #h-1 do (
 	for i from 1 to n do (
 	    if M#(i-1,j) == 0 then (
-		t = true;
+		t := true;
 		for k from 0 to j-1 do (
 		    t = t and (M#(i-1,k) == 0);
 		    );
@@ -106,7 +106,7 @@ fromHashToDiagMatrix = H ->(
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 makeHashFromBetti = B -> (
-    H = new HashTable from apply(keys B, b-> (b_0,b_2-b_0) => B#b)
+    new HashTable from apply(keys B, b-> (b_0,b_2-b_0) => B#b)
     )
 
 --------------------------------------------------------------------------
@@ -155,7 +155,7 @@ isInCone BettiTally := B -> (
 	    C := pureBettiDiagram L;
      	    C := makePureBettiDiagram L;     
      	    ratio := min apply(#L, i->(T#(i,{L_i}, L_i))/(C#(i,{L_i},L_i)));
-     	    X = (C,ratio,merge(T,C, (i,j)->i-ratio*j));
+     	    X := (C,ratio,merge(T,C, (i,j)->i-ratio*j));
 	    B1 = new MutableHashTable from X_2;
 	    )
 	else (
@@ -234,7 +234,7 @@ possibleCancelations (HashTable) := H ->(
     
 possibleBettiTables = method()
 possibleBettiTables (HashTable) := H ->(
-    delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i)))	
+    delete(,apply(possibleCancelations(H),i-> if isInCone(i)==true then i))	
     )      
 end
 
