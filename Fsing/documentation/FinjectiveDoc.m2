@@ -61,7 +61,7 @@ doc ///
 doc ///
     Key
         isFinjective
-        (isFinjective, Ring)     
+        (isFinjective, Ring)   
     Headline
         whether a ring is F-injective
     Usage
@@ -72,7 +72,8 @@ doc ///
         :Boolean
     Description
         Text
-            This verifies if a ring is F-injective or not.  We begin with an example of an F-injective ring that is not F-pure (taken from the work of Anurag Singh).
+            This verifies if a ring of finite type over a prime field is F-injective or not.  Over a more general field this checks the F-injectivity of the relative Frobenius.            
+            We begin with an example of an F-injective ring that is not F-pure (taken from the work of Anurag Singh).
         Example
              S = ZZ/3[a,b,c,d,t];
              m = 4; 
@@ -104,6 +105,26 @@ doc ///
         isFpure            
 ///
 
+doc ///
+    Key
+        [isFinjective, IsLocal]
+    Headline
+        controls whether F-injectivity is checked at the origin or everywhere
+    Usage
+        isFinjective(..., IsLocal=>b)
+    Inputs
+        b:Boolean
+    Outputs
+        :Boolean
+    Description
+        Text
+            If you set the option {\tt IsLocal => true} (default {\tt false}) it will only check F-injectivity at the origin.  Otherwise it will check it everywhere.  Note checking at the origin can be slower than checking it everywhere.  Consider the example of the following non-F-injective ring.
+        Example
+            R = ZZ/5[x,y,z]/ideal( (x-1)^4 + y^4 + z^4 );
+            isFinjective(R)
+            isFinjective(R, IsLocal=>true)
+///
+        
 doc ///
     Key
         [isFinjective, AssumeCM]

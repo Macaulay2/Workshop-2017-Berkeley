@@ -4,7 +4,7 @@ doc ///
      Key
      	findAllCompatibleIdeals 
      Headline
-        Finds all ideals compatible with a given Frobenius near-splitting of the form Tr(F_* u (-)) where $Tr:F_*R \rightarrow R$ is the trace map for a polynomial ring $R$.
+        finds all ideals compatibly Frobenius split ideals
      Usage
      	 findAllCompatibleIdeals (u)
      Inputs

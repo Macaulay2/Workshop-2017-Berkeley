@@ -30,6 +30,12 @@ TEST /// --HSLGModule cone over ordinary elliptic curve
     assert(HSLmod#0 == HSLmod#1);
 ///
 
+TEST /// --the isLocal option
+    R = ZZ/5[x,y,z]/ideal((x-2)^3 + y^3 + z^3); --supersingular
+    assert( isFinjective(R, IsLocal=>true) );
+    assert( not isFinjective(R) );
+///
+
 TEST /// --HSLGModule cone over supersingular elliptic curve
     R = ZZ/5[x,y,z]/ideal(x^3+y^3+z^3);
     HSLmod = HSLGModule(R);

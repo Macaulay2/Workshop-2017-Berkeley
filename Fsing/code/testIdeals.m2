@@ -62,7 +62,7 @@ testElement(Ring) := o->(R1) ->
 	while(any(primesList, II->isSubset(ideal(testEle), II))) do(
 	    curMinor = first entries gens  minors(n1,M1, First =>{randomSubset(r1,n1),randomSubset(c1,n1)}, Limit =>1);
 	    if (#(curMinor) > 0) then (
-            testEle = testEle + (random(coefficientRing R1))*(first curMinor);
+	        if (o.AssumeDomain == true) then testEle = first curMinor else testEle = testEle + (random(coefficientRing R1))*(first curMinor);
         );
 	);
 	testEle%I1

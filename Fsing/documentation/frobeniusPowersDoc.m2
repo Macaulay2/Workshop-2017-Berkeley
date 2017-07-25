@@ -9,7 +9,7 @@ doc ///
         fastExponentiation
         (fastExponentiation, ZZ, RingElement)
     Headline
-        computes powers of elements in rings of positive characteristic quickly.
+        computes powers of elements in rings of positive characteristic quickly
     Usage
         fastExponentiation(n,f) 
     Inputs
@@ -41,7 +41,7 @@ doc ///
     Key
         frobenius
     Headline
-        computes Frobenius powers of ideals and matrices.
+        computes Frobenius powers of ideals and matrices
     Usage
         frobenius(e,I)
         frobenius^e(I) 

@@ -43,7 +43,7 @@ doc ///
             ascendIdeal(1, h, ideal(y^3))
             ascendIdeal(1, h, ideal((sub(y, S))^3))          
         Text
-            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the polynomial passed is a power, $h^a$.  If $a$ is large, we don't want to compute $h^a$; instead we try to keep the exponent small by only raising it to the minimal power.
+            The alternate ways to call the function allow the function to behave in a more efficient way.  Indeed, frequently the polynomial passed is a power, $h^a$.  If $a$ is large, we don't want to compute $h^a$; instead we try to keep the exponent small by only raising it to the minimal power needed to do computation at that time.
         Example
             S = ZZ/5[x,y,z];
             g = x^4+y^4+z^4;

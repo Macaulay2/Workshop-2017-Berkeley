@@ -62,8 +62,7 @@ export{
 --BasicFunctions (BasicFunctions.m2) 
     "basePExp",    
     "carryTest",  
-    "denom",   
-    "digit", 	   
+    "denom",    
     "divideFraction",
     "fasterFloorLog",
     "firstCarry", 

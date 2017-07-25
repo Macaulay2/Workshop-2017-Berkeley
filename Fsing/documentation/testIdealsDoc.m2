@@ -245,7 +245,7 @@ doc ///
         :Boolean
     Description
         Text
-            Given a normal Q-Gorenstein ring $R$, this computes whether the ring is strongly F-regular.
+            Given a normal Q-Gorenstein ring $R$ (or a Gorenstein ring in general), this computes whether the ring is strongly F-regular.
         Example
             R = ZZ/5[x,y,z]/ideal(x^2+y*z);
             isFregular(R)
@@ -313,7 +313,7 @@ doc ///
         :Boolean
     Description
         Text
-            Given a ring $R$, this computes whether the ring is F-pure using Fedder's criterion (typically by applying @TO frobeniusRoot@ to $I^{[p]} : I$).
+            Given a ring $R$, this computes whether the ring is F-pure using Fedder's criterion (by applying @TO frobeniusRoot@ to $I^{[p]} : I$).
         Example
             R = ZZ/5[x,y,z]/ideal(x^2+y*z);
             isFpure(R)

@@ -88,7 +88,7 @@ doc ///
             are zero. If $x$ is nonzero, then {\tt adicExpansion(p,e,x)} returns a 
             list of size $e$ in which the $i$th element is the coefficient of 
             $p^{-i-1}$ in the unique nonterminating base $p$ expansion of $x$.  
-            For example, the non-terminating base 2 expansion of 1/2 is 
+            For example, the non-terminating base $2$ expansion of $1/2$ is 
             $1/2 = 0/2 + 1/4 + 1/8 + 1/16 + \cdots$, and so 
         Example
             adicExpansion(2,4,1/2)

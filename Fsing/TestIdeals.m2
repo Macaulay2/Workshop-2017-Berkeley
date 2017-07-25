@@ -10,8 +10,8 @@
 --*************************************************
 
 newPackage( "TestIdeals",
-Version => "0.1", 
-Date => "May 30th, 2017", 
+Version => "0.2", 
+Date => "July 24th, 2017", 
 Authors => {
      {Name => "Erin Bela",
      Email => "ebela@nd.edu"
@@ -153,12 +153,12 @@ export{
 
  
 -- Other
-    "FFiniteSupport", ---MK
-    "findAllCompatibleIdeals", ---MK	   
-    "findGeneratingMorphisms", ---MK
+--    "FFiniteSupport", ---MK
+    "findAllCompatibleIdeals" ---MK	   
+--    "findGeneratingMorphisms", ---MK
 --    "FPureIdeals",
-    "generatingMorphism", ---MK
-    "generatingRoot" ---MK
+--    "generatingMorphism", ---MK
+--    "generatingRoot" ---MK
 --    "paraTestModule", ---MK
 --    "paraTestModuleAmbient" ---MK  
 
@@ -169,15 +169,9 @@ load "./code/BasicFunctions.m2"
 
 load "./code/EthRoots.m2"
 
-load "./code/generatingMorphism.m2"
-
 load "./code/frobeniusPowers.m2"
 
 load "./code/compatiblySplit.m2"
-
---load "./code/FPure.m2"
-
---load "./code/FFiniteSupport.m2"
 
 load "./code/parameterTestIdeal.m2"
 
@@ -199,17 +193,11 @@ load "./documentation/EthRootsDoc.m2"
 
 load "./documentation/compatiblySplitDoc.m2"
 
-load "./documentation/FFiniteSupportDoc.m2"
-
-load "./documentation/generatingMorphismDoc.m2"
-
 load "./documentation/testIdealsDoc.m2"
 
 load "./documentation/parameterTestIdealDoc.m2"
 
 load "./documentation/FinjectiveDoc.m2"
-
---load "./documentation/FPureDoc.m2"
 
 -- TESTS
 
