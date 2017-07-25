@@ -12,7 +12,7 @@ doc ///
         :List
     Description
         Text
-            Given an element u of the polynomial ring $R$ over a finite field, this function returns a list of all prime ideals $P$ such that: 
+            Given an element u of the polynomial ring $R$ over a prime field, this function returns a list of all prime ideals $P$ such that: 
             
             (a) $u P \subseteq P^{[p]}$, and 
             

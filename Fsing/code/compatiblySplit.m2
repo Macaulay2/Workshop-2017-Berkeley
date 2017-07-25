@@ -32,7 +32,7 @@ compatibleIdeals = method(Options => {FrobeniusRootStrategy => Substitution});
 
 compatibleIdeals(RingElement) := o -> u ->
 (
-    if not isPolynomialOverPosCharField( u ) then 
+    if not isPolynomialOverPrimeField( u ) then 
         error "compatibleIdeals: expected an element of a polynomial ring over a prime field ZZ/p";
     L := { }; 
     R := ring u; 
