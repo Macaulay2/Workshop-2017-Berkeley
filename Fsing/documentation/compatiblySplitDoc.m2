@@ -1,5 +1,3 @@
---this doc file is done
-
 doc ///
     Key
         compatibleIdeals 
