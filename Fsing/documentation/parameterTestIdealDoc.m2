@@ -54,11 +54,11 @@ doc ///
 
 doc ///
     Key
-        findCanonicalModuleFrobeniusTrace
+        frobeniusTraceOnCanonicalModule
     Headline
         finds the u, which in a polynomail ring, determines the Frobenius trace on canonical module of a quotient of that ring
     Usage
-        findCanonicalModuleFrobeniusTrace(canIdeal, defIdeal)
+        frobeniusTraceOnCanonicalModule(canIdeal, defIdeal)
     Inputs
         canIdeal:Ideal
         defIdeal:Ideal
@@ -77,7 +77,7 @@ doc ///
             R = S/defIdeal;
             J = canonicalIdeal(R);
             canIdeal = sub(J, S) + defIdeal;
-            findCanonicalModuleFrobeniusTrace(canIdeal, defIdeal)
+            frobeniusTraceOnCanonicalModule(canIdeal, defIdeal)
 ///
 
 doc ///
@@ -107,7 +107,7 @@ doc ///
         :Sequence
     Description
         Text
-            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element $u$ (or $u$s) used to compute this ideal via the method @TO findCanonicalModuleFrobeniusTrace@.  
+            Computes the parameter test module (as a submodule of the canonical module).  The function returns three values, the parameter test submodule, the canonical module of which it is a subset, and the element $u$ (or $u$s) used to compute this ideal via the method @TO frobeniusTraceOnCanonicalModule@.  
         Example
             R = ZZ/7[x,y,z]/ideal(x^3+y^3+z^3);
             testModule(R)

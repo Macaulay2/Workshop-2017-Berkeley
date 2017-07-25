@@ -337,10 +337,10 @@ ascendIdeal(ZZ, BasicList, BasicList, Ideal) := o->(ek, akList,  hkList, Jk) -> 
 --minimalCompatible(Ideal,RingElement,ZZ) :=  (Jk, hk, ek) -> ascendIdeal (Jk, hk, ek)
 --minimalCompatible(Ideal,RingElement,ZZ,ZZ) :=  (Jk, hk, ak, ek) -> ascendIdeal(Jk, hk, ak, ek)
 --minimalCompatible(Matrix,Matrix,ZZ) := (A,U,e) -> Mstar (A,U,e)
-minimalCompatible = method();
-minimalCompatible(ZZ,RingElement,Ideal) :=  (ek, hk, Jk) -> ascendIdeal (ek, hk, Jk)
-minimalCompatible(ZZ,ZZ,RingElement,Ideal) :=  ( ak, ek,hk,Jk) -> ascendIdeal (ak, ek,hk,Jk)
-minimalCompatible(ZZ,Matrix,Matrix) := (e,A,U) -> Mstar (e,A,U)
+minimalCompatible = method(Options => {FrobeniusRootStrategy => Substitution});
+minimalCompatible(ZZ,RingElement,Ideal) :=  o->(ek, hk, Jk) -> ascendIdeal (ek, hk, Jk, FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
+minimalCompatible(ZZ,ZZ,RingElement,Ideal) :=  o->( ak, ek,hk,Jk) -> ascendIdeal (ak, ek,hk,Jk,FrobeniusRootStrategy=>o.FrobeniusRootStrategy);
+minimalCompatible(ZZ,Matrix,Matrix) := o->(e,A,U) -> Mstar (e,A,U);
 
 --MKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMKMK
 

@@ -1,13 +1,13 @@
 doc ///
     Key
-        findQGorGen
-        (findQGorGen, ZZ, Ring)
-        (findQGorGen, Ring)
+        QGorensteinGenerator
+        (QGorensteinGenerator, ZZ, Ring)
+        (QGorensteinGenerator, Ring)
     Headline
         finds an element representing the Frobenius trace map of a Q-Gorenstein ring
     Usage
-        findQGorGen(e, R)
-        findQGorGen(R)
+        QGorensteinGenerator(e, R)
+        QGorensteinGenerator(R)
     Inputs
         e: ZZ
         R: Ring
@@ -23,7 +23,7 @@ doc ///
             f = x^2*y - z^2;
             I = ideal(f);
             R = S/I;
-            u = findQGorGen(1, R)
+            u = QGorensteinGenerator(1, R)
             u%I^3 == f^2%I^3
         Text
             If Macaulay2 does not recognize that $I^{[p^e]} : I / I^{[p^e]}$ is principal, an error is thrown.  Note in the nongraded case, Macaulay2 is not guaranteed to do this simplification.

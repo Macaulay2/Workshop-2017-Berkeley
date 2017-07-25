@@ -20,9 +20,9 @@
 --Preliminary functions
 --*********************
 
-findQGorGen=method()
+QGorensteinGenerator=method()
 
-findQGorGen ( ZZ, Ring ) := ( e, R ) -> 
+QGorensteinGenerator ( ZZ, Ring ) := ( e, R ) -> 
 (
      S := ambient R; -- the ambient ring
      I := ideal R; -- the defining ideal
@@ -31,11 +31,11 @@ findQGorGen ( ZZ, Ring ) := ( e, R ) ->
      J = trim sub( J, S/Ie ); -- extend colon ideal to S/Ie
      L := J_*; -- grab generators
      if ( #L != 1 ) then 
-	  error "findQGorGen: this ring does not appear to be (Q-)Gorenstein, or you might need to work on a smaller chart. Or the index may not divide p^e-1 for the e you have selected.  Alternately it is possible that Macaulay2 failed to trim a principal ideal.";
+	  error "QGorensteinGenerator: this ring does not appear to be (Q-)Gorenstein, or you might need to work on a smaller chart. Or the index may not divide p^e-1 for the e you have selected.  Alternately it is possible that Macaulay2 failed to trim a principal ideal.";
      lift( L#0, S )
 )
 
-findQGorGen ( Ring ) := R -> findQGorGen( 1, R )
+QGorensteinGenerator ( Ring ) := R -> QGorensteinGenerator( 1, R )
 
 --Finds a test element of a ring R = k[x, y, ...]/I (or at least an ideal 
 --containing a nonzero test element).  It views it as an element of the ambient ring
@@ -150,7 +150,7 @@ testIdeal(Ring) := o->(R1) -> (
     if ((pp-1)%cartIndex == 0) then ( 
         J1 := testElement( R1, AssumeDomain=>o.AssumeDomain );
         h1 := sub(0, ambient R1);
-        try (h1 = findQGorGen( 1, R1)) then (
+        try (h1 = QGorensteinGenerator( 1, R1)) then (
             computedTau = ascendIdeal(1, h1, sub(ideal(J1), R1), FrobeniusRootStrategy => o.FrobeniusRootStrategy);
             computedFlag = true;
         )
@@ -166,7 +166,7 @@ testIdeal(Ring) := o->(R1) -> (
         
         runningIdeal := ideal(sub(0, R1));
         omegaAmb := sub(canIdeal, ambient R1) + ideal(R1);
-    	u1 := (findCanonicalModuleFrobeniusTrace(ideal R1, omegaAmb));
+    	u1 := (frobeniusTraceOnCanonicalModule(ideal R1, omegaAmb));
     
 --    print gensList;
 --    1/0;
@@ -229,7 +229,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
     if ((pp-1)%cartIndex == 0) then ( 
         J1 := testElement( R1 );
         h1 := sub(0, ambient R1);
-        try (h1 = findQGorGen( 1, R1)) then (
+        try (h1 = QGorensteinGenerator( 1, R1)) then (
             --do stuff
             computedTau = testModule(tList, fList, ideal(sub(1, R1)), {h1}, FrobeniusRootStrategy => o.FrobeniusRootStrategy, AssumeDomain=>o.AssumeDomain);
         ) else (
@@ -244,7 +244,7 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
         
         runningIdeal := ideal(sub(0, R1));
         omegaAmb := sub(canIdeal, ambient R1) + ideal(R1);
-    	u1 := (findCanonicalModuleFrobeniusTrace(ideal R1, omegaAmb));
+    	u1 := (frobeniusTraceOnCanonicalModule(ideal R1, omegaAmb));
     	
         t2 := append(tList, 1/cartIndex);
         f2 := fList;

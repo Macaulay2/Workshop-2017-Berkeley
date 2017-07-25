@@ -84,7 +84,6 @@ export{
 --ethRootFunctions (EthRoots.m2)
     "ascendIdeal", --Karl (still needs more tests / documentation)
     "AscentCount",
-    --"boundLargestCompatible", ---MK (now in Fpure)
     "FrobeniusRootStrategy",  
     "frobeniusRoot",  
     "MonomialBasis",	
@@ -104,11 +103,10 @@ export{
     "AssumeNormal", --an option telling functions to assume a ring is normal.
     "AssumeDomain", --an option telling functions to assume a ring is a domain.
     "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
-    "findCanonicalModuleFrobeniusTrace", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "frobeniusTraceOnCanonicalModule", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
     "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
     "isFrational", --Karl (added recently).
     "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
---    "randomSubset", probably should not be exported
     "testModule", --Karl (this subsumes a bunch of older functions)
     "MTries",
     "parameterTestIdeal",
@@ -120,47 +118,14 @@ export{
     "Katzman", --an option for CanonicalStrategy
 
 -- testIdeals.m2
-    "findQGorGen", --Karl (this finds y such that I^{[p^e]} : I = (y) + I^{[p^e]}, if it exists) **Documented**
+    "QGorensteinGenerator", --Karl (this finds y such that I^{[p^e]} : I = (y) + I^{[p^e]}, if it exists) **Documented**
     "testElement", --Karl (my students Marcus and Dan did some improvements on this recently, it doesn't compute the whole Jacobian, it just looks at random minors until it finds a good one, it can be much much faster) **Documented**
     "MaxCartierIndex", --the cartier index limfindAllCompatibleIdealsit in the test ideal method
     "testIdeal", --Karl (the new version)
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
     "isFregular",
     "isFpure",
-
--- Other.m2
---    "HSL", 
---    "imageOfRelativeCanonical",
---    "imageOfTrace", --doesn't work! 
---    "isFPure",  
---    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular
---    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular
---    "isMapSplit",
---    "isSharplyFPurePoly", --Karl needs to be redone
---    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
---    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
---    "sigmaQGorAmb", --Karl needs to be redone
-
---REMOVE LATER (DivisorPatch.m2)
---MTries = MTries;
---NoStrategy = "NoStrategy";
---ReturnMap = "ReturnMap";
---IdealStrategy = "IdealStrategy";
---Section = "Section";
---KnownDomain = "KnownDomain";
---IsGraded = "IsGraded"; 
---ModuleStrategy = "ModuleStrategy";
-
- 
--- Other
---    "FFiniteSupport", ---MK
-    "findAllCompatibleIdeals" ---MK	   
---    "findGeneratingMorphisms", ---MK
---    "FPureIdeals",
---    "generatingMorphism", ---MK
---    "generatingRoot" ---MK
---    "paraTestModule", ---MK
---    "paraTestModuleAmbient" ---MK  
+    "compatibleIdeals" ---MK	   
 
 }
 

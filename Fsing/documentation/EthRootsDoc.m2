@@ -213,6 +213,7 @@ doc ///
         [frobenius, FrobeniusRootStrategy]
         [frobeniusPower, FrobeniusRootStrategy]  
         [parameterTestIdeal, FrobeniusRootStrategy]
+        [compatibleIdeals, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
     Usage
@@ -226,11 +227,12 @@ doc ///
         frobenius(..., FrobeniusRootStrategy=>S)
         frobeniusPower(..., FrobeniusRootStrategy=>S)
         parameterTestIdeal(..., FrobeniusRootStrategy=>S)
+        compatibleIdeals(..., FrobeniusRootStrategy=>S)
     Inputs
         S: Symbol
     Description
         Text
-            Valid options are {\tt Substitution} and {\tt MonomialBasis}.  These options will be passed in various other internal function calls when calling {\tt frobeniusRoot}.
+            Valid options are {\tt Substitution} and {\tt MonomialBasis}.  These options will be passed in various calls to @TO frobeniusRoot@.
     SeeAlso
         [frobeniusRoot, FrobeniusRootStrategy]
 ///
