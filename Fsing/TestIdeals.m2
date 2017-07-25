@@ -11,7 +11,7 @@
 
 newPackage( "TestIdeals",
 Version => "0.2", 
-Date => "July 24th, 2017", 
+Date => "July 25th, 2017", 
 Authors => {
      {Name => "Erin Bela",
      Email => "ebela@nd.edu"
