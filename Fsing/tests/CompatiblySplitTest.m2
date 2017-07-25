@@ -7,11 +7,11 @@ assert(  all(answerList, tt->any(compatIdeals, ss -> tt==ss)) );
 ///
 
 TEST /// 
-R=ZZ/2[x_{21},x_{31},x_{32},x_{41},x_{42},x_{43}]
-u=x_{41}*(x_{31}*x_{42}-x_{41}*x_{32})*(x_{41}-x_{21}*x_{42}-x_{31}*x_{43}+x_{21}*x_{32}*x_{43})
-time CompatibleIdeals=compatibleIdeals(u)
+R=ZZ/2[x_{21},x_{31},x_{32},x_{41},x_{42},x_{43}];
+u=x_{41}*(x_{31}*x_{42}-x_{41}*x_{32})*(x_{41}-x_{21}*x_{42}-x_{31}*x_{43}+x_{21}*x_{32}*x_{43});
+time CompatibleIdeals=compatibleIdeals(u);
 answer=  {
-    ideal(x_{21}*x_{32}*x_{43}+x_{21}*x_{42}+x_{31}*x_{43}+x_{41}),
+    ideal(x_{21}*x_{32}*x_{43}+x_{21}*x_{42}+x_{31}*x_{43}+x_{41}),    
     ideal(x_{32}*x_{41}+x_{31}*x_{42},x_{31}*x_{43}+x_{41},x_{32}*x_{43}+x_{42}),
     ideal(x_{32}*x_{41}+x_{31}*x_{42},x_{31}*x_{43}+x_{41},x_{32}*x_{43}+x_{42},x_{21}*x_{42}+x_{41},x_{21}*x_{32}+x_{31}),
     ideal(x_{31},x_{21},x_{41},x_{32}*x_{43}+x_{42}),
@@ -35,6 +35,7 @@ answer=  {
     ideal(x_{41},x_{31}), 
     ideal(x_{32}*x_{41}+x_{31}*x_{42})
 }
-assert(CompatibleIdeals==answer)
+assert( all(CompatibleIdeals, tt->any(answer, ss -> tt==ss)));
+assert( all(answer, tt->any(CompatibleIdeals, ss -> tt==ss)));
 ///
 

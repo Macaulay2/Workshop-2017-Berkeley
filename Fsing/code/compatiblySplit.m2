@@ -49,7 +49,8 @@ compatibleIdealsInnards(RingElement, List, Ideal) := o->( u, L, P ) ->
 (
     local f;
     P1 := frobenius(P);
-    C1 := ideal( ( singularLocus( P ) ).relations );
+--    C1 := ideal( ( singularLocus( P ) ).relations );
+    C1 := ideal testElement((ring P)/P, AssumeDomain=>true);
     ---tau=ideal mingens star(C1,u,1) ; ---OLD VERSION
     tau := ideal mingens ascendIdeal( 1, u, C1, FrobeniusRootStrategy=>o.FrobeniusRootStrategy );
     Plist := minimalPrimes tau;
