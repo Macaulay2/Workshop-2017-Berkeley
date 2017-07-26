@@ -134,14 +134,16 @@ universalEmbedding(Module) := Matrix => (M) -> (
 --           streamlined, skipping the unneccessary versal computation as in that 
 --           case the inclusion map is a versal map.
 
-reesIdeal = method(Options => {
+reesIdeal = method(
+    Options => {
 	  DegreeLimit => {},
 	  BasisElementLimit => infinity,
 	  PairLimit => infinity,
 	  MinimalGenerators => true,
 	  Strategy => null,
 	  Variable => "w"
-	  })
+	  }
+      )
   
 reesAlgebraIdeal = reesIdeal
 
@@ -159,7 +161,6 @@ reesIdeal(Ideal) := Ideal => o-> (J) -> (
 
 -- needs user-provided non-zerodivisor a such that M[a^{-1}] is of linear type.
 
-reesIdeal (Module, RingElement) := Ideal =>
 reesIdeal (Module, RingElement) := Ideal => o -> (M,a) -> (
      R := ring M;
      if R =!= ring a 
@@ -172,64 +173,86 @@ reesIdeal(Ideal, RingElement) := Ideal => o -> (I,a) -> (
      reesIdeal(module I, a)
      )
 
-reesAlgebra = method (TypicalValue=>Ring,Options=>{Variable => "w"})
+reesAlgebra = method (TypicalValue=>Ring,
+            Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+    )
 -- accepts a Module, Ideal, or pair (depending on the method) and
 -- returns the quotient ring isomorphic to the Rees Algebra rather
 -- than just the defining ideal as in reesIdeal. 
 
-reesAlgebra Ideal := 
+reesAlgebra Ideal :=
 reesAlgebra Module := o-> M ->  quotient reesIdeal(M, o)
---     R:=ring M;
---     reesIM := reesIdeal M;
---     reesAM := (ring reesIM)/reesIM;
---     --A:= map(reesAM, R);
---     --(reesAM,A)
---     reesAM
---     )
 
-reesAlgebra(Ideal, RingElement) := 
+reesAlgebra(Ideal, RingElement) :=
 reesAlgebra(Module, RingElement) := o->(M,a)-> quotient reesIdeal(M,a,o)
---     R:=ring M;
---     reesIM := reesIdeal(M,a);
---     reesAM := (ring reesIM)/reesIM;
---     --A:= map(reesAM, R);
---     --(reesAM,A)
---     reesAM
---     )
        
-isLinearType=method(TypicalValue =>Boolean)
+isLinearType=method(TypicalValue =>Boolean,
+        Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+)
 
 isLinearType(Ideal):=
-isLinearType(Module):= M->(
+isLinearType(Module):= o-> M->(
      if class M === Ideal then M = module M;
-     I := reesIdeal M;
+     I := reesIdeal (M,o);
      S := ring I;
      P := promote(presentation M, S);
      J := ideal((vars S) * P);
      ((gens I) % J) == 0)
 
 isLinearType(Ideal, RingElement):=
-isLinearType(Module, RingElement):= (M,a)->(
+isLinearType(Module, RingElement):= o-> (M,a)->(
      if class M === Ideal then M = module M;
-     I := reesIdeal(M,a);
+     I := reesIdeal(M,a,o);
      S := ring I;
      P := promote(presentation M, S);
      J := ideal((vars S) * P);
      ((gens I) % J) == 0)
 
-normalCone = method(TypicalValue => Ring, Options => {Variable => "w"})
+normalCone = method(TypicalValue => Ring, 
+    	    Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+)
 normalCone(Ideal) := o -> I -> (
-     RI := reesAlgebra(I);
+     RI := reesAlgebra(I,o);
      RI/promote(I,RI)
      )
 normalCone(Ideal, RingElement) := o -> (I,a) -> (
-     RI := reesAlgebra(I,a);
+     RI := reesAlgebra(I,a,o);
      RI/promote(I,RI)     
      )
      
-associatedGradedRing= method(TypicalValue => Ring, Options => {Variable => "w"})
-associatedGradedRing (Ideal) := o -> I -> normalCone(I)
-associatedGradedRing (Ideal, RingElement) := o -> (I,a) -> normalCone(I,a)
+associatedGradedRing= method(TypicalValue => Ring,
+	    Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+)
+associatedGradedRing (Ideal) := o -> I -> normalCone(I,o)
+associatedGradedRing (Ideal, RingElement) := o -> (I,a) -> normalCone(I,a,o)
      
 
 -- PURPOSE : Compute the multipicity e_I(M) and e(I) = e_I(R), 
@@ -242,16 +265,25 @@ associatedGradedRing (Ideal, RingElement) := o -> (I,a) -> normalCone(I,a)
 --           Groebner basis computation and thus can quickly take all of your
 --           memory and time (most likely memory).   
 
-multiplicity = method()
-multiplicity(Ideal) := ZZ => I ->  (
-     RI := normalCone I;
+multiplicity = method(
+    	    Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+)
+multiplicity(Ideal) := ZZ => o -> I ->  (
+     RI := normalCone (I,o);
      J := ideal RI;
      J1 := first flattenRing J;
      S1 := newRing(ring J1, Degrees=>{numgens ring J1 : 1});
      degree substitute(J1,S1)
      )
-multiplicity(Ideal,RingElement) := ZZ => (I,a) ->  (
-     RI := normalCone (I,a);
+multiplicity(Ideal,RingElement) := ZZ => o -> (I,a) ->  (
+     RI := normalCone (I,a,o);
      J := ideal RI;
      J1 := first flattenRing J;
      S1 := newRing(ring J1, Degrees=>{numgens ring J1 : 1});
@@ -293,28 +325,63 @@ degree(S^1/I)
 --closed point! ***put this into the documentation!*** to get the closed
 --fiber, flatten the base ring first. 
 
-specialFiberIdeal=method(TypicalValue=>Ideal, Options=>{Variable=>"w"})
-
+specialFiberIdeal=method(TypicalValue=>Ideal, 
+        Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+      )
 specialFiberIdeal(Ideal):= 
 specialFiberIdeal(Module):= o->i->(
-     Reesi:= reesIdeal(i, Variable=>fixupw o.Variable);
-     trim(Reesi + promote(ideal vars ring i, ring Reesi))
+    --change
+--     Reesi:= reesIdeal(i, Variable=>fixupw o.Variable);
+     Reesi:= reesIdeal(i, o);     
+--     trim(Reesi + promote(ideal vars ring i, ring Reesi))
+     S := ring Reesi;
+     --is the coefficient ring of Reesi automatically flattened? NO
+     kk := ultimate(coefficientRing, S);
+     T := kk[gens S];
+     minimalpres := map(T,S);
+     trim minimalpres Reesi
      )
  
 specialFiberIdeal(Ideal, RingElement):=
 specialFiberIdeal(Module,RingElement):= o->(i,a)->(
-     Reesi:= reesIdeal(i, a, Variable=>fixupw o.Variable);
-     trim(Reesi + promote(ideal vars ring i, ring Reesi))     
+    --change
+--     Reesi:= reesIdeal(i, a, Variable=>fixupw o.Variable);
+     Reesi:= reesIdeal(i, o);     
+--     trim(Reesi + promote(ideal vars ring i, ring Reesi))     
+     S := ring Reesi;
+     --is the coefficient ring of Reesi automatically flattened? NO
+     kk := ultimate(coefficientRing, S);
+     T := kk[gens S];
+     minimalpres := map(T,S);
+     trim minimalpres Reesi
      )
 
 ---------The following returns a ring with just the new vars.
 --The order of the generators is supposed to be the same as the order
 --of the given generators of I.
-specialFiber=method(TypicalValue=>Ring, Options=>{Variable=>"w"})
+specialFiber=method(TypicalValue=>Ring, 
+            Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+      )
 
 specialFiber(Ideal):= 
 specialFiber(Module):= o->i->(
-     Reesi:= reesIdeal(i, Variable=>fixupw o.Variable);
+--changed
+--     Reesi:= reesIdeal(i, Variable=>fixupw o.Variable);
+     Reesi:= reesIdeal(i, o);     
      S := ring Reesi;
      --is the coefficient ring of Reesi automatically flattened? NO
      kk := ultimate(coefficientRing, S);
@@ -325,7 +392,9 @@ specialFiber(Module):= o->i->(
  
 specialFiber(Ideal, RingElement):=
 specialFiber(Module,RingElement):= o->(i,a)->(
-     Reesi:= reesIdeal(i, a, Variable=>fixupw o.Variable);
+--changed
+--     Reesi:= reesIdeal(i, a, Variable=>fixupw o.Variable);
+     Reesi:= reesIdeal(i, o);     
      S := ring Reesi;
      --is the coefficient ring of Reesi automatically flattened? NO
      kk := ultimate(coefficientRing, S);
@@ -334,14 +403,25 @@ specialFiber(Module,RingElement):= o->(i,a)->(
      T/(minimalpres Reesi)
      )
 
-isReduction=method(TypicalValue=>Boolean, Options=>{Variable=>"w"})
+isReduction=method(TypicalValue=>Boolean, 
+       Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+    )
 
 --tests whether the SECOND arg is a reduction of the FIRST arg
 
 isReduction(Module,Module):= 
 isReduction(Ideal,Ideal):= o->(I,J)->(
      if isSubset(J, I) then (
-	     Sfib:= specialFiber(I, Variable=>fixupw o.Variable);
+--changed
+--	     Sfib:= specialFiber(I, Variable=>fixupw o.Variable);
+	     Sfib:= specialFiber(I, o);
 	     Ifib:=ideal presentation Sfib;
 	     kk := coefficientRing Sfib;
 	     M := sub(gens J // gens I, kk);
@@ -353,7 +433,9 @@ isReduction(Ideal,Ideal):= o->(I,J)->(
 isReduction(Module,Module,RingElement):= 
 isReduction(Ideal,Ideal,RingElement):= o->(I,J,a)->(
      if isSubset(J, I) then (
-	     Sfib :=specialFiber(I, a, Variable=>fixupw o.Variable); 
+--changed
+--	     Sfib :=specialFiber(I, a, Variable=>fixupw o.Variable); 
+	     Sfib :=specialFiber(I, a, o);
 	     Ifib:= ideal presentation Sfib;
 	     kk := coefficientRing Sfib;
 	     M := sub(gens J // gens I, kk);
@@ -364,11 +446,10 @@ isReduction(Ideal,Ideal,RingElement):= o->(I,J,a)->(
 
 
 ///
-####
 restart
 uninstallPackage "ReesAlgebra"
 installPackage ("ReesAlgebra", FileName => "~/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
-
+check "ReesAlgebra"
 
 peek loadedFiles
 S = kk[s,t][x,y,z]
@@ -405,13 +486,22 @@ scan({2,3,5,7,11,101,32003}, p ->(
 --           over the quotient ring R/I.
 -- OUTPUT : The analytic spread of f/M/or J over over the ring R, or if 
 --          the option is given, R/I.
-analyticSpread = method()
+analyticSpread = method(
+           Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+      )
 
 analyticSpread(Ideal) := 
-analyticSpread(Module) := ZZ => (M) -> dim specialFiberIdeal(M)
+analyticSpread(Module) := ZZ => o->(M) -> dim specialFiberIdeal(M,o)
 
 analyticSpread(Ideal,RingElement) :=
-analyticSpread(Module,RingElement) := ZZ => (M,a) -> dim specialFiberIdeal(M,a)
+analyticSpread(Module,RingElement) := ZZ => o->(M,a) -> dim specialFiberIdeal(M,a,o)
  
 ----- distinguished and Mult still does not work!!!!!
    
@@ -430,10 +520,19 @@ analyticSpread(Module,RingElement) := ZZ => (M,a) -> dim specialFiberIdeal(M,a)
 --           time decompose required this.  But I think it is not necessary 
 --           now. 
 
-distinguished = method(Options => {Variable => "w"})
+distinguished = method(
+           Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+      )
 distinguished(Ideal) := List => o -> i -> (
      R:=ring i;
-     reesAi := reesAlgebra (i,Variable=>fixupw o.Variable);
+     reesAi := reesAlgebra (i,o);
      A := map(reesAi,R);
      (T,B) := flattenRing reesAi;
      L:=decompose substitute(i,T);
@@ -442,7 +541,7 @@ distinguished(Ideal) := List => o -> i -> (
 
 distinguished(Ideal,RingElement) := List => o -> (i,a) -> (
      R:=ring i;
-     reesAi := reesAlgebra (i,a,Variable=>fixupw o.Variable);
+     reesAi := reesAlgebra (i,a,o);
      A := map(reesAi,R);
      (T,B) := flattenRing reesAi;
      L:=decompose substitute(i,T);
@@ -460,9 +559,11 @@ distinguished(Ideal,RingElement) := List => o -> (i,a) -> (
 
 
 ///
-
+####
+uninstallPackage "ReesAlgebra"
 restart
 installPackage "ReesAlgebra"
+
 loadPackage "ReesAlgebra"
 T=ZZ/101[c,d]
 D = 4
@@ -492,10 +593,19 @@ viewHelp top
 
 ///
 
-distinguishedAndMult = method(Options => {Variable => "w"})
+distinguishedAndMult = method(
+               Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  }
+    )
 distinguishedAndMult(Ideal) := List => o -> i -> (
     R:=ring i;
-    ReesI := reesIdeal( i, Variable => fixupw o.Variable);
+    ReesI := reesIdeal(i, o);
     (S,toFlatS) := flattenRing ring ReesI;
      I:=(toFlatS ReesI)+substitute(i,S);
      L:=decompose I;
@@ -506,7 +616,7 @@ distinguishedAndMult(Ideal) := List => o -> i -> (
 
 distinguishedAndMult(Ideal,RingElement) := List => o -> (i,a) -> (
     R:=ring i;
-    ReesI := reesIdeal( i,a, Variable => fixupw o.Variable);
+    ReesI := reesIdeal( i,a,,o);
     (S,toFlatS) := flattenRing ring ReesI;
      I:=(toFlatS ReesI)+substitute(i,S);
      L:=decompose I;
@@ -517,28 +627,46 @@ distinguishedAndMult(Ideal,RingElement) := List => o -> (i,a) -> (
  
 
 
-minimalReduction = method(Options=>{Tries => 20})
+minimalReduction = method(
+                   Options => {
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w",
+	  Tries => 20
+	  }
+      )
+
 minimalReduction Ideal := Ideal => o -> i -> (
      --if the following is true, then we can compute the minimal reduction homogeneously
      h := isHomogeneous i and (d:=min degrees i) == max degrees i;
      S:=ring i;
-     ell:=analyticSpread i;
-     
+--     ell:=analyticSpread(i,o); -- doesn't know about "Tries"
+     ell := analyticSpread(i,
+	  DegreeLimit => o.DegreeLimit,
+	  BasisElementLimit => o.BasisElementLimit,
+	  PairLimit => o.PairLimit,
+	  MinimalGenerators => true,
+	  Strategy => o.Strategy,
+	  Variable => "w"
+	 ); -- the list is necessary because isReduction doesn't know about "Tries"
      J:=null;
-     --o.Tries defaults to 20
      for b from 1 to o.Tries do(
-     
      if h then
           J = ideal ((gens i)*random(source gens i, (ring i)^{ell:-d})) 
      else 
      	  J = ideal (map(S^1, S^(rank source gens i), gens i)*random(S^(rank source gens i), S^ell));
-	  
-     if isReduction(i,J) then (
---	  if b>1 then print b; 
-	  return J));
-
-     {* << bound *} -- incorrect code commented out
-     <<" iterations were not enough to randomly find a minimal reduction"; endl;
+     if isReduction(i,J,
+	  DegreeLimit => o.DegreeLimit,
+	  BasisElementLimit => o.BasisElementLimit,
+	  PairLimit => o.PairLimit,
+	  MinimalGenerators => true,
+	  Strategy => o.Strategy,
+	  Variable => "w")
+      then  return J);
+     <<o.Tries <<" iterations were not enough to randomly find a minimal reduction"; endl;
      error("not random enough")
           )
 
@@ -569,20 +697,6 @@ scan({2,3,5,7,11,101,32003}, p ->(
 ///
 
 reductionNumber = method()
-
-///
---The following seems to  be much slower!
-reductionNumber (Ideal, Ideal, String) := (i,j,s) -> (
-     Ifib := specialFiber(I);
-     Pfib := (ring Ifib); -- ambient ring of the fiber
-     n := numgens Pfib;
-     kk := coefficientRing Pfib;
-     M := sub(gens J // gens I, kk);
-     M = promote(M, Pfib);
-     L := (vars Pfib)*M; 
-     regularity (Pfib^1/ideal(leadTerm(Ifib+ideal L)))
-	  )
-///
 reductionNumber (Ideal,Ideal) := (i,j) -> (
      I:=i; -- will be a power of i
      M:= ideal vars ring i; -- we're pretending to be in a local ring
@@ -598,6 +712,20 @@ reductionNumber (Ideal,Ideal) := (i,j) -> (
 	       j= i*j;
      	       rN =rN+1));
      rN)
+
+{*
+--The following seems to  be much slower!
+reductionNumber (Ideal, Ideal, String) := (i,j,s) -> (
+     Ifib := specialFiber(I);
+     Pfib := (ring Ifib); -- ambient ring of the fiber
+     n := numgens Pfib;
+     kk := coefficientRing Pfib;
+     M := sub(gens J // gens I, kk);
+     M = promote(M, Pfib);
+     L := (vars Pfib)*M; 
+     regularity (Pfib^1/ideal(leadTerm(Ifib+ideal L)))
+	  )
+*}
 
 
 whichGm = method()
@@ -681,9 +809,11 @@ psi1 = jacobianDual(STS phi, X, Ts)
 
 beginDocumentation()
 ///
+
 uninstallPackage "ReesAlgebra"
 restart
 installPackage  "ReesAlgebra"
+check "ReesAlgebra"
 ///
 
 
@@ -1474,7 +1604,7 @@ doc ///
      M:Module
        or @ofClass Ideal@
      f:RingElement
-     a non-zerodivisor such that $M[f^{-1}]$ is a free module when $M$ is a module, an element in $M$ when $M$ is an ideal
+      a non-zerodivisor such that $M[f^{-1}]$ is a free module when $M$ is a module, an element in $M$ when $M$ is an ideal
   Outputs
      :Ideal
   Description
@@ -1919,13 +2049,29 @@ assert(ideal R == ideal (-w_2*y+w_3*x,-w_1*y+w_2*x,-w_0*y+w_1*x,w_2^2-w_1*w_3,w_
 TEST///
 x = symbol x
 S=ZZ/101[x_0..x_4]
-i=monomialCurveIdeal(S,{2,3,5,6})
-time M1 = gens gb reesIdeal i; 
-time M2 = gens gb reesIdeal(i,i_0);
-use ring M2
+i=monomialCurveIdeal(S,{4,5,6,7})
+M1 = gens gb reesIdeal i; 
+M2 = gens gb reesIdeal(i,i_0);
 M1 = substitute(M1, ring M2);
 assert(M2 == M1)
 ///
+
+///
+restart
+loadPackage ("ReesAlgebra", Reload =>true)
+S=ZZ/101[x_0..x_4]
+i=monomialCurveIdeal(S,{5,8,9,11})
+time M1 = gens gb reesIdeal i; 
+time M2 = gens gb reesIdeal(i,i_0);
+time M3 = gens gb reesIdeal(i,i_0, Strategy => Bayer);
+time M4 = gens gb reesIdeal(i, Strategy => Bayer);
+M1 = substitute(M1, ring M2);
+M4 = substitute(M4, ring M2);
+assert(M2 == M1)
+assert(M2 == M4)
+
+///
+
 
 --- Testing analyticSpread
 TEST ///
@@ -1943,15 +2089,7 @@ S=ring sfi
 T=ZZ/23[S_0,S_1,S_2,S_3,S_4,S_5,S_6,S_7,S_8,S_9]
 M=matrix{{S_0,S_1,S_3,S_6},{S_1,S_2,S_4,S_7},{S_3,S_4,S_5,S_8},{S_6,S_7,S_8,S_9}}
 i=minors(2,M)
-j=i+ideal(a,b,c,d)
-assert(sfi==j)
-sf=specialFiber(msq)
-isf= ideal sf
-S=ring isf
-T=ZZ/23[S_0,S_1,S_2,S_3,S_4,S_5,S_6,S_7,S_8,S_9]
-M=matrix{{S_0,S_1,S_3,S_6},{S_1,S_2,S_4,S_7},{S_3,S_4,S_5,S_8},{S_6,S_7,S_8,S_9}}
-i=minors(2,M)
-ideal sf ==i
+assert(sfi == i)
 ///
 
 
@@ -1967,7 +2105,6 @@ assert(reductionNumber(I,J)==1)
 assert(isReduction(I,K)==true)
 assert(reductionNumber(I,K)==1)
 ///
-
 --testing multiplicity
 TEST///
 R=ZZ/101[x,y]
@@ -2269,12 +2406,12 @@ J2 = saturate(J, ideal(v_1,v_2, v_3))
 ///
 
 end--
-restart
 uninstallPackage "ReesAlgebra"
-loadPackage("ReesAlgebra", Reload=>true)
+restart
 installPackage("ReesAlgebra")
 check "ReesAlgebra"
 
+loadPackage("ReesAlgebra", Reload=>true)
 viewHelp installPackage
 viewHelp reesIdeal
 
