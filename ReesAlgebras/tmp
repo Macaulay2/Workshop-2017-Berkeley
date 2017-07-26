@@ -1,0 +1,81 @@
+    [reesIdeal, PairLimit]
+    [minimalReduction, PairLimit]
+    [distinguishedAndMult,PairLimit]
+    [distinguished,PairLimit]
+    [analyticSpread, PairLimit]
+    [specialFiber, PairLimit]
+    [specialFiberIdeal, PairLimit]
+    [multiplicity, PairLimit]
+    [associatedGradedRing, PairLimit]
+    [normalCone, PairLimit]
+    [isReduction, PairLimit]
+    [isLinearType,PairLimit]
+    [reesAlgebra,PairLimit]
+    
+
+    [reesIdeal, MinimalGenerators]
+    [minimalReduction, MinimalGenerators]
+    [distinguishedAndMult,MinimalGenerators]
+    [distinguished,MinimalGenerators]
+    [analyticSpread, MinimalGenerators]
+    [specialFiber, MinimalGenerators]
+    [specialFiberIdeal, MinimalGenerators]
+    [multiplicity, MinimalGenerators]
+    [associatedGradedRing, MinimalGenerators]
+    [normalCone, MinimalGenerators]
+    [isReduction, MinimalGenerators]
+    [isLinearType,MinimalGenerators]
+    [reesAlgebra,MinimalGenerators]
+
+
+    [minimalReduction, BasisElementLimit]
+    [reesIdeal, BasisElementLimit]
+    [distinguishedAndMult,BasisElementLimit]
+    [distinguished,BasisElementLimit]
+    [analyticSpread, BasisElementLimit]
+    [specialFiber, BasisElementLimit]
+    [associatedGradedRing, BasisElementLimit]
+    [multiplicity, BasisElementLimit]
+    [normalCone, BasisElementLimit]
+    [isReduction, BasisElementLimit]
+    [isLinearType,BasisElementLimit]
+    [reesAlgebra,BasisElementLimit]
+    [specialFiberIdeal, BasisElementLimit]
+
+
+    [reesIdeal, DegreeLimit]
+    [minimalReduction, DegreeLimit]
+    [distinguishedAndMult,DegreeLimit]
+    [distinguished,DegreeLimit]
+    [analyticSpread, DegreeLimit]
+    [specialFiber, DegreeLimit]
+    [normalCone, DegreeLimit]
+    [multiplicity, DegreeLimit]
+    [associatedGradedRing, DegreeLimit]
+    [isReduction, DegreeLimit]
+    [isLinearType,DegreeLimit]
+    [reesAlgebra,DegreeLimit]
+    [specialFiberIdeal, DegreeLimit]
+
+
+
+
+
+    [reesAlgebra,Strategy]
+    [isLinearType,Strategy]
+    [isReduction, Strategy]    	  
+    [normalCone, Strategy]    	  
+    [associatedGradedRing, Strategy]    	  
+    [multiplicity, Strategy]    	  
+    [specialFiberIdeal, Strategy]    	  
+    [specialFiber, Strategy]    	  
+    [analyticSpread, Strategy]    	  
+    [distinguished,Strategy]
+    [distinguishedAndMult,Strategy]
+    [minimalReduction, Strategy]    	  
+
+
+
+
+
+

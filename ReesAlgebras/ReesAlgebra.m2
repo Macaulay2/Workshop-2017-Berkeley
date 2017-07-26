@@ -1,4 +1,4 @@
---------------------------------------------------------------------------
+-------------------------------------------------------------------------
 -- PURPOSE : Compute the rees algebra of a module as it is defined in the 
 --           paper "What is the Rees algebra of a module?" by Craig Huneke, 
 --           David Eisenbud and Bernde Ulrich.
@@ -20,8 +20,8 @@
 ---------------------------------------------------------------------------
 newPackage(
 	"ReesAlgebra",
-    	Version => "1.1", 
-    	Date => "October 30, 2009",
+    	Version => "2.0", 
+    	Date => "July 2017",
     	Authors => {{
 		  Name => "David Eisenbud",
 		  Email => "de@msri.org"},
@@ -199,8 +199,8 @@ isLinearType=method(TypicalValue =>Boolean,
 	  BasisElementLimit => infinity,
 	  PairLimit => infinity,
 	  MinimalGenerators => true,
-	  Strategy => null,
-	  Variable => "w"
+	  Strategy => null--,
+	  --Variable => "w"
 	  }
 )
 
@@ -492,8 +492,8 @@ analyticSpread = method(
 	  BasisElementLimit => infinity,
 	  PairLimit => infinity,
 	  MinimalGenerators => true,
-	  Strategy => null,
-	  Variable => "w"
+	  Strategy => null--,
+	  --Variable => "w"
 	  }
       )
 
@@ -634,7 +634,7 @@ minimalReduction = method(
 	  PairLimit => infinity,
 	  MinimalGenerators => true,
 	  Strategy => null,
-	  Variable => "w",
+	  --Variable => "w",
 	  Tries => 20
 	  }
       )
@@ -649,8 +649,7 @@ minimalReduction Ideal := Ideal => o -> i -> (
 	  BasisElementLimit => o.BasisElementLimit,
 	  PairLimit => o.PairLimit,
 	  MinimalGenerators => true,
-	  Strategy => o.Strategy,
-	  Variable => "w"
+	  Strategy => o.Strategy
 	 ); -- the list is necessary because isReduction doesn't know about "Tries"
      J:=null;
      for b from 1 to o.Tries do(
@@ -663,8 +662,8 @@ minimalReduction Ideal := Ideal => o -> i -> (
 	  BasisElementLimit => o.BasisElementLimit,
 	  PairLimit => o.PairLimit,
 	  MinimalGenerators => true,
-	  Strategy => o.Strategy,
-	  Variable => "w")
+	  Strategy => o.Strategy
+	  )
       then  return J);
      <<o.Tries <<" iterations were not enough to randomly find a minimal reduction"; endl;
      error("not random enough")
@@ -818,108 +817,6 @@ check "ReesAlgebra"
 
 
 
-doc ///
-   Key
-    jacobianDual
-    (jacobianDual, Matrix)
-    (jacobianDual, Matrix, Matrix, Matrix)
-   Headline
-    computes the ``jacobian dual'', part of a method of finding generators for Rees Algebra ideals
-   Usage
-    psi = jacobianDual phi
-    psi = jacobianDual(phi, X, T)
-   Inputs
-    phi:Matrix
-     presentation matrix of an ideal
-    X:Matrix
-     row matrix generating an ideal that contains the entries of phi
-    T:Matrix
-     row matrix of variables that will be generators of the Rees algebra of I
-   Outputs
-    psi:Matrix
-     the `Jacobian Dual' ; satisfies T*phi = X*psi
-   Description
-    Text
-     Let I be an ideal of R and let phi be the presentation matrix of I as a module.
-     The symmetric algebra of I has the form 
-     
-     Sym_R(I) = R[T_0..T_m]/ideal(T*phi)
-     
-     where the T_i correspond to the generators of I. If X = matrix{{x_1..x_n}},
-     with x_i \in R, and ideal X contains the entries of the matrix phi, then there is 
-     a matrix psi defined over R[T_0..T_m], called the Jacobian Dual of phi with respect to X,
-     such that T*phi = X*psi. (the matrix psi is generally
-     not unique; Macaulay2 computes it using Groebner division with remainder.)
-     
-     
-     In the form psi = jacobianDual phi,
-     a new ring ST = S[T_0..T_m] is created, and the vector X is set to the variables
-     of R. The result is returned as a matrix over ST. Use the form psi = jacobianDual(phi, X,T)
-     if you want to do the computation in a ring you have already computed;
-     in this case, the matrices phi, X, T should all be defined over the ring ST, but
-     the matrix T should be a row of variables of ST, and
-     the matrix phi should have entries in a subring not involving the entries of T.
- 
-     
-     If I is an ideal of grade >=1 and ideal X contains a nonzerodivisor of R
-     (which will be automatic if I has finite projective dimension) then
-     ideal X has grade >= 1 on the Rees algebra. Since ideal(T*phi) is contained in the
-     defining ideal of the Rees algebra, the vector X is annihilated by the matrix
-     psi when regarded over the Rees algebra. If also the number of relations of I
-     is >= the number of generators of I, this implies that the maximal minors of
-     psi annihilate  the x_i as elements of the Rees algebra, and thus that the maximal
-     minors of psi are inside the ideal of the Rees algebra. In very favorable circumstances,
-     one may even have the equality reesIdeal I = ideal(T*phi)+ideal minors(psi).
-    Example
-     d=3
-     S = ZZ/101[a_0..a_(d-1)]
-     kk = ZZ/101
-     mlin = transpose vars S
-     mquad = random(S^d, S^{-1,-4,d-2:-2})
-     Irand = minors(d,mlin|mquad)
-     X = vars S
-     phi = syz gens Irand;
-    Text
-     We can use the simple form of the function:
-    Example
-     psi = jacobianDual phi
-    Text
-     The long form gives the same answer over a polynomial ring involving
-     with both sets of variables:
-    Example     
-     ST = kk[T_0..T_3, x_0..x_(d-1)] 
-     X = matrix{toList(x_0..x_(d-1))}
-     Ts = matrix{{T_0,T_1,T_2,T_3}}
-     phi = (map(ST,S,X)) phi
-     psi1 = jacobianDual(phi, X, Ts)
-     f = map(ST, ring psi, vars ST)
-     assert(f psi - psi1 == 0)
-    Text
-     The name Jacobian Dual comes from the case where phi is a matrix of linear forms
-     the x_i are the variables of R, and the generators of I are forms, all of the same degree D;
-     in this case Euler's formula sum(df_i/dx_j*xj) = Df can be used to express the
-     entries of psi in terms of the derivatives of the entries of phi, at least when
-     the degrees of the columns of phi are nonzero in the coefficient field.
-     
-     Explicitly, let x_1,...,x_n be the variables of R, and let phi be a presentation matrix for I.
-     Since all the f_i have the same degree, if follows that,
-     for each j, the entries phi_(i,j) will all have the same degree, say D_j = deg phi_(i,j).
-     Let ST be the polynomial ring R[T_0..T_m], where the T_i correspond to f_i, and let
-     X=matrix{{x_1,...,x_n}}, and T=matrix{{T_0,...,T_m}} be row matrices over ST.
-     In this case, by Euler's formula, we may take
-     
-     psi_{k,j}=(1/D_j)*sum_i(d phi_{i,j}/d x_k*T_i),
-   Caveat
-     The division with
-     remainder step is usually fast, but if this
-     ever becomes a bottleneck it would be possible to test for the degree condition and
-     use Euler's formula in the case where it applies.
-   SeeAlso
-    reesAlgebra
-    reesAlgebraIdeal
-    reesIdeal
-    specialFiberIdeal
-///
 
 ///
 uninstallPackage "ReesAlgebra" 
@@ -1017,66 +914,8 @@ doc ///
      universalEmbedding
 ///
 
-doc ///
-  Key
-    [symmetricKernel, Variable]
-    [reesIdeal, Variable]
-    [reesAlgebra, Variable]
-    [normalCone, Variable]
-    [associatedGradedRing, Variable]
-    [specialFiberIdeal, Variable]
-    [specialFiber, Variable]
-    [distinguished, Variable]
-    [distinguishedAndMult, Variable]
-    [isReduction, Variable]
-    [jacobianDual, Variable]
 
-  Headline
-    Choose name for variables in the created ring
-  Usage
-    symmetricKernel(...,Variable=>w)
-    reesIdeal(...,Variable=>w)
-    reesAlgebra(...,Variable=>w)
-    normalCone(...,Variable=>w)
-    associatedGradedRing(...,Variable=>w)
-    specialFiberIdeal(...,Variable=>w)
-    specialFiber(...,Variable=>w)    
-    distinguished(...,Variable=>w)
-    distinguishedAndMult(...,Variable=>w)
-    isReduction(...,Variable=>w)
-    jacobianDual(...,Variable=>w)
 
-  Description
-    Text
-      Each of these functions creates a new ring of the form R[w_0, \ldots, w_r]
-      or R[w_0, \ldots, w_r]/J, where R is the ring of the input ideal or module
-      (except for @TO specialFiber@, which creates a ring $K[w_0, \ldots, w_r]$, 
-      where $K$ is the ultimate coefficient ring of the input ideal or module.)
-      This option allows the user to change the names of the new variables in this ring.
-      The default variable is {\tt w}.
-    Example
-      R = QQ[x,y,z]/ideal(x*y^2-z^9)
-      J = ideal(x,y,z)
-      I = reesIdeal(J, Variable => p)
-    Text
-      To lift the result to an ideal in a flattened ring, use @TO flattenRing@:
-    Example
-      describe ring I
-      I1 = first flattenRing I
-      describe ring oo      
-    Text
-      Note that the rings of I and I1 both have bigradings. Use @TO newRing@ to
-      make a new ring with different degrees.
-    Example
-      S = newRing(ring I1, Degrees=>{numgens ring I1:1})
-      describe S
-      I2 = sub(I1,vars S)
-      res I2
-  SeeAlso
-    flattenRing
-    newRing
-    substitute
-///
 doc ///
   Key
     [minimalReduction, Tries]
@@ -1226,6 +1065,11 @@ doc ///
 doc ///
    Key
     "reesAlgebraIdeal"
+--    [reesAlgebraIdeal, DegreeLimit]
+--    [reesAlgebraIdeal, Strategy]    	  
+--    [reesAlgebraIdeal, BasisElementLimit]
+--    [reesAlgebraIdeal, PairLimit]
+--    [reesAlgebraIdeal, MinimalGenerators]
    Headline
     Synonym for reesIdeal
    SeeAlso
@@ -1239,11 +1083,6 @@ doc ///
     (reesIdeal, Module)
     (reesIdeal,Ideal, RingElement)
     (reesIdeal,Module, RingElement)
-    [reesIdeal, DegreeLimit]
-    [reesIdeal, Strategy]    	  
-    [reesIdeal, BasisElementLimit]
-    [reesIdeal, PairLimit]
-    [reesIdeal, MinimalGenerators]
   Headline
     compute the defining ideal of the Rees Algebra
   Usage
@@ -1366,6 +1205,7 @@ doc ///
     (reesAlgebra, Module)
     (reesAlgebra,Ideal, RingElement)
     (reesAlgebra,Module, RingElement)
+    
   Headline
     compute the defining ideal of the Rees Algebra
   Usage
@@ -1389,12 +1229,12 @@ doc ///
       singularity.  We also demonstrate the use of @TO reesIdeal@, @TO symmetricKernel@,
       @TO isLinearType@, @TO normalCone@, @TO associatedGradedRing@, @TO specialFiberIdeal@.
     Example
-      S = QQ[x_0..x_4]
-      i = monomialCurveIdeal(S,{2,3,5,6})
-      time I = reesIdeal i;
+      S = QQ[x_0..x_3]
+      i = monomialCurveIdeal(S,{3,7,8})      
+      I = reesIdeal i;
       reesIdeal(i, Variable=>v)
-      time I=reesIdeal(i,i_0);
-      time (J=symmetricKernel gens i);
+      I=reesIdeal(i,i_0);
+      (J=symmetricKernel gens i);
       isLinearType(i,i_0)
       isLinearType i
       reesAlgebra (i,i_0)
@@ -1414,6 +1254,7 @@ doc ///
     (isLinearType, Ideal) 
     (isLinearType,Module, RingElement)
     (isLinearType, Ideal, RingElement)
+    
   Headline
      is a module of linear type
   Usage
@@ -1459,6 +1300,7 @@ doc ///
     (isReduction, Ideal, Ideal, RingElement)
     (isReduction, Module, Module)
     (isReduction, Module, Module, RingElement)
+    
   Headline
      is a reduction
   Usage
@@ -1503,6 +1345,7 @@ doc ///
     normalCone
     (normalCone, Ideal)
     (normalCone, Ideal, RingElement)
+    
   Headline
     the normal cone of a subscheme
   Usage
@@ -1532,6 +1375,7 @@ doc ///
     associatedGradedRing
     (associatedGradedRing, Ideal)
     (associatedGradedRing, Ideal, RingElement)
+    
   Headline
     the associated graded ring of an ideal
   Usage
@@ -1560,6 +1404,7 @@ doc ///
     multiplicity
     (multiplicity, Ideal)
     (multiplicity, Ideal, RingElement)
+    
   Headline
      compute the Hilbert-Samuel multiplicity of an ideal
   Usage
@@ -1595,6 +1440,7 @@ doc ///
     (specialFiberIdeal, Ideal)
     (specialFiberIdeal, Module, RingElement)
     (specialFiberIdeal, Ideal, RingElement)
+    
   Headline
      special fiber of a blowup     
   Usage
@@ -1718,6 +1564,8 @@ doc ///
     distinguished
     (distinguished, Ideal)
     (distinguished, Ideal, RingElement)
+
+    
   Headline
      compute the distinguished subvarieties of a scheme
   Usage
@@ -1778,6 +1626,7 @@ doc ///
     distinguishedAndMult
     (distinguishedAndMult, Ideal)
     (distinguishedAndMult, Ideal, RingElement)
+    
   Headline
      compute the distinguished subvarieties of a scheme along with their multiplicities
   Usage
@@ -1802,6 +1651,7 @@ doc ///
   Key
     minimalReduction
     (minimalReduction, Ideal)
+    
   Headline
     minimal reduction of an ideal
   Usage
@@ -1950,6 +1800,238 @@ doc ///
     minimalReduction
     reductionNumber
 ///
+
+doc ///
+   Key
+    jacobianDual
+    (jacobianDual, Matrix)
+    (jacobianDual, Matrix, Matrix, Matrix)
+   Headline
+    computes the ``jacobian dual'', part of a method of finding generators for Rees Algebra ideals
+   Usage
+    psi = jacobianDual phi
+    psi = jacobianDual(phi, X, T)
+   Inputs
+    phi:Matrix
+     presentation matrix of an ideal
+    X:Matrix
+     row matrix generating an ideal that contains the entries of phi
+    T:Matrix
+     row matrix of variables that will be generators of the Rees algebra of I
+   Outputs
+    psi:Matrix
+     the `Jacobian Dual' ; satisfies T*phi = X*psi
+   Description
+    Text
+     Let I be an ideal of R and let phi be the presentation matrix of I as a module.
+     The symmetric algebra of I has the form 
+     
+     Sym_R(I) = R[T_0..T_m]/ideal(T*phi)
+     
+     where the T_i correspond to the generators of I. If X = matrix{{x_1..x_n}},
+     with x_i \in R, and ideal X contains the entries of the matrix phi, then there is 
+     a matrix psi defined over R[T_0..T_m], called the Jacobian Dual of phi with respect to X,
+     such that T*phi = X*psi. (the matrix psi is generally
+     not unique; Macaulay2 computes it using Groebner division with remainder.)
+     
+     
+     In the form psi = jacobianDual phi,
+     a new ring ST = S[T_0..T_m] is created, and the vector X is set to the variables
+     of R. The result is returned as a matrix over ST. Use the form psi = jacobianDual(phi, X,T)
+     if you want to do the computation in a ring you have already computed;
+     in this case, the matrices phi, X, T should all be defined over the ring ST, but
+     the matrix T should be a row of variables of ST, and
+     the matrix phi should have entries in a subring not involving the entries of T.
+ 
+     
+     If I is an ideal of grade >=1 and ideal X contains a nonzerodivisor of R
+     (which will be automatic if I has finite projective dimension) then
+     ideal X has grade >= 1 on the Rees algebra. Since ideal(T*phi) is contained in the
+     defining ideal of the Rees algebra, the vector X is annihilated by the matrix
+     psi when regarded over the Rees algebra. If also the number of relations of I
+     is >= the number of generators of I, this implies that the maximal minors of
+     psi annihilate  the x_i as elements of the Rees algebra, and thus that the maximal
+     minors of psi are inside the ideal of the Rees algebra. In very favorable circumstances,
+     one may even have the equality reesIdeal I = ideal(T*phi)+ideal minors(psi).
+    Example
+     d=3
+     S = ZZ/101[a_0..a_(d-1)]
+     kk = ZZ/101
+     mlin = transpose vars S
+     mquad = random(S^d, S^{-1,-4,d-2:-2})
+     Irand = minors(d,mlin|mquad)
+     X = vars S
+     phi = syz gens Irand;
+    Text
+     We can use the simple form of the function:
+    Example
+     psi = jacobianDual phi
+    Text
+     The long form gives the same answer over a polynomial ring involving
+     with both sets of variables:
+    Example     
+     ST = kk[T_0..T_3, x_0..x_(d-1)] 
+     X = matrix{toList(x_0..x_(d-1))}
+     Ts = matrix{{T_0,T_1,T_2,T_3}}
+     phi = (map(ST,S,X)) phi
+     psi1 = jacobianDual(phi, X, Ts)
+     f = map(ST, ring psi, vars ST)
+     assert(f psi - psi1 == 0)
+    Text
+     The name Jacobian Dual comes from the case where phi is a matrix of linear forms
+     the x_i are the variables of R, and the generators of I are forms, all of the same degree D;
+     in this case Euler's formula sum(df_i/dx_j*xj) = Df can be used to express the
+     entries of psi in terms of the derivatives of the entries of phi, at least when
+     the degrees of the columns of phi are nonzero in the coefficient field.
+     
+     Explicitly, let x_1,...,x_n be the variables of R, and let phi be a presentation matrix for I.
+     Since all the f_i have the same degree, if follows that,
+     for each j, the entries phi_(i,j) will all have the same degree, say D_j = deg phi_(i,j).
+     Let ST be the polynomial ring R[T_0..T_m], where the T_i correspond to f_i, and let
+     X=matrix{{x_1,...,x_n}}, and T=matrix{{T_0,...,T_m}} be row matrices over ST.
+     In this case, by Euler's formula, we may take
+     
+     psi_{k,j}=(1/D_j)*sum_i(d phi_{i,j}/d x_k*T_i),
+   Caveat
+     The division with
+     remainder step is usually fast, but if this
+     ever becomes a bottleneck it would be possible to test for the degree condition and
+     use Euler's formula in the case where it applies.
+   SeeAlso
+    reesAlgebra
+    reesAlgebraIdeal
+    reesIdeal
+    specialFiberIdeal
+///
+doc ///
+  Key
+    [symmetricKernel, Variable]
+    [reesIdeal, Variable]
+    [reesAlgebra, Variable]
+    [normalCone, Variable]
+    [associatedGradedRing, Variable]
+    [specialFiberIdeal, Variable]
+    [specialFiber, Variable]
+    [distinguished, Variable]
+    [distinguishedAndMult, Variable]
+    [isReduction, Variable]
+    [jacobianDual, Variable]
+
+  Headline
+    Choose name for variables in the created ring
+  Usage
+    symmetricKernel(...,Variable=>w)
+    reesIdeal(...,Variable=>w)
+    reesAlgebra(...,Variable=>w)
+    normalCone(...,Variable=>w)
+    associatedGradedRing(...,Variable=>w)
+    specialFiberIdeal(...,Variable=>w)
+    specialFiber(...,Variable=>w)    
+    distinguished(...,Variable=>w)
+    distinguishedAndMult(...,Variable=>w)
+    isReduction(...,Variable=>w)
+    jacobianDual(...,Variable=>w)
+
+  Description
+    Text
+      Each of these functions creates a new ring of the form R[w_0, \ldots, w_r]
+      or R[w_0, \ldots, w_r]/J, where R is the ring of the input ideal or module
+      (except for @TO specialFiber@, which creates a ring $K[w_0, \ldots, w_r]$, 
+      where $K$ is the ultimate coefficient ring of the input ideal or module.)
+      This option allows the user to change the names of the new variables in this ring.
+      The default variable is {\tt w}.
+    Example
+      R = QQ[x,y,z]/ideal(x*y^2-z^9)
+      J = ideal(x,y,z)
+      I = reesIdeal(J, Variable => p)
+    Text
+      To lift the result to an ideal in a flattened ring, use @TO flattenRing@:
+    Example
+      describe ring I
+      I1 = first flattenRing I
+      describe ring oo      
+    Text
+      Note that the rings of I and I1 both have bigradings. Use @TO newRing@ to
+      make a new ring with different degrees.
+    Example
+      S = newRing(ring I1, Degrees=>{numgens ring I1:1})
+      describe S
+      I2 = sub(I1,vars S)
+      res I2
+  SeeAlso
+    flattenRing
+    newRing
+    substitute
+///
+
+doc ///
+   Key
+    [reesIdeal, Strategy]
+    [reesAlgebra,Strategy]
+    [isLinearType,Strategy]
+    [isReduction, Strategy]    	  
+    [normalCone, Strategy]    	  
+    [associatedGradedRing, Strategy]    	  
+    [multiplicity, Strategy]    	  
+    [specialFiberIdeal, Strategy]    	  
+    [specialFiber, Strategy]    	  
+    [analyticSpread, Strategy]    	  
+    [distinguished,Strategy]
+    [distinguishedAndMult,Strategy]
+    [minimalReduction, Strategy]    	  
+   Headline
+    Choose a strategy for the saturation step
+   Usage
+    reesIdeal(...,Strategy => X)
+   Description
+    Text
+     where X is is one of @TO Iterate@, @TO Linear@, @TO Bayer@, @TO Eliminate@.
+     These are described in the documentation node for @TO saturate@.
+     
+     The Rees algebra S(M) of a submodule M of a free module (most importantly,
+     an ideal in the ring), is equal to the symmetric algebra Sym_k(M) mod torsion.
+     computing this torsion is the slow link in most of the programs in this
+     package. The fastest way to compute it is usually by saturating the ideal
+     defining the symmetric algebra with respect
+     to an element in that ideal.
+   SeeAlso
+    saturate
+///
+doc ///
+   Key
+    [reesIdeal, PairLimit]
+    [minimalReduction, PairLimit]
+    [distinguishedAndMult,PairLimit]
+    [distinguished,PairLimit]
+    [analyticSpread, PairLimit]
+    [specialFiber, PairLimit]
+    [specialFiberIdeal, PairLimit]
+    [multiplicity, PairLimit]
+    [associatedGradedRing, PairLimit]
+    [normalCone, PairLimit]
+    [isReduction, PairLimit]
+    [isLinearType,PairLimit]
+    [reesAlgebra,PairLimit]
+   Headline
+    Choose a strategy for the saturation step
+   Usage
+    reesIdeal(...,PairLimit => X)
+   Description
+    Text
+     where X is a positive integer, and the saturation process
+     stops after that number of s-pairs is found.
+     This is described in the documentation node for @TO saturate@.
+     
+     The Rees algebra S(M) of a submodule M of a free module (most importantly,
+     an ideal in the ring), is equal to the symmetric algebra Sym_k(M) mod torsion.
+     computing this torsion is the slow link in most of the programs in this
+     package. The fastest way to compute it is usually by saturating the ideal
+     defining the symmetric algebra with respect
+     to an element in that ideal.
+   SeeAlso
+    saturate
+///
+
 
 TEST///
 --TEST for jacobianDual
@@ -2412,9 +2494,9 @@ installPackage("ReesAlgebra")
 check "ReesAlgebra"
 
 loadPackage("ReesAlgebra", Reload=>true)
-viewHelp installPackage
 viewHelp reesIdeal
-
+viewHelp Strategy
+viewHelp Variable
 -- Local Variables:
 -- compile-command: "make -C $M2BUILDDIR/Macaulay2/packages PACKAGES=ReesAlgebra RemakeAllDocumentation=true IgnoreExampleErrors=false"
 -- End:
