@@ -841,36 +841,55 @@ doc ///
      that require a Rees algebra.
 
      The Rees algebra of a module M is defined by a certain ideal in the symmetric
-     algebra Sym(M) of M, or equivalently, in the symmetric algebra of any
-     free module F that maps onto M (see @TO symmetricKernel@). This ideal (generally
-     taken in the polynomial ring Sym(F)) is 
-     the {\em Rees ideal of M.}
+     algebra Sym(M) of M, or, as in this package, by an ideal in the symmetric algebra of any
+     free module F that maps onto M. 
      When phi: M \to G is the universal embedding
      of M, then, by the definition of Huneke-Eisenbud-Ulrich,
-     the {\em Rees ideal of M} is the kernel of Sym(phi).
+     the {\em Rees ideal of M} is the kernel of Sym(phi). Thus the
+     Rees Algebra of M is the image of Sym(phi).
       
-     The Rees ideal, as considered by David Rees in 1958, originally had
-     to do only with the case where $M$ is an ideal.
-     In this case (and in general in characteristic 0) a
-     theorem of Eisenbud-Huneke-Ulrich asserts that
-     any embedding of M into a free module may be used; in particular, this
-     definition agrees with that of Rees in this case.
+     The Rees algebra was first 
+     studied, in the case where M is an ideal of a ring R, by David Rees in the
+     now famous paper
+     
+     {\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149).
+ 
+     In fact, 
+     Rees mainly studied the ring 
+     $R[It,t^{-1}]$, now also called the `extended Rees
+     Algebra' of I. 
+     
+     In most cases the definition of the Rees algebra of an ideal I \subset R
+     as R[It] \subset R[t]
+     agrees agrees with the definition used here:
+     
+     {\bf Theorem (Eisenbud-Huneke-Ulrich):} Let R be a Noetherian ring
+     and let M be a finitely generated R-module. Let phi: M \to G
+     be the universal embedding of M in a free module, and let
+     psi: M \to G' be any inclusion. If R is torsion-free over ZZ
+     or R is unmixed and generically Gorenstein or M is free locally
+     at each associated prime of R, then the image of Sym(phi) and the
+     image of Sym(psi) are naturally isomorphic.
      
      It follows that in the good cases above the Rees ideal is equal to the saturation
      of the defining ideal of symmetric algebra of M with respect to any
      element f of the ground ring such that M[f^{-1}] is free. This
      expression is often gives a faster computation.
        
+     The definition used here has the advantage of being functorial. We give
+     an example of an ideal where the two definitions differ below.
+     
      {\bf Historical Background}: The Rees Algebra of an ideal is the basic
      commutative algebra analogue of the blow up operation in algebraic
      geometry. It has many applications, and a great deal of modern work in
-     commutative algebra has been devoted to it.  The term ``Rees Algebra'' (of
-     an ideal $I$ in a ring $R$, say) is used here to refer to the ring
-     $R[It]\subset R[t]$ which is sometimes called the ``blowup algebra''
-     instead. (The origin of the name may be traced to a paper by David Rees
-     ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
-     used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
-     Algebra.'')
+     commutative algebra has been devoted to it.  The  ``Rees Algebra'' of
+     an ideal I is sometimes called the ``blowup algebra''
+     instead.
+     
+     To give an example where our definition differs from the classic d
+    
+    Example
+     
 ///
 
 doc ///
