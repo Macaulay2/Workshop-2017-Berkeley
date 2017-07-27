@@ -559,7 +559,7 @@ distinguished(Ideal,RingElement) := List => o -> (i,a) -> (
 
 
 ///
-####
+
 uninstallPackage "ReesAlgebra"
 restart
 installPackage "ReesAlgebra"
@@ -833,25 +833,44 @@ doc ///
     Compute Rees algebra
   Description
     Text
-       The goal of this package is to provide commands to compute the Rees
-       algebra of a module as it is defined in the paper {\em What is the
-       Rees algebra of a module?}, by Craig Huneke, David Eisenbud and Bernd
-       Ulrich, Proc. Am. Math. Soc. 131, 701--708, 2002.
-       It also includes functions for computing many of the structures
-       that require a Rees algebra.  The included functions are listed
-       below. Examples of the use of each of the functions are included with
-       their documentation.
+     The goal of this package is to provide commands to compute the Rees
+     algebra of a module as it is defined in the paper {\em What is the
+     Rees algebra of a module?}, by Craig Huneke, David Eisenbud and Bernd
+     Ulrich, Proc. Am. Math. Soc. 131, 701--708, 2002.
+     It also includes functions for computing many of the invariants
+     that require a Rees algebra.
+
+     The Rees algebra of a module M is defined by a certain ideal in the symmetric
+     algebra Sym(M) of M, or equivalently, in the symmetric algebra of any
+     free module F that maps onto M (see @TO symmetricKernel@). This ideal (generally
+     taken in the polynomial ring Sym(F)) is 
+     the {\em Rees ideal of M.}
+     When phi: M \to G is the universal embedding
+     of M, then, by the definition of Huneke-Eisenbud-Ulrich,
+     the {\em Rees ideal of M} is the kernel of Sym(phi).
+      
+     The Rees ideal, as considered by David Rees in 1958, originally had
+     to do only with the case where $M$ is an ideal.
+     In this case (and in general in characteristic 0) a
+     theorem of Eisenbud-Huneke-Ulrich asserts that
+     any embedding of M into a free module may be used; in particular, this
+     definition agrees with that of Rees in this case.
+     
+     It follows that in the good cases above the Rees ideal is equal to the saturation
+     of the defining ideal of symmetric algebra of M with respect to any
+     element f of the ground ring such that M[f^{-1}] is free. This
+     expression is often gives a faster computation.
        
-      {\bf Historical Background}: The Rees Algebra of an ideal is the basic
-      commutative algebra analogue of the blow up operation in algebraic
-      geometry. It has many applications, and a great deal of modern work in
-      commutative algebra has been devoted to it.  The term ``Rees Algebra'' (of
-      an ideal $I$ in a ring $R$, say) is used here to refer to the ring
-      $R[It]\subset R[t]$ which is sometimes called the ``blowup algebra''
-      instead. (The origin of the name may be traced to a paper by David Rees
-      ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
-      used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
-      Algebra.'')
+     {\bf Historical Background}: The Rees Algebra of an ideal is the basic
+     commutative algebra analogue of the blow up operation in algebraic
+     geometry. It has many applications, and a great deal of modern work in
+     commutative algebra has been devoted to it.  The term ``Rees Algebra'' (of
+     an ideal $I$ in a ring $R$, say) is used here to refer to the ring
+     $R[It]\subset R[t]$ which is sometimes called the ``blowup algebra''
+     instead. (The origin of the name may be traced to a paper by David Rees
+     ({\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149), where Rees
+     used the ring $R[It,t^{-1}]$, now also called the ``extended Rees
+     Algebra.'')
 ///
 
 doc ///
@@ -872,13 +891,20 @@ doc ///
      Given a map between free modules $f: F \to G$ this function computes the
      kernel of the induced map of symmetric algebras, $Sym(f): Sym(F) \to
      Sym(G)$ as an ideal in $Sym(F)$.  When $f$ defines the universal embedding
-     of $Im f$, or when $G$ is the ground ring, then (by results in the paper
+     of $Im f$ then by the definition
      of Huneke-Eisenbud-Ulrich) this is equal to the defining ideal of the Rees
-     algebra of the module Im f.
-
-     This function is the workhorse of all/most of the Rees algebra 
-     functions in the package.  Most users will prefer to use one of the front 
-     end commands @TO reesAlgebra@, @TO reesIdeal@ and others.
+     algebra of the module Im f, the Rees ideal of M.
+     
+     When $M$ is an ideal (and in general in characteristic 0) then, by a 
+     theorem of Eisenbud-Huneke-Ulrich, 
+     any embedding of M into a free module may be used,
+     and it follows that the Rees ideal is equal to the saturation
+     of the defining ideal of symmetric algebra of M with respect to any
+     element f of the ground ring such that M[f^{-1}] is free. And this
+     often gives a faster computation.
+     
+     Most users will prefer to use one of the front 
+     end commands @TO reesAlgebra@, @TO reesIdeal@ to compute the ideal.
    Example
      R = QQ[a..e]
      J = monomialCurveIdeal(R, {1,2,3})
@@ -1098,37 +1124,28 @@ doc ///
       defining the Rees algebra of M
   Description
     Text
-      The Rees algebra of a module $M$ over a ring $R$ is here defined,
-      following the paper What is the Rees algebra of a module? David Eisenbud,
-      Craig Huneke and Bernd Ulrich, Proc. Amer. Math. Soc. 131 (2003)
-      701--708, as follows: If $h:F\to M$ is a surjection from a free module,
-      and $g: M\to G$ is the universal map to a free module, then the Rees
-      algebra of $M$ is the image of the induced map of $Sym(gh): Sym(F)\to
-      Sym(G)$, and thus can be computed with symmetricKernel(gh). The paper
-      above proves that if $M$ is isomorphic to an ideal with inclusion $g:
-      M\to R$ (or, in characteristic zero but not in characteristic $>0$ if $M$
-      is a submodule of a free module and $g': M\to G$) is any injection), then
-      the Rees algebra is equal to the image of $g'h$, so it is unnecessary to
-      compute the universal embedding.
-
-      This package gives the user a choice between two methods for finding the
+      This routine gives the user a choice between two methods for finding the
       defining ideal of the Rees algebra of an ideal or module $M$ over a ring
       $R$: The call
 
         {\tt reesIdeal(M)}
 
       computes the universal embedding $g: M\to G$ and a surjection $f: F\to M$
-      and returns the result of symmetricKernel(gf). On the other hand, if the
+      and returns the result of symmetricKernel(gf). 
+      
+      When M is an ideal (the usual case) or in characteristic 0, the same
+      ideal can be computed by an alternate method that is often faster.
+      If the
       user knows an non-zerodivisor $a\in R$ such that $M[a^{-1}$ is a free
-      module (this is the case, for example, if $a \in M\subset R$ and $a$ is a
-      non-zerodivisor), then it is often much faster to call
+      module (for example, when M is an ideal, any non-zerodivisor $a \in M$ 
+      then it is often much faster to call
 
         {\tt reesIdeal(M,a)}
 
-      which finds a surjection $f: F\to M$ and returns $(J:a^{\infty}) \subset
-      Sym(F)$, the saturation of the ideal $J:=(ker f)Sym(F)$. Note that this
+      which computes the saturation of the defining ideal of the symmetric algebra
+      of M with respect to a. This
       gives the correct answer even under the slightly weaker hypothesis that
-      $M[a^{-1}]$ is ``of linear type''. (See also @TO isLinearType@.)
+      $M[a^{-1}]$ is {\em of linear type}. (See also @TO isLinearType@.)
 
    Example
       kk = ZZ/101;
@@ -1137,45 +1154,23 @@ doc ///
       time V1 = reesIdeal i; 
       time V2 = reesIdeal(i,i_0); 
    Text
-      This example is particularly interesting upon a bit more
-      exploration.
-   Example
-      numgens V1
-      numgens V2
-   Text
-      The difference is striking and, at least in part, explains the
-      difference in computing time.  Furthermore, if we compute a Grobner
-      basis for both and compare the two matrices, we see that we indeed got
-      the same ideal.
-   Example
-      M1 = gens gb V1;
-      M2 = gens gb V2;
-      use ring M2
-      M1 = substitute(M1, ring M2);
-      M1 == M2
-      numgens source M2
-   Text
-      Another example illustrates the power and usage of the code.  We
-      also show the output in this example.  While a bit messy, the
-      user can see how we handle the degrees in both cases.  
+     The following example shows how we handle degrees
    Example
       S=kk[a,b,c]
       m=matrix{{a,0},{b,a},{0,b}}
       i=minors(2,m)
-      time reesIdeal i
-      res i
-      m=random(S^3,S^{4:-1})
-      i=minors(3,m)
-      time I=reesIdeal (i,i_0);
-      transpose gens I
-      i=minors(2,m);
-      time I=reesIdeal (i,i_0);
+      time I1 = reesIdeal i;
+      time I2 = reesIdeal(i,i_0);
+      transpose gens I1
+      transpose gens I2      
    Text
-      {\bf Investigating plane curve singularities}
+      {\bf Investigating plane curve singularities} Proj of the Rees algebra of I \subset R
+      is the blowup of I in spec R. Thus the Rees algebra is a basic construction in
+      resolution of singularities. Here we work out a simple case:
    Example
-      R = ZZ/32003[x,y,z]
+      R = ZZ/32003[x,y]
       I = ideal(x,y)
-      cusp = ideal(x^2*z-y^3)
+      cusp = ideal(x^2-y^3)
       RI = reesIdeal(I)
       S = ring RI
       totalTransform = substitute(cusp, S) + RI
@@ -1184,15 +1179,16 @@ doc ///
       L = primaryDecomposition totalTransform 
       apply(L, i -> (degree i)/(degree radical i))
    Text
-      The total transform of the cusp contains the exceptional with
+      The total transform of the cusp contains the exceptional divisor with
       multiplicity two.  The proper transform of the cusp is a smooth curve but
-      is tangent to the exceptional curve.
+      is tangent to the exceptional divisor
    Example
       use ring L_0
       singular = ideal(singularLocus(L_0));
-      SL = saturate(singular, ideal(x,y,z));
-      saturate(SL, ideal(w_0,w_1)) -- we get 1 so it is smooth.
-  Caveat
+      SL = saturate(singular, ideal(x,y));
+      saturate(SL, ideal(w_0,w_1))
+   Text
+      This shows that the proper transform is smooth.
   SeeAlso
     symmetricKernel
     reesAlgebra
@@ -2013,7 +2009,7 @@ doc ///
     [isLinearType,PairLimit]
     [reesAlgebra,PairLimit]
    Headline
-    Choose a strategy for the saturation step
+    Bound the number of s-pairs considered in the saturation step
    Usage
     reesIdeal(...,PairLimit => X)
    Description
@@ -2031,7 +2027,105 @@ doc ///
    SeeAlso
     saturate
 ///
-
+doc ///
+   Key
+    [reesIdeal, MinimalGenerators]
+    [minimalReduction, MinimalGenerators]
+    [distinguishedAndMult,MinimalGenerators]
+    [distinguished,MinimalGenerators]
+    [analyticSpread, MinimalGenerators]
+    [specialFiber, MinimalGenerators]
+    [specialFiberIdeal, MinimalGenerators]
+    [multiplicity, MinimalGenerators]
+    [associatedGradedRing, MinimalGenerators]
+    [normalCone, MinimalGenerators]
+    [isReduction, MinimalGenerators]
+    [isLinearType,MinimalGenerators]
+    [reesAlgebra,MinimalGenerators]
+   Headline
+    Whether the saturation step returns minimal generators
+   Usage
+    reesIdeal(...,MinimalGenerators => X)
+   Description
+    Text
+     where X is boolean -- whether or not to return minimal generators
+     This is described in the documentation node for @TO saturate@.
+     
+     The Rees algebra S(M) of a submodule M of a free module (most importantly,
+     an ideal in the ring), is equal to the symmetric algebra Sym_k(M) mod torsion.
+     computing this torsion is the slow link in most of the programs in this
+     package. The fastest way to compute it is usually by saturating the ideal
+     defining the symmetric algebra with respect
+     to an element in that ideal.
+   SeeAlso
+    saturate
+///
+doc ///
+   Key
+    [minimalReduction, BasisElementLimit]
+    [reesIdeal, BasisElementLimit]
+    [distinguishedAndMult,BasisElementLimit]
+    [distinguished,BasisElementLimit]
+    [analyticSpread, BasisElementLimit]
+    [specialFiber, BasisElementLimit]
+    [associatedGradedRing, BasisElementLimit]
+    [multiplicity, BasisElementLimit]
+    [normalCone, BasisElementLimit]
+    [isReduction, BasisElementLimit]
+    [isLinearType,BasisElementLimit]
+    [reesAlgebra,BasisElementLimit]
+    [specialFiberIdeal, BasisElementLimit]
+   Headline
+    Bound the number of Groebner basis elements to compute in the saturation step
+   Usage
+    reesIdeal(...,BasisElementLimit => X)
+   Description
+    Text
+     where X is a non-negative integer. Stop when X Groebner basis elements have been found
+     This is described in the documentation node for @TO saturate@.
+     
+     The Rees algebra S(M) of a submodule M of a free module (most importantly,
+     an ideal in the ring), is equal to the symmetric algebra Sym_k(M) mod torsion.
+     computing this torsion is the slow link in most of the programs in this
+     package. The fastest way to compute it is usually by saturating the ideal
+     defining the symmetric algebra with respect
+     to an element in that ideal.
+   SeeAlso
+    saturate
+///
+doc ///
+   Key
+    [reesIdeal, DegreeLimit]
+    [minimalReduction, DegreeLimit]
+    [distinguishedAndMult,DegreeLimit]
+    [distinguished,DegreeLimit]
+    [analyticSpread, DegreeLimit]
+    [specialFiber, DegreeLimit]
+    [normalCone, DegreeLimit]
+    [multiplicity, DegreeLimit]
+    [associatedGradedRing, DegreeLimit]
+    [isReduction, DegreeLimit]
+    [isLinearType,DegreeLimit]
+    [reesAlgebra,DegreeLimit]
+    [specialFiberIdeal, DegreeLimit]
+   Headline
+    Bound the degrees considered in the saturation step. Defaults to infinity.
+   Usage
+    reesIdeal(...,DegreeLimit => X)
+   Description
+    Text
+     where X is a non-negative integer. Stop computation at degree X.
+     This is described in the documentation node for @TO saturate@.
+     
+     The Rees algebra S(M) of a submodule M of a free module (most importantly,
+     an ideal in the ring), is equal to the symmetric algebra Sym_k(M) mod torsion.
+     computing this torsion is the slow link in most of the programs in this
+     package. The fastest way to compute it is usually by saturating the ideal
+     defining the symmetric algebra with respect
+     to an element in that ideal.
+   SeeAlso
+    saturate
+///
 
 TEST///
 --TEST for jacobianDual
