@@ -21,6 +21,7 @@ export {
     "abstractCubic",
     "linesOnCubic",
     "abstractHypersurface",
+    "abstractQuartic",
     "isIrreducible",
     "isSmooth",
     "CanonicalClass",
@@ -107,6 +108,46 @@ abstractHypersurface ZZ := d -> abstractSurface(
 	 1+binomial(d-1,3)
 	}
     )
+abstractQuartic = method()
+abstractQuartic String := Input -> (
+    if Input == "line" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,1},{1,-2}},
+	{1,0},
+	{0,0},
+	2});
+    if Input == "plane conic" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,2},{2,-2}},
+	{1,0},
+	{0,0},
+	2});
+    if Input == "twisted cubic" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,3},{3,-2}},
+	{1,0},
+	{0,0},
+	2});
+    if Input == "rational quartic" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,4},{4,-2}},
+	{1,0},
+	{0,0},
+	2});
+    if Input == "plane elliptic" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,3},{3,0}},
+	{1,0},
+	{0,0},
+	2});
+    if Input == "space elliptic" then return abstractSurface(
+	 {"Quartic surface with a " | Input,
+	matrix{{4,4},{4,0}},
+	{1,0},
+	{0,0},
+	2});
+    error "not implemented yet for your type of surface";
+)
 
 --AbstractDivisors--
 
@@ -237,7 +278,7 @@ realize AbstractSurface := opts -> X -> (
         return new RealizedSurface from {
             symbol AbstractSurface => X,
             symbol Ideal => f, 
-            symbol ExtraData => (phi, points)
+            symbol ExtraData => {phi, points}
             }
         );
     if X.Name == "Quadric surface" then (
@@ -245,22 +286,73 @@ realize AbstractSurface := opts -> X -> (
         return new RealizedSurface from {
 	    symbol AbstractSurface => X,
 	    symbol Ideal => IQ,
-	    symbol ExtraData => (ideal(R_0,R_1),ideal(R_0,R_2))
+	    symbol ExtraData => {ideal(R_0,R_1),ideal(R_0,R_2)}
 	    }
         );
     if X.Name == "Hypersurface" then (        
 	return new RealizedSurface from {
 	    symbol AbstractSurface => X,
 	    symbol Ideal => ideal random(4+first X.CanonicalClass,R),
-	    symbol ExtraData => null
+	    symbol ExtraData => {}
 	    }    	
+    );
+    if select("Quartic",X.Name) != {} then (
+    	if select("line",X.Name) != {} then (
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => ideal(random(3,R)*R_2+random(3,R)*R_3),
+		symbol ExtraData => {ideal(R_2,R_3)}
+      	    }     
+	);	
+    	if select("conic",X.Name) != {} then (
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => ideal(random(3,R)*R_3+random(2,R)*(R_1^2-R_0*R_2)),
+		symbol ExtraData => {ideal(R_3,R_1^2-R_0*R_2)}
+      	    }     
+	);
+	if select("twisted cubic",X.Name) != {} then (
+	    IT := minors(2,matrix{{R_0,R_1,R_2},{R_1,R_2,R_3}}),
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => ideal ((gens IT)*random(R^3,R^{-2}))_(0,0),
+		symbol ExtraData => {IT}
+      	    }     
+	);
+	if select("rational quartic",X.Name) != {} then (
+	    IR := monomialCurveIdeal(R,{1,3,4});
+	    IQR := ideal (gens IR)*(transpose random(R^1,R^{-2,-3,-3,-3}))_(0,0),  
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => IQR,
+		symbol ExtraData => {IR}
+      	    }     
+	);
+    	if select("plane elliptic",X.Name) != {} then (
+	    E := R_2*R_1^2-R_0^3+R_0*R_2^2;
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => ideal (random(3,R)*R_3+random(1,R)*E),
+		symbol ExtraData => {ideal(R_3,E)}
+      	    }     
+	);  
+        if select("space elliptic",X.Name) != {} then (
+	    Q := random(2,R);
+	    return new RealizedSurface from {
+	    	symbol AbstractSurface => X,
+		symbol Ideal => ideal (random(2,R)*(R_0*R_3-R_1*R_2)+random(2,R)*Q),
+		symbol ExtraData => {ideal(R_0*R_3-R_1*R_2,Q)}
+      	    }     
+	);    	
     );
     error "Not implemented yet";
     )
+
 realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
     if C.AbstractSurface =!= X.AbstractSurface then error "expected divisor class on the given surface";
     if X.AbstractSurface.Name == "Cubic surface" then (
-        (phi,pts) := X.ExtraData;
+        phi := X.ExtraData#0;
+	pts := X.ExtraData#1;
         S := target phi;
         R := source phi;
         ab := C.DivisorClass;
