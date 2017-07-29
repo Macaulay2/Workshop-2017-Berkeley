@@ -1,0 +1,25 @@
+#!/bin/bash
+cp TestIdeals.m2 TestIdealsPackage/
+cp code/BasicFunctions.m2 TestIdealsPackage/TestIdeals
+cp code/EthRoots.m2 TestIdealsPackage/TestIdeals
+cp code/frobeniusPowers.m2 TestIdealsPackage/TestIdeals
+cp code/compatiblySplit.m2 TestIdealsPackage/TestIdeals
+cp code/parameterTestIdeal.m2 TestIdealsPackage/TestIdeals
+cp code/Finjective.m2 TestIdealsPackage/TestIdeals
+cp code/testIdeals.m2 TestIdealsPackage/TestIdeals
+cp code/DivisorPatch.m2 TestIdealsPackage/TestIdeals
+cp documentation/BasicFunctionsDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/frobeniusPowersDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/TestIdealDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/EthRootsDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/compatiblySplitDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/testIdealsDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/parameterTestIdealDoc.m2 TestIdealsPackage/TestIdeals
+cp documentation/FinjectiveDoc.m2 TestIdealsPackage/TestIdeals
+cp tests/BasicFunctionsTest.m2 TestIdealsPackage/TestIdeals
+cp tests/EthRootsTest.m2 TestIdealsPackage/TestIdeals
+cp tests/frobeniusPowersTest.m2 TestIdealsPackage/TestIdeals
+cp tests/ParameterTestIdealTest.m2 TestIdealsPackage/TestIdeals
+cp tests/CompatiblySplitTest.m2 TestIdealsPackage/TestIdeals
+cp tests/testIdealTest.m2 TestIdealsPackage/TestIdeals
+

@@ -1,0 +1,5 @@
+July 2017
+
+1)  Karl created "DivisorPatch.m2" so that we don't need to installPackage "Divisor".  This was done because Daniel and Emily can't install the most recent version of m2.
+
+2)  In BasicFunctions.m2 we reverted the function "isPolynomialOverFiniteField" to an older one.  Again, this was done so that it would work in Daniel and Emily's m2 install.  The updated version is commented out in BasicFunctions.m2.
