@@ -1,21 +1,28 @@
 newPackage(
         "SpaceCurves",
-        Version => "0.1", 
-        Date => "",
-        Authors => {{Name => "", 
-                  Email => "", 
-                  HomePage => ""}},
-        Headline => "database of space curves and generation of such examples",
+        Version => "1.0", 
+        Date => "August 1st 2017",
+        Authors => {{Name => "Frank Schreyer", 
+                  Email => "schreyer@math.uni-sb.de", 
+                  HomePage => "https://www.math.uni-sb.de/ag/schreyer/"},
+	      {Name => "Mike Stillman", 
+                  Email => "mike@math.cornell.edu", 
+                  HomePage => "http://www.math.cornell.edu/~mike/"},
+	      {Name => "Mengyuan Zhang", 
+                  Email => "myzhang@berkeley.edu", 
+                  HomePage => "https://math.berkeley.edu/~myzhang/"}
+	      },
+        Headline => "Generation and database of space curves",
         DebuggingMode => true
         )
 
 export {
-    "AbstractSurface",	  --type
-    "abstractSurface",	  --create an AbstractSurface
-    "AbstractDivisor",	  --type
-    "abstractDivisor",	  --create an AbstractDivisor	  
-    "RealizedSurface",	  --type
-    "RealizedDivisor",	  --type
+    "AbstractSurface",	  
+    "abstractSurface",	  
+    "AbstractDivisor",	  
+    "abstractDivisor",	  	  
+    "RealizedSurface",	  
+    "RealizedDivisor",	  
     "realize",
     "abstractQuadric",
     "abstractCubic",
@@ -30,36 +37,40 @@ export {
     "ExtraData",
     "IntersectionPairing",
     "dgTable",
+    "generateCurves",
     "hartshorneRaoModule",
     "hilbertBurchComputation",
     "minimalCurveInLiaisonClass",
     "Chi",
     "irreducibleDivisors",
-    "completeIntersectionCurves"
+    "ciCurves",
+    "Realize"
     }
 
+--I. Data types
 
 AbstractSurface = new Type of HashTable
--- Name,IntersectionPairing,Hyperplane,CanonicalClass,Chi
+-- Name, IntersectionPairing, Hyperplane, CanonicalClass, Chi
 AbstractDivisor = new Type of HashTable
+-- AbstractSurface, DivisorClass
 RealizedSurface = new Type of HashTable
--- AbstractSurface,Ideal,ExtraData
--- ExtraData for cubic: (Phi:P^2-->P^3, ideal of 6 Points)
+-- AbstractSurface, Ideal, ExtraData
 RealizedDivisor = new Type of HashTable
 -- AbstractDivisor, RealizedSurface, Ideal
 
 
+--II. AbstractSurfaces
 
---AbstractSurfaces--
+net AbstractSurface := X -> net X.Name
+net RealizedSurface := X -> net X.Ideal
 ideal RealizedSurface := X -> X.Ideal
-ideal RealizedDivisor := C -> C.Ideal
 
 abstractSurface = method()
 abstractSurface RealizedSurface := X -> X.AbstractSurface
 abstractSurface AbstractDivisor := D -> D.AbstractSurface
 abstractSurface List := data -> (
-    -- data is a List containing all keys of the hashTable
-    -- Name,IntersectionPairing,Hyperplane,CanonicalClass,Chi
+    -- data is a List containing the following keys
+    -- Name, IntersectionPairing, Hyperplane, CanonicalClass, Chi
     M := data#1;
     if numRows M != numColumns M then error "expected square matrix";
     -- TODO: add hodge index check.
@@ -71,7 +82,6 @@ abstractSurface List := data -> (
 	symbol Chi => data#4
         }
     )
-
 abstractQuadric = abstractSurface(
     {"Quadric surface",matrix{{0,1},{1,0}}, {1,1}, {-2,-2},1}
 )
@@ -116,7 +126,7 @@ abstractQuartic String := Input -> (
 	{1,0},
 	{0,0},
 	2});
-    if Input == "plane conic" then return abstractSurface(
+    if Input == "conic" then return abstractSurface(
 	 {"Quartic surface with a " | Input,
 	matrix{{4,2},{2,-2}},
 	{1,0},
@@ -148,8 +158,18 @@ abstractQuartic String := Input -> (
 	2});
     error "not implemented yet for your type of surface";
 )
+isSmooth = method()
+isSmooth Ideal := (I) -> (
+    c := codim I;
+    dim(I + minors(c, jacobian I)) == 0
+    )
+isSmooth RealizedSurface := X -> isSmooth ideal X
 
---AbstractDivisors--
+--III.AbstractDivisors
+
+net AbstractDivisor := D -> net D.DivisorClass
+net RealizedDivisor := D -> net D.Ideal
+ideal RealizedDivisor := C -> C.Ideal
 
 abstractDivisor = method()
 abstractDivisor(List, AbstractSurface) := (C, X) -> (
@@ -158,11 +178,6 @@ abstractDivisor(List, AbstractSurface) := (C, X) -> (
         symbol AbstractSurface => X
         }
     )
-net AbstractDivisor := D -> net D.DivisorClass
-net AbstractSurface := X -> net X.Name
-net RealizedSurface := X -> net X.Ideal
-net RealizedDivisor := D -> net D.Ideal
-
 ZZ * AbstractDivisor := (n,D) -> (
     abstractDivisor(n * D.DivisorClass, D.AbstractSurface)
     )
@@ -178,49 +193,33 @@ AbstractDivisor * AbstractDivisor := (C,D) -> (
     X := C.AbstractSurface;
     assert(X === D.AbstractSurface);
     assert(X.IntersectionPairing =!= null);
-    (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{D.DivisorClass})_(0,0)
+    (matrix{C.DivisorClass} * X.IntersectionPairing * 
+	transpose matrix{D.DivisorClass})_(0,0)
     )
 AbstractDivisor == AbstractDivisor := (C,D) -> (
-    C.AbstractSurface === D.AbstractSurface and C.DivisorClass == D.DivisorClass
+    C.AbstractSurface === D.AbstractSurface and 
+    C.DivisorClass == D.DivisorClass
     )
-
 degree AbstractDivisor := C -> (
     X := C.AbstractSurface;
-    return (matrix{C.DivisorClass} * X.IntersectionPairing * transpose matrix{X.Hyperplane})_(0,0);
+    return (matrix{C.DivisorClass} * X.IntersectionPairing * 
+	transpose matrix{X.Hyperplane})_(0,0);
     )
+degree RealizedDivisor := C -> degree ideal C
 genus AbstractDivisor := C -> (
     X := C.AbstractSurface;
     K := abstractDivisor(X.CanonicalClass,X);
     return 1/2*((K+C)*C)+1;
     )
+genus RealizedDivisor := C -> genus ideal C
 chi AbstractDivisor := C -> (
     X := C.AbstractSurface;
     K := abstractDivisor(X.CanonicalClass,X);
     1/2 * (C * (C-K)) + X.Chi
     )
-degree RealizedDivisor := C -> degree ideal C
-genus RealizedDivisor := C -> genus ideal C
-chi RealizedDivisor := C -> null --to be added
-
---Smoothness and irreducibility--
-
-isSmooth = method()
-isSmooth Ideal := (I) -> (
-    c := codim I;
-    dim(I + minors(c, jacobian I)) == 0
-    )
-isSmooth RealizedSurface := X -> isSmooth ideal X
-isSmooth RealizedDivisor := C -> isSmooth ideal C
-isSmooth AbstractDivisor := C -> (
-    if C.AbstractSurface.Name == "Quadric surface" then return isIrreducible C;
-    if C.AbstractSurface.Name == "Cubic surface" then return isIrreducible C;
-    if C.AbstractSurface.Name == "Hypersurface" then return true;
-    error "Not implemented yet for this type of surface";  
-)
 
 isIrreducible = method()
 isIrreducible AbstractDivisor := Boolean => C -> (
-    --Checks whether a divisor class contains an irreducible curve
     X := C.AbstractSurface;
     if X.Name == "Cubic surface" then (
     	H := abstractDivisor(X.Hyperplane,X);
@@ -243,22 +242,32 @@ isIrreducible AbstractDivisor := Boolean => C -> (
     );
     error "Not implemented for your type of surface yet";
 )
-isIrreducible RealizedDivisor := Boolean => C -> isPrime ideal C 
+isIrreducible RealizedDivisor := Boolean => C -> isPrime ideal C
 
---Realize--
+isSmooth AbstractDivisor := C -> (
+    if C.AbstractSurface.Name == "Quadric surface" then return isIrreducible C;
+    if C.AbstractSurface.Name == "Cubic surface" then return isIrreducible C;
+    if C.AbstractSurface.Name == "Hypersurface" then (
+    	if first C.DivisorClass > 0 then return true
+	else return false;	
+    );
+    error "Not implemented yet for this type of surface";  
+)
+isSmooth RealizedDivisor := C -> isSmooth ideal C
 
-realize = method(Options => {Ring => null, CoefficientRing => ZZ/32003})
+--IV. Realization
+
+realize = method(Options => {Ring => null})
 realize AbstractSurface := opts -> X -> (
-    -- Note: this is in P^3
     R := if opts#Ring =!= null then 
         opts#Ring 
       else (
         x := getSymbol "x";
-        opts.CoefficientRing[x_0..x_3]
+        ZZ/32003[x_0..x_3]
       );
     assert(numgens R == 4);
     kk := coefficientRing R;
-    -- create the polynomial ring.
+    
     if X.Name == "Cubic surface" then (
         y := getSymbol "y";
         S := kk(monoid[y_0..y_2]);
@@ -271,8 +280,6 @@ realize AbstractSurface := opts -> X -> (
             phi := map(S,R,fI.dd_1);
             matS := sub(diff(transpose sub(vars S,RS),sub(vars R,RS) * sub(fI.dd_2,RS)),R);
             f := ideal det matS;
-            -- now check that this is smooth
-            --assert(ker phi == f);
             dim (f + ideal jacobian f) != 0
             ) do ();
         return new RealizedSurface from {
@@ -345,11 +352,12 @@ realize AbstractSurface := opts -> X -> (
       	    }     
 	);    	
     );
-    error "Not implemented yet";
+    error "Not implemented yet for this type of surface";
     )
 
 realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
-    if C.AbstractSurface =!= X.AbstractSurface then error "expected divisor class on the given surface";
+    if C.AbstractSurface =!= X.AbstractSurface then 
+    error "expected divisor class on the given surface";
     if X.AbstractSurface.Name == "Cubic surface" then (
         phi := X.ExtraData#0;
 	pts := X.ExtraData#1;
@@ -396,20 +404,18 @@ realize (AbstractDivisor,RealizedSurface) := opts -> (C, X) -> (
     );
     error "not implemented yet for your type of surface"
 )
-realize AbstractDivisor := opts -> C -> realize(C,realize(C.AbstractSurface))
+realize AbstractDivisor := opts -> C -> (
+    realize(C,realize(C.AbstractSurface, Ring => opts#Ring))
+)
 
 
---Rao Module--
-
+--V. Minimal curves in liaison class
 
 minimalCurveInLiaisonClass=method()
-
 minimalCurveInLiaisonClass(Ideal):= J-> (
     M := hartshorneRaoModule J;
     minimalCurveInLiaisonClass(M)
     )
-    
-
 minimalCurveInLiaisonClass(Module) := M -> (    
  -- a probalistic algorithm which over large finite fields will produce
  -- a minimal curve in the liaison class corresponding to M with high probability
@@ -430,32 +436,37 @@ minimalCurveInLiaisonClass(Module) := M -> (
 	class I === class null)
         do (i=i+1);
     --betti I, L
-    return I)
-
+    return I
+)
 hilbertBurchComputation=method()
 hilbertBurchComputation(Module,Module) := (M,G) -> (
     if not ring M === ring G then error "expected modules over the same polynomial ring";
     -- add check: isFree G == true
-    fM:=res(M,LengthLimit=>2);
-    if not 1+rank fM_0-rank fM_1 +rank G == 0 then error "the free module has the wrong rank";
-    hom:=random(fM_2,G);
+    fM := res(M,LengthLimit=>2);
+    if not 1+rank fM_0-rank fM_1 +rank G == 0 then 
+    error "the free module has the wrong rank";
+    hom := random(fM_2,G);
     hilbBurch := fM.dd_2*hom;
-    degLim := -sum( -flatten degrees G) + sum(-flatten degrees fM_1)-sum(-flatten degrees fM_0);
+    degLim := -sum(-flatten degrees G) + sum(-flatten degrees fM_1) -sum(-flatten degrees fM_0);
     syzHilbBurch := syz(transpose hilbBurch,DegreeLimit=>degLim);
-    ok := rank source syzHilbBurch == rank fM_0+1 and degrees source syzHilbBurch ==(-degrees fM_0|{{degLim}});
-    if ok then return trim ideal(transpose syzHilbBurch_{ rank fM_0} * fM.dd_2) else return null)
+    ok := rank source syzHilbBurch == rank fM_0+1 and 
+    degrees source syzHilbBurch ==(-degrees fM_0|{{degLim}});
+    if ok then return trim ideal(transpose syzHilbBurch_{ rank fM_0} * fM.dd_2) 
+    else return null;
+)
 
 hartshorneRaoModule=method()
 hartshorneRaoModule(Ideal) := I -> (
-    S:=ring I;
-    d:= dim S;
+    S := ring I;
+    d := dim S;
     assert( dim I == 2);
-    omega:=Ext^(d-2)(S^1/I,S^{-d});
+    omega := Ext^(d-2)(S^1/I,S^{-d});
     fomega := res omega;
     HRao := coker(Hom(fomega.dd_(d-2)_{0..(rank fomega_(d-2)-2)},S^{-d}));
-    return HRao)
+    return HRao
+)
 
---Generation and Plotting--
+--VI. Generation and Plotting
 dgTable = method()
 dgTable List := L ->(
     --Takes a list of AbstractDivisors or RealizedDivisors
@@ -476,43 +487,117 @@ dgTable List := L ->(
 
 irreducibleDivisors = method()
 irreducibleDivisors (ZZ, AbstractSurface) := (d,X) -> (
-    --List all irreducible abstract divisors of degree d on X
+    --Produces a list of irreducible abstract divisors of degree d on X
+    Ld := {};
     if X.Name == "Cubic surface" then (
 	return flatten for a from ceiling(d/3) to d list (
 	    degreeList := apply(select(partitions(3*a-d),p->#p<=6),q ->
 		{a} | toList q | splice{(6-#q):0});
 	    --This gives unqiue representation up to change of 6 points
 	    degreeList = select(degreeList, L -> L#0 >= L#1+L#2+L#3); 
-	    divisorList := apply(degreeList, L-> abstractDivisor(L,X));
-	    select(divisorList, D -> isIrreducible D)   
+	    Ld = apply(degreeList, L-> abstractDivisor(L,X));
+	    Ld = select(Ld, D -> isIrreducible D);   
 	);
     );
     if X.Name == "Quadric surface" then (
 	maxdeg := floor(1/2*d);
-	return for a from 1 to maxdeg list abstractDivisor({a,d - a},X);
+	Ld = for a from 1 to maxdeg list abstractDivisor({a,d - a},X);
     );
     if X.Name == "Hypersurface" then (
 	surfd := 4 + first X.CanonicalClass;
 	if d % surfd =!= 0 then return {};
-	return abstractDivisor({d // surfd},X);
+	Ld = abstractDivisor({d // surfd},X);
     );
+    if select("Quartic", X.Name) != {} then (
+    	if select("line",X.Name) != {} then (
+	    Ld = for a from floor(-sqrt(d^2/144+1/18)+d/4) to 
+	    ceiling(+sqrt(d^2/144+1/18)+d/4) list (
+		abstractDivisor({a,d-4*a},X)
+		);
+	    Ld = select(Ld, ad -> genus ad >= 0);
+	);
+        if select("conic",X.Name) != {} then (
+	    if d % 2 == 1 then return {};
+	    Ld = for a from floor(-sqrt(d^2/48+1/6)+d/4) to 
+	    ceiling(sqrt(d^2/48+1/6)+d/4) list (
+		abstractDivisor({a,lift(d/2-2*a,ZZ)},X)
+		);
+	    Ld = select(Ld, ad -> genus ad >= 0);
+	);
+        if select("twisted cubic",X.Name) != {} then (
+	    Ld = for a from floor(-sqrt(9*d^2/272+9/34)+d/4) to 
+	    ceiling(sqrt(9*d^2/272+9/34)+d/4) list (
+		if (d-4*a) % 3 != 0 then continue;
+		abstractDivisor({a,lift((d-4*a)/3,ZZ)},X)
+		);
+	    Ld = select(Ld,ad -> genus ad >= 0);
+	);
+        if select("rational quartic",X.Name) != {} then (
+	    if d % 4 != 0 then return {};
+	    Ld = for a from floor(-sqrt(d^2/24+1/3)+d/4) to 
+	    ceiling(sqrt(d^2/24+1/3)+d/4) list (
+		abstractDivisor({a,lift(d/4-a,ZZ)},X)
+		);
+	    Ld = select(Ld,ad -> genus ad >= 0);
+	);
+        if select("plane elliptic",X.Name) != {} then (
+	    Ld = for a from floor(-sqrt(d^2/16+1/2)+d/4) to 
+	    ceiling(sqrt(d^2/16+1/2)+d/4) list (
+		if (d-4*a) % 3 != 0 then continue;
+		abstractDivisor({a,lift((d-4*a)/3,ZZ)},X)
+		);
+	    Ld = select(Ld,ad -> genus ad >= 0);
+	);
+        if select("space elliptic",X.Name) != {} then (
+	    if d % 4 != 0 then return {};
+	    Ld = for a from floor(-sqrt(d^2/16+1/2)+d/4) to 
+	    ceiling(sqrt(d^2/16+1/2)+d/4) list (
+		abstractDivisor({a,lift(d/4-a,ZZ)},X)
+		);
+	    Ld = select(Ld,ad -> genus ad >= 0);
+	);
+    );
+    return Ld; 
     error "not implemented yet for your type of surface";	
 )
-irreducibleDivisors (ZZ, RealizedSurface) := (d,X) -> (
-    --List all irreducible curves of degree d on X
+irreducibleDivisors (ZZ, RealizedSurface) := opts -> (d,X) -> (
+    --produces a list of irreducible realized curves of degree d on X
    return apply(irreducibleDivisors(d,X.AbstractSurface), aD -> 
        realize(aD,X));	
 )
-completeIntersectionCurves  = method()
-completeIntersectionCurves ZZ := d -> (
+ciCurves  = method(Options => 
+    {symbol Realize => false, Ring => null})
+ciCurves ZZ := opts -> d -> (
     --produce all ci curves of degree d
     div := for i from 2 to floor sqrt d when d % i == 0 list i;
-    return apply(div, deg -> 
-	abstractDivisor({d // deg},abstractHypersurface(deg)));            
+    Ld := apply(div, deg -> 
+	abstractDivisor({d // deg},abstractHypersurface(deg)));
+    if opts.Realize then (
+    	return apply(Ld, ad -> realize(ad,Ring=>opts#Ring));
+    ) else return Ld;           
+)
+generateCurves = method(Options => 
+    {symbol Realize => false, Ring => null})
+generateCurves List := opts -> L -> (
+    --generates all curves of the degrees in the list on all the implemented surfaces
+    Lad := flatten apply(L, d->
+    irreducibleDivisors(d,abstractQuadric) |
+    irreducibleDivisors(d,abstractCubic)   |
+    ciCurves(d)    |
+    irreducibleDivisors(d,abstractQuartic "line") |
+    irreducibleDivisors(d,abstractQuartic "conic") |
+    irreducibleDivisors(d,abstractQuartic "twisted cubic") |
+    irreducibleDivisors(d,abstractQuartic "rational quartic") |
+    irreducibleDivisors(d,abstractQuartic "plane elliptic") |
+    irreducibleDivisors(d,abstractQuartic "space elliptic")
+    );
+    Lad = delete(null,Lad);
+    if opts.Realize then (
+	return apply(Lad, ad -> realize(ad,Ring => opts#Ring));
+    ) else return Lad;
 )
 
-
-
+--DOCUMENTATIONS--
 
 beginDocumentation()
 document { 
@@ -521,13 +606,14 @@ Headline => "Construction and Database of space curves",
 "This package implements methods to collect data and examples of space curve",
 PARA{},
 SUBSECTION "Abstract surfaces and divisors",  
-UL{   TO "AbstractSurface",	  --type      
-      TO "AbstractDivisor",	  --type
-      TO "abstractSurface",	  --create an AbstractSurface
-      TO "abstractDivisor",	  --create an AbstractDivisor	   
+UL{   TO "AbstractSurface",      
+      TO "AbstractDivisor",	  
+      TO "abstractSurface",	  
+      TO "abstractDivisor",	  	   
       TO "abstractQuadric",
       TO "abstractCubic",
       TO "abstractHypersurface",
+      TO "abstractQuartic",
       TO "CanonicalClass",
       TO "Hyperplane",
       TO "DivisorClass",
@@ -539,8 +625,8 @@ UL{   TO "AbstractSurface",	  --type
 },
 PARA{},
 SUBSECTION "Realizations",  
-UL{     TO "RealizedSurface",	  --type
-        TO "RealizedDivisor",	  --type
+UL{     TO "RealizedSurface",
+        TO "RealizedDivisor",
         TO "realize"
 },
 PARA{},
@@ -553,7 +639,7 @@ PARA{},
 SUBSECTION "Collecting examples and information",  
 UL{   TO "dgTable",
       TO "irreducibleDivisors",
-      TO "completeIntersectionCurves"
+      TO "ciCurves"
 }
 }
 
@@ -844,17 +930,17 @@ doc ///
        irreducibleDivisors(4,abstractCubic)
        irreducibleDivisors(4,realize(abstractCubic, Ring=> S))
   SeeAlso
-      completeIntersectionCurves
+      ciCurves
 ///
 
 doc ///
   Key
-    completeIntersectionCurves
-    (completeIntersectionCurves, ZZ)
+    ciCurves
+    (ciCurves, ZZ)
   Headline
     creates all complete intersection curves of a fixed degree in P^3   
   Usage
-     L = completeIntersectionCurves(d)
+     L = ciCurves(d)
   Inputs
     d: ZZ
        a degree
@@ -867,7 +953,7 @@ doc ///
        The list consists of divisors of degree a on hypersurfaces of degree b
        where b <= a and a*b = d.          
      Example
-       completeIntersectionCurves(4)
+       ciCurves(4)
   SeeAlso
 ///
 
@@ -1026,19 +1112,26 @@ restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
 
-dmax = 12
+dmax = 20
 --AbstractDivisors
 time adList = flatten apply(dmax, d-> 	  -- used 8.09871 seconds
     irreducibleDivisors(d+1,abstractQuadric) |
     irreducibleDivisors(d+1,abstractCubic)   |
-    completeIntersectionCurves(d+1)	
+    ciCurves(d+1)    |
+    irreducibleDivisors(d+1,abstractQuartic "line") |
+    irreducibleDivisors(d+1,abstractQuartic "conic") |
+    irreducibleDivisors(d+1,abstractQuartic "twisted cubic") |
+    irreducibleDivisors(d+1,abstractQuartic "rational quartic") |
+    irreducibleDivisors(d+1,abstractQuartic "plane elliptic") |
+    irreducibleDivisors(d+1,abstractQuartic "space elliptic")
     );
 --RealizedDivisors
+dmax = 12
 x = getSymbol "x";
 R = ZZ/101[x_0..x_3]	  
 time rdList = flatten apply(dmax, d-> 	-- used 10.9523 seconds
     irreducibleDivisors(d+1,realize(abstractQuadric,Ring => R)) |
     irreducibleDivisors(d+1,realize(abstractCubic,Ring=>R))   |
-    apply(completeIntersectionCurves(d+1), ci->realize(ci,Ring=>R))	
+    apply(ciCurves(d+1), ci->realize(ci,Ring=>R))	
     );	  
 dgTable adList, dgTable rdList
