@@ -30,7 +30,7 @@ newPackage(
    	     Email => "amelia.taylor@coloradocollege.edu"},
              {Name => "Sorin Popescu",
 	      Email => "sorin@math.sunysb.edu"},
-	 {Name => "Michael E. Stillman", Email => "mike@math.cornell.edu"}},  
+	     {Name => "Michael E. Stillman", Email => "mike@math.cornell.edu"}},  
     	Headline => "Rees algebras",
     	DebuggingMode => true,
 	Reload => true  
@@ -672,19 +672,14 @@ minimalReduction Ideal := Ideal => o -> i -> (
 ///
 restart
 load "ReesAlgebra.m2"
-
 kk=ZZ/2
 S = kk[a,b,c,d];
 I = monomialCurveIdeal(S, {1,3,4});
-
 I = ideal random(S^4, S^{5:-2})
 J = minimalReduction I
-
 time reductionNumber(I,J)
 time reductionNumber(I,J, "1")
-
 time for n from 1 to 100 do(m=m+1; minimalReduction I)
-
 scan({2,3,5,7,11,101,32003}, p ->(
 	  kk=ZZ/p;
 	  S = kk[a,b,c,d];
@@ -692,10 +687,78 @@ scan({2,3,5,7,11,101,32003}, p ->(
 	  T:=tally for n from 1 to 100 list isReduction(I, minimalReduction I);
 	  print (p, T#false, T#true))
 )	  
+///
+
+///
+restart
+loadPackage("ReesAlgebra", Reload=>true)
+kk = ZZ/32003
+g = 3;
+m = 2;
+netList apply (4,p -> (
+	n= g+p;
+S = kk[a_0..a_(g-1),x_0..x_(n-1)];
+i = (ideal apply(g, i->a_i))* (ideal apply(n,i->x_i))^m;
+ell = analyticSpread i; --ell = g+n-1
+jbig = ideal apply(g, i->a_i)*(ideal apply(n,i->x_i^m));
+jell = ideal(gens i * random(source gens i, S^{ell:-m-1}));
+rsmall = reductionNumber(i,jbig);
+time (r = reductionNumber(i,jell));
+<<(n,ell,r, rsmall, ceiling(((n)*(m-1)+1)/m)-1)<<endl;
+(n, ell, r,rsmall, ceiling(((n)*(m-1)+1)/m)-1)
+))
+--minimum value of (ell,r):(g+n-1), ceiling(n-1)(m-1)/m
+--here the estimate of r comes from the non-min reduction
+--(a)(x)^[n].
+
+--actual values: g = 2, m= 2 starting with n=4 it looks like ceiling(n/m)
+--The following gives (ell,r) for n=2..6
+--the case n = 6 took 524 seconds.
+     +------+
+o8 = |(3, 1)|
+     +------+
+     |(4, 2)|
+     +------+
+     |(5, 3)|
+     +------+
+     |(6, 3)|
+     +------+
+     |(7, 4)|
+     +------+
+--actual values: g = 3, m = 2, n = 3,
+(n, ell, r, rsmall, rsmall theoretical)
+(3, 5, 2, 1, 1)
+     -- used 7.10124 seconds
+(4, 6, 3, 2, 2)
+
+
+--could also be 1 more than rsmall.
+--the case n = 6 took 524 seconds.
+
+--elapsedTime (K = codim(j:i))
+--AX = (ideal apply(g, i->a_i))* ideal apply(n,i->x_i^m)
+--elapsedTime reductionNumber(i,AX)
 
 ///
 
 reductionNumber = method()
+reductionNumber (Ideal,Ideal) := (i,j) -> (
+     I := (gens i)%j; -- will be a power of i
+     M:= ideal vars ring i; -- we're pretending to be in a local ring
+     rN:=0;
+     if isHomogeneous j then (
+     	  while not I==0 do (
+    	       j = trim(i*j);
+	       I = (gens trim (i*ideal I))%j;
+     	       rN =rN+1))
+     else(
+     	  while not I==0 do (
+    	       j = trim(i*j+M*ideal I);
+	       I = (gens trim (i*ideal I))%j;
+     	       rN =rN+1));
+     rN)
+ 
+{* slightly slower
 reductionNumber (Ideal,Ideal) := (i,j) -> (
      I:=i; -- will be a power of i
      M:= ideal vars ring i; -- we're pretending to be in a local ring
@@ -703,15 +766,32 @@ reductionNumber (Ideal,Ideal) := (i,j) -> (
      if isHomogeneous j then (
      	  while not ((gens I)%j)==0 do (
 	       I = trim (i*I);
-	       j= trim(i*j);
+	       j=  trim (i*j);
      	       rN =rN+1))
      else(
      	  while not ((gens I)%(j+M*I))==0 do (
 	       I = trim(i*I);
-	       j= i*j;
+	       j= trim(i*j);
      	       rN =rN+1));
      rN)
+*}
 
+{* much slower
+reductionNumber (Ideal,Ideal,ZZ) := (i,j,t) -> (
+    --t is any integer, signals a different method
+     d := max flatten (i_*/degree);
+     I := i; -- will be a power of i
+     M := ideal vars ring i; -- we're pretending to be in a local ring
+     rN := 0;
+     J := j;
+--      while not (gens I)% gb(gens J,DegreeLimit => (rN)*d) ==0 
+      while not (gens I)% gb(gens J) == 0
+            do (
+       I = trim i*I;
+       J = i*J;
+       rN =rN+1);
+     rN)
+*}
 {*
 --The following seems to  be much slower!
 reductionNumber (Ideal, Ideal, String) := (i,j,s) -> (
@@ -830,24 +910,16 @@ doc ///
   Key
     ReesAlgebra
   Headline
-    Compute Rees algebra
+    Compute Rees algebras and their invariants
   Description
     Text
-     The goal of this package is to provide commands to compute the Rees
-     algebra of a module as it is defined in the paper {\em What is the
-     Rees algebra of a module?}, by Craig Huneke, David Eisenbud and Bernd
-     Ulrich, Proc. Am. Math. Soc. 131, 701--708, 2002.
-     It also includes functions for computing many of the invariants
-     that require a Rees algebra.
+     The Rees Algebra of an ideal is the
+     commutative algebra analogue of the blow up in algebraic
+     geometry. (In fact, the  ``Rees Algebra''
+     is sometimes called the ``blowup algebra''.) 
+     A great deal of modern
+     commutative algebra is devoted to studying them.
 
-     The Rees algebra of a module M is defined by a certain ideal in the symmetric
-     algebra Sym(M) of M, or, as in this package, by an ideal in the symmetric algebra of any
-     free module F that maps onto M. 
-     When phi: M \to G is the universal embedding
-     of M, then, by the definition of Huneke-Eisenbud-Ulrich,
-     the {\em Rees ideal of M} is the kernel of Sym(phi). Thus the
-     Rees Algebra of M is the image of Sym(phi).
-      
      The Rees algebra was first 
      studied, in the case where M is an ideal of a ring R, by David Rees in the
      now famous paper
@@ -858,38 +930,91 @@ doc ///
      Rees mainly studied the ring 
      $R[It,t^{-1}]$, now also called the `extended Rees
      Algebra' of I. 
+
+     The original goal of this package, first written around 2002,
+     was to compute the Rees
+     algebra of a module as it is defined in the paper {\em What is the
+     Rees algebra of a module?}, by Craig Huneke, David Eisenbud and Bernd
+     Ulrich, Proc. Am. Math. Soc. 131, 701--708, 2002.
+     It has since expanded to include routines
+     for computing many of the invariants of an ideal or module
+     defined in terms of Rees algebras.
+
+     The Rees algebra of a module M is defined 
+     by a certain ideal in the symmetric
+     algebra Sym(M) of M, or, as in this package, 
+     by an ideal in the symmetric algebra of any
+     free module F that maps onto M. 
+     When phi: M \to G is the {\em universal embedding}
+     of M, then, by the definition of Huneke-Eisenbud-Ulrich,
+     the {\em Rees ideal of M} is the kernel of Sym(phi). Thus the
+     Rees Algebra of M is the image of Sym(phi).
      
-     In most cases the definition of the Rees algebra of an ideal I \subset R
-     as R[It] \subset R[t]
-     agrees agrees with the definition used here:
+     In most cases the kernel of the 
+     Sym(phi) is independent of the embedding phi of
+     M into a free module:
      
-     {\bf Theorem (Eisenbud-Huneke-Ulrich):} Let R be a Noetherian ring
+     {\bf Theorem (Eisenbud-Huneke-Ulrich, Thms 0.2 and 1.4):} Let R be a Noetherian ring
      and let M be a finitely generated R-module. Let phi: M \to G
      be the universal embedding of M in a free module, and let
      psi: M \to G' be any inclusion. If R is torsion-free over ZZ
      or R is unmixed and generically Gorenstein or M is free locally
-     at each associated prime of R, then the image of Sym(phi) and the
+     at each associated prime of R, or G=R, then the image of Sym(phi) and the
      image of Sym(psi) are naturally isomorphic.
      
-     It follows that in the good cases above the Rees ideal is equal to the saturation
-     of the defining ideal of symmetric algebra of M with respect to any
-     element f of the ground ring such that M[f^{-1}] is free. This
-     expression is often gives a faster computation.
+     It follows that in the good cases above the Rees 
+     ideal is equal to the saturation
+     of the defining ideal of symmetric 
+     algebra of M with respect to any
+     element f of the ground ring such 
+     that M[f^{-1}] is free, or is simply {\em of linear type},
+     meaning that Sym(phi) is a monomorphism. This is the case,
+     for example, when M is an ideal and M[f^{-1}] is generated
+     by a regular sequence.
+     This fact often leads to 
+     a faster computation than computing the
+     kernel of Sym(phi) directly.
        
-     The definition used here has the advantage of being functorial. We give
-     an example of an ideal where the two definitions differ below.
-     
-     {\bf Historical Background}: The Rees Algebra of an ideal is the basic
-     commutative algebra analogue of the blow up operation in algebraic
-     geometry. It has many applications, and a great deal of modern work in
-     commutative algebra has been devoted to it.  The  ``Rees Algebra'' of
-     an ideal I is sometimes called the ``blowup algebra''
-     instead.
-     
-     To give an example where our definition differs from the classic d
-    
+     Here is an example of the pathological case of
+     inclusions phi: M \to G and \psi: M \to G' where ker(phi) != ker(psi).
+     In the following, any finite characteristic would work as well.
     Example
-     
+     p = 5
+     R = ZZ/p[x,y,z]/(ideal(x^p,y^p)+(ideal(x,y,z))^(p+1))
+     M = module ideal(z) 
+    Text
+     It is easy to check that M \cong R^1/(x,y,z)^p.
+     We write iota: M\to R^1 for the embedding as an ideal
+     and psi for the embedding M \to R^2 sending z to (x,y).
+    Example
+     iota = map(R^1,M,matrix{{z}}) 
+     psi = map(R^2,M,matrix{{x},{y}})
+     ker iota
+     ker psi
+    Text
+     Finally, the universal embedding is M \to R^3,
+     sending z to (x,y,z):
+    Example
+     phi = universalEmbedding(M)
+    Text
+     We now compute the kernels of the three maps
+     on symmetric algebras:
+    Example
+     Iiota = symmetricKernel iota;
+     Ipsi = symmetricKernel psi;
+     Iphi = symmetricKernel phi;
+    Text 
+     and check that the ones corresponding to phi and iota
+     are equal, whereas the ones corresponding to psi and phi
+     are not:
+    Example
+     Iiota == Iphi    
+     Ipsi == Iphi
+    Text
+     In fact, they differ in degree p:
+    Example
+     numcols basis(p,Iphi) 
+     numcols basis(p,Ipsi)
 ///
 
 doc ///
@@ -2604,12 +2729,11 @@ end--
 uninstallPackage "ReesAlgebra"
 restart
 installPackage("ReesAlgebra")
+viewHelp ReesAlgebra
 check "ReesAlgebra"
 
 loadPackage("ReesAlgebra", Reload=>true)
-viewHelp reesIdeal
-viewHelp Strategy
-viewHelp Variable
+
 -- Local Variables:
 -- compile-command: "make -C $M2BUILDDIR/Macaulay2/packages PACKAGES=ReesAlgebra RemakeAllDocumentation=true IgnoreExampleErrors=false"
 -- End:
