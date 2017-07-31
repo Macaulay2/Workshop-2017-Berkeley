@@ -1,0 +1,546 @@
+\documentclass[twoside,12pt, leqno]{amsart}
+\usepackage{amsmath,amscd,amsthm,amssymb,amsxtra,latexsym,epsfig,epic,graphics}
+\usepackage[matrix,arrow,curve]{xy}
+\usepackage{graphicx}
+\usepackage{diagrams}
+\usepackage{tikz,color}  %TikZ
+%\usepackage{amsrefs}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%\textwidth16cm
+%\textheig\codim20cm
+%\topmargin-2cm
+\oddsidemargin.8cm
+\evensidemargin1cm
+
+%%%%%Definitions
+\input preamble.tex
+\def\e{{\epsilon}}
+\def\TU{{\bf U}}
+\def\AA{{\mathbb A}}
+\def\BB{{\mathbb B}}
+\def\bB{{\mathbb B}}
+\def\PP{{\mathbb P}}
+\def\P{{\mathbb P}}
+\def\QQ{{\mathbb Q}}
+\def\FF{{\mathbb F}}
+\def\facet{{\bf facet}}
+\def\image{{\rm image}}
+\def\cE{{\cal E}}
+\def\cF{{\cal F}}
+\def\cG{{\cal G}}
+\def\cH{{\cal H}}
+\def\cHom{{{\cal H}om}}
+\def\fix#1{{\bf ***Fix:} #1 {\bf ***}}
+\def\david#1{{\bf *** David:} #1 {\bf ***}}
+\DeclareMathOperator{\rH}{{\rm H}}
+\def\fC{{\mathfrak C}}
+\def\Tr{{\rm Tr}}
+\def\bC{{\mathbb C}}
+\def\Gr{{\rm Gr}}
+\def\CI{{\mathcal I}}
+\def\CH{{\mathcal H}}
+%\def\CCH{{\mathcal {CNT}}}
+\def\CCH{{\mathcal {HC}}}
+\def\rH{{\rm H}}
+
+\def\soc{{\rm soc\,}}
+\def\jacobian{{\rm Jac}}
+\def\Rbar{{\overline R}}
+\def\Ibar{{\overline I}}
+\def\mm{{\frak m}}
+\def\RR{{\mathcal R}}
+\def\Trace{{\rm Tr}}
+
+\def\CO{{\mathcal O}}
+\def\CT{{\mathcal T}}
+\def\CHom{{\mathcal Hom}}
+\def\Spec{{{\rm Spec}\,}}
+\def\cone{{{\rm cone}\,}}
+
+\def\tR{{\tilde R}}
+\def\tI{{\tilde I}}
+\def\tJ{{\tilde J}}
+\def\tK{{\tilde K}}
+\def\tH{{\tilde H}}
+\def\tF{{\tilde F}}
+
+\newarrow{Iso} -----
+
+\def\Abar{{\overline A}}
+\def\Rbar{{\overline R}}
+\def\Ibar{{\overline I}}
+\def\Jbar{{\overline J}}
+\def\Kbar{{\overline K}}
+\def\abar{{\overline \alpha}}
+\def\bbar{{\overline \beta}}
+\def\m{{\frak m}}
+\def\Rbar{{\overline R}}
+
+\def\gr{{\rm gr}}
+
+\def\lbracket{{[\kern-1.5pt[}}
+\def\rbracket{{]\kern-1.5pt]}}
+
+\def\seq#1#2{{#1_{1},\dots,#1_{#2}}}
+\def\ff#1{{f_{1},\dots, f_{#1}}}
+
+\makeatletter
+\def\Ddots{\mathinner{\mkern1mu\raise\p@
+\vbox{\kern7\p@\hbox{.}}\mkern2mu
+\raise4\p@\hbox{.}\mkern2mu\raise7\p@\hbox{.}\mkern1mu}}
+\makeatother
+
+
+%%%%%%%%%%%%%%%%%%Silvio's macros for the diagrams
+\usepackage{times}
+\newdimen\x \x=12pt
+
+%\usepackage{mat\codimime}
+\usepackage{color}
+
+%\usepackage{color}
+%\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+\usepackage[breaklinks,bookmarksopen,bookmarksnumbered,urlcolor=blue]{hyperref}
+\hypersetup{colorlinks=true,backref=true,citecolor=blue}
+
+%\pagestyle{myheadings}
+%\date{April 2013-December 2015}
+\author{David Eisenbud}
+
+\title{The Rees Algebra package in Macaulay2}
+\begin{document}
+
+\begin{abstract}
+This note describes version 2.0 of the Macaulay2 package ReesAlgebra.m2.
+\end{abstract}
+
+\maketitle
+
+\section*{Introduction}
+A central construction in modern commutative algebra starts from
+an ideal $I$ in a commutative ring $R$, and produces the \emph{Rees algebra}
+$$
+\RR(I) := R[It]\subset R[t]\cong R\oplus I\oplus I^2\oplus I^3\oplus\cdots.
+$$ 
+where $R[t]$ denotes the polynomial algebra in one variable $t$ over $R$. For basics on Rees algebras, see \cite{Vasconcelos} and \cite{Huneke-****}.
+
+From the point of view of algebraic geometry, the Rees algebra $\RR(I)$ is a homogeneous
+coordinate ring for the graph of a rational map whose total space is the blowup
+of $\Spec R$ along the scheme defined by $I$.
+ (In fact, the  ``Rees Algebra''
+     is sometimes called the ``blowup algebra''.)  
+     
+
+     Rees Algebras were first studied in the algebraic context by
+      by David Rees, in the
+     now famous paper~\cite{Rees}. Actually
+     Rees mainly studied the ring 
+     $R[It,t^{-1}]$, now also called the \emph{extended Rees
+     Algebra} of I. 
+     
+There are several possible ways of extending the Rees algebra construction from ideals to modules. For simplicity we will henceforward only consider finitely generated modules
+over Noetherian rings. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural is
+to think of $R[It]$ as the image of the map of symmetric algebras
+$\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$, and to generalize it to the case of
+an arbitrary finitely generated module $M$ by setting
+$$
+\RR(M) = \image \Sym(\phi)
+$$ 
+where $\phi$ is the \emph{versal} map from $M$ to a free module: If we denote
+by $\phi_1,\dots, \phi_m$ a set of generators for $\Hom_R(M,R)$, then the versal
+map is obtained by composing the direct sum 
+$$
+\oplus_{i=1}^m\phi_i
+$$ 
+with the diagonal 
+embedding 
+$$
+M \to \oplus_{i=1}^mM.
+$$
+ It has the property that any map from $M$ to a free module factors (non-uniquely, in general) through $\phi$. Though this is not immediate, the Rees algebra of an ideal in any Noetherian ring, in this sense,
+ is the same as the Rees algebra in the classical sense, and in most cases one can take
+ any embedding of the module into a free module in the definition:
+ 
+\begin{theorem}\label{good cases} [Eisenbud-Huneke-Ulrich, Thms 0.2 and 1.4] Let $R$ be a Noetherian ring
+     and let $M$ be a finitely generated $R$-module. Let $\phi: M \to G$
+     be the universal embedding of $M$ in a free module, and let
+     $\psi: M \to G'$  be any inclusion of $M$ into a free module $G'$. 
+     If $R$ is torsion-free over $\ZZ$
+     or $R$ is unmixed and generically Gorenstein or $M$ is free locally
+     at each associated prime of $R$, or $G=R$, then the image of $\Sym(\phi)$ and the
+     image of $\Sym(\psi)$ are naturally isomorphic.
+\end{theorem}
+
+ The package ReesAlgebra.m2 was originally written around 2002 (by me and Mike Stillman, if memory serves) to implement this construction. Many others subsequently contributed to its development, including 
+Amelia Taylor, 
+Sorin Popescu,
+and, at the Macaulay2 Workgroup in July 2017, 
+Ilir Dema
+Whitney ***
+**** Chen	
+.
+It has expanded to include routines
+for computing many of the invariants of an ideal or module
+defined in terms of Rees algebras. This is in fact its primary utility, since Rees Algebras
+of modules other than ideals are comparatively little studied. We now describe the central routines implemented in the package. It is a notoriously hard problem to describe Rees algebras by generators and relations in general cases, and the intuition provided by 
+computations using this package has proven useful.
+
+\section{The Rees Algebra and its relations:\\ {\tt reesIdeal, reesAlgebra, universalEmbedding, symmetricKernel, isLinearType,
+jacobianDual,
+associatedGradedRing, normalCone, multiplicity}}
+
+The central routine, reesIdeal (with synonym reesAlgebraIdeal) computes an ideal
+defining the Rees algebra $\RR(M)$ as a quotient of a polynomial ring over $R$ from a free presentation of $M$. From the Rees ideal we immediately get
+${\tt reesAlgebra}\ M$ and, when $M$ is an ideal in $R$,
+the important ${\tt associatedGradedRing\ }M = \RR(M)/M$ (and the more geometric sounding but identical ${\tt normalCone\ }M$.) From these we immediately deduce the
+Hilbert-Samuel multiplicity ${\tt multiplicity\ }I$ of a (homogeneous) ideal primary to the
+maximal ideal of a standard graded ring.
+
+Suppose that $M$ has 
+a set of generators represented by a map from a free module,
+a free presentation
+$$
+ F\rTo^\alpha M\to 0,
+$$
+and suppose  $F = R^n$. The symmetric algebra of $F$ over $R$ is then a polynomial ring
+$\Sym_R(F_0) = R[t_1,\dots, t_n]$ on $n$ new indeterminates $t_1,\dots, t_n$. By the universal
+property of the symmetric algebra there is a canonical surjection
+$\Sym_R(F)\rightarrow \Sym_R(M)$, so we may compute the Rees algebra of $M$ as
+a quotient of the  $\Sym_R(F)$. The call
+$$
+I = {\tt reesIdeal}\ M
+$$
+first calls ${\tt universalEmbedding\ }M$ to compute the versal map from $M$ to a free module $\beta: M\to G$. The call ${\tt symmetricKernel\ } \alpha\circ\beta$  then constructs the map of symmetric algebras $\beta\circ \alpha:\Sym_R(F)\to \Sym_R(G)$ and  calls
+ the built-in Macaulay2 routine to compute the kernel 
+$$
+I = {\tt reesIdeal\ }M = \ker \Sym(\beta\circ\alpha): \Sym_R(F) \to \Sym_R(G).
+$$
+
+There is a different way of computing the Rees algebra that is often much more efficient. It begins by constructing the symmetric algebra of $M$, and uses the observation that the construction of the Rees algebra commutes with localization. See \cite[Appendix ****]{E} for the necessary facts about symmetric algebras.
+
+Suppose that $M$ has a free presentation
+$$
+G\rTo^\alpha F\rTo^\epsilon M\to 0.
+$$
+The right exactness of the symmetric algebra functor implies that the symmetric algebra of $M$ is the quotient of $\Sym_R(F)$ by an ideal $I_0$ that is
+generated by the
+entries of the matrix
+$$
+\begin{pmatrix}
+ t_1&\dots&t_n
+ \end{pmatrix}
+ \circ \phi
+$$
+(where we have identified $\phi$ with $\Sym_R(F)\otimes_R\phi$).
+Thus $I_0$ is generated by polynomials that are linear in the variables $t_i$ (and because
+$M$ is the degree 1 part of $\RR(M)$, these are the only linear forms in the $t_i$ in the
+Rees ideal.)
+
+If $f\in R$ is an element such that $M[f^{-1}]$ is free on generators $g_1,\dots, g_n$, it follows that after inverting $f$ the Rees algebra of $M$ becomes a polynomial ring over $R[f^{-1}]$ on
+indeterminates corresponding to the $g_i$.
+$$
+\RR(M)[f^{-1}] = \Sym_R(M[f^{-1}]) = R[G_1,\dots, G_n]
+$$
+
+ Now suppose in addition that $f$ is a non-zerodivisor in $R$. In the diagram
+$$
+\begin{diagram}
+ \Sym_R(F) &\rTo^\alpha &\Sym_R(M)&\rTo^\beta &\Sym_R(G)\\
+ \dTo&&  \dTo&& \dTo\\
+ \Sym_R(F)[f^{-1}] &\rTo^\alpha &\Sym_R(M)[f^{-1}]&\rTo^\beta &\Sym_R(G)[f^{-1}]\\
+\end{diagram}
+ $$
+ the two outer vertical maps are inclusions, and it follows that the Rees ideal, which is the
+ kernel of the map $\RR(F) = \Sym_R(F) \to \RR(M)$, is equal to the intersection
+ of $\RR(F)$ with the kernel of
+ $\Sym_R(F)[f^{-1}] \rTo^\beta \Sym_R(G)[f^{-1}]$. This intersection
+ may be computed as $I_0:f^\infty$. The call
+ $$
+ {\tt reesIdeal}(I, f)
+ $$
+ computes the Rees ideal in this way.
+ 
+More generally, we say that a module $N$ is {\em of linear type} if
+the Rees ideal of $M$ is equal to the ideal of the symmetric algebra of $M$; 
+for example, any complete intersection ideal is of linear type, and the condition
+can be tested by the call
+$$
+{\tt isLinearType}\ M.
+$$
+The procedure above really requires only that $f$ be a non-zerodivisor in $R$ and
+that $M[f^{-1}]$ be of linear type over $R[f^{-1}]$.
+
+\section{Reductions and the special fiber: {\tt isReduction, minimalReduction, reductionNumber
+specialFiber,
+specialFiberIdeal,
+analyticSpread}}
+
+A \emph{reduction} $J$ of an ideal $I$ is an sub-ideal $J\subset I$ over which $I$ is
+\emph{integrally dependent}. In concrete terms this means that there is some integer $r$ such that $JI^r = I^{r+1}$, and the minimal $r$ with this property is called the reduction number.
+The property of being a reduction is tested by ${\tt isReduction\ }I$, and the reduction number, is then computed by ${\tt reductionNumber\ } I$. 
+
+Now suppose that $\gm$ is a maximal ideal containing $I$. The special fiber ring is by definition
+$\RR(I)/\gm\RR(I)$. It is a standard graded algebra ove the field  $k := R/\gm$, a quotient of 
+$\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by the calls
+${\tt specialFiberIdeal\ }I$ and ${\tt specialFiberRing\ }I$. 
+
+The dimension of the special fiber ring is called the analytic spread of $I$, usually
+denoted
+$$
+\ell(I) = {\tt analyticSpread\ }I.
+$$
+Northcott and Rees~\cite{} proved that if $k$ is infinite then there always exist reductions
+generated by $\ell(I)$ elements, and this is the minimum possible number; these are called
+minimal reductions. The smallest possible reduction number for $I$ with respect to an minimal reduction is  by definition ${\tt reduction number} I$ (this is always achieved by any ideal generated by $\ell(I)$ sufficiently general scalar linear combinations of the generators of $I$; but note that when $I$ is homogeneous but has generators of different degrees such linear combinations are sometimes necessarily inhomogeneous.)
+
+An interesting special case occurs when $R$ is a graded ring over $k = R_0$ and the generators $g_1,\dots, g_n$ of $I$ are all homogeneous of the same degree. In this case the special fiber ring is easily seen to be equal to the subring $k[g_1,\dots,g_n]$ (usually \emph{not} a polynomial ring) generated by the elements $g_i$.
+
+For example, if $I$ is the ideal of $p\times p$ minors of a $p\times (p+q)$ matrix, then
+the special fiber ring is equal to the homogeneous coordinate ring $\G$ of the Grassmannian of
+$p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is known (reference??) that the reduction numberr of $I$ is ****.
+
+\section{Distinguished subvarieties: {\tt distinguished, distinguishedAndMult}}
+ \cite{F}
+\section{A pathological example}       
+     Here is an example from~\cite{EHU} of the pathological case of
+     inclusions $\phi: M \to G$ and $\psi: M \to G'$ into free modules
+     where $\ker(\phi) \neq \ker(\psi)$.
+     In the following, any finite characteristic would work as well.p
+
+
+\let\thefootnote\relax\footnote{
+\noindent A\S Subject Classification:\\
+Primary: 13C40, 13H10, 14M06, 14M10;
+Secondary: 13D02 , 13N05, 14B12, 14M12.\smallbreak
+The author is grateful to the
+National Science Foundation for partial support.<}
+\bibliographystyle{alpha}
+\begin{thebibliography}{ABC99}
+%\bibitem{Bass1963} Bass, Hyman
+%On the ubiquity of Gorenstein rings.
+%Math. Z. 82 1963 8\UTF{2013}28.
+
+
+%\bibitem[AH]{AH} L.~Avramov and J.~Herzog, The Koszul algebra of a codimension 2 embedding. Math. Z. 175 (1980) 249--260.
+%
+%%\bibitem[B]{B} R.~Berger **** Crelle.
+%
+%\bibitem[AK]{AK} A. Altman and S. Kleiman, Introduction to Grothendieck duality, Springer Lect. Notes in Math. 146 (1970).
+%
+%\bibitem[AN]{AN} M. Artin and M. Nagata, Residual intersections in Cohen-Macaulay rings.
+%J. Math. Kyoto Univ. 12 (1972) 307--323.
+%
+%\bibitem[B]{B} R.~Berger,  \"Uber verschiedene Differentenbegriffe. S.-B. Heidelberger Akad. Wiss. Math.-Nat. Kl. (1960/61) 1--44.
+%
+%\bibitem[BE1]{BE1} D. Buchsbaum and D.~Eisenbud, Generic free resolutions and a family of generically perfect ideals.
+%Advances in Math. 18 (1975) 245--301.
+%
+%\bibitem[BE2]{BE2} D. Buchsbaum and D.~Eisenbud,
+%What annihilates a module?
+%J. Algebra 47 (1977) 231--243.
+%
+%\bibitem[B]{B} R.-O. Buchweitz, Contributions \`{a} la th\'{e}orie des singularit\'{e}s, th\`{e}se d' \'{E}tat, Universit\'{e} Paris VII, 1981.
+%
+%\bibitem[C]{C} M. Chasles, Construction des coniques qui satisfont \`a cinque conditions, C. R. Acad. Sci. Paris 58 (1864) 297--308.
+
+\bibitem[CEU]{CEU} -- our paper with Chardin
+
+%\bibitem[CNT]{CNT} M.~Chardin, J.~NaŽliton, and Q.~H.~Tran, Cohen-Macaulayness and canonical module of residual intersections,
+%arXiv:1701.08087.
+%	
+%\bibitem[CP]{CP} A.~Corso and C.~Polini,
+%On residually $S_{2}$ ideals and projective dimension one modules.
+%Proc. Amer. Math. Soc. 129 (2001)1309--1315.
+%
+%\bibitem[E]{E} D.~Eisenbud, Commutative Algebra with a View Toward Algebraic Geometry, GTM 195,
+%Springer-Verlag 1994.
+%
+%\bibitem[EE]{EE} D.~Eisenbud, E.~G~Evans, Jr., Generating modules efficiently: Theorems from algebraic K-theory. J. Alg.. 27 (1973) 278--305.
+%
+%\bibitem[EHo]{EHo} D.~Eisenbud and M.~Hochster, A Nullstellensatz with nilpotents and Zariski's main lemma on holomorphic functions,
+%J. Algebra 58 (1979) 157--161.
+%
+
+ \bibitem[EHU]{EHU} D.~Eisenbud, C.~Huneke and B.~Ulrich, What is the
+     Rees algebra of a module? Proc. Am. Math. Soc. 131, 701--708, 2002.
+  
+\bibitem[EU]{EU} D.~Eisenbud and B.~Ulrich, Duality and socle generators for residual intersections. To appear.
+
+\bibitem[F]{F} W.~Fulton, Intersection Theory ****.
+
+%\bibitem[F]{F} H.~Flenner,
+%Die S\"atze von Bertini f\"ur lokale Ringe.
+%Math. Ann. 229 (1977) 97--111.
+%
+%%\bibitem[FHJ]{FHJ} L.~Fouli, C.~Huneke and M.~Johnson, In Preparation.
+%
+%\bibitem[H]{H} S. H. Hassanzadeh, Cohen-Macaulay residual intersections and their Castelnuovo-Mumford
+% regularity, Trans. Amer. Math. Soc.  364  (2012) 6371--6394.
+%
+% \bibitem[HN]{HN} S. H. Hassanzadeh and J. Na\'eliton,
+%Residual intersections and the Annihilator of Koszul Homologies, Preprint,  arXiv:1405.4586.
+%
+% \bibitem[HSV1]{HSV1} J.~Herzog, A.~Simis and W.~Vasconcelos, Approximation complexes of blowing-up rings,
+% J. Alg. 74 (1982) 466--493.
+%
+%\bibitem[HSV2]{HSV2} J.~Herzog, A.~Simis and W.~Vasconcelos, Approximation complexes of blowing-up rings II,
+% J. Alg. 82 (1983) 53--83.
+%
+%\bibitem[HVV]{HVV} J.~Herzog, R.~Villarreal and W.~Vasconcelos, Ideals with sliding depth,
+%Nagoya Math. J. 99 (1985), 159--172.
+
+
+% \bibitem[H1]{H1}C.~Huneke,
+%On the associated graded ring of an ideal.
+%Illinois J. Math. 26 (1982) 121--137.
+
+
+% \bibitem[H1]{H1} C.~Huneke, Linkage and the Koszul homology of ideals, Amer. J. Math. 104 (1982) 1043--1062.
+%
+% \bibitem[H2]{H2} C.~Huneke, Strongly Cohen-Macaulay schemes and residual intersections,
+%Trans. Amer. Math. Soc. 277 (1983) 739--763.
+%
+% \bibitem[HU]{HU} C.~Huneke and B.~Ulrich,  Residual intersections, J. reine angew. Math. 390 (1988) 1--20.
+
+%\bibitem[Jo]{Jo} M.~Johnson, 
+
+%\bibitem[K1]{K1} E.~Kunz, Holomorphe Differentialformen auf algebraischen Variet\"aten mit Singularit\"aten I,
+%Manuscripta Math. (1975) 91--108.
+%Thm 4.1 is a special case of the invariance of the different on change of Noether normalization.
+
+%\bibitem[K1]{K1} E.~Kunz, K\"ahler Differentials, Vieweg Advanced Lectures, Braunschweig,1986.
+
+%\bibitem[K3]{K3} E.~Kunz, Differentialformen auf algebraischen Variet\"aten mit Singularit\"aten,
+%Abh. Math. Sem. Univ. Hamburg 47 (1978), 42--70.
+%Satz 3.1 is the more general form.
+
+%\bibitem[K2]{K2} E.~Kunz, Residues and duality for projective algebraic varieties, University Lect. Series 47 (2009).
+
+% \bibitem[KU1]{KU1} A.~Kustin and B.~Ulrich, If the socle fits, J. Alg. 147 (1992) 63--80.
+
+\bibitem[KU]{KU} A.~Kustin and B.~Ulrich, A family of complexes associated to an almost alternating map, with applications to residual intersections, Mem. Amer. Math. Soc. 95 (1992).
+
+%\bibitem[LS]{LS} J.~Lipman and A.~Sathaye,  Jacobian ideals and a theorem of Briançon-Skoda. Michigan Math. J.  28  (1981) 199--222.
+%
+%\bibitem[M2]{M2}
+%Macaulay2{\thinspace}--{\thinspace}a system for computation in
+%  algebraic geometry and commutative algebra programmed by D.~Grayson and M.~Stillman,
+%\href{http://www.math.uiuc.edu/Macaulay2/}{\tt  http://www.math.uiuc.edu/Macaulay2/}
+%
+%\bibitem [No]{No} E.~Noether, 
+%Idealdifferentiation und Differente. 
+%J. Reine Angew. Math. 188, (1950) 1--21. 
+%
+% \bibitem[PS]{PS} C.~Peskine and L.~Szpiro, Liaison des vari\'et\'e alg\'ebriques,  Invent. Math. (1974) 271--302.
+%
+
+\bibitem[Rees]{Rees} On a problem of Zariski, Illinois J. Math. (1958) 145-149).
+ 
+%
+%\bibitem[SS0]{SS0} G.~Scheja and U.~Storch, Lokale Verzweigungstheorie. 
+%Vorlesungen \"uber Kommutative Algebra (Wintersemester 1973/74). Schriftenreihe des Mathematischen Institutes der Universit\"at Freiburg, No. 5. Institut des Math\'ematiques, Universit\'e de Fribourg, Fribourg, 1974.
+
+%\bibitem[SS]{SS} G.~Scheja and U.~Storch, \"Uber Spurfunktionen bei vollst\"andigen Durchschnitten,
+%J. Reine Angew. Math. 278 (1975) 174--190.
+%
+%
+%\bibitem[S]{S} E.~Sernesi, The local cohomology of the jacobian ring,
+%Doc. Math. 19 (2014) 541--565.
+%
+%\bibitem[SW]{SW} D.~van Straten and T.~Warmt, Gorenstein-duality for one-dimensional almost complete intersections---with an application to non-isolated real singularities,
+%Math. Proc. Cambridge Philos. Soc. 158 (2015) 249--268.
+%
+%\bibitem[T]{Tate} J.~Tate, Appendix to B.~Mazur and L.~Roberts,
+%Local Euler characteristics,
+%Invent. Math. 9 (1969/1970) 201--234.
+
+\bibitem[U]{U} B.~Ulrich, Artin-Nagata properties and reductions of ideals, Contemp. Math. 159 (1994) 373--400.
+
+\bibitem[VV]{VV} P.~Valabrega and G.~Valla, Form rings and regular sequences, Nagoya Math. J. 72 (1978) 91--101.
+
+%\bibitem[Wa]{Wa} J.~Watanabe, A note on Gorenstein rings of embedding codimension three, Nagoya Math.
+%J. 50 (1973) 227--232.
+%
+%\bibitem[W]{W} T.~Warmt,
+%Gorenstein-Dualit\"at und topologische Invarianten von Singularit\"aten, Dissertation, Johannes Gutenberg Universit\"at Mainz, Mainz, 2002. Cuvillier Verlag, G\"ottingen, 2003.
+%
+%
+%\bibitem[Wi]{Wi} H.~Wiebe, \"{U}ber homologische Invarianten
+%lokaler Ringe, Math. Ann. 179 (1969), 257--274.
+
+
+\end{thebibliography}
+
+\bigskip
+
+\vbox{\noindent Author Addresses:\par
+\smallskip
+\noindent{David Eisenbud}\par
+\noindent{Mathematical Sciences Research Institute,
+Berkeley, CA 94720, USA}\par
+\noindent{de@msri.org}\par
+}
+
+\end{document}
+
+
+
+\begin{theorem}\label{Dedekind complementary module2}
+In addition to the assumptions in the definition of the Dedekind different above, suppose that $A$ is a regular local ring and $R$ is finite
+as an $A$-module.
+\begin{enumerate}
+\item If $R$ is Gorenstein, then $\fD_D(R/A) = \fD_N(R/A)$.
+\item If $R$ is locally a complete intersection,
+ then $\fD_N(R/A) = \fD_K(R/A)$ is generated by the image $\Delta$ in $R$
+ of a Jacobian determinant, and $\fC(R/A) = R \, \Delta ^{-1}$ .
+ \end{enumerate}
+\end{theorem}
+%\begin{theorem}\label{Dedekind complementary module2}
+% Under the assumptions in the definition of the Dedekind different, above,
+%\begin{enumerate}
+% \item If $R$ is a relative complete intersection over $A$,
+% then $\fD_K(R/A) = \fD_N(R/A)$.
+% \item If $R$ is Gorenstein, then $\fD_N(R/A) = \fD_D(R/A)$.
+%\end{enumerate}
+%Thus, if $R$ is a complete intersection, then $\fC(R/A) = 1/J$, where $J$ is the Jacobian
+%determinant.
+ \end{theorem}
+
+%\david{I think we need more assumptions, along the line of $A$ being a power series ring over a field of char 0: otherwise $R$ being a complete
+%intersection is not the same as$R = A[\seq y n]/(F)$ where $F = F_1,\dots, F_{n}$ is a regular sequence in $A[\seq y n]$.
+%
+%I added that last statement of the Theorem, which seems an immediate consquence of the two items, and thus I did not add any explicit proof. OK?}
+
+\begin{proof} 1) Since $R$ is a Cohen-Macaulay ring, it is a free $A$-module, and since $R$ Gorenstein and semilocal, it follows that ${\rm Hom}_A(R,A)
+\cong R$ as an $R$-module. Thus we may apply Lemma~\ref{Noether}. As
+${\rm Hom}_A(R,A)=\fC(R/A)\; \Trace_{R/A}$ by the definition of the
+complementary module, the lemma shows that
+$\fD_N(R/A) \, \fC(R/A) =R$, which gives $\fD_N(R/A)=\fC(R/A)^{-1}=\fD_D(R/A)$.
+
+\smallskip
+\noindent
+2) Since $R$ is semilocal, locally a complete intersection, and a finite $A$-module, we have $R \cong A[\seq y n]/(F)$ for some regular sequence $F = F_1,\dots, F_{n}$ of length $n$ in the polynomial ring $A[\seq y n]$. Write
+$\Delta$ for the image in $R$ of the Jacobian determinant of
+$F_1,\dots, F_{n}$ with respect to $\seq y n$.
+Let $\bD$ be the kernel of the multiplication map $\mu: R^e = R\otimes_AR \to R$ as above.
+The preimage $\tilde \bD$ of $\bD$ in
+$A[\seq y n]\otimes_{A} R$ is the kernel of the natural map to $R$,
+so it is also generated by a regular sequence of length $n$, say
+$\tilde \bD = (G_1,\dots, G_n)$
+and $\tilde \bD$ contains the regular sequence $F\otimes 1$.
+
+The preimage in
+$A[\seq y n]\otimes_{A} R$ of the
+annihilator of $\bD$  may thus be written $(F\otimes 1) : \tilde \bD$. This ideal quotient is generated by $F\otimes 1$ and the determinant of
+any matrix $\Theta$ expressing the elements of $F\otimes 1$ as  linear combinations of the elements of $G$ \david{give reference? Peskine-Szpiro?}. Since
+$$
+\bD\otimes_{R^e}R = \bD/\bD^2 \cong \Omega_{R/A},
+$$
+the image in $R$ of  $\Theta$ is a presentation matrix
+of $\Omega_{R/A}$, and thus (up to a unit) has determinant $\Delta$.
+Hence we have shown that $\fD_N(R/A)= R \, \Delta =\fD_K(R/A)$.
+
+Using part (1) and the fact that the fractional ideal $\fC(R/A)$ is
+principal, hence invertible, it also follows that $\fC(R/A)= R \, \Delta^{-1}$.
+\end{proof}
