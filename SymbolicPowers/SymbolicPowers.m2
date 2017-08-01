@@ -1,23 +1,60 @@
 newPackage(
         "SymbolicPowers",
 	Version => "1.0", 
-	Date => "May 14th, 2017",
-	Authors => {{Name => "Eloisa Grifo", 
-	Email => "eloisa.grifo@virginia.edu"}},
+	Date => "July 21st, 2017",
+	Authors => {
+	    {Name => "Eloisa Grifo", Email => "eloisa.grifo@virginia.edu", HomePage => "http://people.virginia.edu/~er2eq/"}
+	    },
 	Headline => "Calculations involving symbolic powers",
-	DebuggingMode => false
+	DebuggingMode => false,
+	PackageExports => {"Depth"}
         )
 
-export {"symbolicPower", "isSymbPowerContainedinPower", "ContainmentProblem", "bigHeight",
-    "frobeniusPower", "symbPowerPrimePosChar", "doSymbolicAndOrdinaryPowersCoincide",
-    "symbolicPowerJoin", "joinIdeals", "ContainmentProblemGivenSymbolicPower",
-    "symbolicContainmentMonomialCurve", "squarefreeGens", "squarefreeInCodim",
-    "symbolicPowerMonomialCurve", "isKonig", "isPacked", "noPackedSub", "noPackedAllSubs",
-    "minDegreeSymbPower", "lowerBoundResurgence"}
+
+export {
+    -- Options
+    "UseMinimalPrimes",
+    "SampleSize",
+    "UseWaldschmidt",
+    "InSymbolic", 
+    
+    -- Methods
+    "symbolicPower", 
+    "isSymbPowerContainedinPower", 
+    "containmentProblem", 
+    "bigHeight",
+    "frobeniusPower", 
+    "symbPowerPrimePosChar", 
+    "isSymbolicEqualOrdinary",
+    "symbolicPowerJoin", 
+    "joinIdeals",
+    "symbolicContainmentMonomialCurve", 
+    "squarefreeGens", 
+    "squarefreeInCodim",
+    "symbolicPowerMonomialCurve", 
+    "isKonig", 
+    "isPacked", 
+    "noPackedSub", 
+    "noPackedAllSubs",
+    "minDegreeSymbPower", 
+    "lowerBoundResurgence",
+    --"upperBoundResurgence",
+    "exponentsMonomialGens", 
+    "symbolicDefect",
+    "symbolicPolyhedron", 
+    "isGorenstein",
+    "unmixedPart",
+    "waldschmidt",
+    "asymptoticRegularity"
+    }
+
+
+needsPackage "Polyhedra";
+needsPackage "Depth";
 
 
 bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else 
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
     (R := ring I; d := dim R; c := codim I; M := R^1/I; 
 	if codim Ext^d(M,R) == d then d else 
 	(l := toList (c .. d);
@@ -25,34 +62,50 @@ bigHeight(Ideal) := ZZ => I -> (if isPrime(I) then codim(I) else
 	d-position(reverse(v-l),i->i==0))))
 
 
-doSymbolicAndOrdinaryPowersCoincide = method(TypicalValue => Boolean)
-doSymbolicAndOrdinaryPowersCoincide(Ideal,ZZ) := (P,n) -> (Q := P^n; h := bigHeight(P);
+
+fastPower = method(TypicalValue => Ideal)
+fastPower(Ideal,ZZ) := Ideal => (I,n) ->
+(J := I;
+(for i from 2 to n do J = J*I);
+J)
+
+isSymbolicEqualOrdinary = method(TypicalValue => Boolean)
+isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+    h := bigHeight(P);
     if bigHeight(Q) > h then false else (
 	if h==codim(P) then true else symbolicPower(P,n)==Q))
     
 
 
-isSymbPowerContainedinPower = method(TypicalValue => Boolean)
-isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => (I,m,n) -> (h := bigHeight I; 
+
+isSymbPowerContainedinPower = method(TypicalValue => Boolean, Options => {UseMinimalPrimes => false})
+isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
+    h := bigHeight I; 
     if m<n then false else (
 	if m>= h*n then true else (
-	symb := symbolicPower(I,m); pow := I^n; isSubset(symb,pow))))
-
-ContainmentProblem = method(TypicalValue => ZZ)
-ContainmentProblem(Ideal,ZZ) := ZZ => (I,n) -> (m := n;
-    while not(isSymbPowerContainedinPower(I,m,n)) do m = m+1;
-    m)
-
-lowerBoundResurgence = method(TypicalValue => QQ)
-lowerBoundResurgence(Ideal, ZZ) := QQ => (I,m) -> 
-max apply(toList(1 .. m),o -> (ContainmentProblem(I,o)-1)/o);
+	symb := symbolicPower(I,m, UseMinimalPrimes => opts.UseMinimalPrimes); 
+	pow := fastPower(I,n); 
+	isSubset(symb,pow))))
 
 
-ContainmentProblemGivenSymbolicPower = method(TypicalValue => ZZ)
-ContainmentProblemGivenSymbolicPower(Ideal,ZZ) := ZZ => (I,m) -> (h := bigHeight(I); 
-    e := (m-m%h)/h; n := lift(e,ZZ);
-    while isSymbPowerContainedinPower(I,m,n+1) do n = n+1;
-    n)
+
+
+containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false,InSymbolic => false})
+containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (
+
+    if not(opts.InSymbolic) then (
+	m := n; 
+	while 
+	not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
+	do m = m+1; return(m));
+    
+    if opts.InSymbolic then (
+    h := bigHeight(I);
+    e := (n-n%h)/h; 
+    l := lift(e,ZZ);
+    while isSymbPowerContainedinPower(I,n,l+1,
+	UseMinimalPrimes => opts.UseMinimalPrimes) do l = l+1;
+    return l))
 
 
 --Given an ideal I and q=p^e, computes the e-th Frobenius power of I
@@ -90,38 +143,77 @@ symbPowerMon(Ideal,ZZ) := Ideal => (I,n) -> (
 	--intersecting the powers of its associated primes
     if isSquareFree I then 
     (assP := associatedPrimes(I); 
-    intersect apply(assP, i -> i^n))
-    else 
+    intersect apply(assP, i -> fastPower(i,n)))
+    else (
     --If I is simply monomial, one can collect the primary components in a decomposition
     --of I and intersect the powers of the *maximal* ones
-    (primaryDecI := primaryDecomposition I; intersect apply(primaryDecI, i -> i^n))))
+    Pd:=primaryDecomposition I;
+    P:=apply(Pd, a-> radical a);
+    maxP:={};
+    apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+    Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+    intersect apply(Q,i -> fastPower(i,n)))))
 
-
-symbPowerPrime = method(TypicalValue => Ideal)
+symbPowerPrime = method()
 symbPowerPrime(Ideal,ZZ) := Ideal => (I,n) -> (if not(isPrime(I)) 
-    then "Not a prime ideal" else (primaryList := primaryDecomposition(I^n); 
-	res := select(primaryList,i->(radical(i)==I));
-	intersect(res)))
+    then "Not a prime ideal" else (primaryList := primaryDecomposition(fastPower(I,n)); 
+	local result;
+	scan(primaryList, i -> if radical(i)==I then (result = i; break));
+	result))
+    
+symbPowerPrimary = method()
+symbPowerPrimary(Ideal, ZZ) := Ideal => (I,n) -> (if not(isPrimary(I)) 
+    then "Not a prime ideal" else (rad := radical(I);
+	local result;
+	primaryList := primaryDecomposition(fastPower(I,n)); 
+	scan(primaryList,i->(if radical(i)==rad then result := i; break));
+	result))
     
 symbPowerSat = method(TypicalValue => Ideal)
-symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; m := ideal vars R; saturate(I^n,m))
+symbPowerSat(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; 
+    m := ideal vars R; 
+    saturate(fastPower(I,n),m))
 
 --Takes a primary decomposition of I^n, picks the components corresponding to the 
 --minimal primes of I and intersects them
 symbPowerSlow = method(TypicalValue => Ideal)
 symbPowerSlow(Ideal,ZZ) := Ideal => (I,n) -> (assI := associatedPrimes(I);
-    decomp := primaryDecomposition(I^n);
-    comp := select(decomp,a -> isSubset({radical(a)},assI));
-    intersect(comp))
+    decomp := primaryDecomposition fastPower(I,n);
+    intersect select(decomp, a -> any(assI, i -> radical a==i)))
 
 
-symbolicPower = method(TypicalValue => Ideal)
-symbolicPower(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I;
-    if (codim I == dim R - 1 and isHomogeneous(I) and isPolynomialRing R) then symbPowerSat(I,n) else (
-	if isMonomialIdeal I then symbPowerMon(monomialIdeal(I),n) else (
-	    if isPrime I then symbPowerPrime(I,n) else 
-	    symbPowerSlow(I,n)
-	    )))
+symbolicPower = method(TypicalValue => Ideal, Options => {UseMinimalPrimes => false})
+symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
+
+    if opts.UseMinimalPrimes then return (unmixedPart fastPower(I,n));
+        
+    if not opts.UseMinimalPrimes then (    
+    	if (codim I == dim R - 1 and isHomogeneous(I)) then (
+	    if depth (R/I) == 0 then return fastPower(I,n) else 
+		return symbPowerSat(I,n) 
+	    ) else (
+	    if (isPolynomialRing R and isMonomial I) then (
+		return symbPowerMon(monomialIdeal(I),n)
+		) else (
+		    if isPrime I then return symbPowerPrime(I,n) else 
+	    	    if isPrimary I then return symbPowerPrimary(I,n) else 
+			return symbPowerSlow(I,n)
+	    	    )
+		)	    
+    )       
+    )
+
+
+unmixedPart = method()
+unmixedPart(Ideal) := Ideal => I -> (minPrimes := minimalPrimes (I);
+    primDec := primaryDecomposition(I);
+    minComponents := {};
+    scan(primDec, i -> (rad := radical(i); scan(minPrimes, a -> 
+		if rad == a then 
+		(minComponents = append(minComponents,i); break))));
+    intersect(minComponents))
+
+
 
 
 
@@ -176,6 +268,7 @@ symbolicPowerMonomialCurve(Ring,List,ZZ) := Ideal => (k,L,m) -> (
 --Given a monomial ideal, finds a minimal generating set, 
 --and then returns the exponents of the monomials in that set
 --Given a monomial, returns the exponents
+{*
 exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(RingElement) := List => r -> (
     R := ring r;
@@ -185,7 +278,16 @@ exponentsMonomialGens(RingElement) := List => r -> (
     S := k[toSequence flatten entries vars R,Degrees=>deg];
     f := map(S,R,flatten entries vars S);
     degree(f(r)))
+*}
+
+exponentsMonomialGens = method(TypicalValue => List)
 exponentsMonomialGens(Ideal) := List => I -> (
+    local L; 
+    L = flatten entries mingens I;
+    apply(L, l -> flatten exponents l)    
+    )
+
+{*        
     R := ring I;
     k := coefficientRing R;
     d := dim R;
@@ -194,12 +296,14 @@ exponentsMonomialGens(Ideal) := List => I -> (
     f := map(S,R,flatten entries vars S);
     m := flatten entries(mingens f(I));
     delete({},apply(m,degree)))
+*}
 
+{* Not using this.
 squarefreeGensList = method()
 squarefreeGensList(Ideal) := List => I ->(
     w := exponentsMonomialGens(I);
     select(w,i -> all(i,o -> o<2)))
-
+*}
 
 squarefreeGens = method()
 squarefreeGens(Ideal) := List => I ->(
@@ -210,40 +314,56 @@ squarefreeGens(Ideal) := List => I ->(
     apply(v,o->product(apply(toList pairs(o),(i,j)->(l_i)^j))))
 
 
-
 --Finds squarefree monomials generating I^c, where c=codim I
 squarefreeInCodim = method()
 squarefreeInCodim(Ideal) := List => I -> (c := codim I;
-    J := I^c;
+    J := fastPower(I,c);
     squarefreeGens(J))
 
 
 isKonig = method(TypicalValue => Boolean)
-isKonig(Ideal) := Boolean => I -> (R := ring I;
+isKonig(Ideal) := Boolean => I -> (
+    R := ring I;
     if I == ideal 1_R then true else (
 	if I == ideal(0_R) then true else (
-	    c := codim I; J := I^c;
-	    not(squarefreeGens(J)=={}))))
+	    c := codim I; 
+	    J := fastPower(I,c);
+	    not(squarefreeGens(J)=={})
+	    )
+	)
+    )
 
 
-
+-- Input: Ideal and List of variables to evaluate to 1
+-- Output: Ideal with vars from list evaluated to 1
 replaceVarsBy1 = method(TypicalValue => Ideal)
-replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy1(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,1,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
 
+
+-- Input: Ideal and List of variables to evaluate to 0
+-- Output: Ideal with vars from list evaluated to 0
 replaceVarsBy0 = method(TypicalValue => Ideal)
-replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (w := flatten entries vars ring I;
+replaceVarsBy0(Ideal,List) := Ideal => (I,L) -> (
+    w := flatten entries vars ring I;
     v := fold((i,o) -> replace(o,0,i),w,L);
-    promote(substitute(I,matrix{v}),ring I))
+    promote(substitute(I,matrix{v}),ring I)
+    )
     
-
+-- Input: Monomial Ideal
+-- Output: Boolean value determining if packed or not
 isPacked = method(TypicalValue => Boolean)
-isPacked(Ideal) := Boolean => I -> (d := # flatten entries vars ring I; 
+isPacked(Ideal) := Boolean => I -> (
+    d := # flatten entries vars ring I; 
     s := subsets(d);
     w := flatten(table(s,s,(a,b) -> {a,b}));
     w = select(w, i -> unique(join(i_0,i_1))==join(i_0,i_1));
-    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1))))
+    all(w,x -> isKonig(replaceVarsBy1(replaceVarsBy0(I,x_0),x_1)))
+    )
+
 
 noPackedSub = method(TypicalValue => List)
 noPackedSub(Ideal) := List => I -> (if not(isKonig(I)) then "The ideal itself is not Konig!" else (
@@ -276,6 +396,137 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
 minDegreeSymbPower = method(TypicalValue => ZZ)
 minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
+
+---------------------------------
+---Symbolic Defect
+---------------------------------
+
+symbolicDefect = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false})
+symbolicDefect(Ideal,ZZ) := opts -> (I,n) -> (
+    R := ring I;
+    Y := fastPower(I,n);
+    S := R/Y;
+    F := map(S,R);
+    X := symbolicPower(I,n, UseMinimalPrimes => opts.UseMinimalPrimes);
+    # flatten entries mingens F(X)
+      )
+
+-- To be placed in Depth.m2
+-- Should look at the h-vector instead. 
+isGorenstein = method()
+isGorenstein(Ring) := Boolean => R ->(
+    local C; local l;
+    
+    if isCM R == false then return false;
+    
+    C = res R.ideal;
+    l = (C.Resolution).length;
+    
+    if rank(C_(l-2)) == 1 then return true else return false;    
+    )
+
+isGorenstein(Ideal) := Boolean => I ->(
+    local R;
+    R = ring I;
+    return isGorenstein(R/I);
+    )
+
+
+
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Functions for asymptotic invariants
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+-- Computes the symbolic polyhedron for a monomial ideal
+-- Input: an ideal or a  monomial ideal 
+-- Output: a Polyhedron
+
+symbolicPolyhedron = method();
+
+symbolicPolyhedron Ideal := Polyhedron => I -> (
+if not isMonomial(I) then ( 
+    print "Error -- symbolicPolyhedron cannot be applied for an ideal that is not monomial"; 
+    return
+    );   
+return symbolicPolyhedron monomialIdeal I
+)
+
+
+symbolicPolyhedron MonomialIdeal := Polyhedron => I -> ( 
+Pd:=primaryDecomposition I;
+P:=apply(Pd, a-> radical a);
+maxP:={};
+apply(P, a-> if #select(P, b-> isSubset(a,b))==1 then maxP=maxP|{a});
+Q:=for p in maxP list (intersect select(Pd, a-> isSubset(a,p)));
+PI:=apply(Q, a-> newtonPolytope sum flatten entries gens a);
+C := posHull id_(ZZ^(dim ring I));
+QI :=apply(PI, p-> p+C);
+N :=intersection QI;
+return N
+)
+
+alpha = I -> min apply(flatten entries gens I, f-> (degree f)_0) 
+
+-- Computes the Waldschmidt constant for a given ideal
+waldschmidt = method(Options=>{SampleSize=>10});
+waldschmidt Ideal := opts -> I -> (
+if isMonomial I then ( 
+    print "Ideal is monomial, the Waldschmidt constant is computed exactly";   
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
+else (
+    print ("Ideal is not monomial, the  Waldschmidt constant is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list alpha(symbolicPower(I,i))/i
+    )
+)
+
+waldschmidt MonomialIdeal := opts -> I -> (  
+    N:=symbolicPolyhedron I;
+    return min apply (entries transpose vertices N, a-> sum  a)
+    )
+
+lowerBoundResurgence = method(TypicalValue => QQ, Options =>{UseWaldschmidt=>false})
+lowerBoundResurgence(Ideal, ZZ) := opts  -> (I,m) -> (
+    l := max append(apply(toList(2 .. m),o -> (containmentProblem(I,o)-1)/o),1);
+    if opts#UseWaldschmidt == false then return l
+    else return max {l, alpha(I)/waldschmidt(I)}
+    )
+
+--this is not correct
+{*
+upperBoundResurgence = method(TypicalValue => QQ)
+upperBoundResurgence(Ideal, ZZ) := QQ  => (I,m) -> (
+    h := bigHeight I;
+    if m <= 1 then return h 
+    else return 
+    max for o from 2 to m list (
+	    k := h*o-1;  
+	    while isSymbPowerContainedinPower(I,k,o) do k = k-1;
+	    k/o
+	    )
+    ) 
+*}
+
+-- for this function I am assuming that the asymptotic regularity is an infimum
+-- this is more specific than being a limit
+-- I need to think if this is true (did not find it written in the literature)
+
+asymptoticRegularity = method(Options=>{SampleSize=>10});
+asymptoticRegularity Ideal := opts -> I -> (
+    print ("The asymptotic regularity is approximated using first "| opts#SampleSize |" powers.");
+    return min for i from 1 to opts#SampleSize  list regularity(symbolicPower(I,i))/i
+    ) 
+
+
 -----------------------------------------------------------
 -----------------------------------------------------------
 --Documentation
@@ -288,26 +539,49 @@ document {
   Key => SymbolicPowers,
   Headline => "A package for computing symbolic powers of ideals",
    
-   "This is an experimental version of the package. If you find any typos or errors, please let me know. The package was designed to compute symbolic powers of unmixed ideals in a polynomial ring. It might misbehave in other settings.", 
+   "This package gives the ability to compute symbolic powers, and related invarients,
+   of ideals in a polynomial ring or a quotient of a polynomial
+   ring. For example, in the context of the default behavoir of ", 
+   TO "symbolicPower", " assumes the following definition of the symbolic power of an ideal ", TEX /// I ///, ",", 
+   TEX /// $$I^{(n)} = \cap_{p \in Ass(R/I)}(I^nR_p \cap R ),$$ ///,
+   "as defined by M. Hochster and C. Huneke.",
 
-   SUBSECTION "A quick introduction to this package",
+   PARA {"Alternatively, as defined in Villarreal, ", TO "symbolicPower", " has the option to restrict to 
+       minimal primes versus use all associated primes with ", TO "UseMinimalPrimes", ".",
+       "In particular, the symbolic power of an ideal ", TEX /// I ///, " is defined as",
+       TEX /// $$I^{(n)} = \cap_{p \in Min(R/I)}(I^nR_p \cap R ),$$ ///,
+       "where ", TEX /// Min(R/I) ///, " is the set of minimal primes in ", 
+       TEX /// I ///, "."},
+   UL {
+       {"M. Hochster and C. Huneke.", EM " Comparison of symbolic and ordinary powers of ideals.", " Invent. Math. 147 (2002), no. 2, 349–369."},
+       {"R. Villarreal.", EM " Monomial algebras.", " Second edition. Monographs and Research Notes in Mathematics. CRC Press, Boca Raton, FL, 2015. xviii+686 pp. ISBN: 978-1-4822-3469-5."},
+      },
+  
+   SUBSECTION "Contributors",     
+   "The following people have generously contributed code or worked on our code at various
+   Macaulay2 workshops.",
+     
+     UL {
+	 "Ben Drabkin",
+	 "Alexandra Seceleanu",
+	 "Branden Stone"
+	},
+
+   SUBSECTION "A Quick Introduction",
    UL {
     TO "Computing symbolic powers of an ideal",
     TO "Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"
     },
     
  
-  SUBSECTION "Other examples which illustrate this package",
+  SUBSECTION "Other Related Examples",
   UL {
     TO "The Containment Problem",
     TO "Sullivant's algorithm for primes in a polynomial ring",
-    TO "Monomial Curves"
-  },
+    TO "Monomial Curves",
+    TO "The Packing Problem"    
+  }
 
-  SUBSECTION "The Packing Problem",
-  UL {
-    TO "The Packing Problem"
-  },
 }  
 
 
@@ -326,7 +600,6 @@ doc ///
 	       $\bullet$ @TO"Computing symbolic powers of an ideal"@
 	       
 	       $\bullet$ @TO"Alternative algorithm to compute the symbolic powers of a prime ideal in positive characteristic"@
-    	       
  
                {\bf Other examples which illustrate this package}
 
@@ -388,7 +661,7 @@ doc ///
 	 Text
 	      We can also test it a bit faster, without computing the symbolic powers of P:
 	 Example
-	      doSymbolicAndOrdinaryPowersCoincide(P,2)
+	      isSymbolicEqualOrdinary(P,2)
 
 ///
 
@@ -409,11 +682,11 @@ doc ///
      	 Text
 	      In our example, $I^{(4)}$ is the smallest symbolic power contained in $I^2$:
 	 Example
-	      ContainmentProblem(I,2)
+	      containmentProblem(I,2)
      	 Text
 	      We can ask the same question backwards: what is the largest power of I that contains $I^{(4)}$?
 	 Example
-	      ContainmentProblemGivenSymbolicPower(I,4)     
+	      containmentProblem(I,4,InSymbolic => true)     
 ///
 
 
@@ -547,18 +820,18 @@ doc ///
      	   J = ideal(x,y)
     	   isSymbPowerContainedinPower(J,3,2)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 
 doc ///
    Key
-       ContainmentProblem
-       (ContainmentProblem, Ideal, ZZ)
+       containmentProblem
+       (containmentProblem, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the smallest symbolic power of I contained in I^n.
    Usage
-       ContainmentProblem(I,n)
+       containmentProblem(I,n)
    Inputs
 	I:Ideal
 	n:ZZ
@@ -570,21 +843,20 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   m = ContainmentProblem(I,2)
+	   m = containmentProblem(I,2)
    SeeAlso
        isSymbPowerContainedinPower
-       ContainmentProblemGivenSymbolicPower
 ///
 
-
-doc ///
+--To delete and include in containmentProblem
+///
    Key
-       ContainmentProblemGivenSymbolicPower
-       (ContainmentProblemGivenSymbolicPower, Ideal, ZZ)
+       containmentProblemGivenSymbolicPower
+       (containmentProblemGivenSymbolicPower, Ideal, ZZ)
    Headline
        Given an ideal I and an integer n, returns the order of the largest power of I containing in I^{(n)}.
    Usage
-       ContainmentProblemGivenSymbolicPower(I,m)
+       containmentProblemGivenSymbolicPower(I,m)
    Inputs
 	I:Ideal
 	m:ZZ
@@ -596,9 +868,9 @@ doc ///
 	   B = QQ[x,y,z];
 	   f = map(QQ[t],B,{t^3,t^4,t^5})
 	   I = ker f;
-	   ContainmentProblemGivenSymbolicPower(I,3)
+	   containmentProblemGivenSymbolicPower(I,3)
    SeeAlso
-       ContainmentProblem
+       containmentProblem
 ///
 
 doc ///
@@ -692,12 +964,12 @@ doc ///
 
 doc ///
    Key
-       doSymbolicAndOrdinaryPowersCoincide
-       (doSymbolicAndOrdinaryPowersCoincide, Ideal, ZZ)
+       isSymbolicEqualOrdinary
+       (isSymbolicEqualOrdinary, Ideal, ZZ)
    Headline
-       Given a radical ideal I and an integer n, returns true iff $I^n=I^{(n)}$.
+       Given a radical ideal I and an integer n, returns true if and only if $I^n=I^{(n)}$.
    Usage
-       	doSymbolicAndOrdinaryPowersCoincide(I,n)
+       	isSymbolicEqualOrdinary(I,n)
    Inputs
         I:Ideal
 	n:ZZ
@@ -711,7 +983,7 @@ doc ///
               B = QQ[x,y,z];
 	      f = map(QQ[t],B,{t^3,t^4,t^5})
 	      I = ker f;
-	      doSymbolicAndOrdinaryPowersCoincide(I,2)
+	      isSymbolicEqualOrdinary(I,2)
    SeeAlso
       isSymbPowerContainedinPower
 ///
@@ -762,7 +1034,7 @@ doc ///
 	   
 	   This is the algorithm in Seth Sullivant's "Combinatorial symbolic powers", J. Algebra 319 (2008), no. 1, 115--142.
        Example 
-	   A = QQ[x,y,z]
+	   A = QQ[x,y,z];
 	   symbolicPowerJoin(ideal(x,y),2) 
      SeeAlso 
 	  joinIdeals
@@ -822,7 +1094,7 @@ doc ///
        Example 
 	   symbolicPowerMonomialCurve({3,4,5},3) 
      SeeAlso 
-	  ContainmentProblem
+	  containmentProblem
 /// 
 
 
@@ -844,8 +1116,8 @@ doc ///
        Text
 	   Given a monomial ideal I, returns all square-free monomials in a minimal generating set of I.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x^2)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x^2);
 	   squarefreeGens(I) 
      SeeAlso 
 	  squarefreeInCodim
@@ -867,8 +1139,8 @@ doc ///
        Text
 	   Given a monomial ideal I, returns all square-free monomials in a minimal generating set of I^c.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   squarefreeInCodim(I) 
      SeeAlso 
 	  squarefreeGens
@@ -894,8 +1166,8 @@ doc ///
        Text
 	   A square-free monomial ideal I of codimension c is Konig if it contains a regular sequence of monomials of length c.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   isKonig(I) 
      SeeAlso 
 	  squarefreeGens
@@ -919,8 +1191,8 @@ doc ///
        Text
 	   A square-free monomial ideal I of codimension c is packed if every ideal obtained from it by replacing any number of variables by 1 or 0 is Konig.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   isPacked(I) 
      SeeAlso 
 	  squarefreeGens
@@ -945,8 +1217,8 @@ doc ///
        Text
 	   Determines only one such substitutions, even though others may exist.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   noPackedSub(I) 
      SeeAlso 
 	  isPacked	  
@@ -969,8 +1241,8 @@ doc ///
        Text
 	   Given an ideal that is not packed, returns a list with all substitution of variables by 0 and/or 1 that produces an ideal that is not Konig.
        Example 
-	   R = QQ[x,y,z]
-	   I = ideal(x*y,y*z,x*z)
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
 	   noPackedAllSubs(I) 
      SeeAlso 
 	  noPackedSub
@@ -994,7 +1266,7 @@ doc ///
        Text
 	   Given an ideal $I$ and an integer $n$, returns the minimal degree of an element in $I^{(n)}$.
        Example 
-	   T = QQ[x,y,z]
+	   T = QQ[x,y,z];
 	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
 	   minDegreeSymbPower(I,2)
 
@@ -1015,16 +1287,189 @@ doc ///
           :QQ
      Description	  
        Text
-	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \geq n$.
+	   Given an ideal $I$ and an integer $n$, finds the maximum of the quotiens m/k that fail $I^{(m)} \subseteq I^k$ with $k \leq n$.
        Example 
-	   T = QQ[x,y,z]
-	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z")
+	   T = QQ[x,y,z];
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
 	   lowerBoundResurgence(I,5)
+
+///
+
+doc ///
+     Key 
+         UseWaldschmidt
+     Headline 
+         Optional input for computing a lower bound for the resurgence of a given ideal
+     Usage 
+         lowerBoundResurgence(Ideal,ZZ,UseWaldschmidt=>true)
+     Inputs 
+     	  I:Ideal
+	  n:ZZ
+     Outputs
+          :QQ
+     Description	  
+       Text
+	   Given an ideal $I$ and an integer $n$, returns the larger value between the 
+	   maximum of the quotiens $m/k$ that fail $I^{(m)} \subseteq I^k$ with $k \leq n$ 
+	   and $\frac{\alpha(I)}{waldschmidt(I)}$. 
+       Example 
+	   T = QQ[x,y,z];
+	   I = intersect(ideal"x,y",ideal"x,z",ideal"y,z");
+	   lowerBoundResurgence(I,5,UseWaldschmidt=>true)
 
 ///
 
 
 
+doc ///
+     Key 
+         symbolicPolyhedron
+	 (symbolicPolyhedron,Ideal)
+	 (symbolicPolyhedron,MonomialIdeal)
+     Headline 
+         Computes the symbolic polyhedron for a monomial ideal. 
+     Usage 
+         symbolicPolyhedron(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :Polyhedron 
+     Description	  
+       Text
+	   The symbolic polyhedron associated to a monomial ideal I is defined in the paper "Symbolic Powers of Monomial Ideals" 
+	   by S. M. Cooper, R. J. D. Embree, H. T. Ha, A. H. Hoefel. The symbolic polyhedron contains the exponent vector of any
+	   monomial in I^n scaled by 1/n.
+	  
+       Text
+       	   This function uses the Polyhedra package and returns an object of type Polyhedron.
+       
+       Example 
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
+	   symbolicPolyhedron(I)
+        
+     SeeAlso 
+	  Polyhedra
+///
+
+doc ///
+     Key 
+         waldschmidt
+	 (waldschmidt,Ideal)
+	 (waldschmidt,MonomialIdeal)
+     Headline 
+         Computes the Waldschmidt constant  for a homogeneous ideal. 
+     Usage 
+         waldschmidt(I)
+     Inputs 
+     	  I:Ideal
+     Outputs
+          :QQ 
+     Description	  
+       Text
+	   The Waldschmidt constant for a homogeneous ideal I is defined as $waldschmidt(I)=lim_{n\to\infty} \frac{\alpha(I^{(n)})}{n}$, 
+	   where $\alpha(J)$ denotes the smallest degree of a nonzero element in a given homogeneous ideal $J$. The limit of the sequence 
+	   $\frac{\alpha(I^{(n)})}{n}$ exists because of the subadditivity of $\alpha$ and is equal to the infimum of the sequence $\frac{\alpha(I^{(n)})}{n}$.
+	  
+       Text
+       	   The Waldschmidt constant can be computed for monomial ideals as the smallest value of the sum of the coordinates over all the points of 
+	   the symbolic polyhedron. The function uses this method to return an exact answer for the Waldschmidt constant of a monomial ideal.
+	   
+       Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+       
+       Example 
+	   R = QQ[x,y,z];
+	   I = ideal(x*y,y*z,x*z);
+	   waldschmidt(I)
+	   
+       Example 
+	   R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   waldschmidt(J, SampleSize=>5)
+        
+     SeeAlso 
+	  symbolicPolyhedron
+///
+
+
+doc ///
+     Key 
+         SampleSize
+     Headline 
+         An optional parameter used for approximating asymptotic invariants that are defined as limits.
+     Usage 
+         waldschmidt(I,SampleSize=>ZZ)
+     Description	  
+         Text
+       	   For ideals that are not monomial, we give an approximation of the Waldschmidt constant by taking the minimum value of $\frac{\alpha(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize. Similarly the SampleSize is used to give an
+	   approximation for the asymptotic regularity by computing the smallest value of $\frac{reg(I^{(n)})}{n}$ for $n$ from
+	   1 to the SampleSize.
+     
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   waldschmidt(J, SampleSize=>5)
+///	   
+
+
+doc ///
+     Key 
+         InSymbolic
+     Headline 
+         An optional parameter used in containmentProblem
+     Usage 
+         containmentProblem(I,n,InSymbolic => true)
+     Description	  
+         Text
+       	   Given an ideal I and an integer n, InSymbolic is used to ask the following question:
+	   What is the largest power cointained in the symbolic power $I^{(n)}$?
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   containmentProblem(J,3,InSymbolic => true)
+///	   
+	   
+doc ///
+     Key 
+         asymptoticRegularity
+     Headline 
+         An asymptotic invariant defined as the limit of the regularity of the symbolic powers scaled by the symbolic exponent.
+     Usage 
+         asymptoticRegularity(I,SampleSize=>ZZ)
+     Description
+         Text	  
+       	   We give an approximation of the asymptotic regularity by taking the minimum value of $\frac{reg(I^{(n)})}{n}$
+	   over a finite number of exponents $n$, namely for $n$ from 1 to the optional parameter SampleSize.  
+     
+         Example
+           R = QQ[x,y,z];
+	   J = ideal (x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3));
+	   asymptoticRegularity(J, SampleSize=>5)
+///
+
+doc ///
+   Key
+         symbolicDefect
+        (symbolicDefect, Ideal, ZZ)
+   Headline
+         Given an ideal I and integer m, returns the size of a minimal generating set for the m-th symbolic power of I modulo I^m.
+   Usage
+         symbolicDefect(I,m)
+   Inputs
+         I:Ideal
+         m:ZZ
+   Outputs
+          :ZZ
+             the size of a minimal generating set of the m-th symbolic power of I modulo I^m.
+   Description
+       Example
+         R = QQ[x,y,z]    
+         I = ideal(x*y,x*z,y*z);					      
+	 symbolicDefect(I,2)
+ ///
 
 
 TEST ///
@@ -1033,4 +1478,324 @@ TEST ///
    assert(isSymbPowerContainedinPower(I,2,2) == true)
 ///
 
+--bigHeight
+TEST ///
+R=ZZ/2[x,y,z]
+I=ideal(x,y)
+assert(bigHeight(I)==2)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y^3,z^2)
+assert(bigHeight I==3)
+///
+
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(bigHeight(I)==2)
+///
+
+
+--symbolicPower
+TEST ///
+R=QQ[x,y,z]
+I=ideal(y-z,x+z)
+assert(symbolicPower(I,2)==ideal(y^2-2*y*z+z^2,x*y-x*z+y*z-z^2,x^2+2*x*z+z^2))
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x)
+assert(symbolicPower(I,2)==ideal(x^2))
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x+1)
+assert(symbolicPower(I,2)==ideal(x^2+2*x+1))
+///
+
+TEST ///
+R=QQ[w,x,y,z]
+I=ideal(x*y+1,w*y*z)
+assert(symbolicPower(I,3)==ideal(w^3*z^3,w^2*x*y*z^2+w^2*z^2,w*x^2*y^2*z+2*w*x*y*z+w*z,x^3*y^3+3*x^2*y^2+3*x*y+1))
+
+///
+
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y+x*z)
+assert(symbolicPower(I,2)==ideal((x*y+x*z)^2))
+///
+
+--isSymbPowerContainedinPower
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,2,3)==false)
+///
+
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,2,2)==true)
+///
+
+TEST ///
+R=QQ[x,y];
+
+I=ideal(x);
+
+assert(isSymbPowerContainedinPower(I,3,2)==true)
+///
+
+--ContainmentProblem
+
+TEST ///
+R=QQ[x,y,z];
+
+I=ideal(x*y,x*z,y*z);
+
+assert(containmentProblem(I,2)==3)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(containmentProblem(I,2)==4)
+///
+
+--frobeniusPower
+TEST ///
+R=ZZ/3[x,y]
+I=ideal(x*y^2+1,x^2)
+assert(frobeniusPower(I,9)==ideal(x^9*y^(19)+1,x^(18)))
+///
+
+--lowerBoundResurgence
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(lowerBoundResurgence(I,5)==6/5)
+///
+
+----isSymbolicEqualOrdinary
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(isSymbolicEqualOrdinary(I,2)==false)
+///
+
+TEST ///
+R=ZZ/3[x,y]
+I=ideal(x)
+assert(isSymbolicEqualOrdinary(I,3)==true)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*z,y*z)
+assert(isSymbolicEqualOrdinary(I,2)==true)
+///
+
+----joinIdeals
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y)
+J=ideal(x,z)
+assert(joinIdeals(I,J)==ideal(x))
+///
+
+----symbolicPowerJoin
+
+----containmentProblem given Symbolic Power
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*(y^3-z^3),y*(z^3-x^3),z*(x^3-y^3))
+assert(containmentProblem(I,4,InSymbolic => true)==2)
+///
+
+----symbolicContainmentMonomialCurve
+TEST ///
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},4,5)==false)
+///
+
+TEST ///
+R=QQ[x,y,z]
+assert(symbolicContainmentMonomialCurve({1,2,3},5,4)==true)
+///
+
+TEST ///
+assert(symbolicContainmentMonomialCurve(QQ[w,x,y,z],{2,3},3,2)==true)
+///
+----squarefreeGens
+TEST ///
+R=ZZ/5[w,x,y,z]
+I=ideal(y^2*z,x*y*w,z*w^3)
+assert(squarefreeGens(I)=={w*x*y})
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x^2*z,x*y^8,z^3)
+assert(squarefreeGens(I)=={})
+///
+
+----squarefreeInCodim
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x,y^2)
+assert(squarefreeInCodim I=={})
+///
+
+TEST ///
+R=ZZ/2[x,y,z]
+I=ideal(x,y)
+assert(squarefreeInCodim I=={x*y})
+///
+
+----symbolicPowerMonomialCurve
+TEST ///
+I= symbolicPowerMonomialCurve({1,2,1},2)
+R=ring I
+assert(I==ideal(R_0^2-2*R_0*R_2+R_2^2,R_0*R_2^2-R_2^3-R_0*R_1+R_1*R_2,R_2^4-2*R_1*R_2^2+R_1^2))
+///
+
+-- symbolicPolyhedron
+TEST ///
+ R = QQ[x,y,z];
+ I = ideal(x*y,y*z,x*z);
+ -- assert((vertices symbolicPolyhedron I)== matrix{{1,1,0,1/2},{1,0,1,1/2},{0,1,1,1/2}})
+///
+
+-- waldschmidt
+TEST ///
+ R = QQ[x,y,z];
+ I = ideal(x*y,y*z,x*z);
+ assert(waldschmidt(I)==3/2)
+///
+
+
+----isKonig
+TEST ///
+R=ZZ/17[x]
+I=ideal(1_R)
+assert(isKonig(I)==true)
+///
+
+TEST ///
+R=QQ[y,z]
+I=ideal(0_R)
+assert(isKonig(I)==true)
+///
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(isKonig(I)==false)
+///
+
+----isPacked
+
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(isPacked(I)==false)
+///
+
+
+TEST ///
+R=QQ[x,y,z,a,b]
+I=intersect(ideal(x,y),ideal(x,z),ideal(z,a),ideal(y,a),ideal(x,b))
+assert(isPacked(I)==true)
+///
+
+----noPackedSub
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(noPackedSub(I)=="The ideal itself is not Konig!")
+///
+
+
+----noPackedAllSubs
+TEST ///
+R=QQ[x,y,z]
+I=ideal(x*y,x*z,y*z)
+assert(noPackedAllSubs I=="Only I is not Konig -- all proper substitutions are Konig.")
+///
+
+TEST ///
+R=QQ[x_1..x_6]
+I=intersect(ideal(x_1,x_2),ideal(x_2,x_3),ideal(x_3,x_1),ideal(x_3,x_4),ideal(x_4,x_5),ideal(x_5,x_6),ideal(x_6,x_4))
+assert(noPackedAllSubs I=={{"x_1=>0", "x_2=>1", "x_3=>1"}, {"x_2=>0", "x_1=>1", "x_3=>1"}, {"x_5=>0", "x_4=>1", "x_6=>1"}, {"x_6=>0", "x_4=>1", "x_5=>1"}})
+///
+
 end
+
+restart
+uninstallPackage"SymbolicPowers"
+restart
+installPackage"SymbolicPowers"
+viewHelp"SymbolicPowers"
+
+restart
+loadPackage"SymbolicPowers"
+R = QQ[x,y,z]
+I = ideal"x,y,z"
+symbolicPower(I,2)
+check"SymbolicPowers"
+
+
+-- branden
+restart
+n = 3
+R = ZZ/101[x_1..x_n]
+I = ideal(apply(1..n, l -> x_1*x_l) )
+loadPackage"SymbolicPowers"
+symbolicPower(I,2)
+check "SymbolicPowers"
+
+R=QQ[x,y,z]
+I=ideal(x)
+symbolicPower(2,I)
+toString I
+primaryDecomposition I
+
+F = res(R^1/I)
+c = codim(R^1/I) 
+p = F.Resolution.length
+rk = apply(p, l -> r_l = rank(F_l))
+rko = select(rk,odd)
+rke = select(rk,even)
+rk
+
+
+rj = sum_{i=j}^p (-1)^{i-j} rk_i
+r := j -> (
+    ind = apply(p-j, l-> j+l);
+    sum apply(ind, l -> if odd(l-j) then -1*rank(F_l) else rank(F_l))
+    )
+apply((c+1)..(p-1), l -> (
+	if 
+	l = 3
+	height 
+	r l
+	F.dd#l
+	minors(r l, F.dd#l)
+loadPackage"SymbolicPowers"
+bigHeight(I)
+	)
+	r l)
+
+?minors
+
