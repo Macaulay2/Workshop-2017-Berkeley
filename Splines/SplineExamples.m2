@@ -63,8 +63,10 @@ hilbertComparisonTable(0,5,M')
 postulationNumber M'
 --spline Complexes--
 C=cellularComplex(F,InputType=>"Simplicial",Homogenize=>false,BaseRing=>S)
-prune HH C
 SC=splineComplex(V,F,1,Homogenize=>false,BaseRing=>S)
+IC=idealsComplex(V,F,1,Homogenize=>false,BaseRing=>S)
+SC==(coker inducedMap(C,IC))
+prune HH C
 prune HH SC
 SC'=splineComplex(V',F,1,Homogenize=>false,BaseRing=>S)
 prune HH SC'
