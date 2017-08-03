@@ -1,4 +1,3 @@
-
 newPackage(
   "ToricMaps",
   AuxiliaryFiles => false,
@@ -105,8 +104,11 @@ outerNormals (NormalToricVariety,List) := Matrix => (X,sigma) -> (
     X.cache.outerNormals = new MutableHashTable);
   if not X.cache.outerNormals#?sigma then (
     V := transpose matrix rays X;
-    X.cache.outerNormals#sigma = transpose (fourierMotzkin V_sigma)#0);
+    D := fourierMotzkin V_sigma;
+    if D#1 == 0 then X.cache.outerNormals#sigma = transpose D#0 else X.cache.outerNormals#sigma = transpose (D#0 | D#1 | -D#1));
   return X.cache.outerNormals#sigma)
+
+
 
 isWellDefined ToricMap := Boolean => f -> (
     -- CHECK DATA STRUCTURE
@@ -166,15 +168,18 @@ isWellDefined ToricMap := Boolean => f -> (
 )
 
 
+
 isProper = method()
 isProper ToricMap := Boolean => f -> (
+    if not isWellDefined f then << "the map is not well-defined!" << return false; -- check that f is well-defined first
     X := source f;
     Y := target f;
     if isComplete X then return true;
     if (isComplete Y and not isComplete X) then return false;
     A := matrix f;
-    rayMatrixX := transpose matrix rays X;
-    rayMatrixY := transpose matrix rays Y;
+    rayMatrixX := transpose matrix rays X; -- rays of X in columns
+    rayMatrixY := transpose matrix rays Y; -- rays of Y in columns
+    -- make a hash table whose keys are max cones in Y and values are max cones in X mapping into them
     coneTable := new MutableHashTable;
     for sigma in max X do (
 	for tau in max Y do ( 
@@ -185,12 +190,18 @@ isProper ToricMap := Boolean => f -> (
 	)
     );
     K := mingens ker A;
+    volA := max flatten entries mingens minors(rank A, A);
     for tau in max Y do (
-    	indicesOverTau := unique flatten coneTable#tau;
-	raysOverTau := entries transpose rayMatrixX_indicesOverTau;
+    	indicesOverTau := unique flatten coneTable#tau; -- indices of rays in X over tau in Y
+	raysOverTau := entries transpose rayMatrixX_indicesOverTau; -- rays in X over tau in Y
 	conesOverTau := apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)));
 	varietyOverTau := normalToricVariety(raysOverTau, conesOverTau); 
-	liftTau := rayMatrixY_tau//A | K | -K;
+ 	-- compute the rays of image(A) intersect tau
+	raysTauCapImA := first fourierMotzkin ( (transpose outerNormals(Y,tau)) , last fourierMotzkin (A | -A) );
+	liftTau := (volA*raysTauCapImA)//A | K | -K; -- volA is multiplied since over ZZ not QQ
+	--first test whether if any of max cones in X over tau are of dimension less than liftTau
+	if #orbits(varietyOverTau, dim X - rank liftTau) =!= #conesOverTau then return false;
+	--the codimension in dim X of boundaries of liftTau is dim X - rank liftTau +1
 	boundaries := select(orbits(varietyOverTau,dim X - rank liftTau + 1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2);	
 	for C in boundaries do (
 		supportHyperplanes := first fourierMotzkin liftTau;
@@ -206,7 +217,121 @@ isFibration ToricMap := Boolean => f -> 1 == minors(dim target f, matrix f)
 
 isSurjective ToricMap := Boolean => f -> rank matrix f == dim target f
 
+TEST ///
+--Tests for isWellDefined
+--TODO: needs more tests
+X = normalToricVariety({{1,0,0},{0,0,1},{0,0,-1}},{{0,1},{0,2}})
+Y = normalToricVariety({{0,-1}},{{0}})
+f = map(Y,X,matrix{{1,0,0},{0,1,0}})
+assert not isWellDefined f
+assert not isProper f
 
+--< Tests for isProper (see isProperPics.pdf) >--
+--The source and target are proper then the map is proper
+H2 = hirzebruchSurface 2
+PP1 = projectiveSpace 1
+f = map(PP1,H2,matrix{{1,0}})
+assert isWellDefined f
+assert isProper f
+
+--The source not proper but the target is so the map is not proper
+Y = normalToricVariety(rays H2, drop(max H2, -1))
+f = map(PP1, Y, matrix{{1,0}})
+assert isWellDefined f
+assert not isProper f
+
+--The source is proper and the target is not so the map is proper
+g = map(Y, PP1, matrix{{0},{1}})
+assert isWellDefined g
+assert isProper g
+
+--Test A: The source and target are both not proper but the map is proper
+P1A1 = (affineSpace 1) ** (projectiveSpace 1)
+A1 = affineSpace 1
+h = map(A1, P1A1, matrix{{1,0}})
+assert isWellDefined h
+assert isProper h
+
+--Test B
+X = normalToricVariety({{1,0,0},{0,1,0},{0,0,1},{-1,0,0},{0,0,-1}},{{0,1},{1,2,3},{1,3,4}})
+Y = (projectiveSpace 1) ** (affineSpace 1)
+f = map(Y,X,matrix{{1,0,0},{0,1,0}})
+assert isWellDefined f
+assert not isProper f
+
+--Test C
+X = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0},{1,2,3},{1,2,4}})
+Y = (projectiveSpace 1) ** (affineSpace 1)
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test D
+X = normalToricVariety({{0,1},{1,0},{0,-1}},{{0,1},{1,2}})
+Y = normalToricVariety({{-1,-1},{1,0},{0,1}},{{0,1},{1,2}})
+A = id_(ZZ^2)
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test D'
+X = normalToricVariety({{0,1},{1,0},{0,-1},{-1,-1}},{{0,1},{1,2},{2,3}})
+Y = normalToricVariety({{-1,-1},{1,0},{0,1}},{{0,1},{1,2}})
+A = id_(ZZ^2)
+f = map(Y,X,A)
+assert isWellDefined f
+assert isProper f
+
+--Test E
+X = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{1,2,3},{1,2,4}})
+Y = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test E'
+X = normalToricVariety({{0,-1,0},{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0},{1,4},{1,5},{2,3,4},{2,3,5}})
+Y = normalToricVariety({{0,-1},{1,0},{0,1},{-1,0}},{{0},{1},{2,3}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test F
+X'' = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{0,4},{1,2,3},{1,2,4}})
+Y' = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
+A = matrix{{1,0,0},{0,1,0}}
+f = map(Y',X'',A)
+assert isWellDefined f
+assert isProper f
+
+--Test G
+X = normalToricVariety({{-1,1,0},{0,0,1},{0,0,-1}},{{0,1},{0,2}})
+Y = normalToricVariety({{0,1},{1,0}},{{0,1}})
+A = matrix{{1,1,0},{1,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test H
+X = normalToricVariety({{1,-1,0},{1,1,0},{-1,1,0},{0,0,1}},{{0,1,3},{1,2,3}})
+Y = normalToricVariety({{0,1},{1,0}},{{0,1}})
+A = matrix{{1,1,0},{1,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert not isProper f
+
+--Test H'
+X = normalToricVariety({{1,-1,0},{1,1,0},{-1,1,0},{0,0,1},{0,0,-1}},{{0,1,3},{1,2,3},{0,1,4},{1,2,4}})
+Y = normalToricVariety({{0,1},{1,0}},{{0,1}})
+A = matrix{{1,1,0},{1,1,0}}
+f = map(Y,X,A)
+assert isWellDefined f
+assert isProper f
+
+///
 
 
 
@@ -260,289 +385,11 @@ doc ///
 ///   
 
 
-doc ///
-    Key
-        (hilbertPolynomial, NormalToricVariety, Module)
-	(hilbertPolynomial, NormalToricVariety, CoherentSheaf)
-	(hilbertPolynomial, NormalToricVariety, Ideal)
-    Headline 
-        computes the Hilbert polynomial of a module or coherent sheaf
-    Usage 
-        hilbertPolynomial(X,M)
-	hilbertPolynomial(X,F)
-	hilbertPolynomial(X,I)
-    Inputs 
-        X:NormalToricVariety
-	    a smooth projective toric variety
-	M:Module
-	    a graded module over the Cox ring of X
-	F:CoherentSheaf
-	    a coherent sheaf over X
-	I:Ideal
-	    a graded ideal in the Cox ring of X
-    Outputs 
-        :RingElement 
-	    the Hilbert polynomial
-    Description
-        Text
-            The Hilbert polynomial of a coherent sheaf $F$ over a
-	    smooth projective toric variety $X$ is the Euler characteristic
-    	    of $F(i_0,...,i_r)$ where $r$ is the rank of the Picard
-    	    group of X and i_0,...,i_r are formal variables.  The
-    	    Hilbert polynomial agrees with the Hilbert function when
-    	    evaluated at any point sufficiently far in the interior
-	    of the nef cone.
-	Text
-	    For an ideal $I$ in the Cox ring $S$, this computes the Hilbert
-	    polynomial of the coherent sheaf associated to $S/I$.
-    	Text
-            This example illustrates the ideal over the product of two
-	    projective lines.
-    	Example  
-    	  P1P1 = hirzebruchSurface 0;
-	  S = ring P1P1;
-	  R = ring hilbertPolynomial P1P1;
-	  I = ideal(S_0^2*S_3^2 - S_0*S_2*S_1^2);
-	  hilbertPolynomial(P1P1, I)
-	  hilbertPolynomial(P1P1, S^1/I)
-	  h = hilbertPolynomial(P1P1, module I)
-	  R = ring h;
-	  any({1,1}..{3,3}, j -> sub(h, {R_0 => j_0, R_1 => j_1}) == hilbertFunction(j,module I))
-	Text
-	    This example illustrates the cotangent bundle of Hirzebruch
-	    surface.
-	Example
-           H3 = hirzebruchSurface 3;
-	   R = ring hilbertPolynomial H3;
-	   h = hilbertPolynomial(H3, cotangentSheaf H3)
-	Text
-	    This example illustrates the Hirzebruch surface 5.
-    	Example
-	   H5 = hirzebruchSurface 5;
-	   factor hilbertPolynomial H5
-    SeeAlso
-        "Making normal toric varieties"
-        (isSmooth, NormalToricVariety)
-        (isProjective, NormalToricVariety)
-///
-
-
-TEST /// 
-H2 = hirzebruchSurface 2
-PP1 = projectiveSpace 1
-f = map(PP1,H2,matrix{{1,0}})
-assert isWellDefined f
-assert isProper f
-
-Y = normalToricVariety(rays H2, drop(max H2, -1))
-isWellDefined Y
-f = map(PP1, Y, matrix{{1,0}})
-assert isWellDefined f
-assert not isProper f
-
-g = map(Y, PP1, matrix{{0},{1}})
-assert isWellDefined g
-assert isProper g
-
-P1A1 = (affineSpace 1) ** (projectiveSpace 1)
-A1 = affineSpace 1
-h = map(A1, P1A1, matrix{{1,0}})
-assert isWellDefined h
-assert isProper h
-
-X = normalToricVariety({{1,0,0},{0,1,0},{0,0,1},{-1,0,0},{0,0,-1}},{{0,1},{1,2,3},{1,3,4}})
-Y = (projectiveSpace 1) ** (affineSpace 1)
-f = map(Y,X,matrix{{1,0,0},{0,1,0}})
-assert isWellDefined f
-assert not isProper f
-
-X = normalToricVariety({{0,-1,0},{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0},{1,4},{2,3,4},{2,3,5}})
-Y = normalToricVariety({{0,-1},{1,0},{0,1},{-1,0}},{{0},{1},{2,3}})
-A = matrix{{1,0,0},{0,1,0}}
-f = map(Y,X,A)
-assert isWellDefined f
-assert not isProper f
-
-X' = normalToricVariety(rays X, append(max X, {1,5}))
-f = map(Y,X',A)
-assert isWellDefined f
-assert not isProper f
-
-X'' = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{0,4},{1,2,3},{1,2,4}})
-Y' = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
-A = matrix{{1,0,0},{0,1,0}}
-f = map(Y',X'',A)
-assert isWellDefined f
-assert isProper f
 
 
 
-///
-
-
-end
 
 uninstallPackage "ToricMaps"
 restart
 installPackage "ToricMaps"
-
-
-needsPackage "FourierMotzkin"
-X'' = normalToricVariety({{1,0,0},{0,1,0},{-1,0,0},{0,0,1},{0,0,-1}},{{0,3},{0,4},{1,2,3},{1,2,4}})
-Y' = normalToricVariety({{1,0},{0,1},{-1,0}},{{0},{1,2}})
-A = matrix{{1,0,0},{0,1,0}}
-f = map(Y',X'',A)
-assert isWellDefined f
-assert isProper f
-
-    X = source f
-    Y = target f
-    if isComplete X then return true
-    if (isComplete Y and not isComplete X) then return false
-    A = matrix f
-    rayMatrixX = transpose matrix rays X
-    rayMatrixY = transpose matrix rays Y
-    coneTable = new MutableHashTable
-    for sigma in max X do (
-	for tau in max Y do ( 
-      	if all(flatten entries (outerNormals(Y, tau) * A * rayMatrixX_sigma), i -> i <= 0) then (
-	    if not coneTable#?tau then coneTable#tau = {sigma}
-	    else coneTable#tau = coneTable#tau|{sigma}
-	    )
-	)
-    )
-    K = mingens ker A
-    tau = (max Y)_0
-    	indicesOverTau = unique flatten coneTable#tau
-	raysOverTau = entries transpose rayMatrixX_indicesOverTau
-	conesOverTau = apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)))
-	varietyOverTau = normalToricVariety(raysOverTau, conesOverTau) 
-	liftTau = rayMatrixY_tau//A | K | -K
-	boundaries = select(orbits(varietyOverTau,dim X - rank liftTau +1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2)
-	
-	for C in boundaries do (
-		supportHyperplanes = first fourierMotzkin liftTau;
-		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then print "crap"
-	)
-
- tau = (max Y)_1
-    	indicesOverTau = unique flatten coneTable#tau
-	raysOverTau = entries transpose rayMatrixX_indicesOverTau
-	conesOverTau = apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)))
-	varietyOverTau = normalToricVariety(raysOverTau, conesOverTau) 
-	liftTau = rayMatrixY_tau//A | K | -K
-	boundaries = select(orbits(varietyOverTau,dim X - rank liftTau +1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2)
-	
-	for C in boundaries do (
-		supportHyperplanes = first fourierMotzkin liftTau;
-		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then print "crap"
-	)
-
-
-
-
-
-
-
-
-
-
-H2 = hirzebruchSurface 2
-PP1 = projectiveSpace 1
-f = map(PP1,H2,matrix{{1,0}})
-isWellDefined f
-isSurjective f
-isFibration f
-
-H2 = hirzebruchSurface 2
-outerNormals(H2, {2,3})
-
-
-Bl = normalToricVariety({{0,1},{1,1},{1,0}},{{0,1},{1,2}})
-AA2 = normalToricVariety({{0,1},{1,0}},{{0,1}})
-f = map(Bl, AA2, id_(ZZ^2))
-isWellDefined f
-g = map(AA2, Bl, id_(ZZ^2))
-isWellDefined g
-
-check MultiHilbertPolynomial
-Z = hirzebruchSurface 0
-P2 = projectiveSpace 2
-hilbertPolynomial P2
-VS = P2 ^** 2
-hilbertPolynomial VS
-Z = Z^**2
-time hilbertPolynomial Z
-R = ring Z
-I = ideal(x_0^2*x_3^2 - x_0*x_2*x_1^2)
-hilbertPolynomial(Z, module I)
-hilbertPolynomial(Z, R^1/I)
-X^**2
-R = QQ[x,y,z];
-I = ideal"x2,y3";
-multigradedHilbertPolynomial(I)
-
---Notes
---if source complete then any map is proper
---will only deal with cases when source and have convex support of full dimension
-
-
-isConvFullSupp := X -> (
-    V = transpose matrix rays X
-    if not all(max X, sigma -> minors(dim X, V_sigma)=!=0) then (
-    	if debugLevel > 0 then (
-	    << "-- some cones are not full dimensional" << endl);
-	return false);
-    boundaries := flatten apply (max X, sigma ->
-	select(subsets(#sigma-1, sigma), tau -> sigma == select(max X, sig -> isSubset(tau,sig))) 
-    	)
-)
-
-
-restart
-needsPackage "ToricMaps"
-needsPackage "FourierMotzkin"
-
-X = normalToricVariety({{1,0,0},{0,1,0},{0,0,1},{-1,0,0}},{{0,1},{1,2,3}})
-Y = (projectiveSpace 1) ** (affineSpace 1)
-
-peek X
-peek Y
-
-A = matrix{{1,0,0},{0,1,0}}
-f = map(Y,X,A)
-rayMatrixX := transpose matrix rays X;
-rayMatrixY := transpose matrix rays Y;
-K = mingens ker A
-    coneTable := new MutableHashTable;
-    for sigma in max X do (
-	for tau in max Y do ( 
-      	if all(flatten entries (outerNormals(Y, tau) * A * rayMatrixX_sigma), i -> i <= 0) then (
-	    if not coneTable#?tau then coneTable#tau = {sigma}
-	    else coneTable#tau = coneTable#tau|{sigma}
-	    )
-	)
-    );
-keys coneTable
-values coneTable
-tau = (max Y)_1
-    	indicesOverTau := unique flatten coneTable#tau;
-	raysOverTau := entries transpose rayMatrixX_indicesOverTau;
-	conesOverTau := apply(coneTable#tau, sigma -> apply(sigma, i -> position(indicesOverTau, j -> j===i)));
-	varietyOverTau := normalToricVariety(raysOverTau, conesOverTau); 
-	boundaries := select(orbits(varietyOverTau,1), C ->  #select(max varietyOverTau, sig -> isSubset(C,sig))<2);
-	liftTau := rayMatrixY_tau//A | K | -K;
-	apply(boundaries, C -> (
-		supportHyperplanes := first fourierMotzkin liftTau;
-		if all(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)) > 0) then return false;
-	));
-C = boundaries_0  
-supportHyperplanes := first fourierMotzkin liftTau;  
-apply(numcols supportHyperplanes, i -> #delete(0, flatten entries ((matrix rays varietyOverTau)^C * supportHyperplanes_i)))    
-    
-    
-M = random(ZZ^3,ZZ^5)
-K = mingens ker M
-B = transpose matrix {{0,4,-2}}
-B//M
-K | -K
+check ToricMaps
