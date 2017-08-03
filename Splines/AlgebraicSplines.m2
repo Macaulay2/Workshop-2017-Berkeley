@@ -1379,7 +1379,7 @@ doc ///
             F = {{0,2,1},{0,2,3},{0,3,4},{0,4,5},{0,1,5}};  -- a list of facets (pure complex)
     	    splineMatrix(V,F,1)
 	Text
-	    Splines are automatically computed on the cone over the given complex $\Delta$.  If the user desires splines over $\Delta$,
+	    Splines are automatically computed on the cone over the given complex $\Delta$, and the last variable of the polynomial ring is always the variable used to homogenize.  If the user desires splines over $\Delta$,
 	    use the option Homogenize=>false.
 	Example
 	    V = {{0,0},{1,0},{1,1},{-1,1},{-2,-1},{0,-1}};-- the coordinates of vertices
@@ -1393,6 +1393,14 @@ doc ///
             F = {{0,2,1},{0,2,3},{0,3,4},{0,4,5},{0,1,5}};  -- a list of facets (pure complex)
 	    R = QQ[x,y] --desired polynomial ring
     	    splineMatrix(V,F,1,Homogenize=>false,BaseRing=>R)
+	Text
+	    Here is an example where the output is homogenized.  Notice that homogenization occurs with respect to the last variable
+	    of the polynomial ring.
+	Example
+	    V = {{0,0},{1,0},{1,1},{-1,1},{-2,-1},{0,-1}};-- the coordinates of vertices
+            F = {{0,2,1},{0,2,3},{0,3,4},{0,4,5},{0,1,5}};  -- a list of facets (pure complex)
+	    R = QQ[x,y,z] --desired polynomial ring
+    	    splineMatrix(V,F,1,BaseRing=>R)
 	Text
             Alternately, the spline matrix can be created directly from the
 	    dual graph (with edges labeled by linear forms).  Note: This way of

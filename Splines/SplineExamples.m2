@@ -6,11 +6,12 @@ check "AlgebraicSplines"
 V = {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{0,-10}};
 V'= {{-1,-1},{1,-1},{0,1},{10,10},{-10,10},{1,-10}};
 F = {{0,1,2},{2,3,4},{0,4,5},{1,3,5},{1,2,3},{0,2,4},{0,1,5}};
-M = splineModule(V,F,1);
-M' = splineModule(V',F,1);
+S = QQ[x,y,z]
+M = splineModule(V,F,1,BaseRing=>S);
+M' = splineModule(V',F,1,BaseRing=>S);
 prune HH splineComplex(V,F,1)
-splineDimensionTable(0,5,M)
 prune HH splineComplex(V',F,1)
+splineDimensionTable(0,5,M)
 splineDimensionTable(0,5,M')
 
 --Morgan-Scot like triangulation
@@ -49,7 +50,7 @@ prune splineModule(V,F,1)
 prune splineModule(V,F,1,Homogenize=>false)
 --user created ring
 S=QQ[x,y,z]
-M=prune splineModule(V,F,1,Homogenize=>false,BaseRing=>S)
+M=splineModule(V,F,1,Homogenize=>false,BaseRing=>S)
 --get dimension of spline spaces from degrees 0 to 5
 splineDimensionTable(0,5,M)
 --compare hilbert function and polynomial
@@ -63,8 +64,10 @@ hilbertComparisonTable(0,5,M')
 postulationNumber M'
 --spline Complexes--
 C=cellularComplex(F,InputType=>"Simplicial",Homogenize=>false,BaseRing=>S)
-prune HH C
 SC=splineComplex(V,F,1,Homogenize=>false,BaseRing=>S)
+IC=idealsComplex(V,F,1,Homogenize=>false,BaseRing=>S)
+SC==(coker inducedMap(C,IC))
+prune HH C
 prune HH SC
 SC'=splineComplex(V',F,1,Homogenize=>false,BaseRing=>S)
 prune HH SC'
