@@ -86,6 +86,7 @@ abstractSurface List := data -> (
 	symbol Chi => data#4
         }
     )
+
 abstractQuadric = abstractSurface(
     {"Quadric surface",matrix{{0,1},{1,0}}, {1,1}, {-2,-2},1}
 )
@@ -97,7 +98,8 @@ abstractCubic = abstractSurface(
     -{3,1,1,1,1,1,1},
     1}
 )
-linesOnCubic = () -> (
+linesOnCubic = method()
+linesOnCubic := () -> (
     Ds := apply(entries diagonalMatrix{1, -1, -1, -1, -1, -1, -1}, 
              d -> abstractDivisor(d,abstractCubic)
              );
@@ -627,8 +629,10 @@ ACMCharacters = method()
 ACMCharacters (ZZ,ZZ) := List => (d,s) -> (
     assert(s >= 1);
     a := getSymbol "a";
-    R := ZZ/101[a_s..a_(d-1),Degrees=>splice{s..(d-1)}];
-    L := flatten entries basis(d - sum apply(s, k -> -k),R);
+    deg := apply(splice{s..(d-1)},i->{1,i});
+    R := ZZ/2[a_s..a_(d-1),Degrees=> deg];
+    normalize := {s,d-sum apply(s,k-> -k)};
+    L := flatten entries basis(normalize,R);
     apply(L,p-> character (toList(s:-1) | flatten exponents p))
 )
 ACMCharacters ZZ := List => d -> (
@@ -661,6 +665,7 @@ UL{   TO "AbstractSurface",
       TO "abstractDivisor",	  	   
       TO "abstractQuadric",
       TO "abstractCubic",
+      TO "linesOnCubic",
       TO "abstractHypersurface",
       TO "abstractQuartic",
       TO "CanonicalClass",
@@ -685,11 +690,101 @@ UL{   TO "hartshorneRaoModule",
       TO "minimalCurveInLiaisonClass"
 },
 PARA{},
+SUBSECTION "ACM curves and characters",
+UL{    	TO "Character",
+    	TO "character",
+	TO "ACMCharacters",
+	TO "smoothACMCharacters"
+},
+PARA{},
 SUBSECTION "Collecting examples and information",  
 UL{   TO "dgTable",
       TO "smoothDivisors",
-      TO "ciCurves"
+      TO "ciCurves",
+      TO "generateSmoothCurves",
+      TO "implementedSurfaces"
 }
+}
+
+document{
+     Key => AbstractSurface,
+     Headline => "type of HashTable",
+     "AbstractSurface is a type of Hashtable consisting of the following keys:
+     Name, IntersectionPairing, Hyperplane, CanonicalClass, Chi."
+}
+
+document {
+     Key => AbstractDivisor,
+     Headline => "type of HashTable",
+     "AbstractDivisor is a type of Hashtable consisting of the following keys:
+     AbstractSurface, DivisorClass."
+}
+
+document{
+     Key => Hyperplane,
+     Headline => "key of AbstractSurface",
+     "Hyperplane is a Key of AbstractSurface, consists of a list of coordinates
+     representing the hyperplane class"
+}
+
+document{
+     Key => CanonicalClass,
+     Headline => "key of AbstractSurface",
+     "CanonicalClass is a Key of AbstractSurface, consists of a list of coordinates
+     representing the canonical class"
+}
+
+document{
+     Key => DivisorClass,
+     Headline => "key of AbstractDivisor",
+     "DivisorClass is a Key of AbstractDivisor, consists of a list of coordinates
+     representing the divisor class"
+}
+
+document{
+     Key => Chi,
+     Headline => "key of AbstractSurface",
+     "Chi is a Key of AbstractDivisor, consist of an integer specifying
+     the sheaf Euler characteristic of the surface."
+}
+
+document{
+     Key => ExtraData,
+     Headline => "key of RealizedSurface",
+     "ExtraData is a Key of RealizedSurface consisting of a list a extra data. 
+     For example, if RealizedSurface is a cubic sufrace,
+     then it contains the ideal of the six points and the matrix of the birational map.
+     If RealizedSurface is a quartic with a twisted cubic, 
+     then it contains the ideal of the twisted cubic."
+}
+
+document{
+     Key => IntersectionPairing,
+     Headline => "key of AbstractSurface",
+     "IntersectionPairing is a Key of the AbstractSurface, 
+     consisting of matrix encoding the intersection numbers 
+     of the generators of the numerical group of the abstract surface."
+}
+
+document{
+     Key => RealizedSurface,
+     Headline => "type of HashTable",
+     "RealizedSurface is a type of HashTable consisting of the keys:
+     AbstractSurface, ExtraData, Ideal"
+}
+
+document{
+     Key => RealizedDivisor,
+     Headline => "type of HashTable",
+     "RealizedDivisor is a type of HashTable consisting of the keys:
+     AbstractDivisor, RealizedSurface, Ideal"
+}
+
+document{
+     Key => Character,
+     Headline => "type of List",
+     "Character is a type of List encoding the postulation character
+     of a curve. See Martin-Deschamps and Perrin [1990]."
 }
 
 doc ///
@@ -735,6 +830,26 @@ doc ///
 	  Creates a hypersurface of degree d of type AbstractSurface.
 	Example
 	  abstractHypersurface(4)
+    SeeAlso
+///
+
+doc ///
+    Key
+      character
+      (character, List)
+    Headline
+      creates a character from a List	
+    Usage
+      C = character(L)
+    Inputs
+      L: List
+        of values of the postulation character
+    Outputs
+      C: Character 
+    Description
+    	Text
+	Example
+	  character {-1,-1,2}
     SeeAlso
 ///
 
@@ -800,7 +915,6 @@ doc ///
        isIrreducible realize C
   SeeAlso
 ///
-
 
 doc ///
     Key
@@ -976,8 +1090,9 @@ doc ///
        if X is a RealizedSurface, returns a list of RealizedDivisors.          
      Example
        S = ZZ/32003[x_0..x_3]
-       smoothDivisors(4,abstractCubic)
-       smoothDivisors(4,realize(abstractCubic, Ring=> S))
+       X = abstractCubic
+       smoothDivisors(4,X)
+       smoothDivisors(4,realize(X, Ring=> S))
   SeeAlso
       ciCurves
 ///
@@ -1008,6 +1123,73 @@ doc ///
 
 doc ///
   Key
+    abstractSurface
+    (abstractSurface, List)
+  Headline
+    creates an AbstractSurface from a List of keys   
+  Usage
+     X = abstractSurface(L)
+  Inputs
+    L: List
+       of Keys of an AbstractSurface in the following order:
+       Name, IntersectionPairing, Hyperplane, CanonicalClass, Chi
+  Outputs
+    X: AbstractSurface
+  Description
+     Text        
+     Example
+       abstractSurface {"My surface",
+	   matrix{{0,1},{1,0}},
+	   {1,1},
+	   {-2,-2},
+	   1}
+  SeeAlso
+///
+
+doc ///
+    Key
+      ACMCharacters
+      (ACMCharacters, ZZ)
+    Headline
+      creates all characters of non-degnerate ACM curves of degree d	
+    Usage
+      L = ACMCharacters(d)
+    Inputs
+      d: ZZ
+        a degree
+    Outputs
+      L: List
+        of Characters
+    Description
+    	Text
+	Example
+	  ACMCharacters 3
+    SeeAlso
+///
+
+doc ///
+    Key
+      smoothACMCharacters
+      (smoothACMCharacters, ZZ)
+    Headline
+      creates all characters of smooth integral non-degnerate ACM curves of degree d	
+    Usage
+      L = smoothACMCharacters(d)
+    Inputs
+      d: ZZ
+        a degree
+    Outputs
+      L: List
+        of Characters
+    Description
+    	Text
+	Example
+	  smoothACMCharacters 3
+    SeeAlso
+///
+
+doc ///
+  Key
     dgTable
     (dgTable, List)
   Headline
@@ -1031,6 +1213,99 @@ doc ///
        dgTable (L / realize)   
   SeeAlso
 ///
+
+doc ///
+  Key
+    generateSmoothCurves
+    (generateSmoothCurves, List)
+  Headline
+    generates all smooth curves of the listed degrees on all implemented surfaces   
+  Usage
+    L = generateSmoothCurves(D)
+  Inputs
+    D: List
+       of degrees
+  Outputs
+    L: List
+        of AbstractDivisor or RealizedDivisor depending on optional arguments 
+  Description
+     Text          
+     Example
+       generateSmoothCurves({2,3})   
+  SeeAlso
+///
+
+{*
+doc ///
+  Key
+    implementedSurfaces
+    (implementedSurfaces)
+  Headline
+    lists all the implemented AbstractSurfaces   
+  Usage
+    L = implementedSurfaces()
+  Outputs
+    L: List
+        of AbstractSurfaces
+  Description
+    Example
+      implementedSurfaces()
+  SeeAlso 
+///
+
+doc ///
+  Key
+    abstractQuadric
+    (abstractQuadric)
+  Headline
+    creates an abstract quadric surface as an AbstractSurface   
+  Usage
+    X = abstractQuadric
+  Outputs
+    X: AbstractSurface
+  Description
+    Example
+      X = abstractQuadric
+      peek X 
+  SeeAlso 
+///
+
+doc ///
+  Key
+    abstractCubic
+    (abstractCubic)
+  Headline
+    creates an abstract cubic surface as an AbstractSurface   
+  Usage
+    X = abstractCubic
+  Outputs
+    X: AbstractSurface
+  Description
+    Example
+      X = abstractCubic
+      peek X
+  SeeAlso 
+///
+
+doc ///
+  Key
+    linesOnCubic
+    (linesOnCubic)
+  Headline
+    lists the 27 lines on the abstractCubic   
+  Usage
+    L = linesOnCubic()
+  Outputs
+    L: List
+      of 27 lines 
+  Description
+    Example
+      linesOnCubic()
+  SeeAlso
+    abstractCubic
+///
+*}
+
 --TEST SECTION
 
 TEST ///
@@ -1063,20 +1338,6 @@ TEST ///
   betti res ideal I
   assert(degree I == degree C)
   assert(genus I == genus C)
-///
-
-TEST ///
-  S = ZZ/32003[a..d]
-  X = realize(abstractCubic, Ring => S)
-  C = abstractDivisor({2,1,1,1,0,0,0},abstractCubic)
-  isIrreducible C
-  (degree C, genus C)
-  rC = realize(C,X)
-  betti ideal rC
-  isSmooth rC
-  betti res ideal rC
-  assert(degree rC == degree C)
-  assert(genus rC == genus C)
 ///
 
 TEST ///
@@ -1150,7 +1411,6 @@ TEST ///
 end--
 restart
 uninstallPackage "SpaceCurves"
-restart
 installPackage "SpaceCurves"
 viewHelp "SpaceCurves"
 
@@ -1167,4 +1427,3 @@ time sACM = flatten apply(splice{1..dmax},d-> smoothACMCharacters d);  -- used 0
 dgTable Lad
 dgTable ACM
 dgTable sACM
-dgTable (Lad | sACM)
