@@ -1,40 +1,6 @@
--- goal #1:
-    given (d,g,s) (s=2,3,4), and also a field (ZZ/p, for not small p, or QQ).
-    -- return an ideal of a smooth curve of degree d, genus g, smallest surface of degree s.
-    -- also do: CI, ACM.
+1. non-special curves
+2. special, but h^1(OO_C(1)) <= 1.
 
-    return values:
-      1. ideal
-      2. null: "DoesNotExist"
-      3. it exists, but no example is known.
-
-    1. given class (a,b) on a quadric surface, give a random smooth curve in that class.
-    2. given h-vector of ACM curve, give an example of that. (determines d,g,s).
-    3. given class on a cubic surface (a, b1, ..., b6), produce a smooth example.
-    4. given a Rao module, produce a minimal example of a smooth curve in the equivalence class.
-    5. non-special curves
-    6. special, but h^1(OO_C(1)) <= 1.
-
-
--- TODO #2:
-
---Abstract surfaces and divisors
-	   1. isAmple corollary 4.13 [H]
-	   2. isSmooth
-
-
--- Long Term
-
---Ruled cubic surface--
 Curves on a ruled cubic surface
-Generalized Divisors on Gorenstein Schemes: Prop 6.6
-degree 8 genus 5 sur la classification des courbes gauches  pg 178
-"Verify resolution"
-
-
-
-Mengyuan Todo
-
-1. Simplify divisors on cubic surface
-2. Write ruled cubic
-3. read Rao's paper
+3. Generalised Divisors on Gorenstein Schemes: Prop 6.6
+4. degree 8 genus 5 sur la classification des courbes gauches  pg 178

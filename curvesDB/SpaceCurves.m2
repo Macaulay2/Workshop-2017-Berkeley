@@ -1156,7 +1156,7 @@ viewHelp "SpaceCurves"
 
 
 
---Generate all divisors of degree d
+--Generate all curves of degree d
 restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
