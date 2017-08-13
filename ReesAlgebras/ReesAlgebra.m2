@@ -56,7 +56,10 @@ export{
   "universalEmbedding",
   "whichGm",
   "Tries",
-  "jacobianDual"
+  "jacobianDual",
+  "symmetricAlgebraIdeal",
+  "expectedReesIdeal",
+  "PlaneCurveSingularities"
   }
 
 -- Comment : The definition of Rees algebra used in this package is 
@@ -88,6 +91,32 @@ export{
 
 --- Assumes we have a homogeneous (multi) map
 
+symmetricAlgebraIdeal = method(Options =>
+    {Constants => false,         
+                  DegreeLift => null,
+                  DegreeMap => null,
+                  DegreeRank => null,
+                  Degrees => null,
+                  Global => true,
+                  Heft => null,
+                  Inverses => false,
+                  Join => null,
+                  Local => false,
+                  MonomialOrder => {GRevLex, Position => Up},
+                  MonomialSize => 32,
+                  SkewCommutative => {},
+                  VariableBaseName => "w",
+                  Variables => null,
+                  Weights => {},
+                  WeylAlgebra => {}
+})
+symmetricAlgebraIdeal Module := Ideal => o -> M -> (
+    ideal presentation symmetricAlgebra(M, o))
+symmetricAlgebraIdeal Ideal := Ideal => o -> M -> (
+    ideal presentation symmetricAlgebra(module M, o))
+
+
+    
 symmetricKernel = method(Options=>{Variable => "w"})
 symmetricKernel(Matrix) := Ideal => o -> (f) -> (
      if rank source f == 0 then return trim ideal(0_(ring f));
@@ -859,6 +888,20 @@ jacobianDual(Matrix,Matrix, Matrix) := o -> (phi,X,T) -> (
     assert(T*phi == X*psi);
     psi
     )
+
+expectedReesIdeal = method()
+expectedReesIdeal Ideal := Ideal => I -> (
+    S := ring I;
+    I1 := symmetricAlgebraIdeal I;    
+    S1 := ring I1;    
+    if numgens I < numgens S then return I1;
+    if (gens I)% vars S != 0 then error "variables of S must generate an ideal containging I";
+    X := promote(vars ring I, S1);
+    jImat := jacobianDual (presentation module I, X, vars S1);
+    I2 := minors(numrows jImat,jImat);
+    trim(I1+I2)
+    )
+
 ///
 
 restart
@@ -888,22 +931,10 @@ psi1 = jacobianDual(STS phi, X, Ts)
 
 beginDocumentation()
 ///
-
 uninstallPackage "ReesAlgebra"
 restart
 installPackage  "ReesAlgebra"
 check "ReesAlgebra"
-///
-
-
-
-
-///
-uninstallPackage "ReesAlgebra" 
-restart
-installPackage "ReesAlgebra" 
-check "ReesAlgebra" 
-
 ///
 
 doc ///
@@ -919,10 +950,17 @@ doc ///
      is sometimes called the ``blowup algebra''.) 
      A great deal of modern
      commutative algebra is devoted to studying them.
+     
+     Classically the Rees algebra appeared as the bihomogeneous coordinate
+     ring of the blowup of a projective variety along a subvariety or
+     subscheme. Though this is computationally slow on interesting examples,
+     we illustrate with some elementary cases of resolution of plane curve
+     singularities in @TO PlaneCurveSingularities@.
 
-     The Rees algebra was first 
-     studied, in the case where M is an ideal of a ring R, by David Rees in the
-     now famous paper
+     The Rees algebra was 
+     studied in the commutative algebra context (in the case where M is an ideal of a ring R), 
+     by David Rees in
+     a famous paper,
      
      {\em On a problem of Zariski}, Illinois J. Math. (1958) 145-149).
  
@@ -1015,6 +1053,47 @@ doc ///
     Example
      numcols basis(p,Iphi) 
      numcols basis(p,Ipsi)
+  SeeAlso
+   PlaneCurveSingularities
+///
+
+doc ///
+   Key
+    symmetricAlgebraIdeal
+    (symmetricAlgebraIdeal, Ideal)    
+    (symmetricAlgebraIdeal, Module)
+    [symmetricAlgebraIdeal,Constants]
+    [symmetricAlgebraIdeal,DegreeLift]
+    [symmetricAlgebraIdeal,DegreeMap]
+    [symmetricAlgebraIdeal,DegreeRank]
+    [symmetricAlgebraIdeal,Degrees]
+    [symmetricAlgebraIdeal,Global]
+    [symmetricAlgebraIdeal,Heft]
+    [symmetricAlgebraIdeal,Inverses]
+    [symmetricAlgebraIdeal,Join]
+    [symmetricAlgebraIdeal,Local]
+    [symmetricAlgebraIdeal,MonomialOrder]
+    [symmetricAlgebraIdeal,MonomialSize]
+    [symmetricAlgebraIdeal,SkewCommutative]
+    [symmetricAlgebraIdeal,VariableBaseName]
+    [symmetricAlgebraIdeal,Variables]
+    [symmetricAlgebraIdeal,Weights]
+    [symmetricAlgebraIdeal,WeylAlgebra]
+   Headline
+    Ideal of the symmetric algebra of an ideal or module
+   Usage
+    I = symmetricAlgebra J
+   Inputs
+    I:Ideal
+    I: Module
+   Outputs
+    J:Ideal
+   Description
+    Text
+     Uses the built-in  @TO symmetricAlgebra@, function. For documentation of the options
+     look the documentation of  @TO symmetricAlgebra@.
+   SeeAlso
+    reesIdeal
 ///
 
 doc ///
@@ -1974,7 +2053,6 @@ doc ///
      such that T*phi = X*psi. (the matrix psi is generally
      not unique; Macaulay2 computes it using Groebner division with remainder.)
      
-     
      In the form psi = jacobianDual phi,
      a new ring ST = S[T_0..T_m] is created, and the vector X is set to the variables
      of R. The result is returned as a matrix over ST. Use the form psi = jacobianDual(phi, X,T)
@@ -1982,8 +2060,7 @@ doc ///
      in this case, the matrices phi, X, T should all be defined over the ring ST, but
      the matrix T should be a row of variables of ST, and
      the matrix phi should have entries in a subring not involving the entries of T.
- 
-     
+      
      If I is an ideal of grade >=1 and ideal X contains a nonzerodivisor of R
      (which will be automatic if I has finite projective dimension) then
      ideal X has grade >= 1 on the Rees algebra. Since ideal(T*phi) is contained in the
@@ -2271,6 +2348,186 @@ doc ///
     saturate
 ///
 
+
+doc ///
+   Key
+    expectedReesIdeal
+    (expectedReesIdeal, Ideal)
+   Headline
+    symmetric algebra ideal plus jacobian dual
+   Usage
+    J = expectedReesIdeal I
+   Inputs
+    I:Ideal
+   Outputs
+    J:Ideal
+   Description
+    Text
+     The term 'Expected Rees Ideal' for the sum of 
+     of the ideal of the symmetric algebra of I with
+     the ideal of maximal minors of the Jacobian dual matrix of a presentation of I
+     is derived from the paper 
+     *** of Colley and Ulrich. Building on the paper *** of Ulrich,
+     they prove that this ideal is in fact equal to the 
+     ideal of the Rees algebra of I when I is a codimension 2 perfect ideal whose
+     Hilbert-Burch matrix has a special form.
+    Example
+     setRandomSeed 0
+     n = 5
+     S = ZZ/101[x_0..x_(n-2)];
+     M1 = random(S^(n-1),S^{n-1:-2});
+     M = M1||vars S
+     I = minors(n-1, M);
+     time rI = expectedReesIdeal I; -- n= 5 case takes < 1 sec.
+     --time rrI = reesIdeal(I,I_0); -- n = 5 case ~20 sec
+     --time rrrI = reesIdeal I; -- n = 4 case > 1 minute; I didn't wait to see!
+     --assert(rI == (map(ring rI, ring rrI, vars ring rI)) rrI)
+   SeeAlso
+    symmetricAlgebraIdeal
+    jacobianDual
+///
+
+doc ///
+   Key
+    PlaneCurveSingularities
+   Headline
+    Using the Rees Algebra to resolve plane curve singularities
+   Description
+    Text
+     The Rees Algebra of an ideal I appeared classically as
+     the bihomogeneous coordinate ring of the
+     blow up of the ideal I, used in resolution of singularities. Though the general
+     case is still out of reach, we illustrate with some simple examples of plane
+     curve singularities. 
+     
+     First the cusp:
+    Example
+     R = ZZ/32003[x,y,z]
+     I = ideal(x,y)
+     cusp = ideal(x^2*z-y^3)
+     RI = reesIdeal(I)
+     S = ring RI
+     totalTransform = substitute(cusp, S) + RI
+     D = decompose totalTransform 
+    Text
+     the components are the proper transform of the cuspidal curve and the exceptional curve 
+    Example
+     L = primaryDecomposition totalTransform 
+     apply(L, i -> (degree i)/(degree radical i))
+    Text
+     The total transform of the cusp contains the exceptional divisor with multiplicity two.
+     The proper transform of the cusp is a smooth curve but tangent to the exceptional curve.
+    Example
+     singular = ideal(singularLocus(L_0));
+     SL = saturate(singular, promote(ideal(x,y,z), S));
+     saturate(SL, ideal(w_0,w_1)) 
+    Text
+     The answer 1 shows it is smooth.
+    Text
+     Now the Tacnode:
+    Example
+     tacnode = ideal(x^2*z^2-x^4-y^4)
+     RI = reesIdeal(I)
+     S = ring RI
+     totalTransform = substitute(tacnode, S) + RI
+     D = decompose totalTransform -- the components are the proper transform of the cuspidal curve and the exceptional curve 
+     L = primaryDecomposition totalTransform 
+     apply(L, i -> (degree i)/(degree radical i))
+    Text
+     The total transform of the tacnode contains the exceptional divisor with multiplicity two 
+     the proper transform of the tacnode is not yet smooth.  We compute the singular point of the proper 
+     transform and blow up again. 
+    Example
+     singular = ideal(singularLocus(L_0));
+     SL = saturate(singular, promote (ideal(x,y,z), ring singular));
+     J = saturate(SL, ideal(w_0,w_1)) 
+    Text
+     The answer 1 shows it is smooth.
+    Example
+     RJ = reesIdeal(J,Variable => v)
+     SJ = ring RJ
+     totalTransform = substitute(L_0, SJ) + RJ
+     D = decompose totalTransform 
+    Text
+     the components are the proper transform of the cuspidal curve and the exceptional curve 
+    Example
+     L = primaryDecomposition totalTransform 
+     (degree L_0)/(degree radical L_0) 
+    Text
+     The multiplicity of the second exceptional curve is 1
+     the second blow-up desingularizes the tacnode. 
+    Example
+     singular = ideal(singularLocus(L_0));
+     SL = saturate(singular, promote(ideal(x,y,z),ring singular));
+     J = saturate(SL, promote(ideal(w_0,w_1),ring SL))
+     J2 = saturate(J, ideal(v_1,v_2, v_3))
+    Text
+     It is not necessary to repeatedly blow up closed points: there is always a single ideal that can be blown up to desingularize.
+     In this case, blowing-up (x^2,y) desingularlizes the tacnode x^2-y^4 in a single step.
+    Example
+     R = ZZ/32003[x,y,z]
+     I = ideal(x^2,y)
+     tacnode = ideal(x^2*z^2-y^4)
+     RI = reesIdeal(I)
+     S = ring RI
+     totalTransform = substitute(tacnode, S) + RI
+     D = decompose totalTransform 
+    Text 
+     The components are the proper transform of the cuspidal curve and the exceptional curve 
+    Example
+     L = primaryDecomposition totalTransform 
+     singular = ideal(singularLocus(D_0));
+     SL = saturate(singular, promote(ideal(x,y,z),ring singular));
+     saturate(SL, ideal(w_0,w_1)) 
+    Text
+     The answer 1 shows it is smooth.
+ 
+     Finally, we compare the two singularities (x^2+y^2-3x*z)^2 
+     and -4*x^2*(2z-x)*z 
+     We begin by blowing them both up
+    Example
+     R = ZZ/32003[x,y,z]
+     curve = ideal((x^2+y^2-3*x*z)^2 -4*x^2*(2*z-x)*z)
+     sings = radical saturate(ideal(singularLocus(curve)), ideal (vars R))
+     decompose sings 
+    Text
+     there is a tacnode at (0:0:1) and a cusp at (1:0:1) 
+     We blow up P2 at both points. 
+    Example
+     RI = reesIdeal(sings) 
+     S = ring RI
+     totalTransform = substitute(curve, S) + RI
+     D = decompose totalTransform 
+    Text
+     the components are the proper transform of the curve and two exceptional curves
+    Example
+     singular = ideal(singularLocus(D_0));
+     SL = saturate(singular, promote(ideal(x,y,z),ring singular));
+     J = saturate(SL, ideal(w_0,w_1))
+    Text
+     we resolved the cusp, but need a second blow-up to resolve the tacnode (at a point on the exceptional divisor). 
+    Example  
+     RJ = reesIdeal(J, Variable => v)
+     SJ = ring RJ
+     totalTransform = substitute(D_0, SJ) + RJ
+     D = decompose totalTransform 
+    Text
+     The components are the next proper transform and the new exceptional curve.
+     The second blow-up desingularizes the original curve.
+    Example
+     singular = ideal(singularLocus(D_0));
+     SL = saturate(singular, promote(ideal(x,y,z),ring singular));
+     J = saturate(SL, promote(ideal(w_0,w_1), ring SL))
+     J2 = saturate(J, ideal(v_1,v_2, v_3))
+ ///
+///
+  uninstallPackage "ReesAlgebra"
+  restart
+  installPackage "ReesAlgebra"
+  viewHelp ReesAlgebra
+///
+
+-----TESTS-----
 TEST///
 --TEST for jacobianDual
 setRandomSeed 0
@@ -2296,6 +2553,20 @@ setRandomSeed 0
       {T_0*x_0^3-16*T_0*x_0^2*x_1+2*T_0*x_0*x_1^2+32*T_0*x_1^3+45*T_1+40*T_2,
       -11*T_0*x_1^3-11*T_1+43*T_2}}
      f psi - m
+///
+
+TEST///
+--test for expectedReesIdeal
+     setRandomSeed 0
+     n = 3
+     S = ZZ/101[x_0..x_(n-2)];
+     M1 = random(S^(n-1),S^{n-1:-2});
+     M = M1||vars S
+     I = minors(n-1, M);
+     time rI = expectedReesIdeal I
+     time rrI = reesIdeal I;
+     time rrI = reesIdeal(I,I_0); -- ~20 sec
+     assert(rI == (map(ring rI, ring rrI, vars ring rI)) rrI)
 ///
 
 ///
@@ -2484,13 +2755,27 @@ I=ideal(x^2, x*y*u^2+2*x*y*u*v+x*y*v^2,y^2)
 assert(distinguishedAndMult I == {{2, ideal (y, x)}})
 distinguishedAndMult I
 ///
-end
 
+TEST///
+--Test for symmetricAlgebraIdeal
+R=ZZ/101[x,y,u,v]
+I=ideal vars R
+J = symmetricAlgebraIdeal I
+S = ring J
+m = promote(vars R,S)||vars S
+assert(J == minors(2,m))
+///
 
+end--
+uninstallPackage "ReesAlgebra"
+restart
+installPackage("ReesAlgebra")
+check "ReesAlgebra"
 
+viewHelp ReesAlgebra
 
-
---NOTE Oct 5
+------------------------
+--NOTEs for future revisions
 -- I think we should combine the examples section for 
 --symmetricKernel, reesIdeal, reesAlgebra, isLinearType, normalCone, 
 --specialFiberIdeal. (These are called GROUP1 below).
@@ -2501,14 +2786,7 @@ distinguished, distinguishedAndMult
 --separately
 --universalEmbedding, multiplicity, analyticSpread
 
-
-
-
-
-
-
-
----- AT:  Anything Listed as a TEST below here is not really a TEST
+---- Anything Listed as a TEST below here is not really a TEST
 ---- yet since it either has no asserts or it does not have enough and
 ---- is more of an example.  Some of these examples are from a very
 ---- long time ago.  
@@ -2583,19 +2861,8 @@ Research Problem: what's the situation in general?
 *}
 
 
-
 ///
---For reesAlgebra (combine with reesIdeal?)
-restart
-loadPackage "ReesAlgebra"
-S = ZZ/101[x,y]
-M = (ideal vars S)^2
-reesAlgebra(M,S_0)
-reesAlgebra(M)
-reesIdeal M
-///
-
-TEST///
+--Examples with various functions
 restart
 loadPackage "ReesAlgebra"
 kk=ZZ/101
@@ -2605,135 +2872,20 @@ reesAlgebra i
 reesIdeal i
 specialFiberIdeal i
 assert (isLinearType i==false)
-
 normalCone i
 
-restart
-loadPackage "ReesAlgebra"
-kk=ZZ/101
-R=kk[x,y]
-i = ideal(x^2,y^2)
--- need to reset ring
 i = ideal(x+y^2)
 multiplicity i 
 
 R = ZZ/101[x,y]/ideal(x^3-y^3)
 I = ideal(x^2,y^2)
 multiplicity I
-
 ///
 
-///
-restart
-loadPackage "ReesAlgebra"
-kk=ZZ/101
-R=kk[x,y]
-i=(ideal vars R)^2
-reesAlgebra i
-reesIdeal i
-specialFiberIdeal i
-///
 
 ///
 --Examples for reesIdeal
 
---Using reesIdeal to understand blowups and resolution of plane curve singularities:
-
-restart
-load "ReesAlgebra.m2"
-R = ZZ/32003[x,y,z]
-I = ideal(x,y)
-cusp = ideal(x^2*z-y^3)
-RI = reesIdeal(I)
-S = ring RI
-totalTransform = substitute(cusp, S) + RI
-D = decompose totalTransform -- the components are the proper transform of the cuspidal curve and the exceptional curve 
-L = primaryDecomposition totalTransform 
-apply(L, i -> (degree i)/(degree radical i))
--- the total transform of the cusp contains the exceptional with multiplicity two 
--- the proper transform of the cusp is a smooth curve but tangent to the exceptional curve 
-singular = ideal(singularLocus(L_0));
-SL = saturate(singular, ideal(x,y,z));
-saturate(SL, ideal(w_1,w_2)) -- we get 1 so it is smooth.
-
---another example with blowing up:
-tacnode = ideal(x^2*z^2-x^4-y^4)
-RI = reesIdeal(I)
-S = ring RI
-totalTransform = substitute(tacnode, S) + RI
-D = decompose totalTransform -- the components are the proper transform of the cuspidal curve and the exceptional curve 
-L = primaryDecomposition totalTransform 
-apply(L, i -> (degree i)/(degree radical i))
--- the total transform of the tacnode contains the exceptional with multiplicity two 
--- the proper transform of the tacnode is not yet smooth.  We compute the singular point of the proper 
--- transform and blow up again. 
-singular = ideal(singularLocus(L_0));
-SL = saturate(singular, ideal(x,y,z));
-J = saturate(SL, ideal(w_1,w_2)) -- we get 1 so it is smooth.
-RJ = reesIdeal(J,Variable => v)
-SJ = ring RJ
-totalTransform = substitute(L_0, SJ) + RJ
-D = decompose totalTransform -- the components are the proper transform of the cuspidal curve and the exceptional curve 
-L = primaryDecomposition totalTransform 
-(degree L_1)/(degree radical L_1) -- multiplicity of the second exceptional curve is 1
--- the second blow-up desingularizes the tacnode. 
-singular = ideal(singularLocus(L_0));
-SL = saturate(singular, ideal(x,y,z));
-J = saturate(SL, ideal(w_1,w_2))
-J2 = saturate(J, ideal(v_1,v_2, v_3))
-
-
--- however blowing-up (x^2,y) desingularlizes the tacnode x^2-y^4 in a single step.
-R = ZZ/32003[x,y,z]
-I = ideal(x^2,y)
-tacnode = ideal(x^2*z^2-y^4)
-RI = reesIdeal(I)
-S = ring RI
-totalTransform = substitute(tacnode, S) + RI
-D = decompose totalTransform -- the components are the proper transform of the cuspidal curve and the exceptional curve 
-L = primaryDecomposition totalTransform 
-singular = ideal(singularLocus(D_0));
-SL = saturate(singular, ideal(x,y,z));
-saturate(SL, ideal(w_1,w_2)) -- we get 1 so it is smooth.
-
-
--- two singularities (x^2+y^2-3x*z)^2 -4*x^2*(2z-x)*z -- blowup both singularities
-R = ZZ/32003[x,y,z]
-curve = ideal((x^2+y^2-3*x*z)^2 -4*x^2*(2*z-x)*z)
-sings = radical saturate(ideal(singularLocus(curve)), ideal (vars R))
-decompose sings -- there is a tacnode at (0:0:1) and a cusp at (1:0:1) 
--- we blow up P2 at both points. 
-RI = reesIdeal(sings) 
-S = ring RI
-totalTransform = substitute(curve, S) + RI
-D = decompose totalTransform -- the components are the proper transform of the curve and two exceptional curves
-singular = ideal(singularLocus(D_0));
-SL = saturate(singular, ideal(x,y,z));
-J = saturate(SL, ideal(w_1,w_2))
-
--- we resolved the cusp, but need a second blow-up to resolve the tacnode (at a point on the exceptional divisor). 
- 
-RJ = reesIdeal(J, Variable => v)
-SJ = ring RJ
-totalTransform = substitute(D_0, SJ) + RJ
-D = decompose totalTransform -- the components are the next proper transform and the new exceptional curve.
--- the second blow-up desingularizes the original curve.
-singular = ideal(singularLocus(D_0));
-SL = saturate(singular, ideal(x,y,z));
-J = saturate(SL, ideal(w_1,w_2))
-J2 = saturate(J, ideal(v_1,v_2, v_3))
+///    
 
 ///
-
-end--
-uninstallPackage "ReesAlgebra"
-restart
-installPackage("ReesAlgebra")
-viewHelp ReesAlgebra
-check "ReesAlgebra"
-
-loadPackage("ReesAlgebra", Reload=>true)
-
--- Local Variables:
--- compile-command: "make -C $M2BUILDDIR/Macaulay2/packages PACKAGES=ReesAlgebra RemakeAllDocumentation=true IgnoreExampleErrors=false"
--- End:
