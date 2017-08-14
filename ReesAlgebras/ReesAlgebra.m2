@@ -2516,18 +2516,18 @@ doc ///
      (Hartshorne, Algebraic Geometry,Thm II.7.17).
      In this case, blowing-up (x,y^2) desingularlizes the tacnode x^2-y^4 in a single step.
     Example
-     R = ZZ/32003[x,y]
-     tacnode = ideal(x^2-y^4)
-     mm = ideal(x,y^2)
-     B = first flattenRing reesAlgebra mm
-     irrelB = ideal(w_0,w_1)
-     proj = map(B,R,{x,y})
+     R = ZZ/32003[x,y];
+     tacnode = ideal(x^2-y^4);
+     mm = ideal(x,y^2);
+     B = first flattenRing reesAlgebra mm;
+     irrelB = ideal(w_0,w_1);
+     proj = map(B,R,{x,y});
      totalTransform = proj tacnode
      netList (D = decompose totalTransform)
      exceptional = proj mm
-     strictTransform = saturate(totalTransform, exceptional)
-     decompose strictTransform
-     sing0 = sub(ideal singularLocus strictTransform, B)
+     strictTransform = saturate(totalTransform, exceptional);
+     netList decompose strictTransform
+     sing0 = sub(ideal singularLocus strictTransform, B);
      sing = saturate(sing0,irrelB)
     Text
      So this single blowup is already nonsingular.
