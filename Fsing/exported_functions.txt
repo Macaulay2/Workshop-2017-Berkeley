@@ -1,0 +1,261 @@
+--===========================================================
+--===========================================================
+
+TestIdeals Package
+
+--===========================================================
+--===========================================================
+
+--BasicFunctions (BasicFunctions.m2)
+
+Exported
+
+"adicDigit", DOCUMENTED	   
+"adicExpansion",    DOCUMENTED
+"adicTruncation", DOCUMENTED
+"decomposeFraction", DOCUMENTED; 
+"floorLog", DOCUMENTED
+"multiplicativeOrder",  DOCUMENTED 
+"NoZeroC", DOCUMENTED; CHANGE NAME?
+
+NOT exported
+
+baseP1
+denominator/numerator
+"fracPart",
+isPolynomial
+isPolynomialOverPosCharField
+isPolynomialOverFiniteField
+isPolynomialOverPrimeField
+"maxIdeal", 
+
+--===========================================================
+
+--ethRootFunctions (EthRoots.m2)
+
+Exported
+
+"ascendIdeal",  DOCUMENTED
+"AscentCount", DOCUMENTED
+"frobeniusRoot",  DOCUMENTED
+"FrobeniusRootStrategy",  DOCUMENTED
+"MonomialBasis", DOCUMENTED	
+"Substitution", DOCUMENTED
+
+NOT Exported
+
+frobeniusRootMonStrat
+frobeniusRootRingElements
+frobeniusRootSubStrat
+getExponents
+getFieldGenRoot
+mEthRoot
+mEthRootOfOneElement
+minimalCompatible
+Mstar
+
+--===========================================================
+--Frobenius Powers (frobeniusPowers.m2)
+
+Exported
+
+"fastExponentiation",  DOCUMENTED; TESTED
+"frobenius", DOCUMENTED
+"frobeniusPower", DOCUMENTED
+FrobeniusPowerStrategy DOCUMENTED
+"Naive",  DOCUMENTED
+"Safe",  DOCUMENTED
+
+NOT Exported
+
+frobeniusMethod
+FrobeniusOperator
+frobeniusPowerHelper
+stableIdeal
+
+--===========================================================
+
+
+-- parameterTestIdeal.m2
+    "AssumeCM", --an option for function, if true, then the function will do less work.
+    "AssumeReduced", --an option telling functions to assume a ring is reduced.
+    "AssumeNormal", --an option telling functions to assume a ring is normal.
+    "canonicalIdeal", --Karl (still needs more tests / documentation), this is based on Moty's old code.
+    "findSplittingsOfIdeal", --Karl (this is Moty's find u function, but it returns a list if Macaulay2 doesn't identify 1 element).
+    "isCohenMacaulay", --Karl (added recently, if anyone has ideas to improve this...)
+    "isFrational", --Karl (added recently).
+    "IsLocal", --an option for isCohenMacaulay, isFrational, etc.
+    "randomSubset",
+    "testModule", --Karl (this subsumes a bunch of older functions)
+
+--============================================================
+
+-- Finjective.m2
+    "HSLGModule", --produces the non-F-injective module, ie the submodule of the canonical module
+    "isFinjective",
+    "CanonicalStrategy", --how to check F-injectivity on the canonical module (Ext or Katzman)
+    "Katzman", --an option for CanonicalStrategy
+
+--============================================================
+
+-- testIdeals.m2
+    "findQGorGen", --export; main; documented
+    "findTestElementAmbient", --export; main; documented
+    "MaxCartierIndex", --export; main; documented
+    "QGorensteinIndex", --export; main; documented
+    "
+    "tauAOverPEMinus1Poly", --Karl (this should be removed)
+    "tauGor", --Karl (this should be removed)
+    "tauGorAmb",--Karl (this should be removed)
+    "tauNonPrincipalAOverPEPoly", --Karl (this should be removed)
+    "tauPoly", --Karl (this should be removed)
+--    "tauQGor",    --Karl removed  since it is subsumed by the new testIdeal
+--    "tauQGorAmb", --Karl removed  since it is subsumed by the new testIdeal
+    "testIdeal", --Karl (the new version) --exportl main
+
+--============================================================
+
+-- Other.m2
+    "fSig",
+    "HSL", 
+    "imageOfRelativeCanonical",
+    "imageOfTrace", --doesn't work! 
+    "isFPure",  --exportl main
+    "isFRegularPoly",  --Karl : this should be removed / replaced with isFRegular --exportl main
+    "isFRegularQGor",  --Karl : this should be removed / replaced with isFRegular --exportl main
+    "isMapSplit",
+    "isSharplyFPurePoly", --Karl needs to be redone --exportl main
+    "sigmaAOverPEMinus1Poly",  --Karl needs to be redone
+    "sigmaAOverPEMinus1QGor",  --Karl needs to be redone 
+    "sigmaQGorAmb", --Karl needs to be redone
+
+--============================================================
+
+-- Other
+    "FFiniteSupport", ---MK
+    "findAllCompatibleIdeals", ---MK	   
+    "findGeneratingMorphisms", ---MK
+    "FPureIdeals",
+    "FullMap", ---Karl
+    "generatingMorphism", ---MK
+    "generatingRoot" ---MK
+--    "paraTestModule", ---MK
+--    "paraTestModuleAmbient" ---MK  
+
+
+--============================================================
+--============================================================
+
+FPT Package
+
+--============================================================
+--============================================================
+
+basicFunctionsFPT
+
+NOT exported
+
+denominator/numerator
+"fracPart",
+"carryTest",  
+"firstCarry",  
+"getCanVector",
+"getNumAndDenom", 
+"taxicabNorm",
+nontrivialPowerSet
+numberToPrimeFactorList
+getFactorList
+findNumberBetween
+selectNonzero
+selectPositive
+nonzeroPositions
+zeroPositions
+isDiagonal
+isMonomial
+isBinomial
+isBinaryForm -- Check for standard grading!
+isNonConstantBinaryForm
+isLinearBinaryForm
+xInt
+
+--===========================================================
+
+--F-thresholds computations (FThresholds.m2)
+    "BinaryFormCheck",
+    "binarySearch1",
+    "binarySearchRecursive",
+    "BinomialCheck",
+    "ComputePreviousNus", -- export; FPT
+    "DiagonalCheck", 
+    "estFPT", --Karl (and others, Pedro?, maybe should just be called fpt?)   -- export; main
+    "FinalCheck", -- export; FPT
+    "fpt",   -- export; FPT
+    "fpt1",   -- export; FPT
+    "FPTApproxList",     -- export; FPT
+    "FTApproxList", -- export; FPT
+    "FTHatApproxList", -- export; FPT
+    "guessFPT", --Karl (probably should be incorporated into estFPT -- export; FPT
+    "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring) -- export; FPT
+    "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring) -- export; FPT
+    "linearSearch", -- export; FPT
+    "MultiThread", -- export; FPT
+    "newNu", -- export; FPT
+    "newNuHat",  -- export; FPT
+    "newNuHatList", -- export; FPT
+    "newNuList",   -- export; FPT
+    "nu",
+    "nuAlt",
+    "NuCheck", -- export; FPT
+    "nuHat",
+    "nuHatList",
+    "nuList",
+    "nuListAlt",
+    "nuListAlt1",
+    "Origin", --?
+    "OutputRange", --?
+    "SearchFunction", -- export; FPT
+    "TestFunction", -- export; FPT
+    "testGenFrobeniusPower", -- export; FPT
+    "testPower", -- export; FPT
+    "testRoot", -- export; FPT
+    "UseColonIdeals", -- export; FPT
+
+--===========================================================
+
+--F-thresholds of special families of polynomials (SpecialFThresholds.m2)
+
+Exported
+
+"binaryFormFPT"  
+"binomialFPT", 
+"diagonalFPT"
+"MaxExp",
+ "Nontrivial",    
+ "PrintCP", --maybe delete
+
+NOT Exported
+
+"binaryFormFPTInternal",
+ "factorList",    
+ "findCPBelow",
+ "isCP",
+ "isInLowerRegion",
+ "isInUpperRegion",
+ "setFTData",
+ "splittingField",
+
+
+--============================================================
+--============================================================
+
+LEFTOVERS
+
+--============================================================
+--============================================================
+
+Functions that were not being used or exported
+
+[allPartitions] 
+[allPartitionsInnards]
+
+maxIdeal (RingElement)
