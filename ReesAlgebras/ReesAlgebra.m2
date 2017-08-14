@@ -1017,23 +1017,21 @@ doc ///
      inclusions phi: M \to G and \psi: M \to G' where ker(phi) != ker(psi).
      In the following, any finite characteristic would work as well.
     Example
-     p = 5
-     R = ZZ/p[x,y,z]/(ideal(x^p,y^p)+(ideal(x,y,z))^(p+1))
-     M = module ideal(z) 
+     p = 5;
+     R = ZZ/p[x,y,z]/(ideal(x^p,y^p)+(ideal(x,y,z))^(p+1));
+     M = module ideal(z);
     Text
      It is easy to check that M \cong R^1/(x,y,z)^p.
      We write iota: M\to R^1 for the embedding as an ideal
      and psi for the embedding M \to R^2 sending z to (x,y).
     Example
-     iota = map(R^1,M,matrix{{z}}) 
-     psi = map(R^2,M,matrix{{x},{y}})
-     ker iota
-     ker psi
+     iota = map(R^1,M,matrix{{z}});
+     psi = map(R^2,M,matrix{{x},{y}});
     Text
      Finally, the universal embedding is M \to R^3,
      sending z to (x,y,z):
     Example
-     phi = universalEmbedding(M)
+     phi = universalEmbedding(M);
     Text
      We now compute the kernels of the three maps
      on symmetric algebras:
