@@ -325,9 +325,7 @@ $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is
      and $\psi$ for the embedding $M \to R^2$ sending $z$ to the vector $(x,y)$.
 \begin{verbatim}
       iota = map(R^1,M,matrix{{z}}) 
-     psi = map(R^2,M,matrix{{x},{y}})
-     ker iota
-     ker psi
+      psi = map(R^2,M,matrix{{x},{y}})
 \end{verbatim}
      Finally, the universal embedding is $M \to R^3$,
      sending $z$ to the vector $(x,y,z)$:
@@ -347,20 +345,14 @@ $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is
      are not---they differ in degree p.
  \begin{verbatim}
 i14 :      Iiota == Iphi    
-
 o14 = true
-
 i15 :      Ipsi == Iphi
-
 o15 = false
-
 i16 :      numcols basis(p,Iphi) 
-
 o16 = 3
-
 i17 :      numcols basis(p,Ipsi)
-
-o17 = 1\end{verbatim}
+o17 = 1
+\end{verbatim}
 
 \section{Rees Algebras and Desingularization}
 
@@ -380,20 +372,51 @@ $X$ in $B_n$ that is smooth. In the case of plane curves, this can be done with 
 Blowing-up $(x^2,y)$ in k[x,y] desingularlizes the tacnode $x^2-y^4$ in a single step. 
 \end{example}
 \begin{verbatim}
-     R = ZZ/32003[x,y]
-     tacnode = ideal(x^2-y^4)
-     mm = ideal(x^2,y)
-     B = reesAlgebra mm
-     irrelB = ideal vars B
-     totalTransform = substitute(tacnode, B)
-     netList (D = decompose totalTransform)
-     properTransform = saturate(totalTransform, promote(mm,B))
-     allvarsB = promote(vars R,B)|vars B
-     jacobianMatrix = diff(allvarsB, transpose gens properTransform)
-     codim properTransform
-     sing = saturate(minors(1,jacobianMatrix)+properTransform, irrelB)
-     assert(sing = ideal 1_(ring sing))
-  \end{verbatim}
+ Macaulay2, version 1.10
+with packages: ConwayPolynomials, Elimination, IntegralClosure, InverseSystems, LLLBases, PrimaryDecomposition, ReesAlgebra, TangentCone
+
+i1 :      R = ZZ/32003[x,y];
+i2 :      tacnode = ideal(x^2-y^4);
+i3 :      mm = ideal(x,y^2);
+i4 :      B = first flattenRing reesAlgebra mm;
+i5 :      irrelB = ideal(w_0,w_1);
+i6 :      proj = map(B,R,{x,y});
+i7 :      totalTransform = proj tacnode
+              4    2
+o7 = ideal(- y  + x )
+i8 :      netList (D = decompose totalTransform)
+     +-----------------------+
+o8 = |ideal (y, x)           |
+     +-----------------------+
+     |        2              |
+     |ideal (y  + x, w  + w )|
+     |                0    1 |
+     +-----------------------+
+     |        2              |
+     |ideal (y  - x, w  - w )|
+     |                0    1 |
+     +-----------------------+
+
+i9 :      exceptional = proj mm
+                2
+o9 = ideal (x, y )
+i10 :      strictTransform = saturate(totalTransform, exceptional);
+i11 :      netList decompose strictTransform
+
+      +-----------------------+
+      |        2              |
+o11 = |ideal (y  + x, w  + w )|
+      |                0    1 |
+      +-----------------------+
+      |        2              |
+      |ideal (y  - x, w  - w )|
+      |                0    1 |
+      +-----------------------+
+
+i12 :      sing0 = sub(ideal singularLocus strictTransform, B);
+i13 :      sing = saturate(sing0,irrelB)
+o13 = ideal 1
+\end{verbatim}
 The last line asserts that the singular locus of the the variety ``properTransform'' is empty;
 that is, the the scheme defined by "properTransform" is smooth (in this case it is the union
 of two disjoint smooth curves.)
