@@ -27,7 +27,8 @@ export {
     "RealizedSurface",
     "ExtraData",    	  
     "RealizedDivisor",
-    "Character",	  
+    "Postulation",
+    "postulation",	  
     "abstractSurface",
     "implementedSurfaces",	  
     "abstractDivisor",	  	  
@@ -36,9 +37,7 @@ export {
     "linesOnCubic",
     "abstractHypersurface",
     "abstractQuartic",
-    "character",
-    "ACMCharacters",
-    "smoothACMCharacters",
+    "ACMPostulations",
     "realize",
     "isIrreducible",
     "isSmooth",
@@ -48,7 +47,8 @@ export {
     "minimalCurveInLiaisonClass",
     "smoothDivisors",
     "ciCurves",
-    "generateSmoothCurves"
+    "generateSmoothCurves",
+    "smooth"
     }
 
 --I. Data types
@@ -61,7 +61,8 @@ RealizedSurface = new Type of HashTable
 -- AbstractSurface, Ideal, ExtraData
 RealizedDivisor = new Type of HashTable
 -- AbstractDivisor, RealizedSurface, Ideal
-
+Postulation = new Type of List
+-- The postulation character of a curve
 
 --II. AbstractSurfaces
 
@@ -574,7 +575,7 @@ smoothDivisors (ZZ, AbstractSurface) := (d,X) -> (
     );
     error "not implemented yet for your type of surface";	
 )
-smoothDivisors (ZZ, RealizedSurface) := opts -> (d,X) -> (
+smoothDivisors (ZZ, RealizedSurface) := (d,X) -> (
    --produces a list of irreducible realized curves of degree d on X
    return apply(smoothDivisors(d,X.AbstractSurface), aD -> 
        realize(aD,X));	
@@ -592,6 +593,9 @@ ciCurves ZZ := opts -> d -> (
 )
 generateSmoothCurves = method(Options => 
     {symbol realize => false, Ring => null})
+generateSmoothCurves ZZ := opts -> d -> (
+    generateSmoothCurves({d},realize => opts.realize, Ring => opts#Ring)
+)
 generateSmoothCurves List := opts -> L -> (
     Surfaces := implementedSurfaces();
     --generates all curves of the degrees in the list on all the implemented surfaces
@@ -610,46 +614,50 @@ binomial (ZZ,ZZ) := (n,p) -> (
     if p < 0 and p <= n and n <= -1 then return (-1)^(-n+p)*binomial(-p-1,-n-1);
     if p < 0 and (n < p or n >= 0) then return 0;  
 )
-Character = new Type of HashTable
-net Character := gamma -> net apply(#gamma,i->gamma#i)
-character = method()
-character List := Character => L -> (
+postulation = method()
+postulation List := Postulation => L -> (
     while last L == 0 do L = drop(L,{#L-1,#L-1});
-    new Character from apply(#L,i->(i,L#i))  
+    new Postulation from L
 )
-degree Character := gamma -> (
+{*
+postulation Ideal := Postulation => I -> "to be done"
+postulation QuotientRing := Postulation => S -> "to be done"
+postulation HVector
+postulation Matrix
+*}
+
+degree Postulation := gamma -> (
     --computes the degree given character gamma    
     sum apply(#gamma, k -> k*gamma#k)
 )
-genus Character := gamma -> (
+genus Postulation := gamma -> (
     --compute the genus given character gamma
     sum apply(#gamma, k -> binomial(k-1,2)*gamma#k)
 )
-ACMCharacters = method()
-ACMCharacters (ZZ,ZZ) := List => (d,s) -> (
+ACMPostulations = method(Options => {symbol smooth => false})
+ACMPostulations (ZZ,ZZ) := List => opts -> (d,s) -> (
     assert(s >= 1);
     a := getSymbol "a";
     deg := apply(splice{s..(d-1)},i->{1,i});
     R := ZZ/2[a_s..a_(d-1),Degrees=> deg];
     normalize := {s,d-sum apply(s,k-> -k)};
     L := flatten entries basis(normalize,R);
-    apply(L,p-> character (toList(s:-1) | flatten exponents p))
+    L = apply(L,p-> postulation (toList(s:-1) | flatten exponents p));
+    if opts.smooth then return select(L,p->isConnected p) else
+    return L;
 )
-ACMCharacters ZZ := List => d -> (
-    flatten apply(splice{2..d-1},s->ACMCharacters(d,s))    
+ACMPostulations ZZ := List => opts -> d -> (
+    flatten apply(splice{2..d-1},s->ACMPostulations(d,s,smooth => opts.smooth))    
 )
 isConnected = method()
-isConnected Character := Boolean => gamma -> (
-    gamma = apply(#gamma,i->gamma#i);
+isConnected Postulation := Boolean => gamma -> (
     L := sort select(#gamma, i-> gamma#i >0);
     return (#L == last L - first L + 1);
 )
-smoothACMCharacters = method()
-smoothACMCharacters ZZ := d-> (
-    Lc := ACMCharacters d;
-    select(Lc, c -> isConnected c)    
+hilbertBurchDegree = method()
+hilbertBurchDegree Postulation := gamma -> (
+    return "not implemented yet";
 )
-
 --VIII.DOCUMENTATIONS
 
 beginDocumentation()
@@ -691,10 +699,9 @@ UL{   TO "hartshorneRaoModule",
 },
 PARA{},
 SUBSECTION "ACM curves and characters",
-UL{    	TO "Character",
-    	TO "character",
-	TO "ACMCharacters",
-	TO "smoothACMCharacters"
+UL{    	TO "Postulation",
+    	TO "postulation",
+	TO "ACMPostulations"
 },
 PARA{},
 SUBSECTION "Collecting examples and information",  
@@ -781,9 +788,9 @@ document{
 }
 
 document{
-     Key => Character,
+     Key => Postulation,
      Headline => "type of List",
-     "Character is a type of List encoding the postulation character
+     "Postulation is a type of List encoding the postulation character
      of a curve. See Martin-Deschamps and Perrin [1990]."
 }
 
@@ -835,21 +842,21 @@ doc ///
 
 doc ///
     Key
-      character
-      (character, List)
+      postulation
+      (postulation, List)
     Headline
-      creates a character from a List	
+      creates a Postulation from a List	
     Usage
-      C = character(L)
+      C = postulation(L)
     Inputs
       L: List
         of values of the postulation character
     Outputs
-      C: Character 
+      C: Postulation 
     Description
     	Text
 	Example
-	  character {-1,-1,2}
+	  postulation {-1,-1,2}
     SeeAlso
 ///
 
@@ -1148,43 +1155,23 @@ doc ///
 
 doc ///
     Key
-      ACMCharacters
-      (ACMCharacters, ZZ)
+      ACMPostulations
+      (ACMPostulations, ZZ)
+      (ACMPostulations, ZZ, ZZ)
     Headline
-      creates all characters of non-degnerate ACM curves of degree d	
+      creates all Postulations of non-degnerate ACM curves of degree d	
     Usage
-      L = ACMCharacters(d)
+      L = ACMPostulations(d)
     Inputs
       d: ZZ
         a degree
     Outputs
       L: List
-        of Characters
+        of Postulations
     Description
     	Text
 	Example
-	  ACMCharacters 3
-    SeeAlso
-///
-
-doc ///
-    Key
-      smoothACMCharacters
-      (smoothACMCharacters, ZZ)
-    Headline
-      creates all characters of smooth integral non-degnerate ACM curves of degree d	
-    Usage
-      L = smoothACMCharacters(d)
-    Inputs
-      d: ZZ
-        a degree
-    Outputs
-      L: List
-        of Characters
-    Description
-    	Text
-	Example
-	  smoothACMCharacters 3
+	  ACMPostulations 3
     SeeAlso
 ///
 
@@ -1422,8 +1409,9 @@ needsPackage "SpaceCurves"
 check "SpaceCurves"
 dmax = 20
 time Lad = generateSmoothCurves splice{1..dmax};  -- used 10.109 seconds
-time ACM = flatten apply(splice{1..dmax},d-> ACMCharacters d);	-- used 0.570933 seconds  
-time sACM = flatten apply(splice{1..dmax},d-> smoothACMCharacters d);  -- used 0.729161 seconds
+time ACM = flatten apply(splice{1..dmax},d-> ACMPostulations d);	-- used 0.570933 seconds  
+time sACM = flatten apply(splice{1..dmax},d
+    -> ACMPostulations(d,smooth=>true));  -- used 0.729161 seconds
 dgTable Lad
 dgTable ACM
 dgTable sACM
