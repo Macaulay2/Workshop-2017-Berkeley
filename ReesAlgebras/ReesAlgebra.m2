@@ -2795,6 +2795,41 @@ iota = map(P2, P2xP2,{a,b,a,b}) -- the diagonal embedding
 assert(diag == ker iota)
 SW = P2/iota(Ilines) -- intersection of the diagonal with the product of the two sets of lines
 
+--more generally, given I,J\subset S ideals with I an lci, set R = S/J. Fulton forms the 
+--distinguished primes p\subset S/I as the intersections of S/I\subset gr_I(S)
+--of the minimal primes P of ker(gr_I(S) --> gr_{IR}(R).
+ 
+///
+restart
+kk = ZZ/101
+S = kk[a,b,a',b']
+I = ideal(a-a',b-b')
+R = S/ideal(a^2*b,a'*b'^2)
+f = map(R,S)
+J = f I
+
+II = ker normalConeMorphism(f,I,J)
+NI = ring II
+Plist = decompose II
+inc = map(S/I,NI)
+plist = apply(Plist, P -> inc(P+ideal vars NI))
+
+distinguishedAndMult J
+viewHelp distinguishedAndMult 
+code methods distinguishedAndMult 
+///
+normalConeMorphism = method()
+normalConeMorphism(RingMap, Ideal, Ideal) := (f, I,J) ->(
+    --f:S\to R
+    --I\subset S
+    --f(I) \subset J\subset R
+    --form the map of rings normalCone(I) \to normalCone(J).
+m := (f gens I) // gens J;
+NI := normalCone I;
+NJ := normalCone J;
+map(NJ,NI,(vars NJ)*m)
+ )
+    
 --We want to intersect V with the diagonal, and compute the
 --distinguished subvarieties and their multiplicities.
 --we take the map from the associated graded of diag in P2xP2 to the associated graded of
@@ -2803,5 +2838,16 @@ SW = P2/iota(Ilines) -- intersection of the diagonal with the product of the two
 --has minimal primes that pull back to the distinguished primes of P2, subvarieties
 --inside the physical intersection of the two families of lines.
 
+minimalPresentation normalCone diag
+viewHelp(minimalPresentation, Ring)
 
+--summary:
+Given a map of rings f: S -> R, and ideals I\subset S, J\subset R, f(I)\subset J,
+we can form the distinguished subvarieties and their multiplicities"
+of S/I; the distinguished subvarieties will be the canonical supports of the pull-back cycles
+making up f^*(R/J) in the subvariety f(S/I).
 
+The primes of the distinguished varieties are the intersections
+ of S/I\subset normalCone I with the primes of decompose ker (normalCone I -> normalCone J).
+
+In Fulton, I is always lci.
