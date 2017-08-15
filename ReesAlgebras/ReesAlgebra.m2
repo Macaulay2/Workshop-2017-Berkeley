@@ -2785,5 +2785,23 @@ installPackage("ReesAlgebra")
 check "ReesAlgebra"
 
 viewHelp ReesAlgebra
+restart
+kk = ZZ/101
+P2xP2 = kk[a',b',x',y'] --A^2 x A^2
+Ilines = ideal(a'^2*b',x'*y'^2) --the product of the two funny unions of lines in the plane
+diag = ideal(a'-x',b'-y')
+P2 = kk[a,b]
+iota = map(P2, P2xP2,{a,b,a,b}) -- the diagonal embedding
+assert(diag == ker iota)
+SW = P2/iota(Ilines) -- intersection of the diagonal with the product of the two sets of lines
+
+--We want to intersect V with the diagonal, and compute the
+--distinguished subvarieties and their multiplicities.
+--we take the map from the associated graded of diag in P2xP2 to the associated graded of
+--diag in SW.
+-- The kernel, an ideal in the normal cone of P2 in P2xP2
+--has minimal primes that pull back to the distinguished primes of P2, subvarieties
+--inside the physical intersection of the two families of lines.
+
 
 
