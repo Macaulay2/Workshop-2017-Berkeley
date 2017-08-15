@@ -2843,7 +2843,7 @@ viewHelp(minimalPresentation, Ring)
 
 --summary:
 Given a map of rings f: S -> R, and ideals I\subset S, J\subset R, f(I)\subset J,
-we can form the distinguished subvarieties and their multiplicities"
+we can form the distinguished subvarieties and their multiplicities
 of S/I; the distinguished subvarieties will be the canonical supports of the pull-back cycles
 making up f^*(R/J) in the subvariety f(S/I).
 
@@ -2851,3 +2851,22 @@ The primes of the distinguished varieties are the intersections
  of S/I\subset normalCone I with the primes of decompose ker (normalCone I -> normalCone J).
 
 In Fulton, I is always lci.
+
+dist = method()
+dist(RingMap, Ideal, Ideal) := (f,I,J) ->(
+--f: S -> R,  I\subset S, J\subset R, f(I)\subset J:
+    S = source f;
+    R = target f;
+    (m,r) = quotientRemainder(f gens I, gens J)
+    if r !=0 then error"f(I) not contained in J";
+    NI := normalCone I;
+    NJ := normalCone J;
+    II = ker map(NJ,NI,(vars NJ)*m)
+--to be absorbed:               
+	       L:=decompose I;
+           apply(L,P->(Pcomponent := I:(saturate(I,P)); 
+                     --the P-primary component. The multiplicity is
+                     --computed as (degree Pcomponent)/(degree P)
+                {(degree Pcomponent)/(degree P), kernel(map(S/P, R))})))
+
+    
