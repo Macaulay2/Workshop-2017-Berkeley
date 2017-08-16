@@ -41,6 +41,7 @@ export{
   "associatedGradedRing", 
   "distinguished",
   "distinguishedAndMult",
+  "dist",
   "isLinearType", 
   "minimalReduction",
   "isReduction",
@@ -653,7 +654,41 @@ distinguishedAndMult(Ideal,RingElement) := List => o -> (i,a) -> (
 	       --the P-primary component. The multiplicity is
 	       --computed as (degree Pcomponent)/(degree P)
        	  {(degree Pcomponent)/(degree P), kernel(map(S/P, R))})))
- 
+
+dist = method()
+dist(RingMap, Ideal, Ideal) := (f,I,J) ->(
+--f: S -> R,  I\subset S, J\subset R, f(I)\subset J:
+    S := source f;
+    R := target f;
+    (m,r) := quotientRemainder(f gens I, gens J);
+    if r !=0 then error"f(I) not contained in J";
+    NI := normalCone I;
+    prune NI;
+    mp := NI.minimalPresentationMap;
+    NJ := normalCone J;
+    K := ker map(NJ,NI,(vars NJ)*m);
+    L := decompose K;
+    M := apply(L,P->(Pcomponent := K:(saturate(K,P))));
+    --the P-primary component. The multiplicity is
+    --computed as (degree M_i)/(degree L_i)
+    apply(#L, i -> {(degree mp(M_i))/(degree mp(L_i)),kernel(map(NI/L_i, S/I))})
+    )
+dist(Ring,Ideal,Ideal) := (S,I,J) -> (
+    f = map(S/J,S);
+    dist(f,I,f I))
+
+///
+restart
+uninstallPackage "ReesAlgebra"
+restart
+installPackage "ReesAlgebra"
+loadPackage("ReesAlgebra", Reload=>true)
+kk = ZZ/101
+S = kk[s,t]
+I = ideal"s2t"
+J = ideal"st2"
+dist(S,I,J)
+///
 
 
 minimalReduction = method(
@@ -2852,21 +2887,46 @@ The primes of the distinguished varieties are the intersections
 
 In Fulton, I is always lci.
 
-dist = method()
-dist(RingMap, Ideal, Ideal) := (f,I,J) ->(
---f: S -> R,  I\subset S, J\subset R, f(I)\subset J:
-    S = source f;
-    R = target f;
-    (m,r) = quotientRemainder(f gens I, gens J)
-    if r !=0 then error"f(I) not contained in J";
-    NI := normalCone I;
-    NJ := normalCone J;
-    II = ker map(NJ,NI,(vars NJ)*m)
---to be absorbed:               
-	       L:=decompose I;
-           apply(L,P->(Pcomponent := I:(saturate(I,P)); 
-                     --the P-primary component. The multiplicity is
-                     --computed as (degree Pcomponent)/(degree P)
-                {(degree Pcomponent)/(degree P), kernel(map(S/P, R))})))
+restart
 
+
+a = symbol a;a' = symbol a';b = symbol b;b' = symbol b';
+S = kk[a,b,a',b']
+I = ideal(a-a',b-b') -- ideal of the diagonal
+R = S/ideal(a^3,a'*b')
+--R = S/ideal(a^2,b')
+f = map(R,S)
+J = f I
+dist(f,I,J)
+
+--
+restart
+n= 4
+S = kk[a_1..a_n]
+SS = kk[x_1..x_n,y_1..y_n]
+Delta = ideal (apply(n,i->x_(i+1)-y_(i+1)))
+in1 = map(SS,S,apply(n, i->x_(i+1)))
+in2 = map(SS,S,apply(n, i->y_(i+1)))
+IV = ideal(a_4,a_3^3-a_1*a_2*(a_2-2*a_1))
+IW = ideal(a_3, a_4^3-a_1*a_2*(a_1-2*a_2))
+VW = SS/(in1 IV+in2 IW)
+f = map(VW,SS)
+dist(f,Delta,f Delta)
+
+
+n= 2
+S = kk[a_0..a_n]
+SS = kk[x_0..x_n,y_0..y_n]
+Delta = ideal (apply(n+1,i->x_(i)-y_(i)))
+in1 = map(SS,S,apply(n+1, i->x_i))
+in2 = map(SS,S,apply(n+1, i->y_i))
+
+use S
+IV = ideal(a_1^2*a_2)
+IW = ideal(a_1*a_2^2)
+VW = SS/(in1 IV + in2 IW)
+f = map(VW,SS)
+dist(f,Delta,f Delta)
+dist(S, Delta, (in1 IV + in2 IW))
+///
     
