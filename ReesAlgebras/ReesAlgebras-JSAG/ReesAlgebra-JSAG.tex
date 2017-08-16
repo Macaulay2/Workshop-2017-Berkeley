@@ -359,7 +359,15 @@ $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is
 
 \section{Distinguished subvarieties: {\tt distinguished, distinguishedAndMult}}
  \cite{F}
+The key construction in the Fulton-MacPherson definition of the refined intersection  product 
+\cite[Section 6.1]{F}
+involves normal cones, and is easy to implement using the tools in this package. The simplest case is the intersection of two subvarieties $X,V$ in 
+a variety $Y$, and the astonishing main result is that if $X\subset Y$ is locally a complete intersection, then the intersection product 
+$X\cdot V$ can be given a meaning as rational equivalence class of cycles on $X$, or even on $X\cap V$, of the \emph{expected dimension}, defined to be $\dim V - \codim_{Y} X$---and this, no matter how ``bad'' the intersection $X\cap V$. (In the general case, the subvariety $V$ is replaced by a morphism $f:V\to Y$ from a pure-dimensional variety $V$, and this is the key to the functoriality of the intersection product. The routines in this package work in the general setting, but for simplicity we will stick with the basic case in this description.)
 
+More precisely, let $N \to X$ be the projectivize normal bundle of $X\subset Y$ (that is, Proj of the normal bundle of $X\subset Y$ the construction gives a finite collection of sub-cones of the restriction of the normal  \emph{distinguished subvarieties} $V_{i}\subset X\cap V$, a collection of well defined cycle classes $\alpha_{i,j}$ in the Chow group of $V_{i}$, each having the \emph{expected dimension}, and a positive integer multiplicity $m_{i,j}$, in such a way that the class of $V\cdot W$ in the chow group of $V\cap W$ is $\sum_{i}m_{i,j}\alpha_{i,j}$. 
+
+In case the expected dimension of the
 
 \section{Rees Algebras and Desingularization}
 

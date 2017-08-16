@@ -41,7 +41,7 @@ export{
   "associatedGradedRing", 
   "distinguished",
   "distinguishedAndMult",
-  "dist",
+--  "dist",
   "isLinearType", 
   "minimalReduction",
   "isReduction",
