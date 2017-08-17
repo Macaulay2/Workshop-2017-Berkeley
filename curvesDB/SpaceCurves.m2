@@ -44,6 +44,7 @@ export {
     "dgTable",
     "hartshorneRaoModule",
     "hilbertBurchComputation",
+    "degreeMatrix",
     "minimalCurveInLiaisonClass",
     "smoothDivisors",
     "ciCurves",
@@ -616,11 +617,17 @@ binomial (ZZ,ZZ) := (n,p) -> (
 )
 postulation = method()
 postulation List := Postulation => L -> (
-    while last L == 0 do L = drop(L,{#L-1,#L-1});
+    while last L == 0 do L = drop(L,-1);
     new Postulation from L
 )
+postulation Ideal := Postulation => I -> (
+    S := (ring I)/I;
+    r := regularity I;
+    H := (d,F) -> numcols basis(d,F);
+    L := -apply(r+1,d-> H(d,S)-3*H(d-1,S)+3*H(d-2,S)-H(d-3,S));
+    return postulation L;
+)    
 {*
-postulation Ideal := Postulation => I -> "to be done"
 postulation QuotientRing := Postulation => S -> "to be done"
 postulation HVector
 postulation Matrix
@@ -654,9 +661,47 @@ isConnected Postulation := Boolean => gamma -> (
     L := sort select(#gamma, i-> gamma#i >0);
     return (#L == last L - first L + 1);
 )
-hilbertBurchDegree = method()
-hilbertBurchDegree Postulation := gamma -> (
-    return "not implemented yet";
+hilbertFunction Postulation := gamma -> (
+    n -> -sum apply(#gamma,k->binomial(n-k+2,2)*gamma#k)
+)
+hilbertFunction (ZZ,Postulation) := (d,gamma) -> (
+    (hilbertFunction gamma)(d)    
+)
+degreeMatrix = method()
+degreeMatrix Postulation := gamma -> (
+    dmax := #gamma;
+    H := hilbertFunction gamma;
+    B := new MutableList from {1} | splice{dmax:0};
+    for i from 1 to dmax do (
+    	B#i = H(i) - sum apply(i,j->binomial(3+i-j,3)*B#j);
+    );
+    B = toList B;
+    B = {0} | drop(B,1); 
+    L := {};	--degree of generators a_i
+    M := {};	--degree of syzygies b_i
+    for i from 0 to #B-1 do (
+    	if B#i<0 then L = L | splice{(-B#i):i};
+	if B#i>0 then M = M | splice{(B#i):i};	
+    );
+    Ok := false;
+    if all(M-drop(L,1),i->i>=0) and all(M-drop(L,-1),i->i>=0) then
+    Ok = true;
+    if Ok then matrix apply(L,l-> apply(M,m->m-l)) else matrix{{}}        
+)
+realize Postulation := opts-> gamma -> (
+    R := if opts#Ring =!= null then 
+        opts#Ring 
+      else (
+        x := getSymbol "x";
+        ZZ/32003[x_0..x_3]
+    );
+    assert(numgens R == 4);
+    
+    M := degreeMatrix gamma;
+    if M != matrix{{}} then (
+    	N := matrix apply(entries M, row -> apply(row, a-> random(a,R)))
+    ) else return null;
+    minors(numcols N,N)    
 )
 --VIII.DOCUMENTATIONS
 
@@ -1407,7 +1452,7 @@ viewHelp "SpaceCurves"
 restart
 needsPackage "SpaceCurves"
 check "SpaceCurves"
-dmax = 20
+dmax = 10
 time Lad = generateSmoothCurves splice{1..dmax};  -- used 10.109 seconds
 time ACM = flatten apply(splice{1..dmax},d-> ACMPostulations d);	-- used 0.570933 seconds  
 time sACM = flatten apply(splice{1..dmax},d
@@ -1415,3 +1460,4 @@ time sACM = flatten apply(splice{1..dmax},d
 dgTable Lad
 dgTable ACM
 dgTable sACM
+
