@@ -361,13 +361,37 @@ $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is
  \cite{F}
 The key construction in the Fulton-MacPherson definition of the refined intersection  product 
 \cite[Section 6.1]{F}
-involves normal cones, and is easy to implement using the tools in this package. The simplest case is the intersection of two subvarieties $X,V$ in 
-a variety $Y$, and the astonishing main result is that if $X\subset Y$ is locally a complete intersection, then the intersection product 
-$X\cdot V$ can be given a meaning as rational equivalence class of cycles on $X$, or even on $X\cap V$, of the \emph{expected dimension}, defined to be $\dim V - \codim_{Y} X$---and this, no matter how ``bad'' the intersection $X\cap V$. (In the general case, the subvariety $V$ is replaced by a morphism $f:V\to Y$ from a pure-dimensional variety $V$, and this is the key to the functoriality of the intersection product. The routines in this package work in the general setting, but for simplicity we will stick with the basic case in this description.)
+involves normal cones, and is easy to implement using the tools in this package. The simplest case is the intersection of two subvarieties $X,V$. If $X$ and $V$ meet in the \emph{expected dimension}, defined to be $\dim V - \codim_{Y} X$,
+and the ambient variety $Y$ is smooth, then one can assign multiplicities to the components $W_{i}$ of $X\cap V$, and the $X\cdot V$ is a positive linear
+combination of these components. The astonishing result of the theory is that if $X\subset Y$ is locally a complete intersection, then, no matter how singular $Y$ and no matter how strange the actual intersection $X\cap V$, the intersection product 
+$X\cdot V$ can be given a meaning as rational equivalence class of cycles of the expected dimension on $X$, or even on $X\cap V$. This class comes with a canonical decomposition $\sum_{i}m_{i}\alpha_{i}$, 
+where the $m_{i}$ are positive integers, and $\alpha_{i}$ is a cycle of the expected dimension
+on a certain subvariety $Z_{i}\subset X\cap V$ called a distinguished variety of the intersection (the $Z_{i}$ need not be distinct.)
 
-More precisely, let $N \to X$ be the projectivize normal bundle of $X\subset Y$ (that is, Proj of the normal bundle of $X\subset Y$ the construction gives a finite collection of sub-cones of the restriction of the normal  \emph{distinguished subvarieties} $V_{i}\subset X\cap V$, a collection of well defined cycle classes $\alpha_{i,j}$ in the Chow group of $V_{i}$, each having the \emph{expected dimension}, and a positive integer multiplicity $m_{i,j}$, in such a way that the class of $V\cdot W$ in the chow group of $V\cap W$ is $\sum_{i}m_{i,j}\alpha_{i,j}$. 
+In the general case, the subvariety $V$ is replaced by a morphism $f:V\to Y$ from a variety $V$, and this is the key to the functoriality of the intersection product. The routines in this package work in the general setting, but for simplicity we will stick with the basic case in this description.
 
-In case the expected dimension of the
+We now describe the distinguished subvarieties and their multiplicities. This part of the construction sheafifies, so (as in the package) we work in the affine case. We do not require any hypothesis on $X, Y$ or $V$. 
+
+Let $S$ be the coordinate ring of $Y$ and let $I\subset S$ be  ideal of $X$
+Write
+$
+\gr_{I}S
+$ for the associated graded ring $S/I\oplus I/I^{2}\oplus\dots$ of $I$ in $S$, and let
+$\pi$ be the inclusion of $S/I$ into $T$ as the degree 0 part.
+
+Let $R$ be the coordinate ring of $V$, and let $f:S\to R$ be a morphism (if $V$ is a subvariety of $R$ then $f$ will be a projection  $S\to S/J$. Let $K\subset T$ be the kernel of the induced map $ \gr_{I}S \to \gr_{f(I)}R$.  
+
+Let $P_{1},\dots, P_{m}$ be the minimal primes over $K$ in $\gr_{I}R$We define $p_{i}$ to be the degree 0 part of $P_{i}$, that is, $p_{i} := P_{i}\cap S/I$. These are the distinguished prime ideals of $S/I$, and they clearly contain the kernel of $\overline f: S/I \to R/f(I)$, so in the case where $R = S/J$ they contain $I+J$, so they really are subvarieties
+of $X\cap V$.
+
+We further define the multiplicity $m_{i}$ to be the multiplicity with which $P_{i}$ appears in the primary decomposition of $K$ -- that is,
+$$
+m_{i} := \length_{T_{P_{i}}}{P_{i}}_{P_{i}}/K_{P_{i}}.
+$$
+
+Returning to the geometric language, and the case where $X\subset Y$ is locally a complete intersection in a quasi-projective variety, the cycle class $\alpha_{i}$ in the Chow group of the variety 
+$Z_{i}$ corresponding to $p_{i}$ is defined as the Gysin image of the class of the subvariety corresponding
+to $P_{i}$ in the projectivized normal bundle of $X$ in $Y$---a construction not included in this package. 
 
 \section{Rees Algebras and Desingularization}
 
