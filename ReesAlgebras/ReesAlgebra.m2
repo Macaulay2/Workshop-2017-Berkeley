@@ -40,6 +40,7 @@ export{
   "analyticSpread", 
   "associatedGradedRing", 
   "distinguished",
+  "intersectInP",
   "isLinearType", 
   "minimalReduction",
   "isReduction",
@@ -570,38 +571,36 @@ distinguished(Ideal) := o -> I -> (
     distinguished(f,I)
 )
 
-///
+intersectInP = method(Options=>{
+	  DegreeLimit => {},
+	  BasisElementLimit => infinity,
+	  PairLimit => infinity,
+	  MinimalGenerators => true,
+	  Strategy => null,
+	  Variable => "w"
+	  })
 
-restart
-uninstallPackage "ReesAlgebra"
-installPackage "ReesAlgebra"
-peek loadedFiles
-restart
-peek loadedFiles
+intersectInP(Ideal,Ideal) := o->(I,J) ->(
+    --I,J in a polynomial ring; intersection done with the diagonal, then pulled back
+    P := ring I;
+    kk := coefficientRing P;
+    n := numgens P;
+    if P =!=ring J then error"requires two ideals in the same ring";
+    if not isPolynomialRing P and isField kk then 
+         error" ring should be a polynomial ring over a field";
+    X:=symbol X;
+    Y:=symbol Y;
+    PP := kk[X_0..X_(n-1),Y_0..Y_(n-1)];
+    diag := ideal apply(n, i-> X_i-Y_i);
+    toP := map(P,PP/diag,vars P | vars P);
+    inX := map(PP,P,apply(n,i->X_i));
+    inY := map(PP,P,apply(n,i->Y_i));
+    II := inX I + inY J;
+    L := distinguished(diag,II);
+    apply(L, l-> {l_0, trim toP l_1})
+)
 
-uninstallPackage "ReesAlgebra"
-restart
-installPackage("ReesAlgebra",FileName=>
-    "/Users/david/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
-needsPackage "ReesAlgebra"
 
-
-restart
-kk = ZZ/101
-S = kk[x,y]
-SS = kk[s,t,u,v]
-J = ideal"s2t,uv2"
-I = ideal"s-u,t-v"
-
-simpI = map(S,SS/I,{x,y,x,y})
-Sbar = S/ideal("x2y,xy2")
-simpJ = map(Sbar,SS/J,{x,y,x,y})
-
-DJ = distinguished(SS,J,I)
-DI = distinguished(SS,I,J)
-apply(DI, p -> {p_0,simpI(p_1)})
-apply(DJ, p -> {p_0,trim simpJ (p_1)})
-///
 
 
 minimalReduction = method(
@@ -1727,7 +1726,6 @@ doc ///
 doc ///
   Key
     distinguished
-
     (distinguished, RingMap, Ideal)
     (distinguished, Ideal, Ideal)
     (distinguished, Ideal)    
@@ -1748,6 +1746,7 @@ doc ///
      Suppose that f:S\to R is a map of rings, and I is an ideal of S.
      Let K be the kernel of the map of associated graded rings
      gr_I(S) \to gr_(fI)R.
+
      The distinguished primes p_i in S/I are the intersections of the
      minimal primes P_i over K with S/I \subset gr_IS. The multiplicity associated
      with p_i is by definition the the multiplicities of P_i in the primary
@@ -1771,7 +1770,7 @@ doc ///
      
      In the special case
      
-     distinguished(S,I,0)
+     distinguished(I)
      
      we compute the distinguished primes in the support of the normal cone gr_IS.
      An interesting application is given in the paper
@@ -1779,24 +1778,89 @@ doc ///
      ``A geometric effective Nullstellensatz.''
      Invent. Math. 137 (1999), no. 2, 427--448 by
      Ein and Lazarsfeld.
+     
+     Here is an example showing that associated primes need not be distinguished primes:
    Example
-     setRandomSeed 0
-     T = ZZ/101[c,d];
-     D = 4;
-     P = product(D, i -> random(1,T))
-     R = ZZ/101[a,b,c,d]
-     I = ideal(a^2, a*b*(substitute(P,R)), b^2)
+     R = ZZ/101[a,b]
+     I = ideal(a^2, a*b)
+     ass I 	 
    Text
-     There is one minimal associated prime (a thick line in $P^3$) and $D$
-     embedded primes (points on the line).
+     There is one minimal associated prime (a thick line in $P^3$) and one
+     embedded prime.
    Example
-     ass I 
-     primaryDecomposition I
-   Text
-     Only the minimal prime is a distinguished component, and it has multiplicity 2.
-   Example
-     distinguished(I)
+     distinguished I
+     intersectInP(I,I)
+  SeeAlso
+   intersectInP
+   saturate
 ///
+
+doc ///
+   Key
+    intersectInP
+    (intersectInP, Ideal, Ideal)
+   Headline
+    compute distinguished varieties for an intersection in A^n or P^n
+   Usage
+    L = intersectInP(I,J)
+   Inputs
+    I:Ideal
+     of a polynomial ring P over a field
+    J:Ideal
+     of the same ring
+   Outputs
+    L:List
+   Description
+    Text
+     This function applies the technology of @TO distinguished @ to compute
+     the distinguished subvarieties, with their multiplicities, for an intersection
+     in affine or projective space. The function @TO distinguished @ is actually applied
+     to the diagonal ideal in P**P and the ideal I**P + P**I, and the answer is
+     pulled back to P.
+    Example
+     kk = ZZ/101
+     P = kk[x,y]
+     I = ideal"x2-y";J=ideal y
+     intersectInP(I,J)
+     I = ideal"x4+y3+1"
+     intersectInP(I,J)
+     I = ideal"x2y";J=ideal"xy2"
+     intersectInP(I,J)
+     intersectInP(I,I)
+    Text
+     Note that in the last two cases, which are improper intersections of
+     two cubics, the total multiplicity is 9 = 3*3. But this is not always the case
+     (in the actual definition of the intersection product, the multiplicity is
+     multiplied by the class of a certain cycle supported on the distinguished subvariety).
+    Example
+     I = ideal"y-x2"
+     intersectInP(I,I)
+   Caveat
+   SeeAlso
+    distinguished
+///
+
+doc ///
+   Key
+    [intersectInP,BasisElementLimit]
+    [intersectInP,DegreeLimit]
+    [intersectInP,MinimalGenerators]
+    [intersectInP,PairLimit]
+    [intersectInP,Strategy]
+    [intersectInP,Variable]
+    [multiplicity,Variable]
+   Headline
+    Option for intersectInP
+   Description
+    Text
+     see the options for @TO saturate@.
+   SeeAlso
+    intersectInP
+    distinguished
+    saturate
+///
+
+
 
 doc ///
   Key
@@ -2678,12 +2742,21 @@ assert(codim N==1)
 ///
 
 
-
 TEST///
 --Test for distinguished
 R=ZZ/101[x,y,u,v]
 I=ideal(x^2, x*y*u^2+2*x*y*u*v+x*y*v^2,y^2)
-assert(distinguished(R,I,0) == {{2, ideal (y, x)}})
+p = map(R/I,R)
+assert(distinguished I == {{2, p ideal(x,y)}})
+///
+
+TEST///
+kk = ZZ/101
+S = kk[x,y]
+I = ideal"x2y";J=ideal"xy2"
+assert(intersectInP(I,J) == {{2, ideal x}, {5, ideal (y, x)}, {2, ideal y}})
+I = ideal"y-x2";J=ideal y
+assert(intersectInP(I,J) == {{2, ideal (y, x)}})
 ///
 
 TEST///
@@ -2697,6 +2770,14 @@ assert(J == minors(2,m))
 ///
 
 end--
+restart
+uninstallPackage "ReesAlgebra"
+peek loadedFiles
+restart
+installPackage("ReesAlgebra",FileName=>
+    "/Users/david/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
+check "ReesAlgebra"
+
 uninstallPackage "ReesAlgebra"
 restart
 installPackage("ReesAlgebra")
@@ -2704,46 +2785,6 @@ check "ReesAlgebra"
 
 viewHelp ReesAlgebra
 restart
-kk = ZZ/101
-P2xP2 = kk[a',b',x',y'] --A^2 x A^2
-Ilines = ideal(a'^2*b',x'*y'^2) --the product of the two funny unions of lines in the plane
-diag = ideal(a'-x',b'-y')
-P2 = kk[a,b]
-iota = map(P2, P2xP2,{a,b,a,b}) -- the diagonal embedding
-assert(diag == ker iota)
-SW = P2/iota(Ilines) -- intersection of the diagonal with the product of the two sets of lines
-
---more generally, given I,J\subset S ideals with I an lci, set R = S/J. Fulton forms the 
---distinguished primes p\subset S/I as the intersections of S/I\subset gr_I(S)
---of the minimal primes P of ker(gr_I(S) --> gr_{IR}(R).
- 
-///
-restart
-kk = ZZ/101
-S = kk[a,b,a',b']
-I = ideal(a-a',b-b')
-R = S/ideal(a^2*b,a'*b'^2)
-f = map(R,S)
-J = f I
-
-II = ker normalConeMorphism(f,I,J)
-NI = ring II
-Plist = decompose II
-inc = map(S/I,NI)
-plist = apply(Plist, P -> inc(P+ideal vars NI))
-
-///
-normalConeMorphism = method()
-normalConeMorphism(RingMap, Ideal, Ideal) := (f, I,J) ->(
-    --f:S\to R
-    --I\subset S
-    --f(I) \subset J\subset R
-    --form the map of rings normalCone(I) \to normalCone(J).
-m := (f gens I) // gens J;
-NI := normalCone I;
-NJ := normalCone J;
-map(NJ,NI,(vars NJ)*m)
- )
     
 --We want to intersect V with the diagonal, and compute the
 --distinguished subvarieties and their multiplicities.
@@ -2984,3 +3025,4 @@ doc ///
     distinguished
 ///
 *}
+end-
