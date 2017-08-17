@@ -357,7 +357,7 @@ For example, if $I$ is the ideal of $p\times p$ minors of a $p\times (p+q)$ matr
 the special fiber ring is equal to the homogeneous coordinate ring $\G$ of the Grassmannian of
 $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and it is known (reference??) that the reduction number of $I$ is ****.
 
-\section{Distinguished subvarieties: {\tt distinguished}}
+\section{Distinguished subvarieties: {\tt distinguished, intersectInP}}
 
 The key construction in the Fulton-MacPherson definition of the refined intersection  product 
 \cite[Section 6.1]{F}
@@ -392,6 +392,31 @@ $$
 Returning to the geometric language, and the case where $X\subset Y$ is locally a complete intersection in a quasi-projective variety, the cycle class $\alpha_{i}$ in the Chow group of the variety 
 $Z_{i}$ corresponding to $p_{i}$ is defined as the Gysin image of the class of the subvariety corresponding
 to $P_{i}$ in the projectivized normal bundle of $X$ in $Y$---a construction not included in this package. 
+
+Here are some simple examples in which {\tt distinguished} is used to compute the distinguished varieties of
+intersections in ${\mathbb A}^{n}$, via the function {\tt intersectInP}. First, the intersection of a conic with a tangent line.
+\begin{verbatim}
+i2 :      kk = ZZ/101;
+i3 :      P = kk[x,y];
+i4 :      I = ideal"x2-y";J=ideal y;
+i6 :      intersectInP(I,J)
+o6 = {{2, ideal (y, x)}}
+\end{verbatim}
+Slightly more interesting, the following shows what happens when the intersections aren't rational:
+\begin{verbatim}
+i7 :      I = ideal"x4+y3+1";
+i8 :      intersectInP(I,J)
+                     2                        2
+o8 = {{1, ideal (y, x  + 10)}, {1, ideal (y, x  - 10)}}
+\end{verbatim}
+The real interest in the construction is in the case of improper intersections. Here are some typical results:
+\begin{verbatim}
+i9 :      I = ideal"x2y";J=ideal"xy2";
+i11 :      intersectInP(I,J)
+o11 = {{2, ideal x}, {5, ideal (y, x)}, {2, ideal y}}
+i12 :      intersectInP(I,I)
+o12 = {{1, ideal y}, {4, ideal x}, {4, ideal (y, x)}}
+\end{verbatim}
 
 \section{Rees Algebras and Desingularization}
 

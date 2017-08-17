@@ -1748,17 +1748,11 @@ doc ///
      gr_I(S) \to gr_(fI)R.
 
      The distinguished primes p_i in S/I are the intersections of the
-     minimal primes P_i over K with S/I \subset gr_IS. The multiplicity associated
+     minimal primes P_i over K with S/I \subset gr_IS, that is,
+     the minimal primes of the support in R/I of the normal cone of f(I).
+     The multiplicity associated
      with p_i is by definition the the multiplicities of P_i in the primary
      decomposition of K.
-     
-     We allow the special cases
-     
-     distinguished(I,J) := distinguished(f,I), with f:S\to S/J the projection
-     
-     and
-     
-     distinguished(I) := distinguished(f,I), with f:S\to S the identity.
      
      Distinguished subvarieties and their multiplicity
      (defined by the distinguished primes, usually
@@ -1768,11 +1762,18 @@ doc ///
      Section 6.1 for the geometric context and the general case, and the explanation
      in the article Rees Algebras in JSAG (submitted).
      
-     In the special case
+     This application is illustrated in the code for @TO intersectInP@.
      
-     distinguished(I)
+     We allow the special cases
      
-     we compute the distinguished primes in the support of the normal cone gr_IS.
+     distinguished(I,J) := distinguished(f,I), with f:S\to S/J the projection
+     
+     and
+     
+     distinguished(I) := distinguished(f,I), with f:S\to S the identity.
+          
+     which computes the distinguished primes in the support of the normal cone gr_IS
+     itself.
      An interesting application is given in the paper
 
      ``A geometric effective Nullstellensatz.''
@@ -2778,24 +2779,22 @@ installPackage("ReesAlgebra",FileName=>
     "/Users/david/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
 check "ReesAlgebra"
 
+     kk = ZZ/101;
+     P = kk[x,y];
+     I = ideal"x2-y";J=ideal y;
+     intersectInP(I,J)
+     I = ideal"x4+y3+1";
+     intersectInP(I,J)
+     I = ideal"x2y";J=ideal"xy2";
+     intersectInP(I,J)
+     intersectInP(I,I)
+
 uninstallPackage "ReesAlgebra"
 restart
 installPackage("ReesAlgebra")
 check "ReesAlgebra"
 
 viewHelp ReesAlgebra
-restart
-    
---We want to intersect V with the diagonal, and compute the
---distinguished subvarieties and their multiplicities.
---we take the map from the associated graded of diag in P2xP2 to the associated graded of
---diag in SW.
--- The kernel, an ideal in the normal cone of P2 in P2xP2
---has minimal primes that pull back to the distinguished primes of P2, subvarieties
---inside the physical intersection of the two families of lines.
-
-minimalPresentation normalCone diag
-viewHelp(minimalPresentation, Ring)
 
 --summary:
 Given a map of rings f: S -> R, and ideals I\subset S, J\subset R, f(I)\subset J,
@@ -2810,219 +2809,3 @@ In Fulton, I is always lci.
 
 restart
 
-
-a = symbol a;a' = symbol a';b = symbol b;b' = symbol b';
-S = kk[a,b,a',b']
-I = ideal(a-a',b-b') -- ideal of the diagonal
-R = S/ideal(a^3,a'*b')
---R = S/ideal(a^2,b')
-f = map(R,S)
-J = f I
-dist(f,I,J)
-
---
-restart
-n= 4
-S = kk[a_1..a_n]
-SS = kk[x_1..x_n,y_1..y_n]
-Delta = ideal (apply(n,i->x_(i+1)-y_(i+1)))
-in1 = map(SS,S,apply(n, i->x_(i+1)))
-in2 = map(SS,S,apply(n, i->y_(i+1)))
-IV = ideal(a_4,a_3^3-a_1*a_2*(a_2-2*a_1))
-IW = ideal(a_3, a_4^3-a_1*a_2*(a_1-2*a_2))
-VW = SS/(in1 IV+in2 IW)
-f = map(VW,SS)
-dist(f,Delta,f Delta)
-
-
-n= 2
-S = kk[a_0..a_n]
-SS = kk[x_0..x_n,y_0..y_n]
-Delta = ideal (apply(n+1,i->x_(i)-y_(i)))
-in1 = map(SS,S,apply(n+1, i->x_i))
-in2 = map(SS,S,apply(n+1, i->y_i))
-
-use S
-IV = ideal(a_1^2*a_2)
-IW = ideal(a_1*a_2^2)
-VW = SS/(in1 IV + in2 IW)
-f = map(VW,SS)
-dist(f,Delta,f Delta)
-dist(S, Delta, (in1 IV + in2 IW))
-///
-    
-
-
-JETSAM
-{*   
---We can use this to compute the distinguished subvarieties of
---a variety (components of the support of the normal cone).
---In the following routine i must be an ideal of a polynomial ring, not a 
---quotient ring.
-
--- PURPOSE : Compute the distinguised subvarieties of a variety 
---           (components of the support of the normal cone).
--- INPUT : 'i' an ideal over a polynomial ring. 
--- OUTPUT : the components of the support of the normal cone of V(i).
--- COMMENT : I have a note stating that "right now" this computation 
---           requires a polynomial ring over a finite field - written 
---           in 2000/2001.  I have no idea why.  I suspect that at the 
---           time decompose required this.  But I think it is not necessary 
---           now. 
-
-distinguished = method(
-           Options => {
-	  DegreeLimit => {},
-	  BasisElementLimit => infinity,
-	  PairLimit => infinity,
-	  MinimalGenerators => true,
-	  Strategy => null,
-	  Variable => "w"
-	  }
-      )
-distinguished(Ideal) := List => o -> i -> (
-     R:=ring i;
-     reesAi := reesAlgebra (i,o);
-     A := map(reesAi,R);
-     (T,B) := flattenRing reesAi;
-     L:=decompose substitute(i,T);
-     apply(L, p->kernel(map(T/p, T)*B*A))
-     )
-
-distinguished(Ideal,RingElement) := List => o -> (i,a) -> (
-     R:=ring i;
-     reesAi := reesAlgebra (i,a,o);
-     A := map(reesAi,R);
-     (T,B) := flattenRing reesAi;
-     L:=decompose substitute(i,T);
-     apply(L, p->kernel(map(T/p, T)*B*A))
-     )
-     
--- PURPOSE : Compute the distinguised subvarieties of a variety  
---           (components of the support of the normal cone) WITH their 
---           multiplicities.
--- INPUT : 'i' an ideal over a polynomial ring. 
--- OUTPUT : ideals that are the components of the support of the normal 
---          cone of V(i) and integers that are their corresponding 
---          multiplicities.
--- CAVEAT: R must be a polynomial ring.
-
-
-///
-
-uninstallPackage "ReesAlgebra"
-restart
-installPackage "ReesAlgebra"
-
-loadPackage "ReesAlgebra"
-T=ZZ/101[c,d]
-D = 4
-P = product(D, i -> random(1,T))
-R = ZZ/101[a,b,c,d]
-I = ideal(a^2, a*b*(substitute(P,R)), b^2)
-ass I -- there is one minimal associated prime (a thick line in PP^3) and D embedded primes (points on the line) 
-primaryDecomposition I
-distinguished I -- only the minimal prime is a distinguished component
-
-
-K = distinguishedAndMult(I) -- get multiplicity 2 
-J=intersect apply(K, i-> i_1^(i_0)) -- checks the Geometric Nullstellensatz on Ein-Lazarsfeld
-(gens J)% (gb I)
-
-R=ZZ/32003[x,y,z]
-I=intersect(ideal(x),(ideal(x,y))^2, (ideal(x,y,z))^3)
-ass I
-decompose top intersect(ideal(x), ideal(y,z))
-
-distinguished  I
-K = distinguishedAndMult I
-intersect apply(K, i-> i_1^(i_0)) 
-
-viewHelp top
-
-
-///
-
-distinguishedAndMult = method(
-               Options => {
-	  DegreeLimit => {},
-	  BasisElementLimit => infinity,
-	  PairLimit => infinity,
-	  MinimalGenerators => true,
-	  Strategy => null,
-	  Variable => "w"
-	  }
-    )
-distinguishedAndMult(Ideal) := List => o -> i -> (
-    R:=ring i;
-    ReesI := reesIdeal(i, o);
-    (S,toFlatS) := flattenRing ring ReesI;
-     I:=(toFlatS ReesI)+substitute(i,S);
-     L:=decompose I;
-     apply(L,P->(Pcomponent := I:(saturate(I,P)); 
-	       --the P-primary component. The multiplicity is
-	       --computed as (degree Pcomponent)/(degree P)
-       	  {(degree Pcomponent)/(degree P), kernel(map(S/P, R))})))
-
-distinguishedAndMult(Ideal,RingElement) := List => o -> (i,a) -> (
-    R:=ring i;
-    ReesI := reesIdeal( i,a,,o);
-    (S,toFlatS) := flattenRing ring ReesI;
-     I:=(toFlatS ReesI)+substitute(i,S);
-     L:=decompose I;
-     apply(L,P->(Pcomponent := I:(saturate(I,P)); 
-	       --the P-primary component. The multiplicity is
-	       --computed as (degree Pcomponent)/(degree P)
-       	  {(degree Pcomponent)/(degree P), kernel(map(S/P, R))})))
-*}
-
-
-{*
-distinguished(RingMap, Ideal, Ideal) := o -> (f,I,J) ->(
---f: S -> R,  I\subset S, J\subset R, f(I)\subset J:
-    S := source f;
-    R := target f;
-    (m,r) := quotientRemainder(f gens I, gens J);
-    if r !=0 then error"f(I) not contained in J";
-    NI := normalCone (I,o);
-    prune NI;
-    mp := NI.minimalPresentationMap;
-    NJ := normalCone(J,o);
-    K := ker map(NJ,NI,(vars NJ)*m);
-    L := decompose K;
-    M := apply(L,P->(Pcomponent := K:(saturate(K,P))));
-    --the P-primary component. The multiplicity is
-    --computed as (degree M_i)/(degree L_i)
-    apply(#L, i -> {(degree mp(M_i))/(degree mp(L_i)),kernel(map(NI/L_i, S/I))})
-    )
-*}
-
-
-{*
-doc ///
-  Key
-    distinguishedAndMult
-    (distinguishedAndMult, Ideal)
-    (distinguishedAndMult, Ideal, RingElement)
-    
-  Headline
-     compute the distinguished subvarieties of a scheme along with their multiplicities
-  Usage
-     distinguishedAndMult I
-     distinguishedAndMult(I,f)
-  Inputs
-    I:Ideal
-    f:RingElement
-      optional argument, if given it should be a non-zero divisor in the ideal {\tt I}
-  Outputs
-    :List
-      of pairs ${d,P}$, where $d$ is the multiplicity of $I$ along the prime ideal $P$,
-      where $P$ is the ideal of a distinguished subvariety of the normal cone of $I$
-  Description
-   Text
-     See @TO distinguished@ for the definition of distinguished subvarieties, and for an example.
-  SeeAlso
-    distinguished
-///
-*}
-end-
