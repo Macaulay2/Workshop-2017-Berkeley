@@ -2773,39 +2773,9 @@ assert(J == minors(2,m))
 end--
 restart
 uninstallPackage "ReesAlgebra"
-peek loadedFiles
 restart
 installPackage("ReesAlgebra",FileName=>
     "/Users/david/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
 check "ReesAlgebra"
 
-     kk = ZZ/101;
-     P = kk[x,y];
-     I = ideal"x2-y";J=ideal y;
-     intersectInP(I,J)
-     I = ideal"x4+y3+1";
-     intersectInP(I,J)
-     I = ideal"x2y";J=ideal"xy2";
-     intersectInP(I,J)
-     intersectInP(I,I)
-
-uninstallPackage "ReesAlgebra"
-restart
-installPackage("ReesAlgebra")
-check "ReesAlgebra"
-
-viewHelp ReesAlgebra
-
---summary:
-Given a map of rings f: S -> R, and ideals I\subset S, J\subset R, f(I)\subset J,
-we can form the distinguished subvarieties and their multiplicities
-of S/I; the distinguished subvarieties will be the canonical supports of the pull-back cycles
-making up f^*(R/J) in the subvariety f(S/I).
-
-The primes of the distinguished varieties are the intersections
- of S/I\subset normalCone I with the primes of decompose ker (normalCone I -> normalCone J).
-
-In Fulton, I is always lci.
-
-restart
 
