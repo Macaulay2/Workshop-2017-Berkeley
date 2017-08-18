@@ -2060,6 +2060,8 @@ doc ///
      ever becomes a bottleneck it would be possible to test for the degree condition and
      use Euler's formula in the case where it applies.
    SeeAlso
+    whichGm
+    expectedReesIdeal
     reesAlgebra
     reesAlgebraIdeal
     reesIdeal
@@ -2309,7 +2311,7 @@ doc ///
      "Ideals with Expected Reduction Number", Am. J. Math 1996,
      they prove that this ideal is in fact equal to the 
      ideal of the Rees algebra of I when I is a codimension 2 perfect ideal whose
-     Hilbert-Burch matrix has a special form.
+     Hilbert-Burch matrix has a special form. See @TO jacobianDual@ for an example.
     Example
      setRandomSeed 0
      n = 5

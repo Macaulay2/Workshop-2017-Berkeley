@@ -242,7 +242,6 @@ o17 = 1
 
 
 \section{The Rees Algebra and its relations:\\ {\tt reesIdeal, reesAlgebra, universalEmbedding, symmetricKernel, isLinearType,
-jacobianDual,
 associatedGradedRing, normalCone, multiplicity}}
 
 The central routine, reesIdeal (with synonym reesAlgebraIdeal) computes an ideal
@@ -359,7 +358,304 @@ $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and the r
 $(p-1)(q-1)$.
 
 \section{Finding elements of the Rees ideal: {\tt jacobianDual, expectedReesIdeal}}
+\begin{verbatim}
+ 
+Let $M$ be an $R$-module and let $\phi$ be its presentation matrix.
+     The symmetric algebra of I has the form 
+     
+     $$
+     \Sym_R(I) = R[T_0..T_m]/(T*\phi)
+     $$
+     where the T_i correspond to the generators of I. If X = matrix\{\{x_1..x_n\}\},
+     with x_i \in R, and ideal X contains the entries of the matrix phi, then there is 
+     a matrix psi defined over R[T_0..T_m], called the Jacobian Dual of phi with respect to X,
+     such that T*phi = X*psi. (the matrix psi is generally
+     not unique; Macaulay2 computes it using Groebner division with remainder.)
+     
+     In the form psi = jacobianDual phi,
+     a new ring ST = S[T_0..T_m] is created, and the vector X is set to the variables
+     of R. The result is returned as a matrix over ST. 
+     To do the computation in a ring previously defined computed, 
+     use the form psi = jacobianDual(phi, X,T);
+     in this case, the matrices phi, X, T should all be defined over the
+     same ring ST, 
+     the matrix T should be a row of variables of ST, and
+     the matrix phi should have entries in a subring not involving the entries of T.
+      
+     If I is an ideal of grade >=1 and ideal X contains a nonzerodivisor of R
+     (which will be automatic if I has finite projective dimension) then
+     ideal X has grade >= 1 on the Rees algebra. Since ideal(T*phi) is contained in the
+     defining ideal of the Rees algebra, the vector X is annihilated by the matrix
+     psi when regarded over the Rees algebra. If also the number of relations of I
+     is >= the number of generators of I, this implies that the maximal minors of
+     psi annihilate  the x_i as elements of the Rees algebra, and thus that the maximal
+     minors of psi are inside the ideal of the Rees algebra. In very favorable circumstances,
+     one may even have the equality reesIdeal I = ideal(T*phi)+ideal minors(psi): For example:
+     
+     Theorem (S. Morey and B. Ulrich, Rees Algebras of Ideals with Low Codimension, Proc. Am. Math.
+     Soc. 124 (1996) 3653--3661):
+     Let R be a local Gorenstein ring with infinite residue field, let I be a perfect ideal
+     of grade 2 with n generators, and let phi be the presentation matrix of I. Let
+     ell = ell(I) be the analytic spread. Suppose that
+     I satisfies the condition G_{ell} or, equivalently, that the n-p sized minors of phi 
+     have codimension >p for 1<= p < ell. The following conditions are equivalent:
+     
+     1) reesAlgebra I is Cohen-Macaulay and I_(n-ell)(phi) = I_1(phi)^{n-ell}
+     2) reductionNumber I < ell and I_(n+1-ell)(phi) = I_1(phi)^{n+1-ell}
+     3) reesIdeal I = symmetricAlgebraIdeal I + minors(n, jacobianDual phi)
+     
+     We start with the presentation matrix phi of an (n+1)-generator perfect ideal
+     Such that the first row consists of the n
+     variables of the ring, and the rest of whose rows are reasonably general (in this
+     case random quadrics):
+     
+  \end{verbatim}
+   
+     
+     
 
+\begin{verbatim}
+ 
+i1 : loadPackage("ReesAlgebra", Reload =>true)
+
+o1 = ReesAlgebra
+
+o1 : Package
+
+i2 :      setRandomSeed 0
+
+o2 = 0
+
+i3 :      n=3;
+
+i4 :      kk = ZZ/101;
+
+i5 :      S = kk[a_0..a_(n-2)];
+
+i6 :      phi' = map(S^(n),S^(n-1), (i,j) -> if i == 0 then a_j else random(2,S));
+
+             3       2
+o6 : Matrix S  <--- S
+
+i7 :      I = minors(n-1,phi');
+
+o7 : Ideal of S
+
+i8 :      betti (F = res I)
+
+            0 1 2
+o8 = total: 1 3 2
+         0: 1 . .
+         1: . . .
+         2: . 2 .
+         3: . 1 2
+
+o8 : BettiTally
+
+i9 :      phi = F.dd_2;
+
+             3       2
+o9 : Matrix S  <--- S
+
+i10 :      jphi = jacobianDual phi
+
+o10 = {0, 1} | 11w_1a_0-37w_1a_1                 w_2                              |
+      {0, 1} | -11w_0a_0-34w_0a_1-46w_1a_1+14w_2 11w_0a_1-11w_1a_0-30w_1a_1+18w_2 |
+
+                            2                     2
+o10 : Matrix (S[w , w , w ])  <--- (S[w , w , w ])
+                 0   1   2             0   1   2
+
+i11 : ///    Text
+           We first compute the analytic spread ell and the reduction number r
+          Example
+      ///    
+
+o11 =     Text
+           We first compute the analytic spread ell and the reduction number r
+          Example
+
+
+i12 :      ell = analyticSpread I
+
+o12 = 2
+
+i13 :      r = reductionNumber(I, minimalReduction I)
+
+o13 = 1
+
+i14 : ///    Text
+           Now we can check the condition G_{ell}, first probabilistically
+          Example
+      ///    
+
+o14 =     Text
+           Now we can check the condition G_{ell}, first probabilistically
+          Example
+
+
+i15 :      whichGm I >= ell
+
+o15 = true
+
+i16 : ///    Text
+           and now deterministically
+          Example
+      ///    
+
+o16 =     Text
+           and now deterministically
+          Example
+
+
+i17 :      apply(toList(1..ell-1), p-> {p+1, codim minors(n-p, phi)})
+
+o17 = {{2, 2}}
+
+o17 : List
+
+i18 : ///    Text
+           We now check the three equivalent conditions of the Morey-Ulrich Theorem.
+           Note that since ell = n-1 in this case, the second part of conditions
+           1,2 is vacuously satisfied, and since r<ell,
+           the conditions must all be satisfied.
+           We first check that reesAlgebra I is Cohen-Macaulay:
+          Example
+      ///    
+
+o18 =     Text
+           We now check the three equivalent conditions of the Morey-Ulrich Theorem.
+           Note that since ell = n-1 in this case, the second part of conditions
+           1,2 is vacuously satisfied, and since r<ell,
+           the conditions must all be satisfied.
+           We first check that reesAlgebra I is Cohen-Macaulay:
+          Example
+
+
+i19 :      reesI = reesIdeal I;
+
+o19 : Ideal of S[w , w , w ]
+                  0   1   2
+
+i20 :      codim reesI
+
+o20 = 2
+
+i21 :      betti res reesI
+
+             0 1 2
+o21 = total: 1 3 2
+          0: 1 . .
+          1: . . .
+          2: . 2 .
+          3: . 1 2
+
+o21 : BettiTally
+
+i22 : ///    Text
+           Finally, we wish to see that reesIdeal I is generated by the ideal 
+           of the symmetric algebra together with the jacobian dual:
+          Example
+      ///    
+
+o22 =     Text
+           Finally, we wish to see that reesIdeal I is generated by the ideal 
+           of the symmetric algebra together with the jacobian dual:
+          Example
+
+
+i23 :      psi = jacobianDual phi
+
+o23 = {0, 1} | 11w_1a_0-37w_1a_1                 w_2                              |
+      {0, 1} | -11w_0a_0-34w_0a_1-46w_1a_1+14w_2 11w_0a_1-11w_1a_0-30w_1a_1+18w_2 |
+
+                            2                     2
+o23 : Matrix (S[w , w , w ])  <--- (S[w , w , w ])
+                 0   1   2             0   1   2
+
+i24 : ///    Text
+           We now compute the ideal J of the symmetric algebra; the call symmetricAlgebra I
+           would return the ideal over a different ring, so we do it by hand:
+          Example
+      ///    
+
+o24 =     Text
+           We now compute the ideal J of the symmetric algebra; the call symmetricAlgebra I
+           would return the ideal over a different ring, so we do it by hand:
+          Example
+
+
+i25 :      ST = ring psi
+
+o25 = ST
+
+o25 : PolynomialRing
+
+i26 :      T = vars ST
+
+o26 = | w_0 w_1 w_2 |
+
+               1        3
+o26 : Matrix ST  <--- ST
+
+i27 :      J = ideal(T*promote(phi, ST))
+
+                            2          2               2                 2                    2
+o27 = ideal ((- 11a a  - 34a )w  + (11a  - 37a a  - 46a )w  + 14a w , 11a w  + (- 11a a  - 30a )w  + (a  +
+                   0 1      1  0       0      0 1      1  1      1 2     1 0         0 1      1  1     0  
+      --------------------------------------------------------------------------------------------------------
+      18a )w )
+         1  2
+
+o27 : Ideal of ST
+
+i28 :      betti res J
+
+             0 1 2
+o28 = total: 1 2 1
+          0: 1 . .
+          1: . . .
+          2: . 2 .
+          3: . . .
+          4: . . 1
+
+o28 : BettiTally
+
+i29 :      J1 = minors(ell, psi)
+
+                        2              2             2  2                                               2
+o29 = ideal((20a a  - 3a )w w  + (- 20a  - 24a a  - a )w  + (11a  + 34a )w w  + (- 4a  - 14a )w w  - 14w )
+                0 1     1  0 1         0      0 1    1  1       0      1  0 2        0      1  1 2      2
+
+o29 : Ideal of ST
+
+i30 :      betti (G = res trim (J+J1))
+
+             0 1 2
+o30 = total: 1 3 2
+          0: 1 . .
+          1: . . .
+          2: . 2 .
+          3: . 1 2
+
+o30 : BettiTally
+
+i31 :      betti res reesIdeal I
+
+             0 1 2
+o31 = total: 1 3 2
+          0: 1 . .
+          1: . . .
+          2: . 2 .
+          3: . 1 2
+
+o31 : BettiTally
+
+i32 : 
+  
+  \end{verbatim}
+   
+     
 
 \section{Distinguished subvarieties: {\tt distinguished, intersectInP}}
 
