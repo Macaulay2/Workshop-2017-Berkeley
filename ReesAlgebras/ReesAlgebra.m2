@@ -177,7 +177,6 @@ reesIdeal = method(
 reesAlgebraIdeal = reesIdeal
 
 fixupw = w -> if instance(w,String) then getSymbol w else w
-
 reesIdeal(Module) := Ideal => o -> M -> (
      P := presentation M;
      UE := transpose syz transpose P;
@@ -319,34 +318,6 @@ multiplicity(Ideal,RingElement) := ZZ => o -> (I,a) ->  (
      degree substitute(J1,S1)
      )
 
-///
-restart
-load "ReesAlgebra.m2"
-
-kk=ZZ/101
-S=kk[x,y]
-I = ideal(x^2, y^3)
-assert (multiplicity I == 6)
-use S
-I=ideal(x^2, x*y+y^3)
-assert(multiplicity I == 6)
-use S
-I = ideal(x^2+x^3)
-assert(multiplicity I == 3)
-normalCone I
-use S
-isLinearType I
-
-use S
-I = ideal((x+1)^2, (x+1)*(y+1)+(y+1)^3)
-multiplicity I
-
-use S
-I = ideal"x3, x2y,y3"
-multiplicity I
-degree(S^1/I)
-
-///
 
 --Special fiber is here defined to be the fiber of the blowup over the
 --subvariety defined by the vars of the original ring. Note that if the
@@ -474,36 +445,6 @@ isReduction(Ideal,Ideal,RingElement):= o->(I,J,a)->(
      else false)
 
 
-///
-restart
-uninstallPackage "ReesAlgebra"
-installPackage ("ReesAlgebra", FileName => "~/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
-check "ReesAlgebra"
-
-peek loadedFiles
-S = kk[s,t][x,y,z]
-I = ideal"x2, xy+y4"
---II=reesIdeal I
-SF = specialFiber I
-ideal presentation SF
-J = minimalReduction I
-(gens J) ==(gens I)*(gens J//gens I)
-isReduction(I, J, I_0)
-
-analyticSpread I
-
-time tally for n from 1 to 100 list isReduction(I, minimalReduction I, I_0)
-
-setRandomSeed(314159268)
-scan({2,3,5,7,11,101,32003}, p ->(
-	  kk=ZZ/p;
-	  S = kk[a,b,c,d];
-	  I = monomialCurveIdeal(S, {1,3,4});
-	  T:=tally for n from 1 to 100 list isReduction(I, minimalReduction I);
-	  print (p, T#false, T#true))
-)	  
-
-///
 
 -- PURPOSE : Analytic spread of a module as defined in M2 by a matrix, 
 --           a module or ideal over a quotient ring R/I.
@@ -644,26 +585,6 @@ minimalReduction Ideal := Ideal => o -> i -> (
      <<o.Tries <<" iterations were not enough to randomly find a minimal reduction"; endl;
      error("not random enough")
           )
-
-///
-restart
-load "ReesAlgebra.m2"
-kk=ZZ/2
-S = kk[a,b,c,d];
-I = monomialCurveIdeal(S, {1,3,4});
-I = ideal random(S^4, S^{5:-2})
-J = minimalReduction I
-time reductionNumber(I,J)
-time reductionNumber(I,J, "1")
-time for n from 1 to 100 do(m=m+1; minimalReduction I)
-scan({2,3,5,7,11,101,32003}, p ->(
-	  kk=ZZ/p;
-	  S = kk[a,b,c,d];
-	  I = monomialCurveIdeal(S, {1,3,4});
-	  T:=tally for n from 1 to 100 list isReduction(I, minimalReduction I);
-	  print (p, T#false, T#true))
-)	  
-///
 
 ///
 restart
@@ -811,15 +732,14 @@ whichGm Ideal := i -> (
 ------------------------------------------------------------------
  
 jacobianDual = method(Options=>{Variable => "w"})
+
+
 jacobianDual Matrix := o-> phi ->(
-    t := numrows phi;
-    T := fixupw o.Variable;
-    S := ring phi;
-    ST := S[T_0..T_(t-1)];
-    X := promote(vars ring phi, ST);
-    Ts :=  vars ST;
-    jacobianDual(promote(phi,ST),X,Ts)
-    )
+ S := ring phi;
+ X := vars S;
+ ST := symmetricAlgebra(target phi, VariableBaseName => fixupw o.Variable);
+ (vars ST * promote(phi, ST))//promote(X,ST)
+          )
 
 jacobianDual(Matrix,Matrix, Matrix) := o -> (phi,X,T) -> (
     --Suppose that T is a 1 x m matrix of variables in the ring ST = R[T_0..T_(m-1)],
@@ -849,32 +769,6 @@ expectedReesIdeal Ideal := Ideal => I -> (
     trim(I1+I2)
     )
 
-///
-
-restart
-uninstallPackage "ReesAlgebra"
-installPackage "ReesAlgebra"
---viewHelp reesAlgebra
-
-kk = ZZ/101
-d = 3
-S = kk[x_0..x_(d-1)]
-mlin = transpose vars S
-mquad = random(S^d, S^{-1,-4,d-2:-2})
-Irand = minors(d,mlin|mquad)
-X = vars S
-phi = syz gens Irand;
-psi = jacobianDual phi
-
-T = symbol T;
-ST = kk[x_0..x_(d-1), T_0..T_3] -- or
-STS = map(ST,S,(vars ST)_{0..d-1})
---ST = S[T_0..T_3]
-X = matrix {apply(d, i->x_i)}
-Ts = matrix{{T_0,T_1,T_2,T_3}}
-phi
-psi1 = jacobianDual(STS phi, X, Ts)
-///
 
 beginDocumentation()
 ///
@@ -900,7 +794,8 @@ doc ///
      
      Classically the Rees algebra appeared as the bihomogeneous coordinate
      ring of the blowup of a projective variety along a subvariety or
-     subscheme. Though this is computationally slow on interesting examples,
+     subscheme, used for resolution of singularities. 
+     Though this is computationally slow on interesting examples,
      we illustrate with some elementary cases of resolution of plane curve
      singularities in @TO PlaneCurveSingularities@.
 
@@ -924,6 +819,13 @@ doc ///
      It has since expanded to include routines
      for computing many of the invariants of an ideal or module
      defined in terms of Rees algebras.
+     
+     The Rees algebra, or more precisely the associated graded ring, which
+     we compute as a biproduct, plays a central role in modern intersection
+     theory: it is the basis of the Fulton-MacPherson definition of the
+     intersection product in the Chow ring. We illustrate this in
+     @TO distinguished@ and @TO intersectInP@.
+    
 
      The Rees algebra of a module M is defined 
      by a certain ideal in the symmetric
@@ -1000,6 +902,8 @@ doc ///
      numcols basis(p,Ipsi)
   SeeAlso
    PlaneCurveSingularities
+   distinguished
+   intersectInP
 ///
 
 doc ///
@@ -2044,7 +1948,7 @@ doc ///
      
      Sym_R(I) = R[T_0..T_m]/ideal(T*phi)
      
-     where the T_i correspond to the generators of I. If X = matrix{{x_1..x_n}},
+     where the T_i correspond to the generators of I. If X = matrix\{\{x_1..x_n\}\},
      with x_i \in R, and ideal X contains the entries of the matrix phi, then there is 
      a matrix psi defined over R[T_0..T_m], called the Jacobian Dual of phi with respect to X,
      such that T*phi = X*psi. (the matrix psi is generally
@@ -2052,9 +1956,11 @@ doc ///
      
      In the form psi = jacobianDual phi,
      a new ring ST = S[T_0..T_m] is created, and the vector X is set to the variables
-     of R. The result is returned as a matrix over ST. Use the form psi = jacobianDual(phi, X,T)
-     if you want to do the computation in a ring you have already computed;
-     in this case, the matrices phi, X, T should all be defined over the ring ST, but
+     of R. The result is returned as a matrix over ST. 
+     To do the computation in a ring previously defined computed, 
+     use the form psi = jacobianDual(phi, X,T);
+     in this case, the matrices phi, X, T should all be defined over the
+     same ring ST, 
      the matrix T should be a row of variables of ST, and
      the matrix phi should have entries in a subring not involving the entries of T.
       
@@ -2066,31 +1972,73 @@ doc ///
      is >= the number of generators of I, this implies that the maximal minors of
      psi annihilate  the x_i as elements of the Rees algebra, and thus that the maximal
      minors of psi are inside the ideal of the Rees algebra. In very favorable circumstances,
-     one may even have the equality reesIdeal I = ideal(T*phi)+ideal minors(psi).
+     one may even have the equality reesIdeal I = ideal(T*phi)+ideal minors(psi): For example:
+     
+     Theorem (S. Morey and B. Ulrich, Rees Algebras of Ideals with Low Codimension, Proc. Am. Math.
+     Soc. 124 (1996) 3653--3661):
+     Let R be a local Gorenstein ring with infinite residue field, let I be a perfect ideal
+     of grade 2 with n generators, and let phi be the presentation matrix of I. Let
+     ell = ell(I) be the analytic spread. Suppose that
+     I satisfies the condition G_{ell} or, equivalently, that the n-p sized minors of phi 
+     have codimension >p for 1<= p < ell. The following conditions are equivalent:
+     
+     1) reesAlgebra I is Cohen-Macaulay and I_(n-ell)(phi) = I_1(phi)^{n-ell}
+     2) reductionNumber I < ell and I_(n+1-ell)(phi) = I_1(phi)^{n+1-ell}
+     3) reesIdeal I = symmetricAlgebraIdeal I + minors(n, jacobianDual phi)
+     
+     We start with the presentation matrix phi of an (n+1)-generator perfect ideal
+     Such that the first row consists of the n
+     variables of the ring, and the rest of whose rows are reasonably general (in this
+     case random quadrics):
     Example
-     d=3
-     S = ZZ/101[a_0..a_(d-1)]
-     kk = ZZ/101
-     mlin = transpose vars S
-     mquad = random(S^d, S^{-1,-4,d-2:-2})
-     Irand = minors(d,mlin|mquad)
-     X = vars S
-     phi = syz gens Irand;
+     setRandomSeed 0
+     n=3;
+     kk = ZZ/101;
+     S = kk[a_0..a_(n-2)];
+     phi' = map(S^(n),S^(n-1), (i,j) -> if i == 0 then a_j else random(2,S));
+     I = minors(n-1,phi');
+     betti (F = res I)
+     phi = F.dd_2;
+     jphi = jacobianDual phi
     Text
-     We can use the simple form of the function:
+     We first compute the analytic spread ell and the reduction number r
+    Example
+     ell = analyticSpread I
+     r = reductionNumber(I, minimalReduction I)
+    Text
+     Now we can check the condition G_{ell}, first probabilistically
+    Example
+     whichGm I >= ell
+    Text
+     and now deterministically
+    Example
+     apply(toList(1..ell-1), p-> {p+1, codim minors(n-p, phi)})
+    Text
+     We now check the three equivalent conditions of the Morey-Ulrich Theorem.
+     Note that since ell = n-1 in this case, the second part of conditions
+     1,2 is vacuously satisfied, and since r<ell,
+     the conditions must all be satisfied.
+     We first check that reesAlgebra I is Cohen-Macaulay:
+    Example
+     reesI = reesIdeal I;
+     codim reesI
+     betti res reesI
+    Text
+     Finally, we wish to see that reesIdeal I is generated by the ideal 
+     of the symmetric algebra together with the jacobian dual:
     Example
      psi = jacobianDual phi
     Text
-     The long form gives the same answer over a polynomial ring involving
-     with both sets of variables:
-    Example     
-     ST = kk[T_0..T_3, x_0..x_(d-1)] 
-     X = matrix{toList(x_0..x_(d-1))}
-     Ts = matrix{{T_0,T_1,T_2,T_3}}
-     phi = (map(ST,S,X)) phi
-     psi1 = jacobianDual(phi, X, Ts)
-     f = map(ST, ring psi, vars ST)
-     assert(f psi - psi1 == 0)
+     We now compute the ideal J of the symmetric algebra; the call symmetricAlgebra I
+     would return the ideal over a different ring, so we do it by hand:
+    Example
+     ST = ring psi
+     T = vars ST
+     J = ideal(T*promote(phi, ST))
+     betti res J
+     J1 = minors(ell, psi)
+     betti (G = res trim (J+J1))
+     betti res reesIdeal I
     Text
      The name Jacobian Dual comes from the case where phi is a matrix of linear forms
      the x_i are the variables of R, and the generators of I are forms, all of the same degree D;
@@ -2356,8 +2304,9 @@ doc ///
      The term 'Expected Rees Ideal' for the sum of 
      of the ideal of the symmetric algebra of I with
      the ideal of maximal minors of the Jacobian dual matrix of a presentation of I
-     is derived from the paper 
-     *** of Colley and Ulrich. Building on the paper *** of Ulrich,
+     is derived from the paper "Rees Algebras of Ideals of Low Codimension", Proc. Am. Math. Soc. 1996
+     of Colley and Ulrich. Building on the paper 
+     "Ideals with Expected Reduction Number", Am. J. Math 1996,
      they prove that this ideal is in fact equal to the 
      ideal of the Rees algebra of I when I is a codimension 2 perfect ideal whose
      Hilbert-Burch matrix has a special form.
@@ -2774,8 +2723,7 @@ end--
 restart
 uninstallPackage "ReesAlgebra"
 restart
-installPackage("ReesAlgebra",FileName=>
-    "/Users/david/gitRepos/Workshop-2017-Berkeley/ReesAlgebras/ReesAlgebra.m2")
+installPackage "ReesAlgebra"
 check "ReesAlgebra"
-
+viewHelp ReesAlgebra
 
