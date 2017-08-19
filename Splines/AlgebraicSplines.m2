@@ -528,7 +528,8 @@ postulationNumber=method()
 --------------------------------------------
 postulationNumber(Module):= (N) ->(
     k := regularity N;
-    while hilbertFunction(k,N)==hilbertPolyEval(k,N) do	(k=k-1);
+    h := hilbertPolynomial(N);
+    while hilbertFunction(k,N)==h(k) do	(k=k-1);
     k
     )
 
@@ -552,34 +553,15 @@ hilbertComparisonTable=method()
 --------------------------------------------
 
 hilbertComparisonTable(ZZ,ZZ,Module):= (a,b,M) ->(
-    r1:=prepend("Degree",toList(a..b));
-    r2:=prepend("Dimension",apply(toList(a..b),i->hilbertFunction(i,M)));
-    r3:=prepend("HilbertPoly",apply(toList(a..b),i->hilbertPolyEval(i,M)));
+    h := hilbertPolynomial(M);
+    r1 := prepend("Degree",toList(a..b));
+    r2 := prepend("Dimension",apply(toList(a..b),i->hilbertFunction(i,M)));
+    r3 := prepend("HilbertPoly",apply(toList(a..b),i->h(i)));
     netList {r1,r2,r3}
     )
 ---------------------------------------------
 
-hilbertPolyEval=method()
----------------------------------------------
--------------------------------------------
------Inputs:
--------------------------------------------
------ i= integer at which you will evaluate the Hilbert polynomial
------ M= module
---------------------------------------------
------- Outputs:
---------------------------------------------
------- An Hilbert polynomial of the module M
------- evaluated at i.
---------------------------------------------
-
-hilbertPolyEval(ZZ,Module):=(i,M)->(
-    P:=hilbertPolynomial(M,Projective=>false);
-    sub(P,(vars ring P)_(0,0)=>i)
-    )
-
 ------------------------------------------
-
 generalizedSplines = method(Options=>{
 	symbol RingType => "Ambient"
 	}
