@@ -45,10 +45,13 @@ export {
    "ByLinearForms",
    "Homogenize",
    "VariableName",
+   "GenVar",
+   "IdempotentVar",
    "splineDimensionTable",
    "postulationNumber",
    "hilbertComparisonTable",
    "generalizedSplines",
+   "ringStructure",
    "formsList",
    "cellularComplex",
    "idealsComplex",
@@ -625,6 +628,44 @@ generalizedSplines(List,List) := Module => opts -> (E,ideals) ->(
 --E:=apply(edges G,e->elements e);
 --generalizedSplines(E,ideals,opts)
 --)
+
+
+--------------------------------------
+ringStructure = method(Options=>{
+	symbol GenVar => getSymbol "w",
+	symbol IdempotentVar => getSymbol "e"
+	}
+    )
+--------------------------------------
+--Input: A submodule, M, of the ring S^k (ring structure of direct sum),
+-----which is known to have the structure of a sub-ring of S^k
+--Output: A map whose image is M as a sub-ring of S^k and whose source
+-----is a polynomial ring in as many variables as there are generators
+-----of M as a sub-ring of S^k.
+--------------------------------------
+ringStructure(Module) := RingMap => opts -> M ->(
+    dg := flatten (degrees(gens M))_1;
+    --position of generator corresponding to embedding of S--
+    p := position(dg,i->i==0);
+    S := M.ring;
+    newM :=(((gens M)_{p})*(vars S))|((gens M)_(select(numcols gens M,i->(dg_i>0))));
+    dg = flatten (degrees(newM))_1;
+    --build direct sum--
+    ng := rank (ambient M);
+    K := coefficientRing(S);
+    e := opts.GenVar;
+    T := K[(symbol e)_0..(symbol e)_(ng-1)];
+    --ideal of idempotent relations--
+    PR := apply(subsets(ng,2),L->(e_(first L)*e_(last L)));
+    SR := apply(ng,i->e_i^2-e_i);
+    Rel := ideal( join(PR,SR) );
+    DS :=(T/Rel)**S;
+    --turn module generators into ring generators
+    mat := (sub(vars T,DS))*(sub(newM,DS));
+    w := opts.IdempotentVar;
+    Am := K[(symbol w)_0..(symbol w)_(#dg-1),Degrees=>dg];
+    map(DS,Am,flatten entries mat)
+    )
 
 ------------------------------------------
 simpBoundary = method()
