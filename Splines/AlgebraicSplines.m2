@@ -48,6 +48,7 @@ export {
    "GenVar",
    "IdempotentVar",
    "Trim",
+   "VariableGens",
    "splineDimensionTable",
    "postulationNumber",
    "hilbertComparisonTable",
@@ -57,13 +58,16 @@ export {
    "cellularComplex",
    "idealsComplex",
    "splineComplex",
-   "courantFunctions"
+   "courantFunctions",
+   "stanleyReisner",
    --Remove after testing
    --"getCodim1Intersections",
    --"simpBoundary",
    --"facetsN",
    --"boundaryComplex",
-   --"polyBoundary"
+   --"polyBoundary",
+   "prune1",
+   "pruneR"
    }
 
 
@@ -688,7 +692,8 @@ generalizedSplines(List,List) := Module => opts -> (E,ideals) ->(
 ringStructure = method(Options=>{
 	symbol GenVar => getSymbol "w",
 	symbol IdempotentVar => getSymbol "e",
-	symbol Trim => false
+	symbol Trim => false,
+	symbol VariableGens => true
 	}
     )
 --------------------------------------
@@ -701,12 +706,16 @@ ringStructure = method(Options=>{
 ringStructure(Module) := RingMap => opts -> M ->(
     S := M.ring;
     ng := rank (ambient M);
-    --diagonal embedding of polynomial ring--
-    ident := matrix apply(ng,i->{1_S});
-    --remove identity (if it exists) as a generator of M--
-    pos := select(numcols gens M,i->(flatten entries((gens M)_{i}))!=(flatten entries ident));
-    --add variables under diagonal embedding to generators of M--
-    newM :=((ident)*(vars S))|((gens M)_(pos));
+    if opts.VariableGens then (
+	--diagonal embedding of polynomial ring--
+	ident := matrix apply(ng,i->{1_S});
+	--remove identity (if it exists) as a generator of M--
+	pos := select(numcols gens M,i->(flatten entries((gens M)_{i}))!=(flatten entries ident));
+	--add variables under diagonal embedding to generators of M--
+	newM :=((ident)*(vars S))|((gens M)_(pos));
+	)else(
+	newM = (gens M)
+	);
     dg := flatten (degrees(newM))_1;
     --build direct sum--
     K := coefficientRing(S);
@@ -729,20 +738,78 @@ ringStructure(Module) := RingMap => opts -> M ->(
     )
 
 ----------------------------------------------
-pruneR=method()
+prune1=method()
 ---------------------------------------------
+--Input: a ring map whose source is a polynomial ring and the kernel of that map
+--Output: a ring map whose source is a sub-ring of the same polynomial ring,
+---with one extraneous generator removed
+---------------------------------------------
+prune1(RingMap,Ideal):=RingMap=> (phi,Kr) ->(
+    H :=source phi;
+    G :=gens H;
+    K :=coefficientRing(H);
+    dg := apply(G,var->degree(var));
+    H1:= K[reverse(G),Degrees=>reverse(dg),MonomialOrder=>Lex];
+    T := target phi;
+    I := sub(Kr,H1);
+    extGen := select(1,gens H,var->(
+	    nv := sub(var,H1);
+	    (nv%I)!=nv
+	    ));
+    I2 :=eliminate(Kr,extGen);
+    G2 :=G-set(extGen);
+    d2 :=apply(G2,g->degree(g));
+    H2 :=K[G2,Degrees=>d2];
+    phi2 := map(T,H2,apply(G2,g->phi(sub(g,H))));
+    K2 := sub(I2,H2);
+    (phi2,K2)
+    )
+
+--------------------------------------------------------
+pruneR=method()
+--------------------------------------------------------
 --Input: a ring map whose source is a polynomial ring
 --Output: a ring map whose source is a sub-ring of the same polynomial ring,
----with extraneous generators removed
+---with all extraneous generators removed
 ---------------------------------------------
 pruneR(RingMap):=RingMap=> phi ->(
-    H := source phi;
-    T := target phi;
-    I := ker phi;
-    extGens := unique toList(set(flatten apply(I_*, f->flatten entries monomials f))*set(gens H));
-    K := coefficientRing(H);
-    H1 := K[(gens H)-set(extGens)];
-    map(T,H1,apply(gens H1,v->phi(sub(v,H))))
+    G := gens (source phi);
+    Kr := ker phi;
+    (phi2,Kr2) := prune1(phi,Kr);
+    G2 := gens(source phi2);
+    while #G2<#G do(
+	phi = phi2;
+	G = G2;
+	Kr = Kr2;
+	(phi2,Kr2) = prune1(phi,Kr);
+	G2 = gens(source phi2)
+	);
+    phi2
+    )
+    
+-----------------------------------------------------------
+stanleyReisner=method(Options=>{
+    symbol InputType => "ByFacets",
+    symbol Homogenize => true,
+    symbol VariableName => getSymbol "t",
+    symbol CoefficientRing => QQ,
+    symbol BaseRing => null}
+    )
+-----------------------------------------------------------
+--Input: V, list of vertices and F, list of facets
+--Output: A ring map phi whose image is the ring of continuous piecewise polynomials on (V,F).  If
+--(V,F) is simplicial, the basis of Courant functions is chosen, so ker phi
+--is the stanleyReisner ideal of (F)
+-----------------------------------------------------------
+stanleyReisner(List,List):=Ring=>opts->(V,F)->(
+    if issimplicial(V,F) then(
+	CF := courantFunctions(V,F,opts);
+	phi := ringStructure(image CF,VariableGens=>false)
+	)else(
+	C0 := splineModule(V,F,0,opts);
+	phi = ringStructure(C0,Trim=>true)
+	);
+    phi
     )
 
 ------------------------------------------
@@ -1985,6 +2052,7 @@ doc ///
 	GenVar
 	IdempotentVar
 	Trim
+	VariableGens
     Headline
     	given a sub-module of a free module (viewed as a ring with direct sum structure), creates a ring map whose image is sub-ring generated by that module
     Usage
@@ -1997,6 +2065,8 @@ doc ///
 	IdempotentVar=>Symbol
 	
 	Trim=>Symbol
+	
+	VariableGens=>Symbol
 	
     Outputs
     	phi:RingMap
