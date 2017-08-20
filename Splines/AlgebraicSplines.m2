@@ -633,7 +633,8 @@ generalizedSplines(List,List) := Module => opts -> (E,ideals) ->(
 --------------------------------------
 ringStructure = method(Options=>{
 	symbol GenVar => getSymbol "w",
-	symbol IdempotentVar => getSymbol "e"
+	symbol IdempotentVar => getSymbol "e",
+	symbol Prune => false
 	}
     )
 --------------------------------------
@@ -664,7 +665,28 @@ ringStructure(Module) := RingMap => opts -> M ->(
     mat := (sub(vars T,DS))*(sub(newM,DS));
     w := opts.GenVar;
     Am := K[w_0..w_(#dg-1),Degrees=>dg];
-    map(DS,Am,flatten entries mat)
+    phi := map(DS,Am,flatten entries mat);
+    if opts.Prune then(
+	phi = pruneR(phi)
+	);
+    phi
+    )
+
+----------------------------------------------
+pruneR=method()
+---------------------------------------------
+--Input: a ring map whose source is a polynomial ring
+--Output: a ring map whose source is a sub-ring of the same polynomial ring,
+---with extraneous generators removed
+---------------------------------------------
+pruneR(RingMap):=RingMap=> phi ->(
+    H := source phi;
+    T := target phi;
+    I := ker phi;
+    extGens := unique toList(set(flatten apply(I_*, f->flatten entries monomials f))*set(gens H));
+    K := coefficientRing(H);
+    H1 := K[(gens H)-set(extGens)];
+    map(T,H1,apply(gens H1,v->phi(sub(v,H))))
     )
 
 ------------------------------------------
@@ -1909,7 +1931,19 @@ doc ///
 	    degrees H --degrees of variables are same as degrees of generators of M
 	    I=ker phi--the ideal of relations among generators
 	    reduceHilbert(hilbertSeries (H/I))--cokernel of phi has the same graded structure as M
-	    reduceHilbert(hilbertSeries M)	    
+	    reduceHilbert(hilbertSeries M)
+	Text
+	    It often happens that module generators are redundant as ring generators.  These can be eliminated with the option
+	    Prune=>true.
+	Example
+	    phi = ringStructure(M);
+	    ker phi --notice a generator involves an isolated variable
+	    phi' = ringStructure(M,Prune=>true);
+	    ker phi' --now all variables correspond to irredundant generators
+	    
+    Caveat
+        Computing the kernel of phi can be (extremely) time-consuming; depending on the application the user
+	may not wish to use the option Prune=>true.
 ///	    
 	    
 doc ///
