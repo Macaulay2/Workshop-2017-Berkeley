@@ -56,7 +56,8 @@ export {
    "formsList",
    "cellularComplex",
    "idealsComplex",
-   "splineComplex"
+   "splineComplex",
+   "courantFunctions"
    --Remove after testing
    --"getCodim1Intersections",
    --"simpBoundary",
@@ -564,6 +565,58 @@ hilbertComparisonTable(ZZ,ZZ,Module):= (a,b,M) ->(
     netList {r1,r2,r3}
     )
 ---------------------------------------------
+
+----------------------------------------------
+courantFunctions=method(Options => {
+	symbol InputType => "ByFacets", 
+	symbol Homogenize => true, 
+	symbol VariableName => getSymbol "t",
+	symbol CoefficientRing => QQ,
+	symbol BaseRing => null})
+-----------------------------------------------
+--Inputs:
+---V: List of vertices (of a simplicial complex)
+---F: List of facets
+--Outputs:
+---CF: #F\times #V matrix of Courant functions which are
+---1 at a chosen vertex and 0 elsewhere
+------------------------------------------------
+courantFunctions(List,List) := Matrix => opts -> (V,F) -> (
+    if not issimplicial(V,F) then(
+	error "Input must be simplicial."
+	)else(
+	--To homogenize, we append a 1 as the final coordinate of each vertex coord in list V.
+    	--If not homogenizing, still need 1s for computing equations
+	d := #(first V);
+    	Vh := apply(V, v-> append(v,1));
+	if opts.BaseRing === null then (
+	S := createSplineRing(d,opts);
+	) else (
+	S = opts.BaseRing;
+	);
+    if opts.Homogenize then (
+	varlist := vars S;
+	int := set {}
+	) else (
+	varlist = (vars S)|(matrix {{1_S}});
+	int = set(F_0);
+	scan(toList(1..length(F)-1),i->(
+		int = set(F_i)*int
+		))
+	);
+    varCol := transpose varlist;
+    M := transpose(matrix(S,Vh));
+    matrix table(length F,toList(0..(length V)-1)-int,(i,j)->(
+	    if member(j,F_i) then(
+		lk := (F_i)-set({j});
+		Num := det(M_lk|varCol);
+		Den := sub(det(M_lk|M_{j}),QQ);
+		Num/Den
+		)else(
+		0
+		)))
+    ))
+
 
 ------------------------------------------
 generalizedSplines = method(Options=>{
@@ -1884,6 +1937,49 @@ doc ///
 
 doc ///
     Key
+    	courantFunctions
+	(courantFunctions, List,List)
+    Headline
+    	returns the Courant functions of a simplicial complex
+    Usage
+    	M=courantFunctions
+    Inputs
+    	V:List
+	    a list of vertex coordinates
+	F:List
+	    a list of facets, recorded as indices of V
+	BaseRing=>Ring
+	    
+	Homogenize=>Boolean
+	
+	CoefficientRing=>Ring
+	
+	VariableName=>Symbol
+	
+	InputType=>String
+	
+    Outputs
+    	M:Matrix
+	    a matrix so that column $i$ is the Courant function corresponding to vertex $V_i$
+    Description
+    	Text
+	    This method returns a matrix with as many rows as facets and as many columns as vertices.  Column $i$
+	    of the matrix is the Courant function corresponding to vertex $V_i$.  This is the piecewise linear function
+	    which takes the value $1$ at the vertex $V_i$ and $0$ at all other vertices.
+	Example
+	    V={{0,0},{0,1},{-1,-1},{1,0}};
+	    F={{0,1,2},{0,2,3},{0,1,3}};
+	    courantFunctions(V,F)
+	Text
+	    If the option Homogenize=>false is given, the Courant function corresponding to a cone vertex (if there is
+	    one) will be discarded.
+	Example
+	    S=QQ[x,y];
+	    courantFunctions(V,F,Homogenize=>false,BaseRing=>S)
+///
+
+doc ///
+    Key
     	ringStructure
 	(ringStructure, Module)
 	GenVar
@@ -2191,6 +2287,23 @@ phi = ringStructure(M);
 assert((ker phi)==ideal(w_1*w_3-w_2*w_3,w_0*w_2-w_2^2-w_3));
 phi' = ringStructure(M,Trim=>true);
 assert((ker phi')==ideal(w_0*w_1*w_2-w_0*w_2^2-w_1*w_2^2+w_2^3));
+///
+
+TEST ///
+V={{-1,0},{1,0},{2,1},{2,-1},{0,-1},{-2,-1},{-2,1},{0,1}};
+F={{0,1,7},{0,1,4},{0,4,5},{0,5,6},{0,6,7},{1,2,7},{1,2,3},{1,3,4}};
+S=QQ[x,y,z];
+assert(courantFunctions(V,F,BaseRing=>S)==matrix {{-(1/2)*x-(1/2)*y+(1/2)*z, (1/2)*x-(1/2)*y+(1/2)*z, 0, 0, 0, 0,
+      0, y}, {-(1/2)*x+(1/2)*y+(1/2)*z, (1/2)*x+(1/2)*y+(1/2)*z, 0, 0, -y, 0,
+      0, 0}, {y+z, 0, 0, 0, (1/2)*x-(1/2)*y+(1/2)*z, -(1/2)*x-(1/2)*y-(1/2)*z,
+      0, 0}, {x+2*z, 0, 0, 0, 0, -(1/2)*x-(1/2)*y-(1/2)*z,
+      -(1/2)*x+(1/2)*y-(1/2)*z, 0}, {-y+z, 0, 0, 0, 0, 0,
+      -(1/2)*x+(1/2)*y-(1/2)*z, (1/2)*x+(1/2)*y+(1/2)*z}, {0, -y+z,
+      (1/2)*x+(1/2)*y-(1/2)*z, 0, 0, 0, 0, -(1/2)*x+(1/2)*y+(1/2)*z}, {0,
+      -x+2*z, (1/2)*x+(1/2)*y-(1/2)*z, (1/2)*x-(1/2)*y-(1/2)*z, 0, 0, 0, 0},
+      {0, y+z, 0, (1/2)*x-(1/2)*y-(1/2)*z, -(1/2)*x-(1/2)*y+(1/2)*z, 0, 0, 0}})
+V={{0,0},{0,1},{-1,-1},{1,0}}; F={{0,1,2},{0,2,3},{0,1,3}}; R=QQ[x,y];
+assert(courantFunctions(V,F,BaseRing=>R,Homogenize=>false)==matrix {{-x+y, -x, 0}, {0, -y, x-y}, {y, 0, x}})
 ///
 
 end
