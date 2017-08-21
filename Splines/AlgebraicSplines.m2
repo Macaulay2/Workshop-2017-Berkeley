@@ -60,16 +60,16 @@ export {
    "splineComplex",
    "courantFunctions",
    "stanleyReisner",
-   "stanleyReisnerPresentation",
+   "stanleyReisnerPresentation"
    --Remove after testing
    --"getCodim1Intersections",
    --"simpBoundary",
    --"facetsN",
    --"boundaryComplex",
    --"polyBoundary",
-   "prune1",
-   "pruneR",
-   "expressInGens"
+   --"prune1",
+   --"pruneR",
+   --"expressInGens"
    }
 
 
@@ -692,7 +692,7 @@ generalizedSplines(List,List) := Module => opts -> (E,ideals) ->(
 
 --------------------------------------
 ringStructure = method(Options=>{
-	symbol GenVar => getSymbol "w",
+	symbol GenVar => getSymbol "Y",
 	symbol IdempotentVar => getSymbol "e",
 	symbol Trim => false,
 	symbol VariableGens => true
@@ -730,8 +730,8 @@ ringStructure(Module) := RingMap => opts -> M ->(
     DS :=(T/Rel)**S;
     --turn module generators into ring generators
     mat := (sub(vars T,DS))*(sub(newM,DS));
-    w := opts.GenVar;
-    Am := K[w_0..w_(#dg-1),Degrees=>dg];
+    Y := opts.GenVar;
+    Am := K[Y_0..Y_(#dg-1),Degrees=>dg];
     phi := map(DS,Am,flatten entries mat);
     if opts.Trim then(
 	phi = pruneR(phi)
@@ -806,17 +806,17 @@ stanleyReisner=method(Options=>{
 stanleyReisner(List,List):=Ring=>opts->(V,F)->(
     if issimplicial(V,F) then(
 	CF := courantFunctions(V,F,opts);
-	phi := ringStructure(image CF,VariableGens=>false)
+	phi := ringStructure(image CF,VariableGens=>false,GenVar => getSymbol "X")
 	)else(
 	C0 := splineModule(V,F,0,opts);
-	phi = ringStructure(C0,Trim=>true)
+	phi = ringStructure(C0,Trim=>true,GenVar => getSymbol "X")
 	);
     phi
     )
 
 -----------------------------------------------------------
 expressInGens=method(Options=>{
-    symbol GenVar => getSymbol "X"}
+    symbol GenVar => getSymbol "Z"}
     )
 -----------------------------------------------------------
 --Input: ring map phi, matrix representing element of free module R^k
@@ -829,8 +829,8 @@ expressInGens(RingMap,Matrix):= RingElement => opts -> (phi,f) -> (
     dg := flatten apply(gens H,var->degree(var));
     T := target phi;
     K := coefficientRing(H);
-    X := opts.GenVar;
-    nH := K[prepend(X,gens H),Degrees=>join((degrees f)_1_0,dg),MonomialOrder=>Lex];
+    Z := opts.GenVar;
+    nH := K[prepend(Z,gens H),Degrees=>join((degrees f)_1_0,dg),MonomialOrder=>Lex];
     nG := drop(gens nH,1);
     img := apply(nG,var->phi(sub(var,H)));
     vList := matrix {apply(ng,i->T_i)};
@@ -2238,8 +2238,8 @@ doc ///
 	    describe T --direct sum of two copies of R, one for each face; e_i corresponds to the face F_i    
 	Text
 	    As above, write $e$ for the identity of $R^k$.  Then the generators for $M$ as a sub-ring of $R^k$ are the generators of $M$ as an $R$-module (other than $e$), together with 
-	    the generators $x_0e,x_1e,\ldots,x_ne$.  The source of the map created by ringStructure(M) is a polynomial ring in variables $w_0,\ldots,w_n,w_{n+1},\cdots,w_m$, where $w_0,\cdots,w_n$ corresond to the 
-	    generators $x_0e,\ldots,x_ne$ and $w_{n+1},\cdots,w_m$ correspond to the usual generators of M (except for e, if it happens to be a generator of M).
+	    the generators $x_0e,x_1e,\ldots,x_ne$.  The source of the map created by ringStructure(M) is a polynomial ring in variables $Y_0,\ldots,Y_n,Y_{n+1},\cdots,Y_m$, where $Y_0,\cdots,Y_n$ corresond to the 
+	    generators $x_0e,\ldots,x_ne$ and $Y_{n+1},\cdots,Y_m$ correspond to the usual generators of M (except for e, if it happens to be a generator of M).
 	Example
 	    H=source phi;
 	    describe H --polynomial ring in three variables, one for each generator of R and each (non-identity) generator of M
@@ -2273,7 +2273,7 @@ doc ///
 	    variables.
 	Example
 	    f = (ker phi')_0
-	    sub(f,{w_0=>w_0-w_1,w_1=>w_0-w_2,w_2=>w_0})
+	    sub(f,{Y_0=>Y_0-Y_1,Y_1=>Y_0-Y_2,Y_2=>Y_0})
 	Text
 	    If $\Delta$ is simplicial, the ring structure of $C^0(\Delta)$ with this preferred set of generators is obtained with the command @TO stanleyReisner@.
 	Text
@@ -2346,7 +2346,7 @@ doc ///
 	    H=source phi; H1=source phi1;
 	    gens H
 	    gens H1	     
-	    psi=map(H,H1,gens H);--phi1 has same source as H, just with different variable names
+	    psi=map(H,H1,gens H);--phi1 has "same" source as H, but they are viewed as different rings by Macaulay2
 	    scan(gens H1,g->print {g,phi1(g),phi(psi(g))})--phi expresses generators of M in the Stanley Reisner ring, while phi1 expresses generators in the free module R^3
     	    (ker phi)==psi(ker phi1)--the kernels are the same
 	Text
@@ -2592,9 +2592,9 @@ TEST ///
 V={{0,0},{0,1},{-1,-1},{1,0}}; F={{0,1,2},{0,2,3},{0,1,3}}; R=QQ[x,y];
 M=splineModule(V,F,0,BaseRing=>R,Homogenize=>false);
 phi = ringStructure(M);
-assert((ker phi)==ideal(w_1*w_3-w_2*w_3,w_0*w_2-w_2^2-w_3));
+assert((ker phi)==ideal(Y_1*Y_3-Y_2*Y_3,Y_0*Y_2-Y_2^2-Y_3));
 phi' = ringStructure(M,Trim=>true);
-assert((ker phi')==ideal(w_0*w_1*w_2-w_0*w_2^2-w_1*w_2^2+w_2^3));
+assert((ker phi')==ideal(Y_0*Y_1*Y_2-Y_0*Y_2^2-Y_1*Y_2^2+Y_2^3));
 ///
 
 TEST ///
@@ -2617,9 +2617,9 @@ assert(courantFunctions(V,F,BaseRing=>R,Homogenize=>false)==matrix {{-x+y, -x, 0
 TEST ///
 V={{0,0},{0,1},{-1,-1},{1,0}}; F={{0,1,2},{0,2,3},{0,1,3}}; R=QQ[x,y];
 phi=stanleyReisner(V,F);
-assert((ker phi)==ideal(w_1*w_2*w_3))
+assert((ker phi)==ideal(X_1*X_2*X_3))
 phi1=stanleyReisner(V,F,BaseRing=>R,Homogenize=>false);
-assert((ker phi1)==ideal(w_0*w_1*w_2))
+assert((ker phi1)==ideal(X_0*X_1*X_2))
 V={{-1,0},{1,0},{2,1},{2,-1},{0,-1},{-2,-1},{-2,1},{0,1}};
 F={{0,1,7},{0,1,4},{0,4,5},{0,5,6},{0,6,7},{1,2,7},{1,2,3},{1,3,4}};
 phi=stanleyReisner(V,F);
@@ -2633,39 +2633,28 @@ G1 = apply(gens H1,v->phi1(v));
 assert(G0==G1)
 ///
 
+TEST ///
+V={{0,0},{0,1},{-1,-1},{1,0}}; F={{0,1,2},{0,2,3},{0,1,3}}; R=QQ[x,y];
+phi=stanleyReisnerPresentation(V,F,1,BaseRing=>R,Homogenize=>false); H=source phi;
+SR=target phi;
+assert(phi(H_0)==(-SR_1+SR_2))
+assert(phi(H_1)==(SR_0-SR_1))
+assert(phi(H_2)==(-SR_1^3+3*SR_1^2*SR_2))
+assert(phi(H_3)==(SR_0*SR_1^2-SR_1^3+2*SR_1^2*SR_2))
+M=splineModule(V,F,1,Homogenize=>false,BaseRing=>R);
+phi1=ringStructure(M); H1=source phi1; psi=map(H,H1,gens H);
+assert((ker phi)==psi(ker phi1))
+V={{0,0,0},{1,0,0},{0,1,0},{0,0,1},{-1,0,0},{0,-1,0},{0,0,-1}};
+F={{0,1,2,3},{0,1,2,6},{0,2,3,4},{0,2,4,6},{0,1,3,5},{0,3,4,5},{0,4,5,6},{0,1,5,6}};
+S=QQ[x,y,z];
+phi=stanleyReisnerPresentation(V,F,1,BaseRing=>S,Homogenize=>false,Trim=>true);
+H=source phi; SR=target phi; use SR;
+assert(apply(gens H,g->phi(g))=={X_0-X_3, X_1-X_4, X_2-X_5, X_2^2, X_1^2, X_3^2})
+///
+
 end
 
 --may restore to documentation in future iterations
-
---doc ///
---    Key
---        hilbertPolyEval
---	(hilbertPolyEval,ZZ,Module)
---    Headline
---        a function to evaluate the hilbertPolynomial of a graded module at an integer
---    Usage
---        v = hilbertPolyEval(a,M)
---    Inputs
---        a:ZZ
---	    a= integer at which you will evaluate the hilbertPolynomial of the graded module M
---	M:Module
---	    M= graded module
---    Outputs
---        v:ZZ
---	    v= hilbertPolynomial of the graded module M evaluated at a
---    Description
---        Text
---            For any graded module M and any integer a, you may evaluate the hilberPolynomial of M
---	    at a.
---	Example
---	    V = {{0,0},{1,0},{1,1},{0,1}};
---	    F = {{0,1,2},{0,2,3}};
---	    E = {{0,1},{0,2},{0,3},{1,2},{2,3}};
---	    M = splineModule(V,F,E,2)
---	    hilbertPolyEval(2,M)
---	    
---///
-
 
 --doc ///
 --    Key
