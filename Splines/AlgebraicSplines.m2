@@ -1528,7 +1528,7 @@ doc ///
     Key
         AlgebraicSplines
     Headline
-        a package for working with algebraic splines
+        a package for working with splines on simplicial complexes, polytopal complexes, and graphs
     Description
         Text
             This package provides methods for computations with piecewise polynomial functions (splines) over
@@ -1578,8 +1578,7 @@ doc ///
 	    connection was noticed in [3].  For the braid arrangement and its sub-arrangements, the module of derivations is isomorphic to a ring of
 	    splines in a natural way (see [11] and [4]).
 	    
-            Methods in this package borrows heavily from code written by Hal Schenck
-	    and Mike DiPasquale.
+            Methods in this package borrow from code written by Hal Schenck.
 	    
 	    References:\break
 	    [1] Louis J. Billera. Homology of smooth splines: generic triangulations and a conjecture of Strang. Trans. Amer. Math. Soc., 310(1):325–340, 1988.\break
