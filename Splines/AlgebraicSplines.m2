@@ -718,9 +718,9 @@ ringStructure(Module) := RingMap => opts -> M ->(
 	)else(
 	newM = (gens M)
 	);
-    dg := flatten (degrees(newM))_1;
+    dg := (degrees(newM))_1;
     --build direct sum--
-    K := coefficientRing(S);
+    K := if (S===ZZ) then (ZZ) else coefficientRing(S);
     e := opts.IdempotentVar;
     T := K[e_0..e_(ng-1)];
     --ideal of idempotent relations--
@@ -731,7 +731,7 @@ ringStructure(Module) := RingMap => opts -> M ->(
     --turn module generators into ring generators
     mat := (sub(vars T,DS))*(sub(newM,DS));
     Y := opts.GenVar;
-    Am := K[Y_0..Y_(#dg-1),Degrees=>dg];
+    Am := K[Y_0..Y_(numcols(newM)-1),Degrees=>dg];
     phi := map(DS,Am,flatten entries mat);
     if opts.Trim then(
 	phi = pruneR(phi)
@@ -749,15 +749,16 @@ prune1=method()
 prune1(RingMap,Ideal):=RingMap=> (phi,Kr) ->(
     H :=source phi;
     G :=gens H;
+    extGen := select(1,G,var->(any(Kr_*,g->member(var,flatten entries monomials g))));
+    --dg := apply(G,var->degree(var));
+    --H1:= K[reverse(G),Degrees=>reverse(dg),MonomialOrder=>Lex];
+    --I := sub(Kr,H1);
+    --extGen := select(1,gens H,var->(
+	--    nv := sub(var,H1);
+	--    (nv%I)!=nv
+	--    ));
     K :=coefficientRing(H);
-    dg := apply(G,var->degree(var));
-    H1:= K[reverse(G),Degrees=>reverse(dg),MonomialOrder=>Lex];
-    T := target phi;
-    I := sub(Kr,H1);
-    extGen := select(1,gens H,var->(
-	    nv := sub(var,H1);
-	    (nv%I)!=nv
-	    ));
+    T := target phi; 
     I2 :=eliminate(Kr,extGen);
     G2 :=G-set(extGen);
     d2 :=apply(G2,g->degree(g));
@@ -873,7 +874,7 @@ stanleyReisnerPresentation(List,List,ZZ):=Matrix=>opts->(V,F,r)->(
     T := source phi;
     I := ker phi;
     Y := opts.GenVar;
-    K := opts.CoefficientRing;
+    K := coefficientRing(S);
     H := K[apply(length GCR,i->Y_i),Degrees=>dg];
     MP := apply(GCR,f->sub(expressInGens(phi,f),T));
     phiN := map(T/I,H,MP);
@@ -1527,28 +1528,75 @@ doc ///
     Key
         AlgebraicSplines
     Headline
-        a package for building splines and computing bases
+        a package for working with algebraic splines
     Description
         Text
             This package provides methods for computations with piecewise polynomial functions (splines) over
 	    polytopal complexes.
--- 	Text 
---	    "Definitions"
 	Text
 	    Let $\Delta$ be a partition (simplicial,polytopal,cellular,rectilinear, etc.) of a space $\RR^n$.
-	    The spline module $S_d^{r}(\Delta)$ is the module of all functions $f\in C^r(\Delta)$ such that
-	    $f$ is a polynomial of degree $d$ when restricted to each facet $\sigma\in\Delta$.
-	Text
-	    This package computes the @TO splineModule@ and @TO splineMatrix@ of $\Delta$, as well as the Billera-Schenck-Stillman
-	    @TO splineComplex@ of $\Delta$.
---	    , as well
---	    as defining new type @TO Splines@ that contain geometric data 
---	    for $\Delta$ (if entered) and details on the associated spline module $S_d^r(\Delta)$.
---        Text
---	    @SUBSECTION "Other acknowledgements"@
-            --
+	    The spline module $S^{r}(\Delta)$ is the module of all functions $f$ continuously differentiable
+	    to order $r$ such that $f$ is a polynomial when restricted to each facet $\sigma\in\Delta$.
+	    The vector space $S^r_d(\Delta)$ consists of splines whose polynomial restrictions have degree at most $d$.
+	    Its dimension is of particular interest in approximation theory (see [10]).
+	    
+	    The foundations of the algebraic approach to splines (as it applies to numerical analysis) was developed by Billera and Rose in [1],[2],[3].  
+	    In particular, it is shown in [3] that dim$S^r_d(\Delta)=$dim$S^r(c\Delta)_d$, where $S^r(c\Delta)_d$
+    	    is the vector space of splines of degree exactly $d$ on the cone $c\Delta$ over $\Delta$.  So
+	    the statistic dim$S^r_d(\Delta)$ is the Hilbert function of $S^r(c\Delta)$.  The functions
+	    @TO splineMatrix@ and @TO splineModule@ construct the matrix from [3] whose kernel is $S^r(\Delta)$, and
+	    the module $S^r(\Delta)$, respectively.  The functions @TO splineDimensionTable@ and @TO hilbertComparisonTable@ display the statistic
+	    dim$S^r_d(\Delta)$ and compare it to the long term dimension formula, respectively.
+	    
+	    In [1], Billera uses a homological approach to solve a conjecture of Strang on the dimension of the space
+	    $S^1_d(\Delta)$.  The chain complex which he defines in [1] was later modified by Schenck and Stillman in [10]; we will
+	    call this the Billera-Schenck-Stillman chain complex.  It has appeared in many papers due to its use in 
+	    finding dim$S^r_d(\Delta)$; perhaps most notable is [11].  In [10] the chain complex is also used to compute 
+	    dimension formulas in the polytopal setting.  The Billera-Schenck-Stillman complex is implemented by the method
+	    @TO splineComplex@.  The Billera-Schenck-Stillman chain complex is a quotient of the cellular chain complex of
+	    $\Delta$ (relative to the boundary of $\Delta$); the latter is computed by @TO cellularComplex@.  The kernel of
+	    this surjection is given by @TO idealsComplex@.
+	    
+	    The functions mentioned thus far are concerned only with the structure of $S^r(\Delta)$ as a module over the polynomial
+	    ring.  The method @TO ringStructure@ constructs $S^r(\Delta)$ as a quotient of a polynomial ring, thus recovering its
+	    ring structure.  In [2], Billera shows that there is a natural isomorphism between the affine Stanley-Reisner ring $K_a[\Delta]$
+	    (see explanation in documentation for @TO ringStructure@) of a simplicial complex and the ring $S^0(\Delta)$ of continuous 
+	    piecewise polynomials on $\Delta$. The isomorphism identifies the variable corresponding to a vertex with the Courant function 
+	    for that vertex. The method @TO courantFunctions@ computes these functions, and the method @TO stanleyReisner@ constructs
+	    the isomorphism identified in [2].  Moreover, the rings $S^r(\Delta)$ live inside $S^0(\Delta)$ - this is of particular interest
+	    when $\Delta$ is simplicial due to Billera's result.  The method @TO stanleyReisnerPresentation@ constructs $S^r(\Delta)$ as a
+	    quotient of a ring map from a polynomial ring into $S^0(\Delta)$; in particular the generators of $S^r(\Delta)$ are presented
+	    in terms of generators of $S^0(\Delta)$.  If $\Delta$ is simplicial these are selected to be the Courant functions.
+	    
+	    In topology, splines arise as equivariant cohomology of spaces with a torus action via GKM theory - see [14] for a survey of how
+	    this relates to splines in numerical analysis; and [6] for the precise relationship between continuous splines and the equivariant
+	    Chow cohomology of toric varieties.  From this perspective, the notion of generalized splines on graphs was introduced in [5].  The
+	    method @TO generalizedSplines@ computes splines in this more flexible setting.  The relationship to splines in numerical analysis is
+	    via the dual graph described by Rose in [7],[8].
+	    
+	    Additionally, there are connections between splines and the module of multi-derivations of a hyperplane arrangement.  A basic structural
+	    connection was noticed in [3].  For the braid arrangement and its sub-arrangements, the module of derivations is isomorphic to a ring of
+	    splines in a natural way (see [11] and [4]).
+	    
             Methods in this package borrows heavily from code written by Hal Schenck
 	    and Mike DiPasquale.
+	    
+	    References:\break
+	    [1] Louis J. Billera. Homology of smooth splines: generic triangulations and a conjecture of Strang. Trans. Amer. Math. Soc., 310(1):325–340, 1988.\break
+    	    [2] Louis J. Billera, The Algebra of Continuous Piecewise Polynomials, Adv. in Math. 76, 170-183 (1989).\break
+    	    [3] Louis J. Billera and Lauren L. Rose. A dimension series for multivariate splines. Discrete Comput. Geom., 6(2):107–128, 1991.\break
+    	    [4] Michael DiPasquale. Generalized Splines and Graphic Arrangements. J. Algebraic Combin. 45  (2017),  no. 1, 171-189.\break
+	    [5] Simcha Gilbert, Julianna Tymoczko, and Shira Viel. Generalized splines on arbitrary graphs. Pacific J. Math.  281  (2016),  no. 2, 333-364.\break
+    	    [6] Sam Payne, Equivariant Chow cohomology of toric varieties, Math. Res. Lett. 13 (2006), 29-41.\break
+	    [7] Lauren Rose, Combinatorial and topological invariants of modules of piecewise polynomials, Adv. Math. 116 (1995), 34-45.\break
+	    [8] Lauren Rose, Graphs, syzygies, and multivariate splines, Discrete Comput. Geom. 32 (2004), 623-637.\break
+	    [9] T. McDonald, H. Schenck, Piecewise polynomials on polyhedral complexes, Adv. in Appl. Math. 42 (2009), 82-93.\break
+	    [10] Hal Schenck and Mike Stillman. Local cohomology of bivariate splines. J. Pure Appl. Algebra,117/118:535–548, 1997. Algorithms for algebra (Eindhoven, 1996).\break
+	    [11] Hal Schenck, A Spectral Sequence for Splines, Adv. in Appl. Math. 19, 183-199 (1997).\break 
+    	    [12] Schenck, Hal . Splines on the Alfeld split of a simplex and type A root systems. J. Approx. Theory  182  (2014), 1-6.\break
+	    [13] Gilbert Strang, Piecewise Polynomials and the Finite Element Method, Bull. Amer. Math. Soc. 79 (1973) 1128-1137.\break
+	    [14] Julianna Tymoczko. Splines in geometry and topology.  Comput. Aided Geom. Design  45  (2016), 32-47.
+    	    
 ///
 
 ------------------------------------------
@@ -1959,7 +2007,14 @@ doc ///
 	    E={{1,2},{2,3},{3,4}}
 	    I={ideal(x,y),ideal(y),ideal(z)}
 	    generalizedSplines(E,I)
-	    
+	Text
+	    This method can be used to compute splines over non-linear partitions.  The example below can be found in Exercise 13 of Section 8.3 in
+	    the book Using Algebraic Geometry by Cox,Little, and O'Shea.
+	Example
+	    E={{0,1},{1,2},{0,2}};
+	    S=QQ[x,y];
+	    I={y-x^2,x+y^2,y-x^3};--these three curves meet at the origin 
+	    generalizedSplines(E,I)--this is the module of C^0 splines on the partition
 ///
 
 doc ///
@@ -2166,8 +2221,8 @@ doc ///
 	    phi=stanleyReisner(V,F,BaseRing=>R,Homogenize=>false)
 	    ker phi--decone of simplicial complex is a three-cycle
 	Text
-	    The Stanley Reisner ring of a simpicial complex is obtained by selecting its
-	    ring generators to be the Courant functions.
+	    The Stanley Reisner ring of a simpicial complex is obtained using the function @TO ringStructure@, where the
+	    ring generators are chosen to be the Courant functions.
 	Example
 	    V={{0,0},{0,1},{-1,-1},{1,0}};
 	    F={{0,1,2},{0,2,3},{0,1,3}};
@@ -2180,8 +2235,8 @@ doc ///
 	    ring $C^0(\Delta)$.  There is no canonical choice of generators, and $C^0(\Delta)$ is no longer
 	    a combinatorial object.
 	Example
-	    V={{0,10},{-1,-1},{1,-1},{0,2},{-2,-2},{2,-2}};--symmetric triangular prism
-	    V'={{1,10},{-1,-1},{1,-1},{0,2},{-2,-2},{2,-2}};--asymmetric triangular prism
+	    V={{0,1},{-1,-1},{1,-1},{0,10},{-2,-2},{2,-2}};--symmetric triangular prism
+	    V'={{0,1},{-1,-1},{1,-1},{1,10},{-2,-2},{2,-2}};--asymmetric triangular prism
 	    F={{0,1,2},{0,1,3,4},{0,2,3,5},{1,2,4,5}};
 	    S=QQ[x,y,z];
 	    phi=stanleyReisner(V,F,BaseRing=>S) --four generators in degree one
@@ -2245,7 +2300,7 @@ doc ///
 	    describe H --polynomial ring in three variables, one for each generator of R and each (non-identity) generator of M
 	    scan(3,i->print phi(H_i))--these are the splines the variables map to  
 	Text
-	    The kernel of the map created by ringStructure(M) is the ideal of relations on the ring generators.  The grading on the source
+	    The kernel of the map created by ringStructure(M) is the ideal of relations on the ring generators.  If M is graded, the grading on the source
 	    of the map matches up with the grading on M.
 	Example
 	    degrees H --degrees of variables are same as degrees of generators of M
@@ -2254,7 +2309,8 @@ doc ///
 	    reduceHilbert(hilbertSeries M)
 	Text
 	    It often happens that module generators are redundant as ring generators.  These can be eliminated with the option
-	    Trim=>true.
+	    Trim=>true.  The remaining variables in the source ring retain their indexing from the output of ringStructure without
+	    the Trim=>true option.
 	Example
 	    V={{0,0},{0,1},{-1,-1},{1,0}};
 	    F={{0,1,2},{0,2,3},{0,1,3}};--three triangles meeting at (and surrounding) a vertex
@@ -2270,19 +2326,24 @@ doc ///
 	    so-called affine Stanley Reisner ring $\frac{K[\Delta]}{(1-\sum_{v} X_v)K[\Delta]}$.  If $\Delta$ is a cone, as above, then the affine 
 	    Stanley Reisner ring is just the Stanley Reisner ring of the decone of $\Delta$.  In the above example the decone is an empty triangle, so $C^0(\Delta)$ should be
 	    isomorphic to a polynomial ring in three variables modulo the ideal generated by the product of the variables.  The isomorphism can be seen by the following change of
-	    variables.
+	    variables.  Alternatively, the ring structure of $C^0(\Delta)$ with this preferred set of generators is obtained with the command @TO stanleyReisner@.
 	Example
 	    f = (ker phi')_0
 	    sub(f,{Y_0=>Y_0-Y_1,Y_1=>Y_0-Y_2,Y_2=>Y_0})
 	Text
-	    If $\Delta$ is simplicial, the ring structure of $C^0(\Delta)$ with this preferred set of generators is obtained with the command @TO stanleyReisner@.
-	Text
 	    To obtain the sub-ring of $R^k$ which is generated by a specific set of module generators of M, i.e. without adding $x_0e,\ldots,x_ne$ as ring generators,
 	    use the option VariableGens=>false.  This may be done if the user has a particular choice of ring generators they would like to use - for instance
 	    the Courant functions.  See @TO courantFunctions@.
+	Text
+	    We may also use ringStructure to create the ring of splines for more general spline modules created using the @TO generalizedSplines@ method.
+	Example
+	    E={{0,1},{1,2},{0,2}};
+	    S=QQ[x,y];
+	    I={y-x^2,x+y^2,y-x^3};
+	    C0=generalizedSplines(E,I);--splines on a non-linear partition
+	    ringStructure(C0)
     Caveat
-        Computing the kernel of phi can be time-consuming for larger examples; depending on the application the user
-	may not wish to use the option Trim=>true.
+        The Trim option will not work for quotients of polynomial rings over ZZ or ZZ modulo a non-prime integer.
     SeeAlso
     	courantFunctions
 	stanleyReisner
@@ -2363,6 +2424,13 @@ doc ///
 	    V'={{0,0,0},{1,0,0},{0,1,0},{1,1,1},{-1,0,0},{0,-1,0},{0,0,-1}}; --centrally triangulated octahedron that has been perturbed
 	    F={{0,1,2,3},{0,1,2,6},{0,2,3,4},{0,2,4,6},{0,1,3,5},{0,3,4,5},{0,4,5,6},{0,1,5,6}};
 	    stanleyReisnerPresentation(V',F,1,Homogenize=>false,BaseRing=>S,Trim=>true)
+	Text
+	    If $\Delta$ is not simplicial, $C^0(\Delta)$ does not have the same nice structure.
+	Example
+	    V={{0,1},{-1,-1},{1,-1},{0,2},{-2,-2},{2,-2}};
+	    F={{0,1,2},{0,1,3,4},{0,2,3,5},{1,2,4,5}}; --symmetric triangular prism--
+	    S=QQ[x,y,z];
+	    stanleyReisnerPresentation(V,F,1,BaseRing=>S,Trim=>true)
     SeeAlso
     	courantFunctions
 	stanleyReisner
