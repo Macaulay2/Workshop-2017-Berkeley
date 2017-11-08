@@ -13,39 +13,40 @@ newPackage(
 
 export {
     -- Options
-    "UseMinimalPrimes",
+    "InSymbolic",
     "SampleSize",
-    "UseWaldschmidt",
-    "InSymbolic", 
+    "UseMinimalPrimes",
+    "UseWaldschmidt", 
     
     -- Methods
-    "symbolicPower", 
-    "isSymbPowerContainedinPower", 
-    "containmentProblem", 
+    "asymptoticRegularity",
+    "assPrimesHeight",
     "bigHeight",
-    "frobeniusPower", 
-    "symbPowerPrimePosChar", 
-    "isSymbolicEqualOrdinary",
-    "symbolicPowerJoin", 
-    "joinIdeals",
-    "symbolicContainmentMonomialCurve", 
-    "squarefreeGens", 
-    "squarefreeInCodim",
-    "symbolicPowerMonomialCurve", 
+    "containmentProblem", 
+    "exponentsMonomialGens", 
+    "frobeniusPower",       
+    "joinIdeals",    
+    "isGorenstein",
     "isKonig", 
     "isPacked", 
+    "isSymbolicEqualOrdinary",
+    "isSymbPowerContainedinPower", 
+    "lowerBoundResurgence",
+    "minDegreeSymbPower", 
     "noPackedSub", 
     "noPackedAllSubs",
-    "minDegreeSymbPower", 
-    "lowerBoundResurgence",
     --"upperBoundResurgence",
-    "exponentsMonomialGens", 
+    "squarefreeGens", 
+    "squarefreeInCodim",    
+    "symbolicContainmentMonomialCurve",
     "symbolicDefect",
+    "symbolicPower", 
+    "symbolicPowerJoin",
+    "symbolicPowerMonomialCurve", 
+    "symbPowerPrimePosChar",
     "symbolicPolyhedron", 
-    "isGorenstein",
     "unmixedPart",
-    "waldschmidt",
-    "asymptoticRegularity"
+    "waldschmidt"
     }
 
 
@@ -53,15 +54,13 @@ needsPackage "Polyhedra";
 needsPackage "Depth";
 
 
-bigHeight = method(TypicalValue => ZZ)
-bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
-    (R := ring I; d := dim R; c := codim I; M := R^1/I; 
-	if codim Ext^d(M,R) == d then d else 
-	(l := toList (c .. d);
-	w := apply(l, i->Ext^i(M,R)); v := apply(w,codim); 
-	d-position(reverse(v-l),i->i==0))))
 
-
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Auxiliary functions: faster powers, big height, unmixed part
+-- isMonomial
+-----------------------------------------------------------
+-----------------------------------------------------------
 
 fastPower = method(TypicalValue => Ideal)
 fastPower(Ideal,ZZ) := Ideal => (I,n) ->
@@ -69,44 +68,63 @@ fastPower(Ideal,ZZ) := Ideal => (I,n) ->
 (for i from 2 to n do J = J*I);
 J)
 
-isSymbolicEqualOrdinary = method(TypicalValue => Boolean)
-isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
-    h := bigHeight(P);
-    if bigHeight(Q) > h then false else (
-	if h==codim(P) then true else symbolicPower(P,n)==Q))
-    
+
+--old version of big height
+--bigHeight = method(TypicalValue => ZZ)
+--bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
+--    (R := ring I; d := dim R; c := codim I; M := R^1/I; 
+--	if codim Ext^d(M,R) == d then d else
+--	(l := toList (c .. d);
+--	w := apply(l, i->Ext^i(M,R)); v := apply(w,codim); 
+--	d-position(reverse(v-l),i->i==0))))
+
+
+bigHeight = method(TypicalValue => ZZ)
+bigHeight(Ideal) := ZZ => I -> (if isPrimary(I) then codim(I) else 
+    (R := ring I; 
+	d := dim R; 
+	c := codim I; 
+	M := R^1/I; 
+	ans := d;
+	scan(reverse toList (c .. d), 
+	    i -> (if codim Ext^i(M,R) == i then (ans = i; break)));
+	ans    	    	
+	)
+    )
+
+
+assPrimesHeight = method(TypicalValue => List)
+assPrimesHeight(Ideal) := List => I -> (
+    if isPrimary(I) then {codim(I)} else 
+    (R := ring I; 
+	d := dim R; 
+	c := codim I; 
+	M := R^1/I; 
+	l := toList (c .. d);
+	w := apply(l, i->Ext^i(M,R)); 
+	v := apply(w,codim);
+	reverse apply(positions(reverse(v-l),i->i==0), j -> d-j)))
 
 
 
-isSymbPowerContainedinPower = method(TypicalValue => Boolean, Options => {UseMinimalPrimes => false})
-isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
-    h := bigHeight I; 
-    if m<n then false else (
-	if m>= h*n then true else (
-	symb := symbolicPower(I,m, UseMinimalPrimes => opts.UseMinimalPrimes); 
-	pow := fastPower(I,n); 
-	isSubset(symb,pow))))
+unmixedPart = method()
+unmixedPart(Ideal) := Ideal => I -> (minPrimes := minimalPrimes (I);
+    primDec := primaryDecomposition(I);
+    minComponents := {};
+    scan(primDec, i -> (rad := radical(i); scan(minPrimes, a -> 
+		if rad == a then 
+		(minComponents = append(minComponents,i); break))));
+    intersect(minComponents))
 
 
+isMonomial = method()
+isMonomial(RingElement) := r -> (terms(r) == {r})
+isMonomial(MonomialIdeal) := I -> true
+isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 
-containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false,InSymbolic => false})
-containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (
-
-    if not(opts.InSymbolic) then (
-	m := n; 
-	while 
-	not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
-	do m = m+1; return(m));
-    
-    if opts.InSymbolic then (
-    h := bigHeight(I);
-    e := (n-n%h)/h; 
-    l := lift(e,ZZ);
-    while isSymbPowerContainedinPower(I,n,l+1,
-	UseMinimalPrimes => opts.UseMinimalPrimes) do l = l+1;
-    return l))
-
+minDegreeSymbPower = method(TypicalValue => ZZ)
+minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
 --Given an ideal I and q=p^e, computes the e-th Frobenius power of I
 frobeniusPower = method(TypicalValue => Ideal)
@@ -115,24 +133,14 @@ ideal(apply(flatten entries gens I, i -> i^q))
 
 
 
---Given integers a and p, finds the largest power of p such that p^k<=a
-powersdivision = method(TypicalValue => ZZ)
-powersdivision(ZZ,ZZ,ZZ) := ZZ => (a,p,k) -> (if p^k>a then 1 else 
-    1+(powersdivision(a,p,k+1)))
-powersdivision(ZZ,ZZ) := ZZ => (a,p) -> powersdivision(a,p,1)
 
---Computes the symbolic power of a prime ideal in characteristic p
---The method is as follows: to compute $I^{(a)}$, find the largest value k with 
--- $q=p^k \leqslant a$
---$I^{(a)} = (I^{[q]} : I^{a-q+1})$
-symbPowerPrimePosChar = method(TypicalValue => Ideal)
-symbPowerPrimePosChar(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; p := char R;
-    if not(isPrime(I)) 
-    then "Not a prime ideal" else (
-	h := codim I;
-	if p==0 then "The characteristic must be positive" else
-	(e := powersdivision(n,p); q := p^e; c := q-1; d := h*c-n+1; J:= I^d;
-	    (frobeniusPower(I,q)):J)))
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Main symbolic powers function
+-----------------------------------------------------------
+-----------------------------------------------------------
 
 
 
@@ -204,17 +212,87 @@ symbolicPower(Ideal,ZZ) := Ideal => opts -> (I,n) -> (R := ring I;
     )
 
 
-unmixedPart = method()
-unmixedPart(Ideal) := Ideal => I -> (minPrimes := minimalPrimes (I);
-    primDec := primaryDecomposition(I);
-    minComponents := {};
-    scan(primDec, i -> (rad := radical(i); scan(minPrimes, a -> 
-		if rad == a then 
-		(minComponents = append(minComponents,i); break))));
-    intersect(minComponents))
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+-- Containment Problem and Equality functions
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+
+isSymbolicEqualOrdinary = method(TypicalValue => Boolean)
+isSymbolicEqualOrdinary(Ideal,ZZ) := (P,n) -> (Q := fastPower(P,n); 
+    h := bigHeight(P);
+    if bigHeight(Q) > h then false else (
+	if h==codim(P) then true else symbolicPower(P,n)==Q))
+    
 
 
 
+isSymbPowerContainedinPower = method(TypicalValue => Boolean, Options => {UseMinimalPrimes => false})
+isSymbPowerContainedinPower(Ideal,ZZ,ZZ) := Boolean => opts -> (I,m,n) -> (
+    h := bigHeight I; 
+    if m<n then false else (
+	if m>= h*n then true else (
+	symb := symbolicPower(I,m, UseMinimalPrimes => opts.UseMinimalPrimes); 
+	pow := fastPower(I,n); 
+	isSubset(symb,pow))))
+
+
+
+
+containmentProblem = method(TypicalValue => ZZ, Options => {UseMinimalPrimes => false,InSymbolic => false})
+containmentProblem(Ideal,ZZ) := ZZ => opts -> (I,n) -> (
+
+    if not(opts.InSymbolic) then (
+	m := n; 
+	while 
+	not(isSymbPowerContainedinPower(I,m,n, UseMinimalPrimes => opts.UseMinimalPrimes)) 
+	do m = m+1; return(m));
+    
+    if opts.InSymbolic then (
+    h := bigHeight(I);
+    e := (n-n%h)/h; 
+    l := lift(e,ZZ);
+    while isSymbPowerContainedinPower(I,n,l+1,
+	UseMinimalPrimes => opts.UseMinimalPrimes) do l = l+1;
+    return l))
+
+
+
+--Given integers a and p, finds the largest power of p such that p^k<=a
+powersdivision = method(TypicalValue => ZZ)
+powersdivision(ZZ,ZZ,ZZ) := ZZ => (a,p,k) -> (if p^k>a then 1 else 
+    1+(powersdivision(a,p,k+1)))
+powersdivision(ZZ,ZZ) := ZZ => (a,p) -> powersdivision(a,p,1)
+
+
+
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+--Other ways to compute symbolic powers: 
+--for primes in char p
+--for prime ideals in a polynomial ring, using join
+-----------------------------------------------------------
+-----------------------------------------------------------
+
+
+
+
+--Computes the symbolic power of a prime ideal in characteristic p
+--The method is as follows: to compute $I^{(a)}$, find the largest value k with 
+-- $q=p^k \leqslant a$
+--$I^{(a)} = (I^{[q]} : I^{a-q+1})$
+symbPowerPrimePosChar = method(TypicalValue => Ideal)
+symbPowerPrimePosChar(Ideal,ZZ) := Ideal => (I,n) -> (R := ring I; p := char R;
+    if not(isPrime(I)) 
+    then "Not a prime ideal" else (
+	h := codim I;
+	if p==0 then "The characteristic must be positive" else
+	(e := powersdivision(n,p); q := p^e; c := q-1; d := h*c-n+1; J:= I^d;
+	    (frobeniusPower(I,q)):J)))
 
 
 joinIdeals = method(TypicalValue => Ideal)
@@ -236,6 +314,13 @@ symbolicPowerJoin = method(TypicalValue => Ideal);
 symbolicPowerJoin(Ideal,ZZ) := Ideal => (p,n) -> (m := ideal(generators ring p);
     joinIdeals(p,m^n))
 
+
+
+-----------------------------------------------------------
+-----------------------------------------------------------
+--Space monomial curves
+-----------------------------------------------------------
+-----------------------------------------------------------
     
 curveIdeal = method(TypicalValue => Ideal)
 curveIdeal(List) := Ideal => L -> (d := #L; 
@@ -393,13 +478,7 @@ noPackedAllSubs(Ideal) := List => I -> (var := flatten entries vars ring I; d :=
     if allSubs == {} then "Only I is not Konig -- all proper substitutions are Konig." else
     allSubs)
     
-minDegreeSymbPower = method(TypicalValue => ZZ)
-minDegreeSymbPower(Ideal,ZZ) := ZZ => (I,n) -> min flatten degrees symbolicPower(I,n)
 
-isMonomial = method()
-isMonomial(RingElement) := r -> (terms(r) == {r})
-isMonomial(MonomialIdeal) := I -> true
-isMonomial(Ideal) := I -> all(flatten entries mingens I,a -> isMonomial(a))
 
 ---------------------------------
 ---Symbolic Defect
@@ -525,6 +604,9 @@ asymptoticRegularity Ideal := opts -> I -> (
     print ("The asymptotic regularity is approximated using first "| opts#SampleSize |" powers.");
     return min for i from 1 to opts#SampleSize  list regularity(symbolicPower(I,i))/i
     ) 
+
+
+
 
 
 -----------------------------------------------------------
@@ -798,6 +880,38 @@ doc ///
    SeeAlso
        codim
 ///
+
+
+doc ///
+   Key
+       assPrimesHeight
+       (assPrimesHeight, Ideal)
+   Headline
+       The heights of all associated primes
+   Usage
+       assPrimesHeight(I)
+   Inputs
+        I:Ideal
+   Outputs
+       :List
+           the heights of all associated primes of I
+   Description
+       Text  
+           The algorithm is based on the following result by Eisenbud-Huneke-Vasconcelos, 
+	   in their 1993 Inventiones Mathematicae paper:
+	   $\bullet$ codim $Ext^d(M,R) \geq d$ for all d
+	   $\bullet$ If P is an associated prime of M of codimension d := codim P > codim M, 
+	   then codim $Ext^d(M,R) = d$ and the annihilator of $Ext^d(M,R)$ is contained in P
+	   $\bullet$ If codim $Ext^d(M,R) = d$, then there really is an associated prime of codimension d.
+       Example
+           R = QQ[x,y,z,a,b]
+     	   J = intersect(ideal(x,y,z),ideal(a,b))
+    	   assPrimesHeight(J)
+   SeeAlso
+       bigHeight
+       codim
+///
+
 
 doc ///
    Key
