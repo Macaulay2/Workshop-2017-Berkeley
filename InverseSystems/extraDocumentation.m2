@@ -1,15 +1,11 @@
 newPackage(
 	"InverseSystems",
-    	Version => "1.1", 
-    	Date => "July 21, 2017",
+    	Version => "1.0", 
+    	Date => "May 7, 2017",
     	Authors => {{Name => "David Eisenbud", 
-		  Email => "de@msri.org",
-		  Name => "Matthew Mastroeni",
-		  Email => "mastroe2@illinois.edu",
-		  Name => "Rebecca R.G.",
-		  Email => "rirebhuh@syr.edu"
+		  Email => "de@msri.org"
 		  }},
-    	Headline => "Macaulay inverse systems via differentiation and divided powers",
+    	Headline => "equivariant Macaulay inverse systems",
     	DebuggingMode => false
     	)
 
@@ -18,9 +14,7 @@ export {"inverseSystem",
         "toDividedPowers",
         "fromDividedPowers",
 	"isStandardGradedPolynomialRing",
-	"contractInDegree",
-	"contractKernelInDegree",
-	"contractImageInDegree",
+	"lowerExponent",
 	--option names (symbols):
 	"PowerBound",
 	"DividedPowers",
@@ -47,7 +41,7 @@ isStandardGradedPolynomialRing Ring := R ->(
 
 toDividedPowers = method()
 toDividedPowers RingElement := p -> (
-    --the following routine takes a polynomial and writes it in the divided power basis,
+    --the following routine takes a polynomial and writes in in the divided power basis,
     --where a^(n) is represented as a^n.
     S := ring p;
     sub0 := map(S,S,0_S*vars S);
@@ -162,32 +156,52 @@ inverseSystem RingElement := o-> M -> (
     ideal fromDual(M, DividedPowers => o.DividedPowers)
     )
 
-contractInDegree = method()
-contractInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
-    --input is an integer and a homogeneous polynomial
-    --returns the matrix of the map from the ith symmetric power of the ambient ring
-    --to the (degree phi)-i th divided power of the ambient ring given by contraction by phi
+
+lowerExponent = method()
+lowerExponent (RingElement, List) := RingElement => (phi,l) -> (
+    D := ring phi;
+    if not isStandardGradedPolynomialRing D then (error "Expected a polynomial in a standard graded polynomial ring.");
+    if not #l == numgens D then (error "Expected the length of the list to be equal to the number of variables.");
+    if any(l, i -> not instance(i, ZZ) or i < 0) then (error "Expected a list of non-negative integers.");
+    expList := exponents(phi);
+    expList = select(expList, e->all(e-l,i->(i>=0)));
+    sum(apply(expList,e->coefficient(D_e,phi)*D_(e-l)))
+    )
+  
+lowerExponent (RingElement, RingElement) := RingElement => (phi, f) -> (
+    D := ring phi;
+    S := ring f;
+    if not isStandardGradedPolynomialRing S then (error "Expected a polynomial in a standard graded polynomial ring.");
+    if not numgens D == numgens S then (error "Expected the rings of the polynomials to have the same number of variables."); 
+    exps := exponents(f);
+    coeffs := (coefficients f)_1;
+    ((matrix {apply(exps, l -> lowerExponent(phi, l))})*coeffs)_0_0
+    )
+    
+
+dividedActionInDegree = method()
+dividedActionInDegree (ZZ, RingElement) := Matrix => (i, phi) -> (
     if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
     D := ring phi;
     d := (degree phi)#0;
+    --if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
     if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
     matrix apply(flatten entries super basis(d - i, D), 
 	m -> apply(flatten entries super basis(i, D),
-	    u -> coefficient(m, contract(u, phi))
+	    u -> coefficient(m, lowerExponent(phi, u))
 	    )
 	)
     )
 
-contractInDegree (ZZ, List) := Matrix => (i, L) -> (
-    --same with L a list of homogeneous polynomials in a single ring, instead of a single polynomial
-    if any (L,phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
-    D := ring L#0;
-    if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
-    if L=={} then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
-    s := flatten (L/degree);
+dividedActionInDegree (ZZ, Ideal) := Matrix => (i, Phi) -> (
+    if not isHomogeneous Phi then (error "Expected a homogeneous ideal.");
+    D := ring Phi;
+    if Phi==0 then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    gensPhi := flatten entries mingens Phi;
+    s := flatten ((flatten entries mingens Phi)/degree);
     d := max s;
     if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
-    matrixList := apply(#s,j -> contractInDegree(i,L#j));
+    matrixList := apply(#s,j -> dividedActionInDegree(i,gensPhi#j));
     concatMatrix := matrixList#0;
     matrixList = remove(matrixList,0);
     while matrixList =!= {} do (
@@ -197,44 +211,86 @@ contractInDegree (ZZ, List) := Matrix => (i, L) -> (
     concatMatrix
     )
 
-contractKernelInDegree = method()
+dividedActionInDegree (ZZ, List) := Matrix => (i, L) -> (
+    if any (L,phi ->isHomogeneous phi =!= true) then (error "Expected homogeneous polynomials..");
+    D := ring L#0;
+    if any (L,phi->ring phi =!= D) then (error "Expected polynomials in the same ring.");
+    if L=={} then return map((coefficientRing D)^1, (coefficientRing D)^0,0);
+    s := flatten (L/degree);
+    d := max s;
+    if i > d or i < 0 then return map((coefficientRing D)^(binomial(d-i+(numgens D)-1,d-i)),(coefficientRing D)^(binomial(i+(numgens D)-1,i)),0);
+    matrixList := apply(#s,j -> dividedActionInDegree(i,L#j));
+    concatMatrix := matrixList#0;
+    matrixList = remove(matrixList,0);
+    while matrixList =!= {} do (
+	concatMatrix=concatMatrix || matrixList#0; 
+	matrixList = remove(matrixList,0)
+	);
+    concatMatrix
+    )
 
-contractKernelInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
-    --input is an integer and a homogeneous polynomial
-    --returns the kernel of the map from the ith symmetric power of the ambient ring
-    --to the (degree phi)-i th divided power of the ambient ring given by contraction by phi
-    --this is the same as the ith graded piece of the inverse system of phi
+
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The matrix representing multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
+
+
+-----------------------------------------------------------
+
+--RRG Edits appear in this section
+    
+dividedKerInDegree = method()    
+    
+dividedKerInDegree (ZZ, RingElement) := Ideal => (i, phi) -> (
+    K := gens ker dividedActionInDegree(i, phi);
+    D := ring phi;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+dividedKerInDegree (ZZ, List) := Ideal => (i, L) -> (
+    K := gens ker dividedActionInDegree(i, L);
+    D := ring L#0;
+    ideal mingens ideal( (super basis(i, D)) * K )
+    )
+
+dividedKerInDegree (ZZ, Ideal) := Ideal => (i, Phi) -> (
+    gensPhi := flatten entries mingens Phi;
+    dividedKerInDegree(i,gensPhi)
+    )
+
+
+
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The kernel of multiplication by 'phi' on the degree 'i' component of the dual polynomial ring.
+
+
+dividedKerInDegree (ZZ, Matrix) := Ideal => (i, A) -> (
+    D := ring A;
+    n := numgens D;
+    d := 0;
+    while binomial(d-i + n -1, n-1) < numrows A do(
+	d = d + 1
+	); 
+    if i > d or i < 0 then (error "Expected a non-negative integer no bigger than the degree of the polynomial.");
+    ideal mingens ideal( (super basis(i, D) * A) )
+    )
+
+--Input: A matrix 'A' representing multiplication by a homogeneous element of a divided powers algebra on the degree 'i' component of the dual polynomial ring.
+--Output: The kernel of multiplication by 'A' in the dual polynomial ring.
+
+
+-----------------------------------------------------------
+
+dividedKerToDegree = method()
+
+dividedKerToDegree  (ZZ, RingElement) := Ideal => (i, phi) -> (
     if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
-    I := inverseSystem(matrix{{phi}},DividedPowers=>true);
-    ideal super basis(i,I)
+    D := ring phi;
+    ideal mingens sum apply(i+1, j -> sub(dividedKerInDegree(j, phi), D))
     )
 
-contractKernelInDegree (ZZ, List) := Ideal => (i,L) -> (
-    --same with L a list of homogeneous polynomials in the same ring
-    if any(L, phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
-    I := inverseSystem(matrix{L},DividedPowers=> true);
-    ideal super basis(i,I)
-    )
- 
- contractImageInDegree = method()
+--Input: A homogeneous polynomial 'phi' representing an element of a divided powers algebra and an non-negative integer 'i' no bigger than the degree of 'phi'.
+--Output: The kernel of multiplication by 'phi' up to degree 'i' in the dual polynomial ring.
 
-contractImageInDegree (ZZ, RingElement) := Ideal => (i,phi) -> (
-    --input is an integer and a homogeneous polynomial
-    --returns the image of the map from the ith symmetric power of the ambient ring
-    --to the (degree phi)-i th divided power of the ambient ring given by contraction by phi
-    if not isHomogeneous phi then (error "Expected a homogeneous polynomial.");
-    R := ring phi;
-    ideal mingens ideal contract(symmetricPower(i,vars R),phi)
-    )
-
-contractImageInDegree (ZZ, List) := Ideal => (i,L) -> (
-    --same with L a list of homogeneous polynomials in the same ring
-    if any (L,phi -> not isHomogeneous phi) then (error "Expected a list of homogeneous polynomials.");
-    R := ring L#0;
-    if any (L,phi->ring phi =!= R) then (error "Expected polynomials in the same ring.");
-    apply(L,phi -> contractImageInDegree(i,phi))
-    )
-   
 
 beginDocumentation()
 
@@ -445,7 +501,7 @@ SeeAlso
  DividedPowers
  fromDividedPowers
  toDividedPowers
- 
+ lowerExponent
 ///
 
 doc ///
@@ -574,9 +630,6 @@ SeeAlso
  fromDual
  toDual
  isStandardGradedPolynomialRing
- contractInDegree
- contractKernelInDegree
- contractImageInDegree
 ///
 
 doc ///
@@ -752,41 +805,52 @@ doc ///
 
 doc ///
    Key
-    contractInDegree
-    (contractInDegree, ZZ, RingElement)
-    (contractInDegree, ZZ, List)
+    lowerExponent
+    (lowerExponent, RingElement, List)
+    (lowerExponent, RingElement, RingElement) 
    Headline
-    Computes the contraction with an element of the divided powers algebra in a given degree
+    Computes the action of polynomials on elements of the divided powers algebra
    Usage
-    M = contractInDegree(i, phi)
-    M = contractInDegree(i, L)
+    psi = lowerExponent(phi, l)
+    psi = lowerExponent(phi, f)
    Inputs
-    i: ZZ
     phi: RingElement
-     a homogeneous polynomial in a standard graded polynomial ring
-    L: List
-     a list of homogeneous polynomials in a standard graded polynomial ring 
+     a polynomial in a standard graded polynomial ring
+    l: List
+     a list of non-negative integers representing the exponent of a monomial in the polynomial ring
+    f: RingElement
+     a polynomial in the same standard graded polynomial
    Outputs
-    M: Matrix
-   Description 
+    psi: RingElement
+   Description
     Example
      S = ZZ/5[x,y,z]
      phi = x^5*y^2 + y^5*z^2 + z^5*x^2
-     contractInDegree(3, phi)
-   SeeAlso
-    contract
+     l = {0,1,1}
+     psi = lowerExponent(phi, l)
+    Example
+     S = ZZ/3[x,y,z]
+     phi = x^2*y^2*z + x*y*z^5
+     f = x*y*z+y*z^2
+     psi = lowerExponent(phi, f)
      ///
+
+---RRG edits for the next documentation
 
 doc ///
    Key
-    contractKernelInDegree
-    (contractKernelInDegree, ZZ, RingElement)
-    (contractKernelInDegree, ZZ, List)
+    dividedKerInDegree
+    (dividedKerInDegree, ZZ, RingElement)
+    (dividedKerInDegree, ZZ, List) 
+    (dividedKerInDegree, ZZ, Matrix)
    Headline
-    Computes the kernel of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+    Computes the degree i piece of the kernel of the map from symmetric powers to divided powers 
+    given by multiplication by the ring element or list of elements. Matrix option allows user to
+    input matrix gotten from dividedActionInDegree function, to avoid having to repeat the computation.
    Usage
-    I = contractKernelInDegree(i, phi)
-    I = contractKernelInDegree(i,L)
+    psi = dividedKerInDegree(i, phi)
+    psi = dividedKerInDegree(i,L)
+    psi = dividedKerInDegree(i,A)
    Inputs
     i: ZZ
      an integer
@@ -794,35 +858,45 @@ doc ///
      a homogeneous polynomial in a standard graded polynomial ring
     L: List
      a list of homogeneous elements of a standard graded polynomial ring
+    A: Matrix
+     the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
    Outputs
-    I: Ideal
+    psi: Ideal
    Description
-    Text
-     Computes the degree i piece of the kernel of the map from symmetric powers to divided powers 
-     given by multiplication by the ring element or list of elements. 
     Example
      S = ZZ/5[x,y,z]
      i = 2
      phi = x^3+y^3+z^3
-     contractKernelInDegree(i,phi)
+     psi = dividedKerInDegree(i,phi)
     Example
      S = ZZ/5[x,y,z]
      i = 2
-     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
-     contractKernelInDegree(i,L)
+     L = {x^3+y^3+z^3,x*y^2+y*z^2+z*x^2}
+     psi = dividedKerInDegree(i,L)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     A = dividedActionInDegree(i,phi)
+     psi = dividedKerInDegree(i,A)
      ///
 
-
+--latest RRG documentation addition
 doc ///
    Key
-    contractImageInDegree
-    (contractImageInDegree, ZZ, RingElement)
-    (contractImageInDegree, ZZ, List)
+    dividedImInDegree
+    (dividedImInDegree, ZZ, RingElement)
+    (dividedImInDegree, ZZ, List) 
+    (dividedImInDegree, ZZ, Matrix)
    Headline
-    Computes the image of the action of homogeneous polynomials on elements of the divided powers algebra in a given degree
+    Computes the image of the map from the ith graded piece of the symmetric algebra to the direct sum of 
+    divided power rings, which is given by multiplication by the ring element or list of elements. 
+    The Matrix option allows the user to input the matrix gotten from dividedActionInDegree function, 
+    to avoid having to repeat the computation.
    Usage
-    I = contractImageInDegree(i, phi)
-    I = contractImageInDegree(i,L)
+    psi = dividedImInDegree(i, phi)
+    psi = dividedImInDegree(i,L)
+    psi = dividedImInDegree(i,A)
    Inputs
     i: ZZ
      an integer
@@ -830,47 +904,39 @@ doc ///
      a homogeneous polynomial in a standard graded polynomial ring
     L: List
      a list of homogeneous elements of a standard graded polynomial ring
+    A: Matrix
+     the output matrix from dividedActionInDegree(i,phi) or dividedActionInDegree(i,L)
    Outputs
-    I: List
-     a list of ideals
+    psi: List
+     list of ideals
    Description
-    Text
-     Computes the image of the map from the ith symmetric power to divided powers 
-     given by multiplication by the ring element or list of elements. 
     Example
      S = ZZ/5[x,y,z]
      i = 2
      phi = x^3+y^3+z^3
-     contractImageInDegree(i,phi)
+     psi = dividedImInDegree(i,phi)
     Example
      S = ZZ/5[x,y,z]
      i = 2
-     L = {x^3,y^3,z^3,x*y^2+y*z^2,z*x^2}
-     contractImageInDegree(i,L)
+     L = {x^3+y^3+z^3,x*y^2+y*z^2+z*x^2}
+     psi = dividedImInDegree(i,L)
+    Example
+     S = ZZ/5[x,y,z]
+     i = 2
+     phi = x^3+y^3+z^3
+     A = dividedActionInDegree(i,phi)
+     psi = dividedImInDegree(i,A)
      ///
 
 
---check that contraction map and its kernel and image are correct
-TEST ///
 
-S = ZZ/5[x,y,z]; 
-phi = x^3+y^3+z^3;
-assert(contractInDegree(2,phi)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1}}))
-assert(contractKernelInDegree(2, phi)==ideal(x*y,x*z,y*z))
-assert(contractImageInDegree(2, phi)==ideal(x,y,z))
-
-///
+  
 
 
-TEST ///
 
-R=ZZ/5[x,y,z];
-I=ideal(x^3+y^3+z^3,x*y^2+y*z^2+z*x^2);
-assert(contractInDegree(2,I_*)==matrix(ZZ/5,{{1,0,0,0,0,0},{0,0,0,1,0,0},{0,0,0,0,0,1},{0,0,1,1,0,0},{0,1,0,0,0,1},{1,0,0,0,1,0}}))
-assert(contractKernelInDegree(2,I_*)==ideal(0_R))
-assert(contractImageInDegree(2,I_*)=={ideal(x,y,z),ideal(x,y,z)})
 
-///
+
+  
 
 
 
