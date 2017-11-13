@@ -112,7 +112,7 @@
 \begin{document}
 
 \begin{abstract}
-This introduces Rees algebras and some of their uses with illustrations via version 2.0 of the Macaulay2 package ReesAlgebra.m2.
+This introduces Rees algebras and some of their uses with illustrations from version 2.2 of the Macaulay2 package ReesAlgebra.m2.
 \end{abstract}
 
 \maketitle
@@ -153,14 +153,16 @@ of modules other than ideals are comparatively little studied.
 We first describe the construction and an example from \cite{EHU}. Then we list some of the functionality the package now has; and finally we give an elementary example of how blowups can resolve singularities.
 
 \section{The Rees Algebra of a module} There are several possible ways of extending the Rees algebra construction from ideals to modules. For simplicity we will henceforward only consider finitely generated modules
-over Noetherian rings. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural is
+over Noetherian rings. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural
+way to extend the definition is
 to think of $R[It]$ as the image of the map of symmetric algebras
 $\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$, and to generalize it to the case of
 an arbitrary finitely generated module $M$ by setting
 $$
 \RR(M) = \image \Sym(\phi)
 $$ 
-where $\phi$ is the \emph{versal} map from $M$ to a free module, defined as 
+where $\phi$ is a \emph{versal} map from $M$ to a free module. Such a
+versal map may be computed as 
 the composition of 
 the diagonal 
 embedding 
@@ -181,7 +183,7 @@ Though this is not immediate, the Rees algebra of an ideal in any Noetherian rin
  
 \begin{theorem}\label{good cases} [Eisenbud-Huneke-Ulrich, Thms 0.2 and 1.4] Let $R$ be a Noetherian ring
      and let $M$ be a finitely generated $R$-module. Let $\phi: M \to G$
-     be the universal embedding of $M$ in a free module, and let
+     be a versal map of $M$ to a free module. Suppose that $\phi$ is an inclusion, and let
      $\psi: M \to G'$  be any inclusion of $M$ into a free module $G'$. 
      If $R$ is torsion-free over $\ZZ$
      or $R$ is unmixed and generically Gorenstein or $M$ is free locally
@@ -209,11 +211,11 @@ iota = map(R^1,M,matrix{{z}})
 psi = map(R^2,M,matrix{{x},{y}})
 \end{verbatim}
 \begin{normalsize}
-      Finally, the universal embedding is $M \to R^3$,
+      Finally, a we choose a versal embedding is $M \to R^3$,
      sending $z$ to the vector $(x,y,z)$:
 \end{normalsize}
 \begin{verbatim}
-phi = universalEmbedding(M)
+phi = versalEmbedding(M)
 \end{verbatim}
 \begin{normalsize}
      We now compute the kernels of the three maps
@@ -243,10 +245,11 @@ o17 = 1
 \end{footnotesize}
 
 
-\section{The Rees Algebra and its relations:\\ {\tt reesIdeal, reesAlgebra, universalEmbedding, symmetricKernel, isLinearType,
-associatedGradedRing, normalCone, multiplicity}}
+\section{The Rees Algebra and its relations}
+%\\ {\tt reesIdeal, reesAlgebra, versalEmbedding, symmetricKernel, isLinearType,
+%associatedGradedRing, normalCone, multiplicity}}
 
-The central routine, reesIdeal (with synonym reesAlgebraIdeal) computes an ideal
+The central routine, {\tt reesIdeal} (with synonym {\tt reesAlgebraIdeal}) computes an ideal
 defining the Rees algebra $\RR(M)$ as a quotient of a polynomial ring over $R$ from a free presentation of $M$. From the Rees ideal we immediately get
 ${\tt reesAlgebra}\ M$. In the case when $M$ is an ideal in $R$ we also compute
 the important ${\tt associatedGradedRing\ }M = \RR(M)/M$ (and the more geometric sounding but identical ${\tt normalCone\ }M$.)  
@@ -264,11 +267,11 @@ and suppose  $F = R^n$. The symmetric algebra of $F$ over $R$ is then a polynomi
 $\Sym_R(F_0) = R[t_1,\dots, t_n]$ on $n$ new indeterminates $t_1,\dots, t_n$. By the universal
 property of the symmetric algebra there is a canonical surjection
 $\Sym_R(F)\rightarrow \Sym_R(M)$, so we may compute the Rees algebra of $M$ as
-a quotient of the  $\Sym_R(F)$. The call
+a quotient of the  $\Sym_R(F)$. The expression
 $$
 I = {\tt reesIdeal}\ M
 $$
-first calls ${\tt universalEmbedding\ }M$ to compute the versal map from $M$ to a free module $\beta: M\to G$. The call ${\tt symmetricKernel\ } \alpha\circ\beta$  then constructs the map of symmetric algebras $\beta\circ \alpha:\Sym_R(F)\to \Sym_R(G)$ and  calls
+first uses ${\tt versalEmbedding\ }M$ to compute a versal map from $M$ to a free module $\beta: M\to G$. The expression ${\tt symmetricKernel\ } \alpha\circ\beta$  then constructs the map of symmetric algebras $\beta\circ \alpha:\Sym_R(F)\to \Sym_R(G)$ and uses
  the built-in Macaulay2 routine to compute the kernel 
 $$
 I = {\tt reesIdeal\ }M = \ker \Sym(\beta\circ\alpha): \Sym_R(F) \to \Sym_R(G).
@@ -312,7 +315,7 @@ $$
  kernel of the map $\RR(F) = \Sym_R(F) \to \RR(M)$, is equal to the intersection
  of $\RR(F)$ with the kernel of
  $\Sym_R(F)[f^{-1}] \rTo^\beta \Sym_R(G)[f^{-1}]$. This intersection
- may be computed as $I_0:f^\infty$. The call
+ may be computed as $I_0:f^\infty$. The command
  $$
  {\tt reesIdeal}(I, f)
  $$
@@ -321,17 +324,18 @@ $$
 More generally, we say that a module $N$ is {\em of linear type} if
 the Rees ideal of $M$ is equal to the ideal of the symmetric algebra of $M$; 
 for example, any complete intersection ideal is of linear type, and the condition
-can be tested by the call
+can be tested by the command
 $$
 {\tt isLinearType}\ M.
 $$
 The procedure above really requires only that $f$ be a non-zerodivisor in $R$ and
 that $M[f^{-1}]$ be of linear type over $R[f^{-1}]$.
 
-\section{Reductions and the special fiber: {\tt isReduction, minimalReduction, reductionNumber
-specialFiber,
-specialFiberIdeal,
-analyticSpread}}
+\section{Reductions and the special fiber}
+%: {\tt isReduction, minimalReduction, reductionNumber
+%specialFiber,
+%specialFiberIdeal,
+%analyticSpread}}
 
 A \emph{reduction} $J$ of an ideal $I$ is an sub-ideal $J\subset I$ over which $I$ is
 \emph{integrally dependent}. In concrete terms this means that there is some integer $r$ such that $JI^r = I^{r+1}$, and the minimal $r$ with this property is called the reduction number.
@@ -339,7 +343,7 @@ The property of being a reduction is tested by ${\tt isReduction\ }I$, and the r
 
 Now suppose that $\gm$ is a maximal ideal containing $I$. The special fiber ring is by definition
 $\RR(I)/\gm\RR(I)$. It is a standard graded algebra ove the field  $k := R/\gm$, a quotient of 
-$\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by the calls
+$\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by using
 ${\tt specialFiberIdeal\ }I$ and ${\tt specialFiberRing\ }I$. 
 
 The dimension of the special fiber ring is called the analytic spread of $I$, usually
@@ -359,7 +363,7 @@ the special fiber ring is equal to the homogeneous coordinate ring $\G$ of the G
 $p$-planes in $p+q$ space. It follows that $\ell(I) = \dim \G = pq+1$, and the reduction number of $I$ is
 $(p-1)(q-1)$.
 
-\section{Finding elements of the Rees ideal: {\tt jacobianDual, expectedReesIdeal}}
+\section{Finding elements of the Rees ideal}%: {\tt jacobianDual, expectedReesIdeal}}
 
 Let $M$ be an $R$-module and let $\phi: R^{s}\to R^{m}$ be its presentation matrix.
      The symmetric algebra of I has the form      
@@ -400,7 +404,7 @@ $$
      $$
      \codim I_{m-p}(\phi)>p
      $$
-     for $1<= p < \ell$
+     for $1\leq p < \ell$
      
      
 \begin{theorem}[\cite{MU}]
@@ -411,7 +415,7 @@ $$
      $I$ satisfies the condition $G_{\ell}$. The following conditions are equivalent:
  
 \begin{enumerate}
-     \item $\RR(I)$ is Cohen-Macaulay and $I_(m-\ell)(phi) = I_1(phi)^{m-\ell}$.
+     \item $\RR(I)$ is Cohen-Macaulay and $I_(m-\ell)(\phi) = I_1(\phi)^{m-\ell}$.
      \item $r(I) < \ell$ and $I_{m+1-\ell}\phi = (I_1\phi)^{m+1-\ell}$.
      \item The ideal of $\RR(I)$ is equal to the sum of the ideal
      of $\Sym(I)$ with the Jacobian dual minors, $I_{m}\psi$.)
@@ -420,25 +424,24 @@ $$
 \end{theorem}
 
 We can check all these conditions with functions in the package.      
-     We start with the presentation matrix phi of an $m = n+1$-generator perfect ideal
+     We start with the presentation matrix $\phi$ of an $m = n+1$-generator perfect ideal
      Such that the first row consists of the $n$
      variables of the ring, and the rest of whose rows are reasonably general (in this
      case random quadrics):
 
 \begin{footnotesize}
  \begin{verbatim}
-i1 : loadPackage("ReesAlgebra", Reload =>true)
 i2 : setRandomSeed 0
 i3 : n=3;
 i4 : kk = ZZ/101;
 i5 : S = kk[a_0..a_(n-2)];
-i6 : phi' = map(S^(n),S^(n-1), (i,j) -> if i == 0 then a_j else random(2,S));
+i6 : phi = transpose map(S^(n-1),S^{-1,(n-1):-2},(i,j) -> if j == 0 then a_i else random(2,S));
              3       2
 o6 : Matrix S  <--- S
 i7 : I = minors(n-1,phi');
 \end{verbatim}
 \end{footnotesize}
-This is a perfect, codimension 2 ideal, as we see from the Betti table:
+This is a perfect codimension 2 ideal, as we see from the Betti table:
 \begin{footnotesize}
  \begin{verbatim}
 i8 : betti (F = res I)
@@ -449,12 +452,6 @@ o8 = total: 1 3 2
          2: . 2 .
          3: . 1 2
 \end{verbatim}
-\end{footnotesize}
-As we constructed the matrix {\tt phi'} it was not homogeneous, but the resolution is, so we take instead:
-\begin{footnotesize}
- \begin{verbatim}
-i9 : phi = F.dd_2;
- \end{verbatim}
  \end{footnotesize}
 We  compute the analytic spread $\ell$ and the reduction number $r$:
 \begin{footnotesize}
@@ -490,6 +487,9 @@ o19 : Ideal of S[w , w , w ]
                   0   1   2
 i20 : codim reesI
 o20 = 2
+\end{verbatim}
+ \goodbreak
+\begin{verbatim}
 i21 : betti res reesI
              0 1 2
 o21 = total: 1 3 2
@@ -511,7 +511,7 @@ o23 : Matrix (S[w , w , w ])  <--- (S[w , w , w ])
                  0   1   2             0   1   2
 \end{verbatim}
 \end{footnotesize}
-We now compute the ideal J of the symmetric algebra; the call {\tt symmetricAlgebra I}
+We now compute the ideal J of the symmetric algebra; the command {\tt symmetricAlgebra I}
            would return the ideal over a different ring, so we do it by hand:
 \begin{footnotesize}
  \begin{verbatim}
@@ -564,7 +564,7 @@ o31 : BettiTally
 
      
 
-\section{Distinguished subvarieties: {\tt distinguished, intersectInP}}
+\section{Distinguished subvarieties}%: {\tt distinguished, intersectInP}}
 
 The key construction in the Fulton-MacPherson definition of the refined intersection  product 
 \cite[Section 6.1]{F}
@@ -651,8 +651,6 @@ Blowing-up $(x^2,y)$ in k[x,y] desingularlizes the tacnode $x^2-y^4$ in a single
 \end{example}
 \begin{footnotesize}
  \begin{verbatim}
- Macaulay2, version 1.10
-with packages: ConwayPolynomials, Elimination, IntegralClosure, InverseSystems, LLLBases, PrimaryDecomposition, ReesAlgebra, TangentCone
 i1 : R = ZZ/32003[x,y];
 i2 : tacnode = ideal(x^2-y^4);
 i3 : mm = ideal(x,y^2);
@@ -693,8 +691,8 @@ i13 : sing = saturate(sing0,irrelB)
 o13 = ideal 1
 \end{verbatim}
 \end{footnotesize}
-The last line asserts that the singular locus of the the variety ``properTransform'' is empty;
-that is, the the scheme defined by "properTransform" is smooth (in this case it is the union
+The last line asserts that the singular locus of the the strict Transform is empty;
+that is, the the scheme defined by "strictTransform" is smooth (in this case it is the union
 of two disjoint smooth curves.)
 
 \let\thefootnote\relax\footnote{
