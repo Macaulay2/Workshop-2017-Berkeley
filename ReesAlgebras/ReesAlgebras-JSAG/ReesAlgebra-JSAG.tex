@@ -112,7 +112,7 @@
 \begin{document}
 
 \begin{abstract}
-This introduces Rees algebras and some of their uses with illustrations via version 2.0 of the Macaulay2 package ReesAlgebra.m2.
+This note introduces Rees algebras and some of their uses, with illustrations from version 2.0 of the Macaulay2 \cite{M2} package {\tt ReesAlgebra.m2}.
 \end{abstract}
 
 \maketitle
@@ -147,20 +147,23 @@ Whitney Liske, and
 Zhangchi Chen
 contributed routines
 for computing many of the invariants of an ideal or module
-defined in terms of Rees algebras. This is in fact the package's primary utility, since Rees Algebras
+defined in terms of Rees algebras. These routines comprise the package's primary utility, since Rees Algebras
 of modules other than ideals are comparatively little studied. 
 
-We first describe the construction and an example from \cite{EHU}. Then we list some of the functionality the package now has; and finally we give an elementary example of how blowups can resolve singularities.
+We first describe the construction and an example from \cite{EHU}. Then we list some of the functionality the package now has, and illustrate with a Theorem of Morey and Ulrich. Finally we give examples of how Rees algebras
+appear in the Fulton-MacPherson intersection theory and in the resolution of singularities.
 
-\section{The Rees Algebra of a module} There are several possible ways of extending the Rees algebra construction from ideals to modules. For simplicity we will henceforward only consider finitely generated modules
-over Noetherian rings. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural is
-to think of $R[It]$ as the image of the map of symmetric algebras
-$\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$, and to generalize it to the case of
+\section{The Rees Algebra of a module} For simplicity we will henceforward only consider finitely generated modules
+over Noetherian rings. There are several  ways of extending the Rees algebra construction from 
+an ideals $I$ in a ring $R$ to the case of arbitrary $R$-modules. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural is
+to think of the inclusion $I\subset R$ $R[It]$ as a homomorphsim $\phi: I\to R$, and to think of
+the Rees algebra as the image of the induced map of symmetric algebras
+$\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$. We generalize to the case of
 an arbitrary finitely generated module $M$ by setting
 $$
 \RR(M) = \image \Sym(\phi)
 $$ 
-where $\phi$ is the \emph{versal} map from $M$ to a free module, defined as 
+where $\phi$ is a \emph{versal} map from $M$ to a free module, defined as 
 the composition of 
 the diagonal 
 embedding 
@@ -173,72 +176,64 @@ $$
 $$ 
 where
 $\phi_1,\dots, \phi_m$ generate $\Hom_R(M,R)$.
-It has the property that any map from $M$ to a free module factors (non-uniquely, in general) through $\phi$. 
+ 
 
-Though this is not immediate, the Rees algebra of an ideal in any Noetherian ring, in this sense,
+Though this is not immediate, the Rees algebra of an ideal in a Noetherian ring, in this sense,
  is the same as the Rees algebra in the classical sense, and in most cases one can take
  any embedding of the module into a free module in the definition:
  
 \begin{theorem}\label{good cases} [Eisenbud-Huneke-Ulrich, Thms 0.2 and 1.4] Let $R$ be a Noetherian ring
      and let $M$ be a finitely generated $R$-module. Let $\phi: M \to G$
-     be the universal embedding of $M$ in a free module, and let
+     be the versal embedding of $M$ in a free module, and let
      $\psi: M \to G'$  be any inclusion of $M$ into a free module $G'$. 
      If $R$ is torsion-free over $\ZZ$
      or $R$ is unmixed and generically Gorenstein or $M$ is free locally
-     at each associated prime of $R$, or $G=R$, then the image of $\Sym(\phi)$ and the
+     at each associated prime of $R$, or $G'=R$, then the image of $\Sym(\phi)$ and the
      image of $\Sym(\psi)$ are naturally isomorphic.
 \end{theorem}
 
-Nevertheless some examples do violate the conclusion of Theorem~\ref{good cases}. Here is one from~\cite{EHU}.
-     In the following, any finite characteristic would work as well.
-     
-\begin{footnotesize}
+Nevertheless some examples do violate the conclusion of Theorem~\ref{good cases}. Here is one from~\cite{EHU}
+in characteristic 5 (any finite characteristic would work similarly.)
+ \begin{footnotesize}
   \begin{verbatim}
-p = 5
-R = ZZ/p[x,y,z]/(ideal(x^p,y^p)+(ideal(x,y,z))^(p+1))
-M = module ideal(z) 
+i1 : p = 5;
+i2 : R = ZZ/p[x,y,z]/(ideal(x^p,y^p)+(ideal(x,y,z))^(p+1));
+i3 : M = module ideal(z);
  \end{verbatim}
 \end{footnotesize}
-\begin{normalsize}
     It is easy to check that $M \cong R^1/(x,y,z)^p$.
      We write $\iota: M\to R^1$ for the embedding as an ideal
      and $\psi$ for the embedding $M \to R^2$ sending $z$ to the vector $(x,y)$.
-\end{normalsize}
- \begin{verbatim}
-iota = map(R^1,M,matrix{{z}}) 
-psi = map(R^2,M,matrix{{x},{y}})
-\end{verbatim}
-\begin{normalsize}
+\begin{footnotesize} \begin{verbatim}
+i4 : iota = map(R^1,M,matrix{{z}});
+i5 : psi = map(R^2,M,matrix{{x},{y}});
+\end{verbatim}\end{footnotesize}
       Finally, the universal embedding is $M \to R^3$,
      sending $z$ to the vector $(x,y,z)$:
-\end{normalsize}
-\begin{verbatim}
-phi = universalEmbedding(M)
-\end{verbatim}
-\begin{normalsize}
+\begin{footnotesize}\begin{verbatim}
+i6 : phi = universalEmbedding(M);
+\end{verbatim}\end{footnotesize}
      We now compute the kernels of the three maps
      on symmetric algebras:
-\end{normalsize}
- \begin{verbatim}
-Iota = symmetricKernel iota;
-Ipsi = symmetricKernel psi;
-Iphi = symmetricKernel phi;
-\end{verbatim}
 \begin{footnotesize}
-\begin{normalsize}
+ \begin{verbatim}
+i7 : Iiota = symmetricKernel iota;
+i8 : Ipsi = symmetricKernel psi;
+i9 : Iphi = symmetricKernel phi;
+\end{verbatim}
+\end{footnotesize}
       and check that the ones corresponding to $\phi$ and $\iota$
      are equal, whereas the ones corresponding to $\psi$ and $\phi$
      are not---they differ in degree p.
-\end{normalsize}
- \begin{verbatim}
-i14 : Iiota == Iphi    
-o14 = true
-i15 : Ipsi == Iphi
-o15 = false
-i16 : numcols basis(p,Iphi) 
-o16 = 3
-i17 : numcols basis(p,Ipsi)
-o17 = 1
+\begin{footnotesize} \begin{verbatim}
+i10 : Iiota == Iphi    
+o10 = true
+i11 : Ipsi == Iphi
+o11 = false
+i12 : numcols basis(p,Iphi) 
+o12 = 3
+i13 : numcols basis(p,Ipsi)
+o13 = 1
 \end{verbatim}
 \end{footnotesize}
 
@@ -246,7 +241,7 @@ o17 = 1
 \section{The Rees Algebra and its relations:\\ {\tt reesIdeal, reesAlgebra, universalEmbedding, symmetricKernel, isLinearType,
 associatedGradedRing, normalCone, multiplicity}}
 
-The central routine, reesIdeal (with synonym reesAlgebraIdeal) computes an ideal
+The central routine, {\tt reesIdeal} (or {\tt reesAlgebraIdeal}) computes an ideal
 defining the Rees algebra $\RR(M)$ as a quotient of a polynomial ring over $R$ from a free presentation of $M$. From the Rees ideal we immediately get
 ${\tt reesAlgebra}\ M$. In the case when $M$ is an ideal in $R$ we also compute
 the important ${\tt associatedGradedRing\ }M = \RR(M)/M$ (and the more geometric sounding but identical ${\tt normalCone\ }M$.)  
@@ -312,7 +307,11 @@ $$
  kernel of the map $\RR(F) = \Sym_R(F) \to \RR(M)$, is equal to the intersection
  of $\RR(F)$ with the kernel of
  $\Sym_R(F)[f^{-1}] \rTo^\beta \Sym_R(G)[f^{-1}]$. This intersection
- may be computed as $I_0:f^\infty$. The call
+ may be computed by
+ $$
+ {\tt saturate}(I_0,f).
+ $$
+  The call
  $$
  {\tt reesIdeal}(I, f)
  $$
@@ -335,10 +334,11 @@ analyticSpread}}
 
 A \emph{reduction} $J$ of an ideal $I$ is an sub-ideal $J\subset I$ over which $I$ is
 \emph{integrally dependent}. In concrete terms this means that there is some integer $r$ such that $JI^r = I^{r+1}$, and the minimal $r$ with this property is called the reduction number.
-The property of being a reduction is tested by ${\tt isReduction\ }I$, and the reduction number, is then computed by ${\tt reductionNumber\ } I$. 
+The property of being a reduction is tested by ${\tt isReduction\ }I$, and
+${\tt reductionNumber\ } I$ computes it.
 
 Now suppose that $\gm$ is a maximal ideal containing $I$. The special fiber ring is by definition
-$\RR(I)/\gm\RR(I)$. It is a standard graded algebra ove the field  $k := R/\gm$, a quotient of 
+$\RR(I)/\gm\RR(I)$. It is a standard graded algebra over the field  $k := R/\gm$, a quotient of 
 $\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by the calls
 ${\tt specialFiberIdeal\ }I$ and ${\tt specialFiberRing\ }I$. 
 
@@ -364,16 +364,18 @@ $(p-1)(q-1)$.
 Let $M$ be an $R$-module and let $\phi: R^{s}\to R^{m}$ be its presentation matrix.
      The symmetric algebra of I has the form      
      $$
-     \Sym_R(I) = Sym(R^{m)}/(T\phi)
+     \Sym_R(I) = \Sym(R^{m)}/(T\phi)
      $$
-     where we have written $(T\phi)$  for the ideal generated by the entries
+     where we have written $T$ for a vector
+     $(t_{1}, \dots, t_{m}$ whose entries correspond to the generators of $I$ and
+      $(T\phi)$  for the ideal generated by the entries
      of the product 
  $$
 \begin{pmatrix}
- T_{0}&\dots&T_{m}
+ t_{0}&\dots&t_{m}
 \end{pmatrix}\phi
 $$
-and the $T_{i}$ correspond to the generators of $I$. If 
+and the $t_{i}$ correspond to the generators of $I$. If 
      $$
      X = \begin{pmatrix}
 x_1&\dots&x_{n}
@@ -381,7 +383,7 @@ x_1&\dots&x_{n}
 $$
      with $x_i \in R$, and the ideal $J$ generated by the entries of $X$ 
      contains the entries of the matrix $\phi$, then there is 
-     a matrix $\psi$ defined over $R[T_0..T_m]$, called the Jacobian Dual of $\phi$ with respect to $X$,
+     a matrix $\psi$ defined over $R[t_0, \dots, t_m]$, called the Jacobian Dual of $\phi$ with respect to $X$,
      such that $T\phi = X\psi$. (the matrix $\psi$ is generally
      not unique; Macaulay2 computes it using Gr\"obner division with remainder.)
            
@@ -433,8 +435,6 @@ i3 : n=3;
 i4 : kk = ZZ/101;
 i5 : S = kk[a_0..a_(n-2)];
 i6 : phi' = map(S^(n),S^(n-1), (i,j) -> if i == 0 then a_j else random(2,S));
-             3       2
-o6 : Matrix S  <--- S
 i7 : I = minors(n-1,phi');
 \end{verbatim}
 \end{footnotesize}
@@ -460,11 +460,12 @@ We  compute the analytic spread $\ell$ and the reduction number $r$:
 \begin{footnotesize}
  \begin{verbatim}
 i12 : ell = analyticSpread I
+o12 = 2
 i13 : r = reductionNumber(I, minimalReduction I)
 o13 = 1
 \end{verbatim}
 \end{footnotesize}
-Now we can check the condition $G_{ell}$, first probabilistically:
+Now we can check the condition $G_{\ell}$, first probabilistically:
 \begin{footnotesize}
  \begin{verbatim}
 i15 : whichGm I >= ell
@@ -479,7 +480,7 @@ o17 = {{2, 2}}
 \end{verbatim}
 \end{footnotesize}
 We now check the three equivalent conditions of the Morey-Ulrich Theorem.
-           Note that since $\ell = n-1$ in this case, the second part of conditions
+           Since $\ell = n-1$ in this case, the second part of conditions
            1) and 2) is vacuously satisfied, and since $r<\ell$
            the conditions must all be satisfied.
            We first check that $\RR(I)$ is Cohen-Macaulay:
@@ -519,12 +520,6 @@ i25 : ST = ring psi
 i26 : T = vars ST
 o26 = | w_0 w_1 w_2 |
 i27 : J = ideal(T*promote(phi, ST))
-                            2          2               2                 2                    2
-o27 = ideal ((- 11a a  - 34a )w  + (11a  - 37a a  - 46a )w  + 14a w , 11a w  + (- 11a a  - 30a )w  + (a  +
-                   0 1      1  0       0      0 1      1  1      1 2     1 0         0 1      1  1     0  
-      --------------------------------------------------------------------------------------------------------
-      18a )w )
-         1  2
 i28 :      betti res J
              0 1 2
 o28 = total: 1 2 1
@@ -534,12 +529,9 @@ o28 = total: 1 2 1
           3: . . .
           4: . . 1
 i29 : J1 = minors(ell, psi)
-                        2              2             2  2                                               2
-o29 = ideal((20a a  - 3a )w w  + (- 20a  - 24a a  - a )w  + (11a  + 34a )w w  + (- 4a  - 14a )w w  - 14w )
-                0 1     1  0 1         0      0 1    1  1       0      1  0 2        0      1  1 2      2
   \end{verbatim}
   \end{footnotesize}
-And we compute the resolution of $J+J1$, to see that the resulting ideal is perfect, which also shows that
+We compute the resolution of $G := J+J1$, to see that the resulting ideal is perfect, which also shows that
 it is the full ideal of the Rees algebra. We also check directly that it has the same resolution as the computed
 Rees ideal of $I$:
 \begin{footnotesize}
@@ -558,7 +550,6 @@ o31 = total: 1 3 2
           1: . . .
           2: . 2 .
           3: . 1 2
-o31 : BettiTally
   \end{verbatim}
   \end{footnotesize}
 
@@ -568,32 +559,34 @@ o31 : BettiTally
 
 The key construction in the Fulton-MacPherson definition of the refined intersection  product 
 \cite[Section 6.1]{F}
-involves normal cones, and is easy to implement using the tools in this package. The simplest case is the intersection of two subvarieties $X,V$. If $X$ and $V$ meet in the \emph{expected dimension}, defined to be $\dim V - \codim_{Y} X$,
-and the ambient variety $Y$ is smooth, then one can assign multiplicities to the components $W_{i}$ of $X\cap V$, and the $X\cdot V$ is a positive linear
-combination of these components. The astonishing result of the theory is that if $X\subset Y$ is locally a complete intersection, then, no matter how singular $Y$ and no matter how strange the actual intersection $X\cap V$, the intersection product 
-$X\cdot V$ can be given a meaning as rational equivalence class of cycles of the expected dimension on $X$, or even on $X\cap V$. This class comes with a canonical decomposition $\sum_{i}m_{i}\alpha_{i}$, 
+involves normal cones, and is easy to implement using the tools in this package. The simplest case is the intersection of two subvarieties $X,V\subset Y$. If $X$ and $V$ meet in the \emph{expected dimension}, defined to be $\dim V - \codim_{Y} X$,
+and the ambient variety $Y$ is smooth, then one can assign multiplicities $m_{i}$ to the components $W_{i}$ of $X\cap V$, and the 
+intersection product has the form $[X][V] = \sum m_{i}[W_{i}].$
+The astonishing result of the Fulton-MacPherson theory is that if $X\subset Y$ is locally a complete intersection, then, no matter how singular $Y$ and no matter how strange the actual intersection $X\cap V$, the intersection product 
+$X\cdot V$ can be given a meaning as rational equivalence class of cycles of the expected dimension on $X$, or even on certain \emph{distinguished} subvarieties $Z_{i}$ of $X\cap V$. This class comes with a canonical decomposition $\sum_{i}m_{i}\alpha_{i}$, 
 where the $m_{i}$ are positive integers, and $\alpha_{i}$ is a cycle of the expected dimension (possibly 0)
-on a certain subvariety $Z_{i}\subset X\cap V$ called a distinguished variety of the intersection (the $Z_{i}$ need not be distinct.)
+on  $Z_{i}\subset X\cap V$ (the same $Z_{i}$ can appear several times, with different multiplicities and cycles.)
 
 In the general case, the subvariety $V$ is replaced by a morphism $f:V\to Y$ from a variety $V$, and this is the key to the functoriality of the intersection product. The routines in this package work in the general setting, but for simplicity we will stick with the basic case in this description.
 
 We now describe the distinguished subvarieties and their multiplicities. This part of the construction sheafifies, so (as in the package) we work in the affine case. We do not require any hypothesis on $X, Y$ or $V$. 
 
-Let $S$ be the coordinate ring of $Y$ and let $I\subset S$ be  ideal of $X$
+Let $S$ be a ring (for example, the coordinate ring of $Y$) and let $I\subset S$ be an ideal (for example the ideal of $X$).
 Write
-$
-\gr_{I}S
-$ for the associated graded ring $S/I\oplus I/I^{2}\oplus\dots$ of $I$ in $S$, and let
+$$
+T:=\gr_{I}S = S/I\oplus I/I^{2}\oplus\dots
+$$ 
+for the associated graded ring  of $I$, and let
 $\pi$ be the inclusion of $S/I$ into $T$ as the degree 0 part.
 
-Let $R$ be the coordinate ring of $V$, and let $f:S\to R$ be a morphism (if $V$ is a subvariety of $R$ then $f$ will be a projection  $S\to S/J$. Let $K\subset T$ be the kernel of the induced map $ \gr_{I}S \to \gr_{f(I)}R$.  
+Let $f:S\to R$ be a ring homomorphism (for example representing the projection $S\to S/(I(V))$). Let $K\subset T$ be the kernel of the induced map $ \gr_{I}S \to \gr_{f(I)}R$.  
 
-Let $P_{1},\dots, P_{m}$ be the minimal primes over $K$ in $\gr_{I}R$We define $p_{i}$ to be the degree 0 part of $P_{i}$, that is, $p_{i} := P_{i}\cap S/I$. These are the distinguished prime ideals of $S/I$, and they clearly contain the kernel of $\overline f: S/I \to R/f(I)$, so in the case where $R = S/J$ they contain $I+J$, so they really are subvarieties
+Let $P_{1},\dots, P_{m}$ be the minimal primes over $K$ in $\gr_{I}R$. We define $p_{i}$ to be the degree 0 part of $P_{i}$; that is, $p_{i} := P_{i}\cap S/I$. These are the distinguished prime ideals of $S/I$, and they clearly contain the kernel of $\overline f: S/I \to R/f(I)$, so in the case where $R = S/J$ they contain $I+J$.  Thus, in this case, they  represent subvarieties
 of $X\cap V$.
 
-We further define the multiplicity $m_{i}$ to be the multiplicity with which $P_{i}$ appears in the primary decomposition of $K$ -- that is,
+Let $m_{i}$ be the multiplicity with which $P_{i}$ appears in the primary decomposition of $K$ -- that is,
 $$
-m_{i} := \length_{T_{P_{i}}}{P_{i}}_{P_{i}}/K_{P_{i}}.
+m_{i} := \length_{t_{P_{i}}}{P_{i}}_{P_{i}}/K_{P_{i}}.
 $$
 
 Returning to the geometric language, and the case where $X\subset Y$ is locally a complete intersection in a quasi-projective variety, the cycle class $\alpha_{i}$ in the Chow group of the variety 
@@ -601,7 +594,7 @@ $Z_{i}$ corresponding to $p_{i}$ is defined as the Gysin image of the class of t
 to $P_{i}$ in the projectivized normal bundle of $X$ in $Y$---a construction not included in this package. 
 
 Here are some simple examples in which {\tt distinguished} is used to compute the distinguished varieties of
-intersections in ${\mathbb A}^{n}$, via the function {\tt intersectInP}. First, the intersection of a conic with a tangent line.
+intersections in ${\mathbb A}^{n}$, via the function {\tt intersectInP}. First, the familiar multiplicity 2 intersection of a conic with a tangent line.
 \begin{footnotesize}
  \begin{verbatim}
 i2 : kk = ZZ/101;
@@ -620,7 +613,7 @@ i8 : intersectInP(I,J)
 o8 = {{1, ideal (y, x  + 10)}, {1, ideal (y, x  - 10)}}
 \end{verbatim}
 \end{footnotesize}
-The real interest in the construction is in the case of improper intersections. Here are some typical results:{footnotesize}
+The real interest in the construction is in the case of improper intersections. Here are some typical results:
 \begin{footnotesize}
  \begin{verbatim}
 i9 : I = ideal"x2y";J=ideal"xy2";
@@ -633,18 +626,18 @@ o12 = {{1, ideal y}, {4, ideal x}, {4, ideal (y, x)}}
 
 \section{Rees Algebras and Desingularization}
 
-We conclude this note with an example illustrating a general result about projective birational maps of varieites.
+We conclude with an example illustrating a general result about projective birational maps of varieites.
 Recall that a map $B\to X$ of varieties is projective if it is the composition of a closed embedding $B\subset X\times \PP^n$ with the projection to $X$.
 It is birational if it is generically an isomorphism. The inclusion of a ring into the Rees algebra
 of an ideal corresponds to a map from Proj of the Rees algebra to spec of the ring, called a blowup, that is such a proper birational transformation, and in fact every proper birational transformation to an affine variety (or more generally to any scheme, if one works with sheaves of ideals) can be realized in this way.
 
-The Theorem of embedded resolution of singularities, proven by Hironaka in characteristic 0 and conjectured in general, says that give any subvariety $X$ of a smooth variety $Y$, there is
+The Theorem of embedded resolution of singularities (proven by Hironaka in characteristic 0 and conjectured in general) says that, given any subvariety $X$ of a smooth variety $Y$, there is
 a finite sequence of blowups 
 $$
 B_n \to \cdots B_2 \to B_1 \to Y
 $$
-of smooth subvarieties  and a component of the preimage of
-$X$ in $B_n$ that is smooth. In the case of plane curves, this can be done with a sequence of blowups of closed points. But in fact *any* sequence of blowups of a quasi-projective variety can be replaced with a single blowup (\cite[Theorem II.7.17]{Hartshorne} of a more complicated ideal. We illustrate with the desingularization of a tacnode (the union of two smooth curves that meet with a simple tangency.)
+of smooth subvarieties that lie over the singular set of $X$,  and a component of the preimage of
+$X$ in $B_n$ that is smooth and maps birationally to $X$. In the case of plane curves, this can be done with a sequence of blowups of closed points. But in fact *any* sequence of blowups of a quasi-projective variety can be replaced with a single blowup (\cite[Theorem II.7.17]{H} of a more complicated ideal. We illustrate with the desingularization of a tacnode (the union of two smooth curves that meet with a simple tangency.)
 
 \begin{example}
 Blowing-up $(x^2,y)$ in k[x,y] desingularlizes the tacnode $x^2-y^4$ in a single step. 
@@ -694,15 +687,15 @@ o13 = ideal 1
 \end{verbatim}
 \end{footnotesize}
 The last line asserts that the singular locus of the the variety ``properTransform'' is empty;
-that is, the the scheme defined by "properTransform" is smooth (in this case it is the union
+that is, the the scheme defined by {\tt properTransform} is smooth (in this case it is the union
 of two disjoint smooth curves.)
 
 \let\thefootnote\relax\footnote{
-\noindent A\S Subject Classification:\\
-Primary: 13C40, 13H10, 14M06, 14M10;
-Secondary: 13D02 , 13N05, 14B12, 14M12.\smallbreak
+\noindent AMS Subject Classification:\\
+Primary: 13A30, 13D02, 13B22;
+Secondary: 14C17, 14E15.\smallbreak
 The author is grateful to the
-National Science Foundation for partial support.<}
+National Science Foundation for partial support.}
 \bibliographystyle{alpha}
 \begin{thebibliography}{ABC99}
 %\bibitem{Bass1963} Bass, Hyman
@@ -719,6 +712,9 @@ Graduate Texts in Math. 150,  Springer-Verlag, 1997.
 
 \bibitem[F]{F} W.~Fulton, Intersection Theory, Ergebnisse der Mathematik und ihrer Grenzgebiete, Springer-Verlag, Berlin, 1998.
 
+\bibitem[H]{H} R.~Hartshorne, Algebraic Geometry, 
+Graduate Texts in Math. 52,  Springer-Verlag, 1977.
+
 % \bibitem[H1]{H1}C.~Huneke,
 %On the associated graded ring of an ideal.
 %Illinois J. Math. 26 (1982) 121--137.
@@ -726,11 +722,12 @@ Graduate Texts in Math. 150,  Springer-Verlag, 1997.
 \bibitem[KU]{KU} A.~Kustin and B.~Ulrich, A family of complexes associated to an almost alternating map, with applications to residual intersections, Mem. Amer. Math. Soc. 95 (1992).
 
 \bibitem[MU]{MU} S.~Morey and B.~Ulrich, Rees Algebras of Ideals with Low Codimension, Proc. Am. Math. Soc. 124 (1996) 3653--3661.
-%
-%\bibitem[M2]{M2}
-%Macaulay2{\thinspace}--{\thinspace}a system for computation in
-%  algebraic geometry and commutative algebra programmed by D.~Grayson and M.~Stillman,
-%\href{http://www.math.uiuc.edu/Macaulay2/}{\tt  http://www.math.uiuc.edu/Macaulay2/}
+
+\bibitem[M2]{M2}
+Macaulay2{\thinspace}--{\thinspace}a system for computation in
+  algebraic geometry and commutative algebra programmed by D.~Grayson and M.~Stillman,
+\href{http://www.math.uiuc.edu/Macaulay2/}{\tt  http://www.math.uiuc.edu/Macaulay2/}
+
 \bibitem[NR]{NR} D.~Northcott and D.~Rees, 
 Reductions of ideals in local rings 
 Proc. Cambridge Philos. Soc. 50 (1954) 145--158.
@@ -750,12 +747,12 @@ Proc. Cambridge Philos. Soc. 50 (1954) 145--158.
 
 \bigskip
 
-\vbox{\noindent Author Addresses:\par
+\vbox{\noindent Author Address:\par
 \smallskip
 \noindent{David Eisenbud}\par
 \noindent{Mathematical Sciences Research Institute,
 Berkeley, CA 94720, USA}\par
-\noindent{de@msri.org}\par
+\noindent{de@msri.org}
 }
 
 \end{document}
