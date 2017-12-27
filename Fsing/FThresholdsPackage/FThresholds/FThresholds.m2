@@ -119,18 +119,18 @@ linearSearch = ( I, J, e, a, b, testFunction ) ->
 ----------------------------------------------------------------------------------
 -- OPTION PACKAGES
 
-optIL = { TestFunction => testPower, UseColonIdeals => false, SearchFunction => binarySearch }
+optIdealList = { TestFunction => testPower, UseColonIdeals => false, SearchFunction => binarySearch }
 
-optPL = { TestFunction => testRoot, UseColonIdeals => false, SearchFunction => binarySearch }
+optPolyList = { TestFunction => testRoot, UseColonIdeals => false, SearchFunction => binarySearch }
 
-optI = append( optIL, ComputePreviousNus => true )
+optIdeal = append( optIdealList, ComputePreviousNus => true )
 
-optP = append( optPL, ComputePreviousNus => true )
+optPoly = append( optPolyList, ComputePreviousNus => true )
 
 ----------------------------------------------------------------------------------
 -- INTERNAL FUNCTION
 
-nuInternal = optI >> o -> ( n, f, J ) -> 
+nuInternal = optIdeal >> o -> ( n, f, J ) -> 
 ( 
     p := char ring f;
     nu := nu1( f, J );
@@ -176,30 +176,30 @@ nuInternal = optI >> o -> ( n, f, J ) ->
 
 nuList = method( Options => true )
 
-nuList( ZZ, Ideal, Ideal ) := optIL >> o -> ( e, I, J ) -> nuInternal( e, I, J, o )
+nuList( ZZ, Ideal, Ideal ) := optIdealList >> o -> ( e, I, J ) -> nuInternal( e, I, J, o )
 
-nuList( ZZ, RingElement, Ideal ) := optPL >> o -> ( e, I, J ) -> nuInternal( e, I, J, o )
+nuList( ZZ, RingElement, Ideal ) := optPolyList >> o -> ( e, I, J ) -> nuInternal( e, I, J, o )
 
-nuList( ZZ, Ideal ) := optIL >> o -> ( e, I ) -> nuList( e, I, maxIdeal I, o )
+nuList( ZZ, Ideal ) := optIdealList >> o -> ( e, I ) -> nuList( e, I, maxIdeal I, o )
 
-nuList( ZZ, RingElement ) := optPL >> o -> ( e, f ) -> nuList( e, f, maxIdeal f, o )
+nuList( ZZ, RingElement ) := optPolyList >> o -> ( e, f ) -> nuList( e, f, maxIdeal f, o )
 
 nu = method( Options => true )
 
-nu( ZZ, Ideal, Ideal ) := optI >> o -> ( e, I, J ) -> last nuInternal( e, I, J, o )
+nu( ZZ, Ideal, Ideal ) := optIdeal >> o -> ( e, I, J ) -> last nuInternal( e, I, J, o )
 
-nu( ZZ, RingElement, Ideal ) := optP >> o -> ( e, f, J ) -> last nuInternal( e, f, J, o )
+nu( ZZ, RingElement, Ideal ) := optPoly >> o -> ( e, f, J ) -> last nuInternal( e, f, J, o )
 
-nu( ZZ, Ideal ) := optI >> o -> ( e, I ) -> nu( e, I, maxIdeal I, o )
+nu( ZZ, Ideal ) := optIdeal >> o -> ( e, I ) -> nu( e, I, maxIdeal I, o )
 
-nu( ZZ, RingElement ) := optP >> o -> ( e, f ) -> nu( e, f, maxIdeal f, o )
+nu( ZZ, RingElement ) := optPoly >> o -> ( e, f ) -> nu( e, f, maxIdeal f, o )
 
 -- Nus can be computed using generalized Frobenius powers, by using 
 -- TestFunction=>testFrobeniusPower. For convenience, here are some shortcuts: 
 
-muList = optIL >> o -> x -> nuList( x, o, TestFunction => testFrobeniusPower ) 
+muList = optIdealList >> o -> x -> nuList( x, o, TestFunction => testFrobeniusPower ) 
 
-mu = optI >> o -> x -> nu( x, o, TestFunction => testFrobeniusPower ) 
+mu = optIdeal >> o -> x -> nu( x, o, TestFunction => testFrobeniusPower ) 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ----------------------------------------------------------------------------------
