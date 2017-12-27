@@ -60,10 +60,10 @@ export{
     
 --F-thresholds computations (FThresholds.m2)
     "BinaryFormCheck",
-    "binarySearch1",
     "binarySearchRecursive",
     "BinomialCheck",
     "ComputePreviousNus",
+    "critExpApproxList",
     "DiagonalCheck", 
     "estFPT", --Karl (and others, Pedro?, maybe should just be called fpt?)
     "FinalCheck", 
@@ -71,30 +71,22 @@ export{
     "fpt1",   
     "FPTApproxList",     
     "FTApproxList",
-    "FTHatApproxList", 
-    "guessFPT", --Karl (probably should be incorporated into estFPT
+     "guessFPT", --Karl (probably should be incorporated into estFPT
     "HSL",	
     "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring)
     "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring)
     "linearSearch",
+    "mu",
+    "muList",
     "MultiThread",
-    "newNu",
-    "newNuHat", 
-    "newNuHatList",
-    "newNuList",   
     "nu",
-    "nuAlt",
     "NuCheck",
-    "nuHat",
-    "nuHatList",
     "nuList",
-    "nuListAlt",
-    "nuListAlt1",
     "Origin",
     "OutputRange",
     "SearchFunction",
     "TestFunction",
-    "testGenFrobeniusPower",
+    "testFrobeniusPower",
     "testPower",
     "testRoot",
     "UseColonIdeals",
