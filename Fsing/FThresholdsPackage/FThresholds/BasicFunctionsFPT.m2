@@ -62,6 +62,30 @@ getFactorList = n ->
 
 --===================================================================================
 
+
+findNumberBetweenWithDenom = method(); 
+
+--This function finds rational numbers in the range of the interval
+--with the given denominator
+findNumberBetweenWithDenom( ZZ, ZZ, ZZ) := ( myDenom, firstN, secondN) ->
+(
+     upperBound := floor((secondN)*myDenom)/myDenom; 
+          --finds the number with denominator myDenom less than the second number
+     lowerBound := ceiling((firstN)*myDenom)/myDenom; 
+          --finds the number with denominator myDenom greater than the first number
+
+     if (upperBound >= lowerBound) then (
+	  --first we check whether there is anything to search for
+
+	  apply( 1+numerator((upperBound-lowerBound)*myDenom), i-> lowerBound+(i/myDenom) )
+     )
+     else {}
+)
+
+--for backwards compatibility
+--findNumberBetweenWithDenom( ZZ, List ) := (a, L) -> findNumberBetweenWithDenom(a, L#0, L#1);
+
+
 findNumberBetween = method(); 
 
 --This function finds rational numbers in the range of 

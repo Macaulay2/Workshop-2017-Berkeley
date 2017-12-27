@@ -1,4 +1,4 @@
-newPackage( "Fsing",
+newPackage( "FThresholds",
 Version => "0.1", 
 Date => "May 30th, 2017", 
 Authors => {
@@ -48,11 +48,13 @@ Authors => {
      HomePage => "http://math.umn.edu/~ewitt/"
      }
 },
-Headline => "A package for calculations of singularities in positive characteristic", 
+Headline => "A package for calculations of F-thresholds", 
 DebuggingMode => true, 
 Reload => true,
-AuxiliaryFiles=>false
+AuxiliaryFiles=>true
 )
+
+needsPackage "TestIdeals"
 
 export{
     
@@ -71,6 +73,7 @@ export{
     "FTApproxList",
     "FTHatApproxList", 
     "guessFPT", --Karl (probably should be incorporated into estFPT
+    "HSL",	
     "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring)
     "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring)
     "linearSearch",
@@ -112,36 +115,24 @@ export{
     "Nontrivial",    
     "PrintCP",
     "setFTData",
-    "splittingField",
-
- 
--- Other
-    "FFiniteSupport", ---MK
-    "findAllCompatibleIdeals", ---MK	   
-    "findGeneratingMorphisms", ---MK
-    "FPureIdeals",
-    "FullMap", ---Karl
-    "generatingMorphism", ---MK
-    "generatingRoot" ---MK
---    "paraTestModule", ---MK
---    "paraTestModuleAmbient" ---MK  
+    "splittingField"
 }
 
 --*************************************************
 
-load "./code/BasicFunctionsFPT.m2"
+load "./FThresholds/BasicFunctionsFPT.m2"
 
-load "./code/FThresholds.m2"
+load "./FThresholds/FThresholds.m2"
 
-load "./code/SpecialFThresholds.m2"
+load "./FThresholds/SpecialFThresholds.m2"
 
 beginDocumentation()
 
-load "./documentation/FThresholdsDoc.m2"
+load "./FThresholds/FThresholdsDoc.m2"
 
-load "./documentation/SpecialFThresholdsDoc.m2"
+load "./FThresholds/SpecialFThresholdsDoc.m2"
 
 -- TESTS
 
-load "./tests/SpecialFThresholdsTest.m2"
+load "./FThresholds/SpecialFThresholdsTest.m2"
 

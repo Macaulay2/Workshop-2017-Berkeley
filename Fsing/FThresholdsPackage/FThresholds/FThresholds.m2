@@ -629,6 +629,19 @@ threshInt = (f,e,t,b,t1)-> (
 {b1,xInt(t,b,t1/(char ring f)^e,b1)}
 )
 
+isFRegularPoly = method();
+
+--Determines if a pair (R, f^t) is F-regular at a prime
+--ideal Q in R, R is a polynomial ring  
+isFRegularPoly (RingElement, QQ, Ideal) := (f1, t1, Q1) -> (
+     not isSubset(testIdeal(t1,f1), Q1)
+)
+
+--Determines if a pair (R, f^t) is F-regular, R a polynomial ring
+isFRegularPoly (RingElement, QQ) := (f1, t1) -> (
+     isSubset(ideal(1_(ring f1)), testIdeal(t1,f1))
+)
+
 
 --F-pure threshold estimation, at the origin
 --e is the max depth to search in
@@ -731,7 +744,7 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
       --if we run the final check, do the following
       if ( (foundAnswer == false) and (o.FinalCheck == true)) then ( 
 	  if  (o.Verbose==true) then print "Starting FinalCheck."; 
-          	if ((isFRegularPoly(ff,(ak#1),maxIdeal)) ==false ) then (	
+          	if ((isFRegularPoly(ff,ak#1,maxIdeal)) ==false ) then (	
 	      		if  (o.Verbose==true) then print "FinalCheck successful"; 
 	      		answer = (ak#1);
 	      		foundAnswer = true 
@@ -1103,3 +1116,37 @@ isFJumpingNumberPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	not (isSubset(mySigma, myTau))
 )
 
+----------------------------------------------------------------
+--************************************************************--
+--Functions for computing sigma                               --
+--************************************************************--
+----------------------------------------------------------------
+
+
+--Computes Non-Sharply-F-Pure ideals over polynomial rings for (R, fm^{a/(p^{e1}-1)}), 
+--at least defined as in Fujino-Schwede-Takagi.
+sigmaAOverPEMinus1Poly ={HSL=> false}>> o -> (fm, a1, e1) -> ( 
+     Rm := ring fm;
+     pp := char Rm;
+     m1 := 0;
+	e2 := e1;
+	a2 := a1;
+	--if e1 = 0, we treat (p^e-1) as 1.  
+     if (e2 == 0) then (e2 = 1; a2 = a1*(pp-1));
+     if (a2 > pp^e2-1) then (m1 = floor((a2-1)/(pp^e2-1)); a2=((a2-1)%(pp^e2-1)) + 1 );
+     --fpow := fm^a2;
+     IN := frobeniusRoot(e2,ideal(1_Rm)); -- this is going to be the new value.
+     -- the previous commands should use the fast power raising when Emily finishes it
+     IP := ideal(0_Rm); -- this is going to be the old value.
+     count := 0;
+     
+     --our initial value is something containing sigma.  This stops after finitely many steps.  
+     while (IN != IP) do(
+		IP = IN;
+	  	IN = frobeniusRoot(e2,a2,fm,IP); -- ethRoot(e2,ideal(fpow)*IP);
+	  	count = count + 1
+     );
+
+     --return the final ideal and the HSL number of this function
+     if (o.HSL == true) then {IP*ideal(fm^m1),count} else IP*ideal(fm^m1)
+)
