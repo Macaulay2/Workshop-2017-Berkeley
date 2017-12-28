@@ -75,8 +75,15 @@ testPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) ->
     isSubset( ideal fastExponentiation( a, f ), frobenius( e, I ) )
 
 -- testFrobeniusPower(J,a,I,e) checks whether J^[a] is a subset of I^[p^e]
-testFrobeniusPower = ( J, a, I, e ) -> 
+testFrobeniusPower = method()
+
+testFrobeniusPower ( Ideal, ZZ, Ideal, ZZ ) := ( J, a, I, e ) -> 
     isSubset( frobeniusPower( a, J ), frobenius( e, I ) )
+
+testFrobeniusPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> testRoot( f, a, I, e )
+
+-- hash table to select test function from option keyword
+test = new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
 
 ----------------------------------------------------------------------------------
 -- SEARCH FUNCTIONS
@@ -116,12 +123,15 @@ linearSearch = ( I, J, e, a, b, testFunction ) ->
     c-1
 )
 
+-- hash table to select search function from option keyword
+search = new HashTable from { Binary => binarySearch, BinaryRecursive => binarySearchRecursive, Linear => linearSearch }
+
 ----------------------------------------------------------------------------------
 -- OPTION PACKAGES
 
-optIdealList = { TestFunction => testPower, UseColonIdeals => false, SearchFunction => binarySearch }
+optIdealList = { Test => StandardPower, UseColonIdeals => false, Search => Binary }
 
-optPolyList = { TestFunction => testRoot, UseColonIdeals => false, SearchFunction => binarySearch }
+optPolyList = { Test => FrobeniusRoot, UseColonIdeals => false, Search => Binary }
 
 optIdeal = append( optIdealList, ComputePreviousNus => true )
 
@@ -140,9 +150,9 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
     if not o.ComputePreviousNus then
     (
 	if n == 0 then return theList;
- 	N = if principal or o.TestFunction === testFrobeniusPower
+ 	N = if principal or o.Test === FrobeniusPower
 	     then p^n else (numgens trim J)*(p^n-1)+1;
-     	return { o.SearchFunction( f, J, n, nu*p^n, (nu+1)*N, o.TestFunction ) }
+     	return { (search#(o.Search))( f, J, n, nu*p^n, (nu+1)*N, test#(o.Test) ) }
     );
     if o.UseColonIdeals and principal then -- colon ideals only work for polynomials
     (
@@ -151,7 +161,7 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
 	scan( 1..n, e ->
 	    (
 		I = I : ideal( fastExponentiation( nu, g ) );
-		nu =  last nuInternal( 1, g, I, TestFunction => o.TestFunction );
+		nu =  last nuInternal( 1, g, I, Test => o.Test );
 	      	theList = append( theList, p*(last theList) + nu );
 	      	I = frobenius( I )
 	    )
@@ -159,11 +169,11 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
     )
     else
     (
-	N = if principal or o.TestFunction === testFrobeniusPower
+	N = if principal or o.Test === FrobeniusPower
 	     then p else (numgens trim J)*(p-1)+1;
 	scan( 1..n, e -> 
 	    (
-		nu = o.SearchFunction( f, J, e, p*nu, (nu+1)*N, o.TestFunction );
+		nu = (search#(o.Search))( f, J, e, p*nu, (nu+1)*N, test#(o.Test) );
     	       	theList = append( theList, nu )
     	    )
     	)
@@ -195,11 +205,11 @@ nu( ZZ, Ideal ) := optIdeal >> o -> ( e, I ) -> nu( e, I, maxIdeal I, o )
 nu( ZZ, RingElement ) := optPoly >> o -> ( e, f ) -> nu( e, f, maxIdeal f, o )
 
 -- Nus can be computed using generalized Frobenius powers, by using 
--- TestFunction=>testFrobeniusPower. For convenience, here are some shortcuts: 
+-- Test=>FrobeniusPower. For convenience, here are some shortcuts: 
 
-muList = optIdealList >> o -> x -> nuList( x, o, TestFunction => testFrobeniusPower ) 
+muList = optIdealList >> o -> x -> nuList( x, o, Test => FrobeniusPower ) 
 
-mu = optIdeal >> o -> x -> nu( x, o, TestFunction => testFrobeniusPower ) 
+mu = optIdeal >> o -> x -> nu( x, o, Test => FrobeniusPower ) 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ----------------------------------------------------------------------------------
@@ -365,7 +375,7 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
 	 
 	--check to see if (nu+1)/p^e is the FPT
 	if ((o.NuCheck==true) and (foundAnswer == false)) then(
-		if (isFPTPoly(ff, (nn+1)/pp^ee,Origin=>true) == true) then (
+		if (isFPTPoly((nn+1)/pp^ee,ff,Origin=>true) == true) then (
 			answer = (nn+1)/pp^ee;
 			foundAnswer = true
 		)
@@ -432,14 +442,14 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
      answer
 )
 
--- essentially same as estFPT, with small additions and changes to make the code clearer
+-- Essentially same as estFPT, with small additions and changes to make the code clearer.
+-- Removed the MultiThread option, as it does not seem to help. 
 fpt = method( 
     TypicalValue => QQ, 
     Options => 
         {
 	    FinalCheck => true, 
 	    Verbose => false, 
-	    MultiThread => false, 
 	    DiagonalCheck => true, 
 	    BinomialCheck => true, 
 	    BinaryFormCheck => true, 
@@ -472,32 +482,32 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     -- Check if it is diagonal:
     if o.DiagonalCheck and isDiagonal f then 
     ( 
-        if o.Verbose then print "Polynomial is diagonal"; 
+        if o.Verbose then print "Polynomial is diagonal; calling diagonalFPT"; 
         return diagonalFPT f 
     );
 
     -- Now check if it is binomial:
     if o.BinomialCheck and isBinomial f then 
     ( 
-        if o.Verbose then print "Polynomial is a binomial";
+        if o.Verbose then print "Polynomial is a binomial; calling binomialFPT";
         return binomialFPT f 
     );
 
     -- Now check if it is a binary form:
     if o.BinaryFormCheck and isBinaryForm f then 
     ( 
-        if o.Verbose then print "Polynomial is a binary form";
+        if o.Verbose then print "Polynomial is a binary form; calling binaryFormFPT";
         return binaryFormFPT f 
     );
     
-    if o.Verbose then print "Special fpt algorithms are not available for this polynomial";
+    if o.Verbose then print "Special fpt algorithms were not used";
      
     -- Compute nu(e,f)
     n := nu( e, f );
         
     if o.Verbose then print( "nu has been computed: nu(e,f) = " | toString n );
     
-    -- If our nu isn't fine enough, we just spit back some information
+    -- If our nu isn't fine enough, we just return some information
     if n == 0 then 
     (
 	if o.Verbose then 
@@ -508,7 +518,8 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     -- Check to see if either nu/(p^e-1) or (nu+1)/p^e is the fpt
     if o.NuCheck then 
     (
-        --check to see if nu/(p^e-1) is the fpt
+        -- check to see if nu/(p^e-1) is the fpt
+	-- (uses the fact that there are no fpts between nu/p^e and nu/(p^e-1))
 	if not isFRegularPoly( f, n/( p^e - 1 ), M ) then 
 	(
 	    if o.Verbose then print "Found answer via nu/(p^e-1)"; 
@@ -517,7 +528,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
       	else if o.Verbose then print "nu/(p^e-1) is not the fpt";
 	
         --check to see if (nu+1)/p^e is the FPT
-	if isFPTPoly( ( n + 1 )/p^e, f ) then 
+	if isFPTPoly( ( n + 1 )/p^e, f, Origin => true ) then 
 	(
 	    if o.Verbose then print "Found answer via (nu+1)/(p^e)"; 
 	    return ( n + 1 )/p^e
@@ -526,184 +537,41 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     );
 
     -- Do the F-signature computation
-    a := 0;
-    if  not o.MultiThread then a = threshInt( f, e, (n-1)/p^e, fSig( f, n-1 , e ), n ) 
-    else
-    (
-	if o.Verbose then print "Beginning multithreaded F-signature";
-	allowableThreads = 4;
-	numVars := #(ring f)_*;
-	Y := local Y;
-	myMon := monoid[ toList(Y_1..Y_numVars), MonomialOrder => RevLex, Global => false ];
-	R := (coefficientRing ring f) myMon;
-	rMap := map( R, ring f, vars myMon);
-	g := rMap f;
-	t := schedule( fSig, ( g, n-1, e ) );
-	s2 := fSig( f, n, e );	
-	if o.Verbose then print("First F-signature: s(f,nu/p^e) = " | toString s2);
-	while not isReady t do sleep 1;
-	s1 := taskResult t;
-	if o.Verbose then print("Second F-signature: s(f,(nu-1)/p^e) = " | toString s1);
-	a = { s2, xInt( (n-1)/p^e, s1, n/p^e, s2 )}
-    );
-    if o.Verbose then print( "Computed F-signature intercept: " | toString a#1);
+    if o.Verbose then print "Beginning F-signature computation";
+    s2 := fSig( f, n, e );
+    if o.Verbose then print("First F-signature computed: s(f,nu/p^e) = " | toString s2);
+    s1 := fSig( f, n-1, e );
+    if o.Verbose then print("Second F-signature computed: s(f,(nu-1)/p^e) = " | toString s1);
+    a := xInt( (n-1)/p^e, s1, n/p^e, s2 );
+    
+    if o.Verbose then print( "Computed F-signature intercept: " | toString a);
 
     -- Now check to see if we cross at (nu+1)/p^e. If so, then that's the fpt.
-    if (n+1)/p^e == a#1 then 
+    if (n+1)/p^e == a then 
     (
 	if  o.Verbose then print "F-signature line crosses at (nu+1)/p^e"; 
-	return a#1
+	return a
     );
 	       	
     if o.FinalCheck then 
     (
-	if o.Verbose then print "Starting FinalCheck"; 
- --       if not isFRegularPoly( f, a#1, M ) then 
- -- trying isFPT here
-        if isFPTPoly( a#1, f ) then 
+	if o.Verbose then print "Starting final check"; 
+        if not isFRegularPoly( f, a, M ) then 
         (	
-	   if o.Verbose then print "FinalCheck successful"; 
-	   return a#1
+	   if o.Verbose then print "Final check successful; fpt is the F-signature intercept"; 
+	   return a
       	)
-	else if o.Verbose then print "FinalCheck didn't find the fpt"
+	else if o.Verbose then print "Final check didn't find the fpt"
     )
-    else if o.Verbose then print "FinalCheck not run";    
-    { a#1, (n+1)/p^e }
+    else if o.Verbose then print "Final check not run";
+    if o.Verbose then print( 
+	"fpt lies in the interval " |
+	    ( if o.FinalCheck then "( " else "[ " ) |  
+	    toString a | ", " | toString( (n+1)/p^e ) | 
+	    ( if o.NuCheck then " )" else " ]" ) 
+    );    
+    { a, (n+1)/p^e }
 )
-
--- a different version, where multithread is done without cloning the ring and poly
--- essentially same as estFPT, with small additions and changes to make the code clearer
-fpt1 = method( 
-    TypicalValue => QQ, 
-    Options => 
-        {
-	    FinalCheck => true, 
-	    Verbose => false, 
-	    MultiThread => false, 
-	    DiagonalCheck => true, 
-	    BinomialCheck => true, 
-	    BinaryFormCheck => true, 
-	    NuCheck => true 
-    	}
-);
-
-fpt1 ( RingElement, ZZ ) := QQ => o -> ( f, e ) -> 
-(
-    -- To do: check if f is a polynomial over a field of positive char
-
-    -- Check if polynomial is in the homogeneous maximal ideal
-    M := maxIdeal f;   -- The maximal ideal we are computing the fpt at  
-    p := char ring f;
-    if not isSubset( ideal f, M ) then error "Polynomial is not in the homogeneous maximal ideal";   
-
-    if o.Verbose then print "Starting fpt";
-    
-    -- Check if fpt equals 1
-    if not isSubset( ideal( f^(p-1) ), frobenius( M ) ) then 
-    (
-        if o.Verbose then print "nu(1,f) = p-1, so fpt(f) = 1"; 
-        return 1 
-    );	
-    
-    if o.Verbose then print "fpt(f) is not 1";
-    
-    -- Check if one of the special FPT functions can be used...
-    
-    -- Check if it is diagonal:
-    if o.DiagonalCheck and isDiagonal f then 
-    ( 
-        if o.Verbose then print "Polynomial is diagonal"; 
-        return diagonalFPT f 
-    );
-
-    -- Now check if it is binomial:
-    if o.BinomialCheck and isBinomial f then 
-    ( 
-        if o.Verbose then print "Polynomial is a binomial";
-        return binomialFPT f 
-    );
-
-    -- Now check if it is a binary form:
-    if o.BinaryFormCheck and isBinaryForm f then 
-    ( 
-        if o.Verbose then print "Polynomial is a binary form";
-        return binaryFormFPT f 
-    );
-    
-    if o.Verbose then print "Special fpt algorithms are not available for this polynomial";
-     
-    -- Compute nu(e,f)
-    n := nu( e, f ); 
-    
-    if o.Verbose then print( "nu has been computed: nu(e,f) = " | toString n );
-    
-    -- If our nu isn't fine enough, we just spit back some information
-    if n == 0 then 
-    (
-	if o.Verbose then 
-	    print "The nu computed isn't fine enough. Try increasing the max exponent e.";
-	return { 0, 1/p^e }
-    );
-
-    -- Check to see if either nu/(p^e-1) or (nu+1)/p^e is the fpt
-    if o.NuCheck then 
-    (
-        --check to see if nu/(p^e-1) is the fpt
-	if not isFRegularPoly( f, n/( p^e - 1 ), M ) then 
-	(
-	    if o.Verbose then print "Found answer via nu/(p^e-1)"; 
-	    return n/( p^e - 1 )
-	) 
-      	else if o.Verbose then print "nu/(p^e-1) is not the fpt";
-	
-        --check to see if (nu+1)/p^e is the FPT
-	if isFPTPoly( ( n + 1 )/p^e, f ) then 
-	(
-	    if o.Verbose then print "Found answer via (nu+1)/(p^e)"; 
-	    return ( n + 1 )/p^e
-	) 
-      	else if o.Verbose then print "(nu+1)/p^e is not the fpt"
-    );
-
-    -- Do the F-signature computation
-    a := 0;
-    if  not o.MultiThread then a = threshInt( f, e, (n-1)/p^e, fSig( f, n-1 , e ), n ) 
-    else
-    (
-	if o.Verbose then print "Beginning multithreaded F-signature";
-	t := schedule( fSig, ( f, n-1, e ) );
-	s2 := fSig( f, n, e );	
-	if o.Verbose then print("First F-signature: s(f,nu/p^e) = " | toString s2);
-	while not isReady t do sleep 1;
-	s1 := taskResult t;
-	if o.Verbose then print("Second F-signature: s(f,(nu-1)/p^e) = " | toString s1);
-	a = { s2, xInt( (n-1)/p^e, s1, n/p^e, s2 )}
-    );
-    if o.Verbose then print( "Computed F-signature intercept: " | toString a#1);
-
-    -- Now check to see if we cross at (nu+1)/p^e. If so, then that's the fpt.
-    if (n+1)/p^e == a#1 then 
-    (
-	if  o.Verbose then print "F-signature line crosses at (nu+1)/p^e"; 
-	return a#1
-    );
-	       	
-    if o.FinalCheck then 
-    (
-	if o.Verbose then print "Starting FinalCheck"; 
- --       if not isFRegularPoly( f, a#1, M ) then 
- -- trying isFPT here
-        if isFPTPoly( a#1, f ) then 
-        (	
-	   if o.Verbose then print "FinalCheck successful"; 
-	   return a#1
-      	)
-	else if o.Verbose then print "FinalCheck didn't find the fpt"
-    )
-    else if o.Verbose then print "FinalCheck not run";    
-    { a#1, (n+1)/p^e }
-)
-
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -754,6 +622,8 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 		
 	returnValue
 )
+
+isFPTPoly ( ZZ, RingElement ) := o -> ( t, f ) -> isFPTPoly( t/1, f, o )
 
 --isFJumpingNumberPoly determines if a given rational number is an F-jumping number
 --***************************************************************************
