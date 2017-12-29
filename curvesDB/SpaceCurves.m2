@@ -69,9 +69,15 @@ Postulation = new Type of List
 
 net AbstractSurface := X -> net X.Name
 net RealizedSurface := X -> net X.Ideal
+
+AbstractSurface.synonym = "abstract surface"
+AbstractSurface.GlobalAssignHook = globalAssignFunction
+AbstractSurface.GlobalReleaseHook = globalReleaseFunction
+
 ideal RealizedSurface := X -> X.Ideal
 
 abstractSurface = method()
+
 abstractSurface RealizedSurface := X -> X.AbstractSurface
 abstractSurface AbstractDivisor := D -> D.AbstractSurface
 abstractSurface List := data -> (
@@ -966,6 +972,36 @@ doc ///
        isIrreducible C
        isIrreducible realize C
   SeeAlso
+///
+
+-- TODO (MES): is the following description still useful?  If so, add it, otherwise, let's remove it.
+///
+  Key
+    "AbstractSurface"
+  Headline
+    class of abstract surfaces
+  Description
+     Text
+       An abstract surface encodes knowledge about numerical divisor classes, 
+       their intersections, the canonical class, the hyperplane class, and
+       the Euler characteristic of the surface, to enable computations about
+       divisors: their degree, genus, intersection numbers, use of Riemann-Roch, etc.
+       
+       Most users will not use this type directly, instead using 
+       special abstract surfaces, such as @TO "abstractQuadric"@ and @TO "abstractCubic"@.
+     Example
+       abstractCubic
+       peek abstractCubic
+     Text
+       If you want to create a new abstract surface $X$, you must provide information
+       about the numerical divisor group $Num(X)$ (The Neron-Severi group), its canonical
+       class, hyperplane class, and the Euler characteristic of the surface.  See
+       @TO "abstractSurface"@ for an example for how to do this.
+  SeeAlso
+    "abstractQuadric"
+    "abstractCubic"
+    abstractHypersurface
+    AbstractDivisor
 ///
 
 doc ///
