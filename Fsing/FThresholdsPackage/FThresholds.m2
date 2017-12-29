@@ -65,10 +65,8 @@ export{
     "ComputePreviousNus",
     "critExpApproxList",
     "DiagonalCheck", 
-    "estFPT", --Karl (and others, Pedro?, maybe should just be called fpt?)
     "FinalCheck", 
     "fpt",   
-    "fpt1",   
     "FPTApproxList",
     "FrobeniusPower",
     "FrobeniusRoot",     

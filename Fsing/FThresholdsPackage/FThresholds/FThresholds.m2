@@ -289,162 +289,16 @@ fSig = ( f, a, e ) ->
      1 - p^( -e * dim( R ) ) * degree( frobenius( e, maxIdeal R ) + ideal( fastExponentiation( a, f ) ) ) 
 )  
 
---Calculates the x-int of the secant line between two guesses for the fpt
---Input:
---     f - a polynomial in a ring of PRIME characteristic
---     e - a positive integer
---     n - a positive integer
---     n1- an integer > n
--- Output:
---     The x-intercept of the line passing through (n/p^e,fSig(f,n,e)) and (n1/p^e,fSig(f,n1,e))
-threshInt = ( f, e, n, n1 ) -> 
-(
-    p := char ring f;
-    b := fSig( f, n, e );
-    b1 := fSig( f, n1, e );
-    xInt( n/p^e, b, n1/p^e, b1 )
-)
-
-isFRegularPoly = method()
-
 --Determines if a pair (R, f^t) is F-regular at a prime
 --ideal Q in R, where R is a polynomial ring  
-isFRegularPoly ( RingElement, QQ, Ideal ) := ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
+isFRegularPoly = ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 
---Determines if a pair (R, f^t) is F-regular, where R a polynomial ring
-isFRegularPoly ( RingElement, QQ ) := ( f, t ) -> isSubset( ideal( 1_( ring f ) ), testIdeal( t , f ) )
-
-
-
---F-pure threshold estimation, at the origin
---e is the max depth to search in
---FinalCheck is whether the last isFRegularPoly is run (it is possibly very slow) 
---If MultiThread is set to true, it will compute the two F-signatures simultaneously
-estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>true, BinomialCheck=>true, NuCheck=>true} >> o -> (ff,ee)->(
-     print "starting estFPT";
-     
-     maxIdeal := ideal( first entries vars( ring ff) );   --the maximal ideal we are computing the fpt at  
-
-     foundAnswer := false; --this will be set to true as soon as we found the answer.  Setting it to true will stop further tests from being run
-     answer := null; --this stores the answer until it can be returned.
-     
-     --first check if it is diagonal:
-     if ( (o.DiagonalCheck==true) and (foundAnswer == false) ) then (
-	   if (isDiagonal(ff)==true) then ( 
-		if (o.Verbose==true) then print "Polynomial is diagonal."; 
-		answer = diagonalFPT(ff); 
-		foundAnswer = true
-	   )
-     );
-
-     --now check if it is binomial:
-     if ( (o.BinomialCheck==true) and (foundAnswer == false) ) then (
-	  if (isBinomial(ff)==true) then ( 
-	       if  (o.Verbose==true) then print "Polynomial is binomial.";
-	       answer = binomialFPT(ff);
-	       foundAnswer = true
-	  )
-     );
-     
-     --compute nu's
-     if (foundAnswer == false) then (
-     	  pp:=char ring ff;
-     	  nn:=nu(ee,ff);
-	  if  (o.Verbose==true) then print "nu's have been computed";
-
-     	  --if our nu's aren't fine enough, we just spit back some information
-       	  if nn==0 then (
-	       answer = {0,1/pp};
-	       foundAnswer = true
-	   )
-      );
- 
-      --check to see if nu/(p^e-1) is the fpt
-      if ((o.NuCheck==true) and (foundAnswer == false)) then (
-	   if (isFRegularPoly(ff,(nn/(pp^ee-1)),maxIdeal)==false) then ( 
-		if  (o.Verbose==true) then print "Found answer via nu/(p^e-1)."; 
-		answer = nn/(pp^ee-1);
-		foundAnswer = true
-	   ) 
-      	   else (
-	   	if  (o.Verbose==true) then print "nu/(p^e-1) is not the fpt.";
-	   )
-      );
-	 
-	--check to see if (nu+1)/p^e is the FPT
-	if ((o.NuCheck==true) and (foundAnswer == false)) then (
-	    if (isFPTPoly((nn+1)/pp^ee,ff,Origin=>true) == true) then (
-		if (o.Verbose==true) then print "Found answer via (nu+1)/p^e."; 
-		answer = (nn+1)/pp^ee;
-		foundAnswer = true
-	    )
-	);
-
-     --do the F-signature computation
-     if (foundAnswer == false) then (
-	   ak := 0;
-	   if (o.MultiThread==false ) then (ak=threshInt(ff,ee,nn-1,nn) ) else(
-		if (o.Verbose==true) then print "Beginning multithreaded F-signature";
-		allowableThreads = 4;
-		numVars := rank source vars (ring ff);
-		YY := local YY;
-		myMon := monoid[  toList(YY_1..YY_numVars), MonomialOrder=>RevLex,Global=>false];
-		--print myMon;
-     		R1:=(coefficientRing ring ff) myMon;
-		rMap := map(R1, ring ff, vars myMon);
-		gg := rMap(ff);
-		
-		
-		H := (fff,aaa,eee) -> () -> fSig(fff,aaa,eee);
-		newSig1 := H(gg,nn-1,ee);
-		t1 := schedule newSig1;
-	     	s2 := fSig(ff,nn,ee);	
-		if (o.Verbose==true) then print "One signature down";
-		while ((not isReady t1)) do sleep 1;
-		s1 := taskResult t1;
-     	      --  print s1; print s2;
-		ak = xInt( (nn-1)/pp^ee, s1, nn/pp^ee, s2 );
-		--print nn;		
-	   );
-	   if  (o.Verbose==true) then print "Computed F-signatures.";
-	   --now check to see if we cross at (nu+1)/p^e, if that's the case, then that's the fpt.
-	   if ( (nn+1)/pp^ee == ak ) then (
-		if  (o.Verbose==true) then print "F-signature line crosses at (nu+1)/p^e."; 
-		answer = ak;
-		foundAnswer = true
-	   )
-      );	  
-      	
-      --if we run the final check, do the following
-      if ( (foundAnswer == false) and (o.FinalCheck == true)) then ( 
-	  if  (o.Verbose==true) then print "Starting FinalCheck."; 
-          	if ((isFRegularPoly(ff,ak,maxIdeal)) ==false ) then (	
-	      		if  (o.Verbose==true) then print "FinalCheck successful"; 
-	      		answer = ak;
-	      		foundAnswer = true 
-      	  	)
-	  		else ( 
-	      		if  (o.Verbose==true) then print "FinalCheck didn't find the fpt."; 
-	      		answer = { ak, (nn+1)/pp^ee };
-	      		foundAnswer = true
-	  		)
-       );
-       
-       --if we don't run the final check, do the following
-       if ((foundAnswer == false) and (o.FinalCheck == false) ) then (
-	  if  (o.Verbose==true) then print "FinalCheck not run.";
-	  answer = { ak, (nn+1)/pp^ee };
-      	  foundAnswer = true
-       );
-     
-     --return the answer
-     answer
-)
-
--- Essentially same as estFPT, with small additions and changes to make the code clearer.
--- Removed the MultiThread option, as it does not seem to help. 
+-- F-pure threshold estimation, at the origin.
+-- e is the max depth to search in.
+-- FinalCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
+-- If MultiThread is set to true, it will compute the two F-signatures simultaneously.
+-- This is essentially the same as the old estFPT, with a couple more tests, and changes to make the code clearer.
 fpt = method( 
-    TypicalValue => QQ, 
     Options => 
         {
 	    FinalCheck => true, 
@@ -452,7 +306,8 @@ fpt = method(
 	    DiagonalCheck => true, 
 	    BinomialCheck => true, 
 	    BinaryFormCheck => true, 
-	    NuCheck => true 
+	    NuCheck => true,
+	    MultiThread => false 
     	}
 )
 
@@ -466,52 +321,51 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     p := char ring f;
     if not isSubset( ideal f, M ) then error "fpt: polynomial is not in the homogeneous maximal ideal";   
 
-    if o.Verbose then print "Starting fpt";
+    if o.Verbose then print "\nStarting fpt ...";
     
     -- Check if fpt equals 1
     if not isSubset( ideal( f^(p-1) ), frobenius( M ) ) then 
     (
-        if o.Verbose then print "nu(1,f) = p-1, so fpt(f) = 1"; 
+        if o.Verbose then print "\nnu(1,f) = p-1, so fpt(f) = 1."; 
         return 1 
     );
 
-    if o.Verbose then print "fpt is not 1";
+    if o.Verbose then print "\nfpt is not 1 ...";
 
     -- Check if one of the special FPT functions can be used...
     
     -- Check if f is diagonal:
     if o.DiagonalCheck and isDiagonal f then 
     ( 
-        if o.Verbose then print "Polynomial is diagonal; calling diagonalFPT"; 
+        if o.Verbose then print "\nPolynomial is diagonal; calling diagonalFPT ..."; 
         return diagonalFPT f 
     );
 
     -- Now check if f is a binomial:
     if o.BinomialCheck and isBinomial f then 
     ( 
-        if o.Verbose then print "Polynomial is a binomial; calling binomialFPT";
+        if o.Verbose then print "\nPolynomial is a binomial; calling binomialFPT ...";
         return binomialFPT f 
     );
 
     -- Finally, check if f is a binary form:
     if o.BinaryFormCheck and isBinaryForm f then 
     ( 
-        if o.Verbose then print "Polynomial is a binary form; calling binaryFormFPT";
+        if o.Verbose then print "\nPolynomial is a binary form; calling binaryFormFPT ...";
         return binaryFormFPT f 
     );
     
-    if o.Verbose then print "Special fpt algorithms were not used";
+    if o.Verbose then print "\nSpecial fpt algorithms were not used ...";
      
     -- Compute nu(e,f)
     n := nu( e, f );
         
-    if o.Verbose then print( "nu has been computed: nu(e,f) = " | toString n );
+    if o.Verbose then print( "\nnu has been computed: nu(e,f) = " | toString n | " ..." );
     
     -- If nu = 0, we just return some information
     if n == 0 then 
     (
-	if o.Verbose then 
-	    print "The nu computed isn't fine enough. Try increasing the max exponent e.";
+	if o.Verbose then print "\nThe nu computed isn't fine enough. Try increasing the max exponent e.";
 	return { 0, 1/p^e }
     );
 
@@ -522,54 +376,70 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 	-- (uses the fact that there are no fpts between nu/p^e and nu/(p^e-1))
 	if not isFRegularPoly( f, n/(p^e-1), M ) then 
 	(
-	    if o.Verbose then print "Found answer via nu/(p^e-1)"; 
+	    if o.Verbose then print "\nFound answer via nu/(p^e-1)."; 
 	    return n/(p^e-1)
 	) 
-      	else if o.Verbose then print "nu/(p^e-1) is not the fpt";
+      	else if o.Verbose then print "\nnu/(p^e-1) is not the fpt ...";
 	
         --check to see if (nu+1)/p^e is the FPT
 	if isFPTPoly( (n+1)/p^e, f, Origin => true ) then 
 	(
-	    if o.Verbose then print "Found answer via (nu+1)/(p^e)"; 
+	    if o.Verbose then print "\nFound answer via (nu+1)/(p^e)."; 
 	    return (n+1)/p^e
 	) 
-      	else if o.Verbose then print "(nu+1)/p^e is not the fpt"
+      	else if o.Verbose then print "\n(nu+1)/p^e is not the fpt ..."
     );
 
     -- Do the F-signature computation
-    if o.Verbose then print "Beginning F-signature computation";
-    s2 := fSig( f, n, e );
-    if o.Verbose then print( "First F-signature computed: s(f,nu/p^e) = " | toString s2 );
-    s1 := fSig( f, n-1, e );
-    if o.Verbose then print( "Second F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 );
- 
+    local s1;
+    local s2;
+    
+    if not o.MultiThread then 
+    (
+    	if o.Verbose then print "\nBeginning F-signature computation ...";
+    	s2 = fSig( f, n, e );
+    	if o.Verbose then print( "\nFirst F-signature computed: s(f,nu/p^e) = " | toString s2 | " ..." );
+    	s1 = fSig( f, n-1, e );
+    	if o.Verbose then print( "\nSecond F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 | " ..." )
+    ) 
+    else
+    (
+   	if o.Verbose then print "\nBeginning multithreaded F-signature computation ...";
+	t := schedule( fSig, ( f, n-1, e ) );
+	s2 = fSig( f, n, e );	
+   	if o.Verbose then print( "\nFirst F-signature computed: s(f,nu/p^e) = " | toString s2 | " ..." );
+	while not isReady t do sleep 1;
+	s1 = taskResult t;
+    	if o.Verbose then print( "\nSecond F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 | " ..." )
+    );
+
     a := xInt( (n-1)/p^e, s1, n/p^e, s2 );
     
-    if o.Verbose then print( "Computed F-signature intercept: " | toString a );
+    if o.Verbose then print( "\nComputed F-signature intercept: " | toString a | " ..." );
 
     -- Now check to see if F-signature line crosses at (nu+1)/p^e. If so, then that's the fpt
     if (n+1)/p^e == a then 
     (
-	if  o.Verbose then print "F-signature line crosses at (nu+1)/p^e, so that is the fpt"; 
+	if  o.Verbose then print "\nF-signature line crosses at (nu+1)/p^e, so that is the fpt."; 
 	return a
     );
 	       	
     if o.FinalCheck then 
     (
-	if o.Verbose then print "Starting final check"; 
+	if o.Verbose then print "\nStarting final check ..."; 
         if not isFRegularPoly( f, a, M ) then 
         (	
-	   if o.Verbose then print "Final check successful; fpt is the F-signature intercept"; 
+	   if o.Verbose then print "\nFinal check successful; fpt is the F-signature intercept."; 
 	   return a
       	)
-	else if o.Verbose then print "Final check didn't find the fpt"
+	else if o.Verbose then print "\nFinal check didn't find the fpt ..."
     );
 
     if o.Verbose then print( 
-	"fpt lies in the interval " |
+	"\nfpt lies in the interval " |
 	    ( if o.FinalCheck then "( " else "[ " ) |  
 	    toString a | ", " | toString( (n+1)/p^e ) | 
-	    ( if o.NuCheck then " )" else " ]" ) 
+	    ( if o.NuCheck then " )." else " ]." ) 
     );    
     { a, (n+1)/p^e }
 )

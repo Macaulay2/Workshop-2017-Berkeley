@@ -1,10 +1,10 @@
 doc ///
      Key
-     	 estFPT
+     	 fpt
      Headline
-         Atempts to compute the F-pure threshold, where e is the max depth to search in.  
+         Atempts to compute the F-pure threshold of a polynomial at the origin  
      Usage
-     	  estFPT(f,e,finalCheck=>V,Verbose=>W)
+     	  estFPT(f,e,FinalCheck=>V,Verbose=>W)
      Inputs
      	 f:RingElement
          e:ZZ
