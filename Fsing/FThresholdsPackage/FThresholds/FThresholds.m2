@@ -274,48 +274,46 @@ guessFPT ={OutputRange=>false}>>o -> (ff, e1, maxDenom) ->(
 --************************************************************--
 ----------------------------------------------------------------
  
---- Computes the F-signature for a specific value a1/p^e1
+--- Computes the F-signature for a specific value a/p^e
 --- Input:
----	e - some positive integer
----	a - some positive integer between 0 and p^e
 ---	f - some polynomial in two or three variables in a ring R of PRIME characteristic
+---	a - some positive integer between 0 and p^e
+---	e - some positive integer
 --- Output:
 ---	returns value of the F-signature of the pair (R, f^{a/p^e})
 --- Code is based on work of Eric Canton
-fSig = (f, a, e) -> (
+fSig = ( f, a, e ) -> 
+(
      R := ring f;
-     p := char ring f;     
-     1 - p^(-e*dim(R))*degree( frobenius( e, maxIdeal R) + ideal( fastExponentiation( a, f ) )) 
+     p := char R;     
+     1 - p^( -e * dim( R ) ) * degree( frobenius( e, maxIdeal R ) + ideal( fastExponentiation( a, f ) ) ) 
 )  
 
 --Calculates the x-int of the secant line between two guesses for the fpt
 --Input:
---     t - some positive rational number
---     b - the f-signature of (R,f^{t/p^e})
---     e - some positive integer
---     t1- another rational number > t
---     f - some polynomial in two or three variables in a ring of PRIME characteristic
---
+--     f - a polynomial in a ring of PRIME characteristic
+--     e - a positive integer
+--     n - a positive integer
+--     n1- an integer > n
 -- Output:
---	fSig applied to (f,t1,e)
---	x-intercept of the line passing through (t,b) and (t1,fSig(f,t1,e))
-threshInt = (f,e,t,b,t1)-> (
-     b1:=fSig(f,t1,e);
-{b1,xInt(t,b,t1/(char ring f)^e,b1)}
+--     The x-intercept of the line passing through (n/p^e,fSig(f,n,e)) and (n1/p^e,fSig(f,n1,e))
+threshInt = ( f, e, n, n1 ) -> 
+(
+    p := char ring f;
+    b := fSig( f, n, e );
+    b1 := fSig( f, n1, e );
+    xInt( n/p^e, b, n1/p^e, b1 )
 )
 
-isFRegularPoly = method();
+isFRegularPoly = method()
 
 --Determines if a pair (R, f^t) is F-regular at a prime
---ideal Q in R, R is a polynomial ring  
-isFRegularPoly (RingElement, QQ, Ideal) := (f1, t1, Q1) -> (
-     not isSubset(testIdeal(t1,f1), Q1)
-)
+--ideal Q in R, where R is a polynomial ring  
+isFRegularPoly ( RingElement, QQ, Ideal ) := ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 
---Determines if a pair (R, f^t) is F-regular, R a polynomial ring
-isFRegularPoly (RingElement, QQ) := (f1, t1) -> (
-     isSubset(ideal(1_(ring f1)), testIdeal(t1,f1))
-)
+--Determines if a pair (R, f^t) is F-regular, where R a polynomial ring
+isFRegularPoly ( RingElement, QQ ) := ( f, t ) -> isSubset( ideal( 1_( ring f ) ), testIdeal( t , f ) )
+
 
 
 --F-pure threshold estimation, at the origin
@@ -369,22 +367,23 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
 		foundAnswer = true
 	   ) 
       	   else (
-	   	if  (o.Verbose==true) then print "nu/(p^e - 1) is not the fpt.";
+	   	if  (o.Verbose==true) then print "nu/(p^e-1) is not the fpt.";
 	   )
       );
 	 
 	--check to see if (nu+1)/p^e is the FPT
-	if ((o.NuCheck==true) and (foundAnswer == false)) then(
-		if (isFPTPoly((nn+1)/pp^ee,ff,Origin=>true) == true) then (
-			answer = (nn+1)/pp^ee;
-			foundAnswer = true
-		)
+	if ((o.NuCheck==true) and (foundAnswer == false)) then (
+	    if (isFPTPoly((nn+1)/pp^ee,ff,Origin=>true) == true) then (
+		if (o.Verbose==true) then print "Found answer via (nu+1)/p^e."; 
+		answer = (nn+1)/pp^ee;
+		foundAnswer = true
+	    )
 	);
 
      --do the F-signature computation
      if (foundAnswer == false) then (
 	   ak := 0;
-	   if (o.MultiThread==false ) then (ak=threshInt(ff,ee,(nn-1)/pp^ee,fSig(ff,nn-1,ee),nn) ) else(
+	   if (o.MultiThread==false ) then (ak=threshInt(ff,ee,nn-1,nn) ) else(
 		if (o.Verbose==true) then print "Beginning multithreaded F-signature";
 		allowableThreads = 4;
 		numVars := rank source vars (ring ff);
@@ -404,14 +403,14 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
 		while ((not isReady t1)) do sleep 1;
 		s1 := taskResult t1;
      	      --  print s1; print s2;
-		ak = {s2,xInt( (nn-1)/pp^ee, s1, (nn)/pp^ee,s2)};
+		ak = xInt( (nn-1)/pp^ee, s1, nn/pp^ee, s2 );
 		--print nn;		
 	   );
 	   if  (o.Verbose==true) then print "Computed F-signatures.";
 	   --now check to see if we cross at (nu+1)/p^e, if that's the case, then that's the fpt.
-	   if ( (nn+1)/pp^ee == (ak#1) ) then (
+	   if ( (nn+1)/pp^ee == ak ) then (
 		if  (o.Verbose==true) then print "F-signature line crosses at (nu+1)/p^e."; 
-		answer = ak#1;
+		answer = ak;
 		foundAnswer = true
 	   )
       );	  
@@ -419,14 +418,14 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
       --if we run the final check, do the following
       if ( (foundAnswer == false) and (o.FinalCheck == true)) then ( 
 	  if  (o.Verbose==true) then print "Starting FinalCheck."; 
-          	if ((isFRegularPoly(ff,ak#1,maxIdeal)) ==false ) then (	
+          	if ((isFRegularPoly(ff,ak,maxIdeal)) ==false ) then (	
 	      		if  (o.Verbose==true) then print "FinalCheck successful"; 
-	      		answer = (ak#1);
+	      		answer = ak;
 	      		foundAnswer = true 
       	  	)
 	  		else ( 
 	      		if  (o.Verbose==true) then print "FinalCheck didn't find the fpt."; 
-	      		answer = {(ak#1),(nn+1)/pp^ee};
+	      		answer = { ak, (nn+1)/pp^ee };
 	      		foundAnswer = true
 	  		)
        );
@@ -434,7 +433,7 @@ estFPT={FinalCheck=> true, Verbose=> false, MultiThread=>false, DiagonalCheck=>t
        --if we don't run the final check, do the following
        if ((foundAnswer == false) and (o.FinalCheck == false) ) then (
 	  if  (o.Verbose==true) then print "FinalCheck not run.";
-	  answer = {(ak#1),(nn+1)/pp^ee};
+	  answer = { ak, (nn+1)/pp^ee };
       	  foundAnswer = true
        );
      
@@ -455,16 +454,17 @@ fpt = method(
 	    BinaryFormCheck => true, 
 	    NuCheck => true 
     	}
-);
+)
 
 fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) -> 
 (
-    -- To do: check if f is a polynomial over a field of positive char
+    -- Check if polynomial has coefficients in a finite field
+    if not isPolynomialOverFiniteField( f ) then error "fpt: expected polynomial with coefficients in a finite field";
 
     -- Check if polynomial is in the homogeneous maximal ideal
     M := maxIdeal f;   -- The maximal ideal we are computing the fpt at  
     p := char ring f;
-    if not isSubset( ideal f, M ) then error "Polynomial is not in the homogeneous maximal ideal";   
+    if not isSubset( ideal f, M ) then error "fpt: polynomial is not in the homogeneous maximal ideal";   
 
     if o.Verbose then print "Starting fpt";
     
@@ -473,27 +473,27 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     (
         if o.Verbose then print "nu(1,f) = p-1, so fpt(f) = 1"; 
         return 1 
-    );	
-    
-    if o.Verbose then print "fpt(f) is not 1";
-    
+    );
+
+    if o.Verbose then print "fpt is not 1";
+
     -- Check if one of the special FPT functions can be used...
     
-    -- Check if it is diagonal:
+    -- Check if f is diagonal:
     if o.DiagonalCheck and isDiagonal f then 
     ( 
         if o.Verbose then print "Polynomial is diagonal; calling diagonalFPT"; 
         return diagonalFPT f 
     );
 
-    -- Now check if it is binomial:
+    -- Now check if f is a binomial:
     if o.BinomialCheck and isBinomial f then 
     ( 
         if o.Verbose then print "Polynomial is a binomial; calling binomialFPT";
         return binomialFPT f 
     );
 
-    -- Now check if it is a binary form:
+    -- Finally, check if f is a binary form:
     if o.BinaryFormCheck and isBinaryForm f then 
     ( 
         if o.Verbose then print "Polynomial is a binary form; calling binaryFormFPT";
@@ -507,7 +507,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
         
     if o.Verbose then print( "nu has been computed: nu(e,f) = " | toString n );
     
-    -- If our nu isn't fine enough, we just return some information
+    -- If nu = 0, we just return some information
     if n == 0 then 
     (
 	if o.Verbose then 
@@ -518,20 +518,20 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     -- Check to see if either nu/(p^e-1) or (nu+1)/p^e is the fpt
     if o.NuCheck then 
     (
-        -- check to see if nu/(p^e-1) is the fpt
+        -- Check to see if nu/(p^e-1) is the fpt
 	-- (uses the fact that there are no fpts between nu/p^e and nu/(p^e-1))
-	if not isFRegularPoly( f, n/( p^e - 1 ), M ) then 
+	if not isFRegularPoly( f, n/(p^e-1), M ) then 
 	(
 	    if o.Verbose then print "Found answer via nu/(p^e-1)"; 
-	    return n/( p^e - 1 )
+	    return n/(p^e-1)
 	) 
       	else if o.Verbose then print "nu/(p^e-1) is not the fpt";
 	
         --check to see if (nu+1)/p^e is the FPT
-	if isFPTPoly( ( n + 1 )/p^e, f, Origin => true ) then 
+	if isFPTPoly( (n+1)/p^e, f, Origin => true ) then 
 	(
 	    if o.Verbose then print "Found answer via (nu+1)/(p^e)"; 
-	    return ( n + 1 )/p^e
+	    return (n+1)/p^e
 	) 
       	else if o.Verbose then print "(nu+1)/p^e is not the fpt"
     );
@@ -539,17 +539,18 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     -- Do the F-signature computation
     if o.Verbose then print "Beginning F-signature computation";
     s2 := fSig( f, n, e );
-    if o.Verbose then print("First F-signature computed: s(f,nu/p^e) = " | toString s2);
+    if o.Verbose then print( "First F-signature computed: s(f,nu/p^e) = " | toString s2 );
     s1 := fSig( f, n-1, e );
-    if o.Verbose then print("Second F-signature computed: s(f,(nu-1)/p^e) = " | toString s1);
+    if o.Verbose then print( "Second F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 );
+ 
     a := xInt( (n-1)/p^e, s1, n/p^e, s2 );
     
-    if o.Verbose then print( "Computed F-signature intercept: " | toString a);
+    if o.Verbose then print( "Computed F-signature intercept: " | toString a );
 
-    -- Now check to see if we cross at (nu+1)/p^e. If so, then that's the fpt.
+    -- Now check to see if F-signature line crosses at (nu+1)/p^e. If so, then that's the fpt
     if (n+1)/p^e == a then 
     (
-	if  o.Verbose then print "F-signature line crosses at (nu+1)/p^e"; 
+	if  o.Verbose then print "F-signature line crosses at (nu+1)/p^e, so that is the fpt"; 
 	return a
     );
 	       	
@@ -562,8 +563,8 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 	   return a
       	)
 	else if o.Verbose then print "Final check didn't find the fpt"
-    )
-    else if o.Verbose then print "Final check not run";
+    );
+
     if o.Verbose then print( 
 	"fpt lies in the interval " |
 	    ( if o.FinalCheck then "( " else "[ " ) |  
