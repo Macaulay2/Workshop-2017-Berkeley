@@ -112,11 +112,7 @@
 \begin{document}
 
 \begin{abstract}
-<<<<<<< HEAD
-This note introduces Rees algebras and some of their uses, with illustrations from version 2.0 of the Macaulay2 \cite{M2} package {\tt ReesAlgebra.m2}.
-=======
-This introduces Rees algebras and some of their uses with illustrations from version 2.2 of the Macaulay2 package ReesAlgebra.m2.
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
+This note introduces Rees algebras and some of their uses, with illustrations from version 2.2 of the Macaulay2 \cite{M2} package \\{\tt ReesAlgebra.m2}.
 \end{abstract}
 
 \maketitle
@@ -132,17 +128,17 @@ where $R[t]$ denotes the polynomial algebra in one variable $t$ over $R$. For ba
 From the point of view of algebraic geometry, the Rees algebra $\RR(I)$ is a homogeneous
 coordinate ring for the graph of a rational map whose total space is the blowup
 of $\Spec R$ along the scheme defined by $I$.
- (In fact, the  ``Rees Algebra'' is sometimes called the ``blowup algebra''.)  
+ (In fact, the  ``Rees algebra'' is sometimes called the ``blowup algebra''.)  
      
 
-     Rees Algebras were first studied in the algebraic context by
+     Rees algebras were first studied in the algebraic context by
       by David Rees, in the
      now famous paper~\cite{Rees}. Actually
      Rees mainly studied the ring 
      $R[It,t^{-1}]$, now also called the \emph{extended Rees
-     Algebra} of I. 
+     algebra} of I. 
      
-Mike Stillman and I, if memory serves, wrote a Rees Algebra script for Macaulay classic. It was augmented, and made into the package ReesAlgebra.m2  around 2002,  to study a generalization of Rees algebras to modules described in \cite{EHU}. Subsequently
+Mike Stillman and I, if memory serves, wrote a Rees algebra script for Macaulay classic. It was augmented, and made into the package ReesAlgebra.m2  around 2002,  to study a generalization of Rees algebras to modules described in \cite{EHU}. Subsequently
 Amelia Taylor, 
 Sorin Popescu, the present author,
 and, at the Macaulay2 Workgroup in July 2017, 
@@ -151,36 +147,23 @@ Whitney Liske, and
 Zhangchi Chen
 contributed routines
 for computing many of the invariants of an ideal or module
-defined in terms of Rees algebras. These routines comprise the package's primary utility, since Rees Algebras
+defined in terms of Rees algebras. These routines comprise the package's primary utility, since Rees algebras
 of modules other than ideals are comparatively little studied. 
 
-We first describe the construction and an example from \cite{EHU}. Then we list some of the functionality the package now has, and illustrate with a Theorem of Morey and Ulrich. Finally we give examples of how Rees algebras
+We first describe the construction and an example from \cite{EHU}. Then we list some of the functionality the package now has and illustrate it with a theorem of Morey and Ulrich. Finally we give examples of how Rees algebras
 appear in the Fulton-MacPherson intersection theory and in the resolution of singularities.
 
-<<<<<<< HEAD
-\section{The Rees Algebra of a module} For simplicity we will henceforward only consider finitely generated modules
-over Noetherian rings. There are several  ways of extending the Rees algebra construction from 
-an ideals $I$ in a ring $R$ to the case of arbitrary $R$-modules. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural is
-to think of the inclusion $I\subset R$ $R[It]$ as a homomorphsim $\phi: I\to R$, and to think of
-the Rees algebra as the image of the induced map of symmetric algebras
-$\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$. We generalize to the case of
-=======
-\section{The Rees Algebra of a module} There are several possible ways of extending the Rees algebra construction from ideals to modules. For simplicity we will henceforward only consider finitely generated modules
+\section{The Rees algebra of a module} There are several possible ways of extending the Rees algebra construction from ideals to modules. For simplicity we will henceforward only consider finitely generated modules
 over Noetherian rings. Huneke and Ulrich and I argued in~\cite{EHU} that the most natural
 way to extend the definition is
 to think of $R[It]$ as the image of the map of symmetric algebras
 $\Sym(\phi): \Sym_R(I) \to \Sym_R(R) = R[t]$, and to generalize it to the case of
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
 an arbitrary finitely generated module $M$ by setting
 $$
 \RR(M) = \image \Sym(\phi)
 $$ 
-<<<<<<< HEAD
-where $\phi$ is a \emph{versal} map from $M$ to a free module, defined as 
-=======
 where $\phi$ is a \emph{versal} map from $M$ to a free module. Such a
 versal map may be computed as 
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
 the composition of 
 the diagonal 
 embedding 
@@ -201,11 +184,7 @@ Though this is not immediate, the Rees algebra of an ideal in a Noetherian ring,
  
 \begin{theorem}\label{good cases} [Eisenbud-Huneke-Ulrich, Thms 0.2 and 1.4] Let $R$ be a Noetherian ring
      and let $M$ be a finitely generated $R$-module. Let $\phi: M \to G$
-<<<<<<< HEAD
-     be the versal embedding of $M$ in a free module, and let
-=======
      be a versal map of $M$ to a free module. Suppose that $\phi$ is an inclusion, and let
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
      $\psi: M \to G'$  be any inclusion of $M$ into a free module $G'$. 
      If $R$ is torsion-free over $\ZZ$
      or $R$ is unmixed and generically Gorenstein or $M$ is free locally
@@ -225,7 +204,6 @@ i3 : M = module ideal(z);
     It is easy to check that $M \cong R^1/(x,y,z)^p$.
      We write $\iota: M\to R^1$ for the embedding as an ideal
      and $\psi$ for the embedding $M \to R^2$ sending $z$ to the vector $(x,y)$.
-<<<<<<< HEAD
 \begin{footnotesize} \begin{verbatim}
 i4 : iota = map(R^1,M,matrix{{z}});
 i5 : psi = map(R^2,M,matrix{{x},{y}});
@@ -235,8 +213,6 @@ i5 : psi = map(R^2,M,matrix{{x},{y}});
 \begin{footnotesize}\begin{verbatim}
 i6 : phi = universalEmbedding(M);
 \end{verbatim}\end{footnotesize}
-=======
-\end{normalsize}
  \begin{verbatim}
 iota = map(R^1,M,matrix{{z}}) 
 psi = map(R^2,M,matrix{{x},{y}})
@@ -249,7 +225,6 @@ psi = map(R^2,M,matrix{{x},{y}})
 phi = versalEmbedding(M)
 \end{verbatim}
 \begin{normalsize}
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
      We now compute the kernels of the three maps
      on symmetric algebras:
 \begin{footnotesize}
@@ -273,17 +248,13 @@ i13 : numcols basis(p,Ipsi)
 o13 = 1
 \end{verbatim}
 \end{footnotesize}
+\end{normalsize}
 
-
-\section{The Rees Algebra and its relations}
+\section{The Rees algebra and its relations}
 %\\ {\tt reesIdeal, reesAlgebra, versalEmbedding, symmetricKernel, isLinearType,
 %associatedGradedRing, normalCone, multiplicity}}
 
-<<<<<<< HEAD
-The central routine, {\tt reesIdeal} (or {\tt reesAlgebraIdeal}) computes an ideal
-=======
-The central routine, {\tt reesIdeal} (with synonym {\tt reesAlgebraIdeal}) computes an ideal
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
+\noindent The central routine, {\tt reesIdeal} (with synonym: {\tt reesAlgebraIdeal}) computes an ideal
 defining the Rees algebra $\RR(M)$ as a quotient of a polynomial ring over $R$ from a free presentation of $M$. From the Rees ideal we immediately get
 ${\tt reesAlgebra}\ M$. In the case when $M$ is an ideal in $R$ we also compute
 the important ${\tt associatedGradedRing\ }M = \RR(M)/M$ (and the more geometric sounding but identical ${\tt normalCone\ }M$.)  
@@ -348,16 +319,8 @@ $$
  the two outer vertical maps are inclusions, and it follows that the Rees ideal, which is the
  kernel of the map $\RR(F) = \Sym_R(F) \to \RR(M)$, is equal to the intersection
  of $\RR(F)$ with the kernel of
- $\Sym_R(F)[f^{-1}] \rTo^\beta \Sym_R(G)[f^{-1}]$. This intersection
-<<<<<<< HEAD
- may be computed by
- $$
- {\tt saturate}(I_0,f).
- $$
-  The call
-=======
+ $$\Sym_R(F)[f^{-1}] \rTo^\beta \Sym_R(G)[f^{-1}].$$ This intersection
  may be computed as $I_0:f^\infty$. The command
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
  $$
  {\tt reesIdeal}(I, f)
  $$
@@ -385,13 +348,8 @@ The property of being a reduction is tested by ${\tt isReduction\ }I$, and
 ${\tt reductionNumber\ } I$ computes it.
 
 Now suppose that $\gm$ is a maximal ideal containing $I$. The special fiber ring is by definition
-<<<<<<< HEAD
-$\RR(I)/\gm\RR(I)$. It is a standard graded algebra over the field  $k := R/\gm$, a quotient of 
-$\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by the calls
-=======
 $\RR(I)/\gm\RR(I)$. It is a standard graded algebra ove the field  $k := R/\gm$, a quotient of 
 $\Sym_R(F)/\gm = k[t_1,\dots,t_n]$ where, as before, $F$ is a free module of rank $n$ with a surjection to $M$. The defining ideal of the special fiber ring, and the ring itself, are computed  by using
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
 ${\tt specialFiberIdeal\ }I$ and ${\tt specialFiberRing\ }I$. 
 
 The dimension of the special fiber ring is called the analytic spread of $I$, usually
@@ -485,13 +443,10 @@ i2 : setRandomSeed 0
 i3 : n=3;
 i4 : kk = ZZ/101;
 i5 : S = kk[a_0..a_(n-2)];
-<<<<<<< HEAD
-i6 : phi' = map(S^(n),S^(n-1), (i,j) -> if i == 0 then a_j else random(2,S));
-=======
-i6 : phi = transpose map(S^(n-1),S^{-1,(n-1):-2},(i,j) -> if j == 0 then a_i else random(2,S));
+i6 : phi = transpose map(S^(n-1),S^{-1,(n-1):-2},
+             (i,j) -> if j == 0 then a_i else random(2,S));
              3       2
 o6 : Matrix S  <--- S
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
 i7 : I = minors(n-1,phi');
 \end{verbatim}
 \end{footnotesize}
@@ -526,7 +481,8 @@ o15 = true
 and now deterministically:
 \begin{footnotesize}
  \begin{verbatim}
-i17 : apply(toList(1..ell-1), p-> {p+1, codim minors(n-p, phi)})
+i17 : apply(toList(1..ell-1), 
+                  p-> {p+1, codim minors(n-p, phi)})
 o17 = {{2, 2}}
 \end{verbatim}
 \end{footnotesize}
@@ -558,15 +514,13 @@ Finally, we wish to see that reesIdeal I is generated by the ideal
            of the symmetric algebra together with the jacobian dual:
 \begin{footnotesize}
  \begin{verbatim}
-i23 : psi = jacobianDual phi
-o23 = {0, 1} | 11w_1a_0-37w_1a_1                 w_2                              |
-      {0, 1} | -11w_0a_0-34w_0a_1-46w_1a_1+14w_2 11w_0a_1-11w_1a_0-30w_1a_1+18w_2 |
+i23 : psi = jacobianDual phi;
                             2                     2
 o23 : Matrix (S[w , w , w ])  <--- (S[w , w , w ])
                  0   1   2             0   1   2
 \end{verbatim}
 \end{footnotesize}
-We now compute the ideal J of the symmetric algebra; the command {\tt symmetricAlgebra I}
+We now compute the ideal J of the symmetric algebra; the command \\ {\tt symmetricAlgebra I}
            would return the ideal over a different ring, so we do it by hand:
 \begin{footnotesize}
  \begin{verbatim}
@@ -678,7 +632,7 @@ o12 = {{1, ideal y}, {4, ideal x}, {4, ideal (y, x)}}
 \end{verbatim}
 \end{footnotesize}
 
-\section{Rees Algebras and Desingularization}
+\section{Rees algebras and Desingularization}
 
 We conclude with an example illustrating a general result about projective birational maps of varieites.
 Recall that a map $B\to X$ of varieties is projective if it is the composition of a closed embedding $B\subset X\times \PP^n$ with the projection to $X$.
@@ -723,6 +677,9 @@ i9 : exceptional = proj mm
                 2
 o9 = ideal (x, y )
 i10 : strictTransform = saturate(totalTransform, exceptional);
+\end{verbatim}
+\eject
+\begin{verbatim}
 i11 : netList decompose strictTransform
       +-----------------------+
       |        2              |
@@ -738,13 +695,8 @@ i13 : sing = saturate(sing0,irrelB)
 o13 = ideal 1
 \end{verbatim}
 \end{footnotesize}
-<<<<<<< HEAD
-The last line asserts that the singular locus of the the variety ``properTransform'' is empty;
-that is, the the scheme defined by {\tt properTransform} is smooth (in this case it is the union
-=======
 The last line asserts that the singular locus of the the strict Transform is empty;
 that is, the the scheme defined by "strictTransform" is smooth (in this case it is the union
->>>>>>> 56e531f1fa0dfbd9fd8f9947f12bd4c275208647
 of two disjoint smooth curves.)
 
 \let\thefootnote\relax\footnote{
@@ -782,7 +734,7 @@ Graduate Texts in Math. 52,  Springer-Verlag, 1977.
 
 \bibitem[M2]{M2}
 Macaulay2{\thinspace}--{\thinspace}a system for computation in
-  algebraic geometry and commutative algebra programmed by D.~Grayson and M.~Stillman,
+  algebraic geometry\hfill\\ and commutative algebra programmed by D.~Grayson and M.~Stillman,\hfill
 \href{http://www.math.uiuc.edu/Macaulay2/}{\tt  http://www.math.uiuc.edu/Macaulay2/}
 
 \bibitem[NR]{NR} D.~Northcott and D.~Rees, 
