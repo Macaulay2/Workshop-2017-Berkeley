@@ -681,8 +681,8 @@ o8 = |ideal (y, x)           |
 i9 : exceptional = proj mm
                 2
 o9 = ideal (x, y )
-i10 : strictTransform 
-          = saturate(totalTransform, exceptional);
+i10 : strictTransform = saturate(
+                 totalTransform, exceptional);
 \end{verbatim}
 \begin{verbatim}
 i11 : netList decompose strictTransform
