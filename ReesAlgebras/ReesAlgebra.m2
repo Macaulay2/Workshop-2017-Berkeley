@@ -21,7 +21,7 @@
 newPackage(
 	"ReesAlgebra",
     	Version => "2.0", 
-    	Date => "July 2017",
+    	Date => "August 2017",
     	Authors => {{
 		  Name => "David Eisenbud",
 		  Email => "de@msri.org"},
@@ -32,7 +32,7 @@ newPackage(
 	      Email => "sorin@math.sunysb.edu"},
 	     {Name => "Michael E. Stillman", Email => "mike@math.cornell.edu"}},  
     	Headline => "Rees algebras",
-    	DebuggingMode => true,
+    	DebuggingMode => false,
 	Reload => true  
     	)
 
