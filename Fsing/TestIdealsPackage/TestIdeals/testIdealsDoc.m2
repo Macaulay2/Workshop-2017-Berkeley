@@ -68,6 +68,7 @@ doc ///
         [testIdeal, AssumeDomain]
         [testModule, AssumeDomain]
         [isFregular, AssumeDomain]
+        [isFrational, AssumeDomain]
     Headline
         assume the ring is a domain
     Description

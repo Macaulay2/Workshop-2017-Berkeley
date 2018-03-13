@@ -9,9 +9,14 @@
 --*************************************************
 --*************************************************
 
+--version history
+--0.2 first public version
+--0.2a added AssumeDomain options to isFregular and isFrational
+
+
 newPackage( "TestIdeals",
-Version => "0.2", 
-Date => "July 25th, 2017", 
+Version => "0.2a", 
+Date => "3/13/2018, 2018", 
 Authors => {
      {Name => "Erin Bela",
      Email => "ebela@nd.edu"
