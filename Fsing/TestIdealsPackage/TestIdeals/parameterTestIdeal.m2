@@ -321,7 +321,7 @@ isCohenMacaulay(Ring) := o->(R1) ->(
 
 --next we write an isFrational function
 
-isFrational = method(Options => {IsLocal => false, AssumeCM => false});
+isFrational = method(Options => {AssumeDomain => false, IsLocal => false, AssumeCM => false});
 
 isFrational(Ring) := o->(R1) ->(
     flag := true;
@@ -334,7 +334,7 @@ isFrational(Ring) := o->(R1) ->(
     --next verify if it is Frational
     if (flag == true) then (
         --note we don't compute the test module if we know that the ring is not CM.
-        MList := testModule(R1);
+        MList := testModule(R1, AssumeDomain=>o.AssumeDomain);
         if (o.IsLocal == true) then (
             paraTestIdeal := (MList#0):(MList#1);
             myMaxIdeal := sub(maxIdeal(ambient R1), R1);

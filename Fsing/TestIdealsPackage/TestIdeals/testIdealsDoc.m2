@@ -67,6 +67,7 @@ doc ///
     Key
         [testIdeal, AssumeDomain]
         [testModule, AssumeDomain]
+        [isFregular, AssumeDomain]
     Headline
         assume the ring is a domain
     Description

@@ -262,10 +262,10 @@ testIdeal(List, List, Ring) := o->(tList, fList, R1) ->(
 
 --We can now check F-regularity
 
-isFregular = method(Options => {MaxCartierIndex => 100, IsLocal=>false, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0});
+isFregular = method(Options => {AssumeDomain => false, MaxCartierIndex => 100, IsLocal=>false, FrobeniusRootStrategy => Substitution, QGorensteinIndex => 0});
 
 isFregular(Ring) := o->R1 -> (
-    tau := testIdeal(R1, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex );
+    tau := testIdeal(R1, AssumeDomain=>o.AssumeDomain, MaxCartierIndex=>o.MaxCartierIndex, FrobeniusRootStrategy=>o.FrobeniusRootStrategy, QGorensteinIndex => o.QGorensteinIndex );
     if (o.IsLocal == true) then (
         if (isSubset(ideal(sub(1, R1)), tau+maxIdeal( R1 ))) then true else false
     )
