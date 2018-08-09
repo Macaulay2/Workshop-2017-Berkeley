@@ -1,15 +1,18 @@
 #+TITLE: F-Thresholds Package
 
-* Master file: [[file:./FThresholds.m2][FThresholds.m2]]
+* Master: [[file:./FThresholds.m2][FThresholds.m2]]
 
+* Basics: [[file:./FThresholds/BasicFunctions.m2][FThresholds/BasicFunctions.m2]] [0/2]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
 
-* Basic functions: [[file:./FThresholds/BasicFunctions.m2][FThresholds/BasicFunctions.m2]] [0%]
-
-** TODO Documentation: [[file:./FThresholds/BasicFunctionsDoc.m2][FThresholds/BasicFunctionsDoc.m2]] [0/1]
+** Documentation: [[file:./FThresholds/BasicFunctionsDoc.m2][FThresholds/BasicFunctionsDoc.m2]] [0/1]
 
 *** TODO Start documentation file
 
-** TODO Tests: [[file:./FThresholds/BasicFunctionsTest.m2][FThresholds/BasicFunctionsTest.m2]] [0/1]
+
+** Tests: [[file:./FThresholds/BasicFunctionsTest.m2][FThresholds/BasicFunctionsTest.m2]] [0/1]
 
 *** TODO Start tests file
 
@@ -45,16 +48,51 @@
 *** xInt
 *** maxIdeal
 
-
-* Main functions: [[file:./FThresholds/FThresholds.m2][FThresholds/FThresholds.m2]]
-
+* Main: [[file:./FThresholds/FThresholds.m2][FThresholds/FThresholds.m2]] [0/4]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
 ** Documentation: [[file:./FThresholds/FThresholdsDoc.m2][FThresholds/FThresholdsDoc.m2]]
 
 ** Tests: [[file:./FThresholds/FThresholdsTest.m2][FThresholds/FThresholdsTest.m2]]
 
+** Functions [0/5]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+*** nu1
+*** testRoot
+*** testPower
+*** testFrobeniusPower
+*** binarySearch
+*** binarySearchRecursive
+*** linearSearch
+*** nuInternal
+*** nuList
+*** nu
+*** muList
+*** mu
+*** FPTApproxList
+*** critExpApproxList
+*** guessFPT [0/1]
+**** TODO Incorporate in fpt
+*** fSig
+*** isFRegularPoly
+*** fpt
+*** isFPTPoly [0/2]
+**** TODO Change name so it doesn't refer to type of argument
+**** TODO Rewrite, so as not to assume a polynomial ring
 
-* Special FT functions: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]]
+*** isFJumpingNumerPoly [0/2]
+**** TODO Change name so it doesn't refer to type of argument
+**** TODO Rewrite, so as not to assume a polynomial ring
+*** sigmaAOverPEMinus1Poly  
+* Special FT: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
 
 ** Documentation: [[file:./FThresholds/SpecialFThresholdsDoc.m2][FThresholds/SpecialFThresholdsDoc.m2]]
+
 ** Tests: [[file:./FThresholds/SpecialFThresholdsTest.m2][FThresholds/SpecialFThresholdsTest.m2]]
 
