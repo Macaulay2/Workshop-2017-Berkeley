@@ -1,0 +1,60 @@
+#+TITLE: F-Thresholds Package
+
+* Master file: [[file:./FThresholds.m2][FThresholds.m2]]
+
+
+* Basic functions: [[file:./FThresholds/BasicFunctions.m2][FThresholds/BasicFunctions.m2]] [0%]
+
+** TODO Documentation: [[file:./FThresholds/BasicFunctionsDoc.m2][FThresholds/BasicFunctionsDoc.m2]] [0/1]
+
+*** TODO Start documentation file
+
+** TODO Tests: [[file:./FThresholds/BasicFunctionsTest.m2][FThresholds/BasicFunctionsTest.m2]] [0/1]
+
+*** TODO Start tests file
+
+
+** Functions
+
+*** denominator
+*** numerator
+*** fracPart
+*** nontrivialPowerSet
+*** numberToPrimeFactorList
+*** getFactorList
+*** findNumberBetweenWithDenom
+*** findNumberBetween
+*** carryTest
+*** firstCarry
+*** getCanVector
+*** getNumAndDenom
+*** taxicabNorm
+*** selectNonzero
+*** selectPositive
+*** nonzeroPositions
+*** zeroPositions
+*** isPolynomial
+*** isPolynomialOverPosCharField
+*** isPolynomislOverFiniteField
+*** isDiagonal
+*** isMonomial
+*** isBinomial
+*** isBinaryForm
+*** isNonCostantBinaryForm
+*** isLinearBinaryForm
+*** xInt
+*** maxIdeal
+
+
+* Main functions: [[file:./FThresholds/FThresholds.m2][FThresholds/FThresholds.m2]]
+
+** Documentation: [[file:./FThresholds/FThresholdsDoc.m2][FThresholds/FThresholdsDoc.m2]]
+
+** Tests: [[file:./FThresholds/FThresholdsTest.m2][FThresholds/FThresholdsTest.m2]]
+
+
+* Special FT functions: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]]
+
+** Documentation: [[file:./FThresholds/SpecialFThresholdsDoc.m2][FThresholds/SpecialFThresholdsDoc.m2]]
+** Tests: [[file:./FThresholds/SpecialFThresholdsTest.m2][FThresholds/SpecialFThresholdsTest.m2]]
+
