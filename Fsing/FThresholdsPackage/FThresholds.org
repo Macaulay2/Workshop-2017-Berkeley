@@ -1,24 +1,15 @@
 #+TITLE: F-Thresholds Package
 
 * Master: [[file:./FThresholds.m2][FThresholds.m2]]
-
 * Basics: [[file:./FThresholds/BasicFunctions.m2][FThresholds/BasicFunctions.m2]] [0/2]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-
 ** Documentation: [[file:./FThresholds/BasicFunctionsDoc.m2][FThresholds/BasicFunctionsDoc.m2]] [0/1]
-
 *** TODO Start documentation file
-
-
 ** Tests: [[file:./FThresholds/BasicFunctionsTest.m2][FThresholds/BasicFunctionsTest.m2]] [0/1]
-
 *** TODO Start tests file
-
-
 ** Functions
-
 *** denominator
 *** numerator
 *** fracPart
@@ -47,15 +38,12 @@
 *** isLinearBinaryForm
 *** xInt
 *** maxIdeal
-
 * Main: [[file:./FThresholds/FThresholds.m2][FThresholds/FThresholds.m2]] [0/4]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
 ** Documentation: [[file:./FThresholds/FThresholdsDoc.m2][FThresholds/FThresholdsDoc.m2]]
-
 ** Tests: [[file:./FThresholds/FThresholdsTest.m2][FThresholds/FThresholdsTest.m2]]
-
 ** Functions [0/5]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
@@ -87,12 +75,39 @@
 **** TODO Change name so it doesn't refer to type of argument
 **** TODO Rewrite, so as not to assume a polynomial ring
 *** sigmaAOverPEMinus1Poly  
-* Special FT: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]] [0/0]
+* Special FT: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]] [0/3]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-
 ** Documentation: [[file:./FThresholds/SpecialFThresholdsDoc.m2][FThresholds/SpecialFThresholdsDoc.m2]]
-
 ** Tests: [[file:./FThresholds/SpecialFThresholdsTest.m2][FThresholds/SpecialFThresholdsTest.m2]]
+** Functions [0/3]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+*** diagonalFPT
+*** factorOurMonomial
+*** monomialFactor
+*** twoIntersection
+*** allIntersections
+*** isInPolytope
+*** isInInteriorPolytope
+*** polytopeDefiningPoints
+*** maxCoordinateSum
+*** dCalculation
+*** calculateEpsilon
+*** binomialFPT
+*** setFTData
+*** isInUpperRegion
+*** isInLowerRegion
+*** neighborInUpperRegion
+*** isCP
+*** findCPBelow
+*** binaryFormFPTInternal
+*** binaryFormFPT
+*** factorList [0/1]
+**** TODO Move to BasicFunctions
+*** splittingField [0/2]
+**** TODO Determine to what class of polynomials this applies
+**** TODO Move to BasicFunctions
 
