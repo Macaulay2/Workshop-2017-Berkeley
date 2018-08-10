@@ -1,13 +1,13 @@
 #+TITLE: F-Thresholds Package
 
-* Master: [[file:./FThresholds.m2][FThresholds.m2]]
-* Basics: [[file:./FThresholds/BasicFunctions.m2][FThresholds/BasicFunctions.m2]] [0/2]
+* Master file: [[file:./FThresholdsPackage/FThresholds.m2][FThresholds.m2]]
+* Basic functions: [[file:./FThresholdsPackage/FThresholds/BasicFunctions.m2][BasicFunctions.m2]] [0/2]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-** Documentation: [[file:./FThresholds/BasicFunctionsDoc.m2][FThresholds/BasicFunctionsDoc.m2]] [0/1]
+** Documentation: [[file:./FThresholdsPackage/FThresholds/BasicFunctionsDoc.m2][BasicFunctionsDoc.m2]] [0/1]
 *** TODO Start documentation file
-** Tests: [[file:./FThresholds/BasicFunctionsTest.m2][FThresholds/BasicFunctionsTest.m2]] [0/1]
+** Tests: [[file:./FThresholdsPackage/FThresholds/BasicFunctionsTest.m2][BasicFunctionsTest.m2]] [0/1]
 *** TODO Start tests file
 ** Functions
 *** denominator
@@ -38,12 +38,12 @@
 *** isLinearBinaryForm
 *** xInt
 *** maxIdeal
-* Main: [[file:./FThresholds/FThresholds.m2][FThresholds/FThresholds.m2]] [0/4]
+* Main functions: [[file:./FThresholdsPackage/FThresholds/FThresholds.m2][FThresholds.m2]] [0/4]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-** Documentation: [[file:./FThresholds/FThresholdsDoc.m2][FThresholds/FThresholdsDoc.m2]]
-** Tests: [[file:./FThresholds/FThresholdsTest.m2][FThresholds/FThresholdsTest.m2]]
+** Documentation: [[file:./FThresholdsPackage/FThresholds/FThresholdsDoc.m2][FThresholdsDoc.m2]] 
+** Tests: [[file:./FThresholdsPackage/FThresholds/FThresholdsTest.m2][FThresholdsTest.m2]]
 ** Functions [0/5]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
@@ -75,12 +75,12 @@
 **** TODO Change name so it doesn't refer to type of argument
 **** TODO Rewrite, so as not to assume a polynomial ring
 *** sigmaAOverPEMinus1Poly  
-* Special FT: [[file:./FThresholds/SpecialFThresholds.m2][FThresholds/SpecialFThresholds.m2]] [0/3]
+* Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/3]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-** Documentation: [[file:./FThresholds/SpecialFThresholdsDoc.m2][FThresholds/SpecialFThresholdsDoc.m2]]
-** Tests: [[file:./FThresholds/SpecialFThresholdsTest.m2][FThresholds/SpecialFThresholdsTest.m2]]
+** Documentation: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsDoc.m2][SpecialFThresholdsDoc.m2]]
+** Tests: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsTest.m2][SpecialFThresholdsTest.m2]] 
 ** Functions [0/3]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive

@@ -189,7 +189,7 @@ taxicabNorm ( List ) := u -> sum( u, abs )
 selectNonzero = L -> select( L, x -> x != 0 )
 selectPositive = L -> select( L, x -> x > 0 )
 nonzeroPositions = L -> positions( L, x -> x != 0 )
-zeroPositions = L -> positions( L, x -> x == 0 )
+zeroPositions = L -> positions( L, zero )
 
 --===============================================================================
 
