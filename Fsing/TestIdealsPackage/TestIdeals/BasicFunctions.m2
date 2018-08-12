@@ -115,7 +115,7 @@ adicDigit ( ZZ, ZZ, QQ ) := ZZ => ( p, e, x ) ->
     if e <= 0 then error "adicDigit: Expected second argument to be positive";
     if x < 0 or x > 1 then error "adicDigit: Expected last argument in [0,1]";
     if x == 0 then return 0;
-    ( adicTruncation(p, e, x) - adicTruncation(p, e-1, x) ) * p^e
+    lift( ( adicTruncation(p, e, x) - adicTruncation(p, e-1, x) ) * p^e, ZZ )
 )
 
 adicDigit ( ZZ, ZZ, ZZ ) := ZZ => ( p, e, x ) -> adicDigit( p, e, x/1 )

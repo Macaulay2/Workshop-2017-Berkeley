@@ -14,27 +14,27 @@
 --*************************************************
 --Basic Manipulations with Numbers 
 --*************************************************
---===================================================================================
+--===============================================================================
 
 denominator( ZZ ) := x -> 1;
 numerator( ZZ ) := x -> x;
 
---===================================================================================
+--===============================================================================
 
 --Finds the fractional part of a number.
 fracPart = x -> x - floor(x)
 
---===================================================================================
+--===============================================================================
 
 --*************************************************
 --Information Regarding Factors and Factorization
 --*************************************************
 
---===================================================================================
+--===============================================================================
 
 nontrivialPowerSet = L -> delete( {}, subsets L )
 
---===================================================================================
+--===============================================================================
 
 --Returns a list of factors of a number with repeats.
 numberToPrimeFactorList = n ->
@@ -43,7 +43,7 @@ numberToPrimeFactorList = n ->
      flatten apply( toList prod, x -> toList( x#1:x#0 ) )
 )
 
---===================================================================================
+--===============================================================================
 
 --Returns a list of all proper -- not one -- factors of number.
 --Has funny order...
@@ -54,13 +54,36 @@ getFactorList = n ->
      toList set apply( powSet, x -> product( x ) )
 )
 
---===================================================================================
+--===============================================================================
 
 --*************************************************
 --Finding Numbers in Given Range
 --*************************************************
 
---===================================================================================
+--===============================================================================
+
+findNumberBetweenWithDenom = method(); 
+
+--This function finds rational numbers in the range of the interval
+--with the given denominator
+findNumberBetweenWithDenom( ZZ, ZZ, ZZ) := ( myDenom, firstN, secondN) ->
+(
+     upperBound := floor((secondN)*myDenom)/myDenom; 
+          --finds the number with denominator myDenom less than the second number
+     lowerBound := ceiling((firstN)*myDenom)/myDenom; 
+          --finds the number with denominator myDenom greater than the first number
+
+     if (upperBound >= lowerBound) then (
+	  --first we check whether there is anything to search for
+
+	  apply( 1+numerator((upperBound-lowerBound)*myDenom), i-> lowerBound+(i/myDenom) )
+     )
+     else {}
+)
+
+--for backwards compatibility
+--findNumberBetweenWithDenom( ZZ, List ) := (a, L) -> findNumberBetweenWithDenom(a, L#0, L#1);
+
 
 findNumberBetween = method(); 
 
@@ -85,13 +108,13 @@ findNumberBetween( ZZ, ZZ, ZZ) := ( maxDenom, firstN, secondN)->
 --for backwards compatibility
 --findNumberBetween( ZZ, List ) := ( maxDenom, myInterv )-> findNumberBetween( maxDenom, myInterv#0, myInterv#1);
 
---===================================================================================
+--===============================================================================
 
 --*************************************************
 --Manipulations with Vectors   
 --*************************************************
 
---===================================================================================
+--===============================================================================
 
 --Given a vector w of rational integers in [0,1], returns a number of digits such that
 --it suffices to check to see if the components of w add without carrying in base p
@@ -106,7 +129,7 @@ carryTest = ( p, w ) ->
      c+d+1
 )
 
---===================================================================================
+--===============================================================================
 
 --Given a vector w of rational integers in [0,1], returns the first spot 
 --e where the the sum of the entries in w carry in base p
@@ -127,7 +150,7 @@ firstCarry = ( p, w ) ->
      )
 )
 
---===================================================================================
+--===============================================================================
 
 getCanVector = method()
 
@@ -140,7 +163,7 @@ getCanVector ( ZZ, ZZ ) := ( i, n ) ->
     apply( n, j -> if i==j then 1 else 0 )
 )
  
---===================================================================================
+--===============================================================================
 
 getNumAndDenom = method()
 
@@ -153,36 +176,35 @@ getNumAndDenom ( List ) := u ->
     ( a, den )        
 )
 
---===================================================================================
+--===============================================================================
 
 taxicabNorm = method()
 
 --Computes the taxicab norm of a vector.
 taxicabNorm ( List ) := u -> sum( u, abs )
 
---===================================================================================
+--===============================================================================
 
 --Selects or finds positions of nonzero, zero, positive entries in a list
 selectNonzero = L -> select( L, x -> x != 0 )
 selectPositive = L -> select( L, x -> x > 0 )
 nonzeroPositions = L -> positions( L, x -> x != 0 )
-zeroPositions = L -> positions( L, x -> x == 0 )
+zeroPositions = L -> positions( L, zero )
 
-
---===================================================================================
+--===============================================================================
 
 --*************************************************
 --Tests for various types of polynomials   
 --*************************************************
 
---===================================================================================
+--===============================================================================
 
 --isPolynomial(F) checks if F is a polynomial
 isPolynomial = method( TypicalValue => Boolean )
 
 isPolynomial (RingElement) := Boolean => F -> isPolynomialRing( ring F ) 
 
---===================================================================================
+--===============================================================================
 
 --isPolynomialOverPosCharField(F) checks if F is a polynomial over a field
 --of positive characteristic
@@ -191,7 +213,7 @@ isPolynomialOverPosCharField = method( TypicalValue => Boolean )
 isPolynomialOverPosCharField (RingElement) := Boolean => F ->
     isPolynomial F and isField( kk := coefficientRing ring F ) and ( char kk ) > 0
 
---===================================================================================
+--===============================================================================
 
 --isPolynomialOverFiniteField(F) checks if F is a polynomial over a finite field.
 isPolynomialOverFiniteField = method( TypicalValue => Boolean )
@@ -203,9 +225,8 @@ isPolynomialOverFiniteField = method( TypicalValue => Boolean )
 
 isPolynomialOverFiniteField (RingElement) := Boolean => F ->
     isPolynomialOverPosCharField( F ) and  ( try (coefficientRing ring F)#order then true else false )
---===================================================================================
 
---===================================================================================
+--===============================================================================
 
 --Determines whether a polynomial f is a diagonal polynomial (i.e., of the form 
 --x_1^(a_1)+...+x_n^(a_n)) over a field of positive characteristic 
@@ -215,7 +236,7 @@ isDiagonal (RingElement) := Boolean => f ->
     isPolynomialOverPosCharField( f ) and 
     ( product( exponents( f ), v -> #(positions( v, x -> x != 0 )) ) == 1 )
 
---===================================================================================
+--===============================================================================
 
 --Returns true if the polynomial is a monomial
 isMonomial = method( TypicalValue => Boolean )
@@ -223,7 +244,7 @@ isMonomial = method( TypicalValue => Boolean )
 isMonomial (RingElement) := Boolean => f -> 
     isPolynomial f and #( terms f ) == 1
 
---===================================================================================
+--===============================================================================
 
 --Returns true if the polynomial is a binomial over a field of positive characteristic
 isBinomial = method( TypicalValue => Boolean )
@@ -231,7 +252,7 @@ isBinomial = method( TypicalValue => Boolean )
 isBinomial (RingElement) := Boolean => f -> 
     isPolynomialOverPosCharField f and #( terms f ) == 2
 
---===================================================================================
+--===============================================================================
   
 --isBinaryForm(F) checks if F is a homogeneous polynomial in two variables.
 --WARNING: what we are really testing is if the *ring* of F is a polynomial ring in two 
@@ -243,7 +264,7 @@ isBinaryForm = method( TypicalValue => Boolean )
 isBinaryForm (RingElement) := Boolean => F ->
     isPolynomial F and numgens ring F == 2 and isHomogeneous F 
 
---===================================================================================
+--===============================================================================
 
 --isNonconstantBinaryForm(F) checks if F is a nonconstant homogeneous polynomial in two 
 --variables. See warning under "isBinaryForm".
@@ -252,7 +273,7 @@ isNonConstantBinaryForm = method( TypicalValue => Boolean )
 isNonConstantBinaryForm (RingElement) := Boolean => F -> 
     isBinaryForm F  and ( degree F )#0 > 0
 
---===================================================================================
+--===============================================================================
 
 --isLinearBinaryForm(F) checks if F is a linearform in two variables. See warning 
 --under "isBinaryForm".
@@ -261,17 +282,13 @@ isLinearBinaryForm = method( TypicalValue => Boolean )
 isLinearBinaryForm (RingElement) := Boolean => F -> 
     isBinaryForm F and ( degree F )#0 == 1
 
---===================================================================================
-
---===================================================================================
+--===============================================================================
 
 --*************************************************
 --Miscelaneous
 --*************************************************
 
---===================================================================================
-
---===================================================================================
+--===============================================================================
 
 --Finds the x-intercept of a line passing through two points
 xInt = ( x1, y1, x2, y2 ) ->
@@ -280,7 +297,7 @@ xInt = ( x1, y1, x2, y2 ) ->
     x1-(y1/((y1-y2)/(x1-x2)))
 )
 
---===================================================================================
+--===============================================================================
 
 -- maxIdeal returns the ideal generated by the variables of a polynomial ring
 maxIdeal = method( TypicalValue => Ideal )
@@ -291,4 +308,4 @@ maxIdeal ( RingElement ) := Ideal => f -> maxIdeal ring f
 
 maxIdeal ( Ideal ) := Ideal => I -> maxIdeal ring I
 
---===================================================================================
+--===============================================================================

@@ -1,10 +1,10 @@
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-----------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
 -- CONTENTS - FPTs of special types of polynomials
-----------------------------------------------------------------------------------
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--- Main functions: diagonalFPT, binomialFPT, binaryFormFPT, 
+-- Main functions: diagonalFPT, binomialFPT, binaryFormFPT
 
 -- Auxiliary Functions: factorOutMonomial, monomialFactor, twoIntersection, 
 --    allIntersections, isInPolytope, isInInteriorPolytope,
@@ -12,14 +12,14 @@
 --    setFTData, isInUpperRegion, isInLowerRegion, neighborInUpperRegion, isCP, 
 --    findCPBelow, binaryFormFPTInternal, factorList, splittingField
 
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-----------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
 -- Functions for computing FPTs of diagonal polynomials
-----------------------------------------------------------------------------------
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
---Computes the F-pure threshold of a diagonal hypersurface 
---x_1^(a_1) + ... +x_n^(a_n) using Daniel Hernandez' algorithm
+-- Computes the F-pure threshold of a diagonal hypersurface 
+-- x_1^(a_1) + ... +x_n^(a_n) using Daniel Hernandez' algorithm
 diagonalFPT = method( TypicalValue => QQ )
 
 diagonalFPT ( RingElement ) := QQ => f ->
@@ -33,12 +33,11 @@ diagonalFPT ( RingElement ) := QQ => f ->
     else sum( adicTruncation( p, fc-1, w ) ) + 1/p^( fc-1 )
 )
 
-
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-----------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
 -- Functions for computing FPTs of binomials
-----------------------------------------------------------------------------------
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 --Given input vectors v={a_1,...,a_n} and w={b_1,...,b_n}, gives the
 --corresponding vectors that omit all a_i and b_i such that a_i=b_i
@@ -69,8 +68,8 @@ allIntersections = ( v, w ) ->
     select( join( L1, L2, L3 ), x -> ( x#0 >= 0 and x#1 >= 0 ) )
 )
 
---Given a point a=(x,y) in the real plane and two vectors v={v0,...,vn} and w={w0,...,wn}, 
---checks whether a is in the polytope defined by the equations vi*x+wi*y<=1
+--Given a point a=(x,y) in the real plane and two vectors v={v0,...,vn} and 
+-- w={w0,...,wn}, checks whether a is in the polytope defined by the equations vi*x+wi*y<=1
 isInPolytope = ( a, v, w ) -> all( v, w, (i,j) -> i*a#0 + j*a#1 <= 1 ) 
 
 --Given a point a=(x,y) in the real plane and two vectors
@@ -105,8 +104,9 @@ dCalculation = ( w, N, p ) ->
     i + 1
 )
 
---Given the "truncation" points  P1 and P2 and two vectors v and w defining the binomial,
---outputs the "epsilon" in Daniel Hernandez's algorithm for F-thresholds of binomials
+--Given the "truncation" points  P1 and P2 and two vectors v and w defining the 
+-- binomial, outputs the "epsilon" in Daniel Hernandez's algorithm for 
+-- F-thresholds of binomials
 calculateEpsilon = ( P1, P2, v, w ) ->
 (
     X := 0;
@@ -120,9 +120,8 @@ calculateEpsilon = ( P1, P2, v, w ) ->
     max(X,Y) 
 )
 
-
---Computes the FPT of a binomial, based on the work of Daniel Hernandez 
---(implemented by Emily Witt)
+-- Computes the FPT of a binomial 
+-- Based on the work of Daniel Hernandez, and implemented by Emily Witt
 binomialFPT = method( TypicalValue => QQ )
 
 binomialFPT ( RingElement ) := QQ => g ->
@@ -152,13 +151,13 @@ binomialFPT ( RingElement ) := QQ => g ->
      min( FPT, monFPT )
 )
 
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-----------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
 -- Functions for computing FPTs of forms in two variables
-----------------------------------------------------------------------------------
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
--- Based on the work of Hernandez and Teixeira. -- 	                                           --                      
+-- Based on the work of Hernandez and Teixeira, and implemented by Teixeira
 
 {*
     Remark: At this point, only commands for computations of F-pure thresholds are
@@ -171,19 +170,21 @@ binomialFPT ( RingElement ) := QQ => g ->
     Types and auxiliary commands
 *}
 
---FTData is a HashTable that stores the data necessary in F-threshold calculations
---(for conveniently passing those data from one function to another).
---It contains the following keys:
---    "ring": the ring of the polynomial in question;
---    "char": the characteristic of ring;
---    "ideal": the ideal with respect to which we want to compute the F-threshold;
---    "gens": the generators of the ideal;
---    "polylist": a list of the (non-associated) factors of the polynomial in question;
---    "numpolys": the number of factors.
+-- FTData is a HashTable that stores the data necessary in F-threshold 
+-- calculations (for conveniently passing those data from one function 
+-- to another). It contains the following keys:
+-- "ring": the ring of the polynomial in question;
+-- "char": the characteristic of ring;
+-- "ideal": the ideal with respect to which we want to compute the 
+--   F-threshold;
+-- "gens": the generators of the ideal;
+-- "polylist": a list of the (non-associated) factors of the polynomial in 
+--   question;
+-- "numpolys": the number of factors.
 FTData = new Type of HashTable
 
---setFTData takes a list of generators of the ideal or the ideal itself and a list
---    of polynomials, and builds an FTData from them.
+-- setFTData takes a list of generators of the ideal or the ideal itself and a 
+-- list of polynomials, and builds an FTData from them.
 setFTData = method( TypicalValue => FTData )
 
 setFTData (List,List) := FTData => (gen,polylist) -> 
@@ -200,11 +201,12 @@ setFTData (Ideal,List) := FTData => (I,polylist) -> setFTData(I_*,polylist)
     Tests and auxiliary functions
 *}
 
---isInUpperRegion(a,q,S)/isInUpperRegion(u,S) test if the point u=a/q is in the
---upper region attached to S. Suppose I is the ideal of the FTData S under consideration 
---and L={L_1,...,L_n} is the "polylist". Then a point a/q (where a=(a_1,...,a_n) is a 
---nonnegative integer vector and q a power of "char") is in the "upper region" if 
---L_1^(a_1)...L_n^(a_n) is in I^[q]; otherwise it is in the lower region.
+-- isInUpperRegion(a,q,S)/isInUpperRegion(u,S) test if the point u=a/q is in 
+-- the upper region attached to S. Suppose I is the ideal of the FTData S 
+-- under consideration and L={L_1,...,L_n} is the "polylist". Then a point 
+-- a/q (where a=(a_1,...,a_n) is a nonnegative integer vector and q a power 
+-- of "char") is in the "upper region" if L_1^(a_1)...L_n^(a_n) is in I^[q]; 
+-- otherwise it is in the lower region.
 isInUpperRegion = method( TypicalValue => Boolean )
 
 isInUpperRegion (List,ZZ,FTData) := Boolean => (a,q,S) -> 
@@ -217,18 +219,19 @@ isInUpperRegion (List,ZZ,FTData) := Boolean => (a,q,S) ->
 isInUpperRegion (List,FTData) := Boolean => (u,S) ->
     isInUpperRegion append(getNumAndDenom(u),S)
 
---isInLoweRegion(a,q,S)/isInLoweRegion(u,S) test if the point u=a/q is in the
---lower region attached to S.
+-- isInLoweRegion(a,q,S)/isInLoweRegion(u,S) test if the point u=a/q is in 
+-- the lower region attached to S.
 isInLowerRegion = method( TypicalValue => Boolean )
 
 isInLowerRegion (List,ZZ,FTData) := Boolean => (a,q,S) -> not isInUpperRegion(a,q,S)
 
 isInLowerRegion (List,FTData) := Boolean => (u,S) -> not isInUpperRegion(u,S)
 
---neighborInUpperRegion(a,q,S)/neighborInUpperRegion(u,S): auxiliary commands that, 
---given a point u=a/q in the upper region, try to find a "neighbor" of the form 
---(a-e_i)/q that also lies in the upper region. If the search is successful, they return
---the first such neighbor found; otherwise they return nothing.
+-- neighborInUpperRegion(a,q,S)/neighborInUpperRegion(u,S): auxiliary commands 
+-- that, given a point u=a/q in the upper region, try to find a "neighbor" of 
+-- the form (a-e_i)/q that also lies in the upper region. If the search is 
+-- successful, they return the first such neighbor found; otherwise they 
+-- return nothing.
 neighborInUpperRegion = method( TypicalValue => Sequence )
 
 neighborInUpperRegion (List,ZZ,FTData) := Sequence => (a,q,S) ->
@@ -255,8 +258,8 @@ neighborInUpperRegion (List,FTData) := List => (u,S) ->
     if nbr===null then nbr else (nbr_0)/(nbr_1)
 )
 
---isCP(a,q,S)/isCP(u,S) test if u=a/q is a critical point, that is, if u is in the
---upper region but each neighbor (a-e_i)/q (where a_i>0) is not.
+-- isCP(a,q,S)/isCP(u,S) test if u=a/q is a critical point, that is, if u is 
+-- in the upper region but each neighbor (a-e_i)/q (where a_i>0) is not.
 isCP = method( TypicalValue => Boolean )
 
 isCP (List,ZZ,FTData) := Boolean => (a,q,S) -> 
@@ -267,8 +270,8 @@ isCP (List,ZZ,FTData) := Boolean => (a,q,S) ->
 
 isCP (List,FTData) := Boolean => (u,S) -> isCP append(getNumAndDenom(u),S)
 
---findCPBelow(u,S) takes a point u in the upper region attached to S and finds a 
---critical point <= u with the same denominator.
+--findCPBelow(u,S) takes a point u in the upper region attached to S and 
+-- finds a critical point <= u with the same denominator.
 findCPBelow = method( TypicalValue => List )
 
 findCPBelow (List,FTData) := List => (pt,S) ->
@@ -282,9 +285,9 @@ findCPBelow (List,FTData) := List => (pt,S) ->
     Computation of FPTs
 *}
 
---binaryFormFPTInternal({a1,...an},S): if S#"polylist={L1,...,Ln} is a list of linear
---forms, binaryFormFPTInternal({a1,...an},S) finds the FPT of the polynomial
---F=L1^(a1)...Ln^(an)
+-- binaryFormFPTInternal({a1,...an},S): if S#"polylist={L1,...,Ln} is a list 
+-- of linear forms, binaryFormFPTInternal({a1,...an},S) finds the FPT of the 
+-- polynomial F=L1^(a1)...Ln^(an)
 binaryFormFPTInternal = method(TypicalValue => QQ, Options => {MaxExp => infinity, PrintCP => false, Nontrivial => false})
 
 binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
@@ -345,9 +348,9 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
 -----------------------
 binaryFormFPT = method(TypicalValue => QQ, Options => {MaxExp => infinity, PrintCP => false})
 
---binaryFormFPT(RingElement)
---FPT(F) computes the F-pure threshold of a form F in two variables. 
---KNOWN ISSUE: if the splitting field of F is too big, factor will not work.
+-- binaryFormFPT(RingElement)
+-- FPT(F) computes the F-pure threshold of a form F in two variables. 
+-- KNOWN ISSUE: if the splitting field of F is too big, factor will not work.
 binaryFormFPT (RingElement) :=  QQ => opt ->  F ->
 (    
    if not isNonConstantBinaryForm(F) then (
@@ -368,10 +371,10 @@ binaryFormFPT (RingElement) :=  QQ => opt ->  F ->
     binaryFormFPTInternal(m,setFTData(S_*,L),MaxExp=>(opt.MaxExp),PrintCP=>(opt.PrintCP),Nontrivial=>true)
 )
 
---binaryFormFPT(List,List)
---Given a list L={L_1,...,L_n} of linear forms in 2 variables and a list m={m_1,...,m_n}
---of multiplicities, binaryFormFPT(L,m) returns the F-pure threshold of the polynomial 
---L_1^(m_1)*...*L_n^(m_n). 
+-- binaryFormFPT(List,List)
+-- Given a list L={L_1,...,L_n} of linear forms in 2 variables and a list 
+-- m={m_1,...,m_n} of multiplicities, binaryFormFPT(L,m) returns the F-pure 
+-- threshold of the polynomial L_1^(m_1)*...*L_n^(m_n). 
 binaryFormFPT (List,List) := QQ => opt -> (L,m) -> 
 (
     -- some checks to see if input makes sense   
@@ -394,8 +397,8 @@ binaryFormFPT (List,List) := QQ => opt -> (L,m) ->
 
 -- Factorization of polynomials and splitting fields --
 
---factorList(F) factors the RingElement F and returns a list of pairs of the form
---{factor,multiplicity}.
+-- factorList(F) factors the RingElement F and returns a list of pairs of 
+-- the form {factor,multiplicity}.
 factorList = method( TypicalValue => List )
 
 factorList (RingElement) := List => F -> apply( toList( factor( F ) ), toList )

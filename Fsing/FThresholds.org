@@ -1,0 +1,113 @@
+#+TITLE: F-Thresholds Package
+
+* Master file: [[file:./FThresholdsPackage/FThresholds.m2][FThresholds.m2]]
+* Basic functions: [[file:./FThresholdsPackage/FThresholds/BasicFunctions.m2][BasicFunctions.m2]] [0/2]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./FThresholdsPackage/FThresholds/BasicFunctionsDoc.m2][BasicFunctionsDoc.m2]] [0/1]
+*** TODO Start documentation file
+** Tests: [[file:./FThresholdsPackage/FThresholds/BasicFunctionsTest.m2][BasicFunctionsTest.m2]] [0/1]
+*** TODO Start tests file
+** Functions
+*** denominator
+*** numerator
+*** fracPart
+*** nontrivialPowerSet
+*** numberToPrimeFactorList
+*** getFactorList
+*** findNumberBetweenWithDenom
+*** findNumberBetween
+*** carryTest
+*** firstCarry
+*** getCanVector
+*** getNumAndDenom
+*** taxicabNorm
+*** selectNonzero
+*** selectPositive
+*** nonzeroPositions
+*** zeroPositions
+*** isPolynomial
+*** isPolynomialOverPosCharField
+*** isPolynomislOverFiniteField
+*** isDiagonal
+*** isMonomial
+*** isBinomial
+*** isBinaryForm
+*** isNonCostantBinaryForm
+*** isLinearBinaryForm
+*** xInt
+*** maxIdeal
+* Main functions: [[file:./FThresholdsPackage/FThresholds/FThresholds.m2][FThresholds.m2]] [0/4]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./FThresholdsPackage/FThresholds/FThresholdsDoc.m2][FThresholdsDoc.m2]] 
+** Tests: [[file:./FThresholdsPackage/FThresholds/FThresholdsTest.m2][FThresholdsTest.m2]]
+** Functions [0/5]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+*** nu1
+*** testRoot
+*** testPower
+*** testFrobeniusPower
+*** binarySearch
+*** binarySearchRecursive
+*** linearSearch
+*** nuInternal
+*** nuList
+*** nu
+*** muList
+*** mu
+*** FPTApproxList
+*** critExpApproxList
+*** guessFPT [0/1]
+**** TODO Incorporate in fpt
+*** fSig
+*** isFRegularPoly
+*** fpt
+*** isFPTPoly [0/2]
+**** TODO Change name so it doesn't refer to type of argument
+**** TODO Rewrite, so as not to assume a polynomial ring
+
+*** isFJumpingNumerPoly [0/2]
+**** TODO Change name so it doesn't refer to type of argument
+**** TODO Rewrite, so as not to assume a polynomial ring
+*** sigmaAOverPEMinus1Poly  
+* Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/3]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsDoc.m2][SpecialFThresholdsDoc.m2]]
+** Tests: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsTest.m2][SpecialFThresholdsTest.m2]] 
+** Functions [0/3]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+*** diagonalFPT
+*** factorOurMonomial
+*** monomialFactor
+*** twoIntersection
+*** allIntersections
+*** isInPolytope
+*** isInInteriorPolytope
+*** polytopeDefiningPoints
+*** maxCoordinateSum
+*** dCalculation
+*** calculateEpsilon
+*** binomialFPT
+*** setFTData
+*** isInUpperRegion
+*** isInLowerRegion
+*** neighborInUpperRegion
+*** isCP
+*** findCPBelow
+*** binaryFormFPTInternal
+*** binaryFormFPT
+*** factorList [0/1]
+**** TODO Move to BasicFunctions
+*** splittingField [0/2]
+**** TODO Determine to what class of polynomials this applies
+**** TODO Move to BasicFunctions
+

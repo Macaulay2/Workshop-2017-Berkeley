@@ -1,0 +1,109 @@
+#+TITLE: Test Ideals Package
+
+* Master file: [[file:./TestIdealsPackage/TestIdeals.m2][TestIdeals.m2]]
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/TestIdealDoc.m2][TestIdealDoc.m2]]
+* Basics functions: [[file:./TestIdealsPackage/TestIdeals/BasicFunctions.m2][BasicFunctions.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/BasicFunctionsDoc.m2][BasicFunctionsDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/BasicFunctionsTest.m2][BasicFunctionsTest.m2]] [0/0]
+** Functions [0/0]
+*** denominator
+*** numerator
+*** fracPart
+*** floorLog
+*** multiplicativeOrder
+*** decomposeFraction
+*** adicDigit
+*** adicExpansion
+*** adicTruncation
+*** baseP1
+*** isPolynomial
+*** isPolynomialOverPosCharField
+*** isPolynomislOverFiniteField
+*** isPolynomialOverPrimeField
+*** maxIdeal
+* Compatibly split ideals: [[file:./TestIdealsPackage/TestIdeals/compatiblySplit.m2][compatiblySplit.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/compatiblySplitDoc.m2][compatiblySplitDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/CompatiblySplitTest.m2][CompatiblySplitTest.m2]] [0/0]
+** Functions [0/0]
+*** compatibleIdeals
+*** compatibleIdealsInnards
+* E-th roots: [[file:./TestIdealsPackage/TestIdeals/EthRoots.m2][EthRoots.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/EthRootsDoc.m2][EthRootsDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/EthRootsTest.m2][EthRootsTest.m2]] [0/0]
+** Functions [0/0]
+*** frobeniusRoot 
+*** getFieldGenRoot
+*** frobeniusRootMonStrat
+*** frobeniusRootSubStrat
+*** frobeniusRootRingElements
+*** ascendIdeal
+*** minimalCompatible
+*** getExponents
+*** mEthRootOfOneElement
+*** mEthRoot
+*** Mstar
+* F-injective: [[file:./TestIdealsPackage/TestIdeals/Finjective.m2][Finjective.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/FinjectiveDoc.m2][FinjectiveDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/FinjectiveTest.m2][FinjectiveTest.m2]]  [0/0]
+** Functions [0/0]
+*** HSLGModule
+*** isFinjective
+*** isFinjectiveCanonicalStrategy
+*** frob
+*** frobPF
+*** frobPFMap
+*** pushFwdToAmbient
+* Frobenius powers: [[file:./TestIdealsPackage/TestIdeals/frobeniusPowers.m2][frobeniusPowers.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/frobeniusPowersDoc.m2][frobeniusPowersDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/frobeniusPowersTest.m2][frobeniusPowersTest.m2]] [0/0]
+** Functions [0/0]
+*** fastExponentiation
+*** frobeniusMethod 
+*** frobenius
+*** stableIdeal
+*** frobeniusPower
+*** frobeniusPowerHelper
+* Parameter test ideal: [[file:./TestIdealsPackage/TestIdeals/parameterTestIdeal.m2][parameterTestIdeal.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/parameterTestIdealDoc.m2][parameterTestIdealDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/ParameterTestIdealTest.m2][ParameterTestIdealTest.m2]] [0/0]
+** Functions [0/0]
+*** canonicalIdeal
+*** finduOfIdeal
+*** frobeniusTraceOnCanonicalModule
+*** testModule
+*** parameterTestIdeal
+*** isCohenMacaulay
+*** isFrational
+* Test ideals: [[file:./TestIdealsPackage/TestIdeals/testIdeals.m2][testIdeals.m2]] [0/0]
+:PROPERTIES:
+:COOKIE_DATA: todo recursive
+:END:
+** Documentation: [[file:./TestIdealsPackage/TestIdeals/testIdealsDoc.m2][testIdealsDoc.m2]] [0/0]
+** Tests: [[file:./TestIdealsPackage/TestIdeals/testIdealTest.m2][testIdealTest.m2]] [0/0]
+** Functions [0/0]
+*** QGorensteinGenerator 
+*** testElement
+*** randomSubset
+*** getNonzeroGenerator
+*** isLocallyPrincipalIdeal
+*** testIdeal
+*** isFregular
+*** isFpure
