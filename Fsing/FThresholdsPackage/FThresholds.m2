@@ -37,7 +37,8 @@ Authors => {
      HomePage => "http://math.utah.edu/~schwede/"
      },
      {Name => "Dan Smolkin",
-     Email => "smolkin@math.utah.edu"
+     Email => "smolkin@math.utah.edu",
+     HomePage => "http://dan.smolk.in"
      },
      {Name => "Pedro Teixeira",
      Email => "pteixeir@knox.edu",
@@ -56,36 +57,36 @@ AuxiliaryFiles => true
 
 needsPackage "TestIdeals"
 
-export{
+export => {
 --F-thresholds computations (MainFunctions.m2)
-    "BinaryFormCheck",
-    "BinaryRecursive",
-    "BinomialCheck",
-    "ComputePreviousNus",
+    "BinaryFormCheck", 
+    "BinaryRecursive", 
+    "BinomialCheck", 
+    "ComputePreviousNus", 
     "criticalExponentApproximation",
-    "DiagonalCheck", 
+    "DiagonalCheck",  
     "FinalCheck", 
     "fpt",   
-    "fptApproximation",
-    "FrobeniusPower",
-    "FrobeniusRoot",     
+    "fptApproximation", 
+    "FrobeniusPower", 
+    "FrobeniusRoot",  
     "ftApproximation",
     "guessFPT", --Karl (probably should be incorporated into fpt
+    "HSL", 
     "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
     "isFPT", --Karl (should be redone, so as not to assume a polynomial ring)
-    "mu",
-    "muList",
-    "nu",
-    "NuCheck",
-    "nuList",
-    "OutputRange",
-    "Search",
-    "StandardPower",
-    "UseColonIdeals",
+    "nu", --Dan: add the mu options
+    "NuCheck", 
+    "nuList", --Dan: add the mu options
+    "OutputRange", 
+    "Search", 
+    "StandardPower", 
+    "Test", 
+    "UseColonIdeals", 
 
-    "MaxExp",
-    "PrintCP",
-    "Nontrivial"
+
+    "MaxExp", -- Dan ( **no doc**)
+    "PrintCP", -- Dan ( **no doc**)
 }
 
 --*************************************************
