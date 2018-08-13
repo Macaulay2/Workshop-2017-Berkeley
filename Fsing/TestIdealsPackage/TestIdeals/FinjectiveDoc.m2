@@ -8,6 +8,7 @@ doc ///
         (HSLGModule, QQ, RingElement)
         (HSLGModule, List, List)
         (HSLGModule, ZZ, List, List, Ideal)
+        [HSLGModule, FrobeniusRootStrategy]
     Headline
         computes the submodule of the canonical module stable under the image of the trace of Frobenius
     Usage
@@ -24,11 +25,13 @@ doc ///
         expList:List
         eltList:List
         e:ZZ
+        FrobeniusRootStrategy=>Symbol
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :List
     Description
         Text
-            Given a ring $R$ with canonical module $\omega$, this computes the image of $F^e_* \omega \to \omega$ for $e >> 0$.  This image is sometimes called the HSLG-module.  It roughly tells you where a ring is non-F-injective.
+            Given a ring $R$ with canonical module $\omega$, this computes the image of $F^e_* \omega \to \omega$ for $e >> 0$.  This image is sometimes called the HSLG-module (named for Hartshorne-Speiser, Lyubeznik and Gabber).  It roughly tells you where a ring is non-F-injective.
         Text
             Specifically, this function returns a list of the following entries.  {\tt HSLGmodule, canonicalModule, u, HSLCount} where {\tt canonicalModule} is the canonical module of the ring (expressed as an ideal), {\tt HSLGmodule} is a submodule of that canonical module, {\tt u} is an element of the ambient polynomial ring representing the trace of Frobenius on the canonical module and {\tt HSLCount} is how many times the trace of Frobenius was computed before the image stabilized.
         Example
@@ -56,23 +59,43 @@ doc ///
             f = y;
             g = z;
             HSLGModule({1/2, 1/2, 1/2}, {y,z,y+z})
+        Text
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
 ///
 
 doc ///
     Key
         isFinjective
-        (isFinjective, Ring)   
+        (isFinjective, Ring)  
+        [isFinjective, FrobeniusRootStrategy] 
+        [isFinjective, IsLocal]
+        [isFinjective, AssumeCM]
+        [isFinjective, AssumeNormal]
+        [isFinjective, AssumeReduced]
+        [isFinjective, CanonicalStrategy]
     Headline
         whether a ring is F-injective
     Usage
         isFinjective(R)
     Inputs
         R:Ring
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
+        IsLocal => Boolean
+            specify whether to check F-injectivity only at the origin
+        AssumeCM => Boolean
+            assume the ring is Cohen-Macaulay
+        AssumeNormal => Boolean
+            assume the ring is normal
+        AssumeReduced => Boolean
+            assume the ring is reduced
+        CanonicalStrategy => Boolean
+            specify what strategy to use when computing the Frobenius action on top local cohomology
     Outputs
         :Boolean
     Description
         Text
-            This verifies if a ring of finite type over a prime field is F-injective or not.  Over a more general field this checks the F-injectivity of the relative Frobenius.            
+            This determines whether a ring of finite type over a prime field is F-injective or not.  Over a more general field this checks the F-injectivity of the relative Frobenius.            
             We begin with an example of an F-injective ring that is not F-pure (taken from the work of Anurag Singh).
         Example
              S = ZZ/3[a,b,c,d,t];
@@ -101,50 +124,20 @@ doc ///
             R = S/(ker f);
             isFinjective(R)
             isFpure(R)
-    SeeAlso
-        isFpure            
-///
-
-doc ///
-    Key
-        [isFinjective, IsLocal]
-    Headline
-        controls whether F-injectivity is checked at the origin or everywhere
-    Usage
-        isFinjective(..., IsLocal=>b)
-    Inputs
-        b:Boolean
-    Outputs
-        :Boolean
-    Description
+        Text
+            If {\tt CanonicalStrategy=>Katzman} which is the default behavior, then the Frobenius action on the top local cohomology (bottom $Ext$) is computed via the method of Katzman.  If it is set to anything else, it is simply brute forced in Macaulay2 using the fuctoriality of Ext.  {\tt CanonicalStrategy=>Katzman} typically is much faster.
+        Example
+            R = ZZ/5[x,y,z]/ideal(y^2*z + x*y*z-x^3)
+            time isFinjective(R)
+            time isFinjective(R, CanonicalStrategy=>null)
         Text
             If you set the option {\tt IsLocal => true} (default {\tt false}) it will only check F-injectivity at the origin.  Otherwise it will check it everywhere.  Note checking at the origin can be slower than checking it everywhere.  Consider the example of the following non-F-injective ring.
         Example
             R = ZZ/5[x,y,z]/ideal( (x-1)^4 + y^4 + z^4 );
             isFinjective(R)
             isFinjective(R, IsLocal=>true)
-///
-        
-doc ///
-    Key
-        [isFinjective, AssumeCM]
-        [isFinjective, AssumeNormal]
-        [isFinjective, AssumeReduced]
-    Headline
-        assumptions to speed up the computation of isFinjective        
-    Usage
-        isFinjective(..., AssumeCM=>b1, AssumeNormal=>b2, AssumeReduced=>b3)
-    Inputs
-        b1:Boolean
-        b2:Boolean
-        b3:Boolean
-    Outputs
-        :Boolean
-    Description
         Text
-            Various options which can (vastly) speed up the computation of whether a ring is F-injective.
-        Text
-            If {\tt AssumeCM=>true} then it only checks the Frobenius action on top cohomology (which is typically much faster).  The default value is {\tt false}.  Note, that it can give an incorrect answer however if the non-injective Frobenius occurs in a lower degree, as it does in this example of the cone over a supersingular elliptic curve times $P^1$.
+            If {\tt AssumeCM=>true} then the function only checks the Frobenius action on top cohomology (which is typically much faster).  The default value is {\tt false}.  Note, that it can give an incorrect answer if the non-injective Frobenius occurs in a lower degree.  Consider the example of the cone over a supersingular elliptic curve times $P^1$.
         Example
             S = ZZ/3[xs, ys, zs, xt, yt, zt];
             EP1 = ZZ/3[x,y,z,s,t]/ideal(x^3+y^2*z-x*z^2); 
@@ -156,7 +149,13 @@ doc ///
             If {\tt AssumedReduced=>true} (default {\tt true}) then the bottom local cohomology is avoided (this means the Frobenius action on the top potentially nonzero Ext is not computed).
         Text
             If {\tt AssumeNormal=>true} (default {\tt false}) then certain cohomologies of the local cohomology can be avoided.
+        Text
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
+    SeeAlso
+        isFpure            
 ///
+
+        
 
 doc ///
     Key
@@ -170,25 +169,6 @@ doc ///
             These are options used in various functions to make assumptions about your ring.
 ///
 
-doc ///
-    Key
-        [isFinjective, CanonicalStrategy]
-    Headline
-        specify a strategy for isFinjective
-    Usage
-        isFinjective(..., CanonicalStrategy=>b)
-    Inputs
-        b:Boolean
-    Outputs
-        :Boolean
-    Description
-        Text
-            If {\tt CanonicalStrategy=>Katzman} which is the default behavior, then the Frobenius action on the top local cohomology (bottom $Ext$) is computed via the method of Katzman.  If it is set to anything else, it is simply brute forced in Macaulay2 using the fuctoriality of Ext.  {\tt CanonicalStrategy=>Katzman} typically is much faster.
-        Example
-             R = ZZ/5[x,y,z]/ideal(y^2*z + x*y*z-x^3)
-            time isFinjective(R)
-            time isFinjective(R, CanonicalStrategy=>null)
-///
 
 doc ///
     Key

@@ -473,48 +473,40 @@ isFPT = method( Options => { Verbose=> false } )
 
 isFPT ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
-    R := ring f;
-    p := char R;
-    --this writes t = a/(p^b(p^c-1))
-    (a,b,c) := toSequence decomposeFraction( p, t );
-
-    -- sigma
-    local a1;
-    local Sigma;
-    if c == 0 then 
-    (
-	a1 = a-1;
-	Sigma = sigma( f, p-1, 1 )
-    )
-    else 
-    (
-	a1 = floor( (a-1)/(p^c-1) );
-	Sigma = sigma( f, ( (a-1)%(p^c-1) ) + 1, c )
-    );
-    if o.Verbose then print "\nSigma Computed";
+	p := char ring f;
+	--this writes t = a/(p^b(p^c-1))
+	(a,b,c) := toSequence decomposeFraction( p, t );
+	mySigma := ideal(f);
+	myTau := ideal(sub(1, ring f));
+	myA := a;
+	myA2 := 0;
 	
-    if not isSubset( ideal 1_R, frobeniusRoot( b, a1, f , Sigma ) ) then
-        return false; 
+	if (c != 0) then (
+		myA = floor(a / (p^c - 1));
+		myTau = testIdeal( (a%(p^c-1))/(p^c-1), f )
+	);
+	
+	if o.Verbose then print "higher tau Computed";
 
-    if o.Verbose then print "\nWe know t <= FPT";
-    
-        -- Higher tau
-    local a2;
-    local Tau;
-    if c == 0 then
-    (
-	a2 = a;
-	Tau = ideal 1_R
-    )
-    else
-    (
-	a2 = floor( a / (p^c - 1) );
-	Tau = testIdeal( fracPart( a/(p^c-1) ), f )
-    );	
+	--first we check whether this is even a jumping number.
+	if (c == 0) then (
+		myA2 = a-1;
+		mySigma = sigmaAOverPEMinus1Poly(f, (p-1), 1)
+	)
+	else (
+		myA2 = floor((a-1)/(p^c-1));
+		mySigma = (sigmaAOverPEMinus1Poly(f, ((a-1)%(p^c-1))+1, c))
+	);
+	if o.Verbose then print "higher sigma Computed";
 
-    if o.Verbose then print "\nHigher tau Computed";
-    
-    not isSubset( ideal 1_R, frobeniusRoot( b, a2, f, Tau ) )
+	returnValue := false;
+	
+	if ( isSubset(ideal(sub(1, ring f)), frobeniusRoot(b, myA2, f , mySigma ) )) then (
+		if (o.Verbose==true) then print "we know t <= FPT";
+		if (not isSubset(ideal(sub(1, ring f)), frobeniusRoot( b, myA, f, myTau ) ))  then returnValue = true 
+	);
+		
+	returnValue
 )
 
 isFPT ( ZZ, RingElement ) := o -> ( t, f ) -> isFPT( t/1, f, o )
@@ -529,25 +521,22 @@ isFJumpingNumber = method( Options => {Verbose=> false} )
 
 isFJumpingNumber ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
-    p := char ring f;
-    --this writes t = a/(p^b(p^c-1))
-    (a,b,c) := toSequence decomposeFraction( p, t );
-    Tau := frobeniusRoot( b, testIdeal( t*p^b, f ) );
-    if o.Verbose then print "\nHigher tau Computed";
+	p := char ring f;
+	--this writes t = a/(p^b(p^c-1))
+	(a,b,c) := toSequence decomposeFraction( p, t );
+	mySigma := ideal(f);
+	myTau := frobeniusRoot(b, testIdeal(t*p^b, f) );
+	if (o.Verbose==true) then print "higher tau Computed";
 
-    local Sigma;
-    if c == 0 then
-        Sigma = frobeniusRoot( b, ideal( f^(a-1) ) * sigma( f, p-1, 1 ) )
-    else Sigma = frobeniusRoot( b, sigma( f, a, c ) );
-    if o.Verbose then print "\nSigma Computed";
+	--first we check whether this is even a jumping number.
+	if (c == 0) then
+		mySigma = frobeniusRoot(b,(ideal(f^(a-1)))*((sigmaAOverPEMinus1Poly(f, (p-1), 1))))
+	else 
+		mySigma = frobeniusRoot(b,(sigmaAOverPEMinus1Poly(f, a, c)));
+	if (o.Verbose==true) then print "sigma Computed";
 
-    -- if sigma is not contained in tau, this is an F-jumping number
-    not isSubset( Sigma, Tau )
+	not (isSubset(mySigma, myTau))
 )
-
-isFJumpingNumber ( ZZ, RingElement ) := o -> ( t, f ) -> 
-    isFJumpingNumber( t/1, f, o )
-
 
 ----------------------------------------------------------------
 --************************************************************--
@@ -555,40 +544,31 @@ isFJumpingNumber ( ZZ, RingElement ) := o -> ( t, f ) ->
 --************************************************************--
 ----------------------------------------------------------------
 
---Computes Non-Sharply-F-Pure ideals over polynomial rings for 
--- (R, f^{a/(p^{e}-1)}), at least defined as in Fujino-Schwede-Takagi.
-sigma = ( f, a, e ) -> 
-(
-    R := ring f;
-    p := char R;
-    m := 0;
-    e1 := e;
-    a1 := a;
-    --if e = 0, we treat (p^e-1) as 1.  
-    if e1 == 0 then 
-        (
-	    e1 = 1; 
-	    a1 = a*(p-1)
-	);
-     if a1 > p^e1-1 then 
-         (
-	     m = floor( (a1-1)/(p^e1-1) ); 
-	     a1 = (a1-1)%(p^e1-1) + 1 
-	 );
-     --fpow := f^a1;
-     IN := frobeniusRoot( e1, ideal 1_R ); -- this is going to be the new value.
-     IP := ideal 0_R; -- this is going to be the old value.
+
+--Computes Non-Sharply-F-Pure ideals over polynomial rings for (R, fm^{a/(p^{e1}-1)}), 
+--at least defined as in Fujino-Schwede-Takagi.
+sigmaAOverPEMinus1Poly ={HSL=> false}>> o -> (fm, a1, e1) -> ( 
+     Rm := ring fm;
+     pp := char Rm;
+     m1 := 0;
+	e2 := e1;
+	a2 := a1;
+	--if e1 = 0, we treat (p^e-1) as 1.  
+     if (e2 == 0) then (e2 = 1; a2 = a1*(pp-1));
+     if (a2 > pp^e2-1) then (m1 = floor((a2-1)/(pp^e2-1)); a2=((a2-1)%(pp^e2-1)) + 1 );
+     --fpow := fm^a2;
+     IN := frobeniusRoot(e2,ideal(1_Rm)); -- this is going to be the new value.
+     -- the previous commands should use the fast power raising when Emily finishes it
+     IP := ideal(0_Rm); -- this is going to be the old value.
      count := 0;
      
-     --our initial value is something containing sigma.  
-     -- This stops after finitely many steps.  
-     while IN != IP do
-     (
-	 IP = IN;
-	 IN = frobeniusRoot( e1, a1, f, IP ); -- ethRoot(e1,ideal(fpow)*IP);
-	 count = count + 1
+     --our initial value is something containing sigma.  This stops after finitely many steps.  
+     while (IN != IP) do(
+		IP = IN;
+	  	IN = frobeniusRoot(e2,a2,fm,IP); -- ethRoot(e2,ideal(fpow)*IP);
+	  	count = count + 1
      );
 
-     --return the final ideal
-    IP*ideal( f^m )
+     --return the final ideal and the HSL number of this function
+     if (o.HSL == true) then {IP*ideal(fm^m1),count} else IP*ideal(fm^m1)
 )

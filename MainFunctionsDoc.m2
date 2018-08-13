@@ -106,78 +106,78 @@ doc ///
          f:RingElement
          e:ZZ
          V:Boolean
-         W:Boolean
+        W:Boolean
      Outputs
         L:List
         Q:QQ
      Description
           Text 
-              This tries to find an exact value for the fpt.  If it can, it returns that value.  Otherwise it should return a range of possible values (eventually).  It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  Next it tries to estimate the range of the FPT using nu's.  Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument.  finalCheck is a Boolean with default value True that determines whether the last isFRegularPoly is run (it is possibly very slow).  If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be.  Verbose set to true displays verbose output.
+          This tries to find an exact value for the fpt.  If it can, it returns that value.  Otherwise it should return a range of possible values (eventually).  It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  Next it tries to estimate the range of the FPT using nu's.  Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument.  finalCheck is a Boolean with default value True that determines whether the last isFRegularPoly is run (it is possibly very slow).  If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be.  Verbose set to true displays verbose output.
 ///
 
 doc ///
      Key
          fptApproximation
-         (fptApproximation,ZZ,Ideal)
-         (fptApproximation,ZZ,RingElement)
+     (fptApproximation,ZZ,Ideal)
+     (fptApproximation,ZZ,RingElement)
      Headline
-         Gives a list of nu_I(p^d)/p^d for d=0,...,e.
+        Gives a list of nu_I(p^d)/p^d for d=0,...,e.
      Usage
           fptApproximation(e,I)
-          fptApproximation(e,f) 
+      fptApproximation(e,f) 
      Inputs
          e:ZZ
          I:Ideal
-         f:RingElement
+     f:RingElement
      Outputs
          :List
      Description
-         Text 
-             This returns a list of nu_I(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I(p^d)/p^d} converges to the F-pure threshold.        
+    Text 
+         This returns a list of nu_I(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I(p^d)/p^d} converges to the F-pure threshold.        
 ///
 
 doc ///
      Key
          ftApproximation
-         (ftApproximation,ZZ,Ideal,Ideal)
-         (ftApproximation,ZZ,RingElement,Ideal)
+     (ftApproximation,ZZ,Ideal,Ideal)
+     (ftApproximation,ZZ,RingElement,Ideal)
      Headline
-         Gives a list of nu_I^J(p^d)/p^d for d=0,...,e.
+        Gives a list of nu_I^J(p^d)/p^d for d=0,...,e.
      Usage
-         ftApproximation(e,I,J)
-         ftApproximation(e,f,J) 
+          ftApproximation(e,I,J)
+      ftApproximation(e,f,J) 
      Inputs
          e:ZZ
          I:Ideal
-         J:Ideal
-         f:RingElement
+     J:Ideal
+     f:RingElement
      Outputs
          :List
      Description
-         Text 
-             This returns a list of nu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I^J(p^d)/p^d} converges to the F-threshold of I or f with respect to J.         
+    Text 
+         This returns a list of nu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I^J(p^d)/p^d} converges to the F-threshold of I or f with respect to J.         
 ///
 
 doc ///
      Key
          criticalExponentApproximation
-         (criticalExponentApproximation,ZZ,Ideal,Ideal)
-         (criticalExponentApproximation,ZZ,RingElement,Ideal)
+     (criticalExponentApproximation,ZZ,Ideal,Ideal)
+     (criticalExponentApproximation,ZZ,RingElement,Ideal)
      Headline
         Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
      Usage
           criticalExponentApproximation(e,I,J)
-          criticalExponentApproximation(e,f,J) 
+      criticalExponentApproximation(e,f,J) 
      Inputs
          e:ZZ
          I:Ideal
-         J:Ideal
-         f:RingElement
+     J:Ideal
+     f:RingElement
      Outputs
          :List
      Description
-         Text 
-             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
+    Text 
+         This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
 ///
 
 doc ///
@@ -190,12 +190,12 @@ doc ///
      Inputs
          f:RingElement
          e:ZZ
-         d:ZZ
+     d:ZZ
      Outputs
         :List
      Description
-        Text
-             This tries to guess the FPT.  In particular, it computes the number nu such that nu/(p^e - 1) <= FPT < (nu+1)/p^e.  It then outputs a list of all rational numbers with denominators less than or equal to d, which lie in that range.  WARNING:  There are several improvements which should be made to this function to rule out many of the possibilies.
+    Text
+         This tries to guess the FPT.  In particular, it computes the number nu such that nu/(p^e - 1) <= FPT < (nu+1)/p^e.  It then outputs a list of all rational numbers with denominators less than or equal to d, which lie in that range.  WARNING:  There are several improvements which should be made to this function to rule out many of the possibilies.
 ///
 
 doc ///
@@ -209,84 +209,84 @@ doc ///
      Inputs
          t:QQ
          f:RingElement
-         V:Boolean
+     V:Boolean
      Outputs
         :Boolean
      Description
         Text
-            Returns true if t is an F-jumping number, otherwise it returns false.
+         Returns true if t is an F-jumping number, otherwise it returns false.
 ///
 
 doc ///
      Key
         isFPT 
-        (isFPT,QQ,RingElement)
+    (isFPT,QQ,RingElement)
      Headline
         Checks whether a given number is the FPT
      Usage
           isFPT(t,f,Verbose=>V,Origin=>W)  
      Inputs
         t:QQ
-        f:RingElement
+            f:RingElement
         V:Boolean
         W:Boolean
      Outputs
         :Boolean
      Description
         Text
-             Returns true if t is the FPT, otherwise it returns false.  If Origin is true, it only checks it at the homogeneous maximal ideal.
+         Returns true if t is the FPT, otherwise it returns false.  If Origin is true, it only checks it at the homogeneous maximal ideal.
 ///
  
 doc ///
      Key
          nu
-         (nu,ZZ,Ideal,Ideal)
-         (nu,ZZ,Ideal)
-         (nu,ZZ,RingElement,Ideal)
-         (nu,ZZ,RingElement)
+     (nu,ZZ,Ideal,Ideal)
+     (nu,ZZ,Ideal)
+     (nu,ZZ,RingElement,Ideal)
+     (nu,ZZ,RingElement)
      Headline
         Gives $\nu_I^J(p^e)$ or $\nu_f^J(p^e)$
      Usage
           nu(e,I,J)
-          nu(e,I)
-          nu(e,f,J)
-          nu(e,f) 
+      nu(e,I)
+      nu(e,f,J)
+      nu(e,f) 
      Inputs
          e:ZZ
          I:Ideal
-         J:Ideal
-         f:RingElement
+     J:Ideal
+     f:RingElement
      Outputs
         :ZZ
      Description
-        Text
-            Given an ideal I in a polynomial ring k[x1, ..., xn], this function outputs the maximal integer nu such that I^nu is not in ideal J^[p^e].  If the input is (ZZ,Ideal) then the function computes the maximal integer nu such that I^nu in not in (x_1, ...,x_n)^[p^e]. If a RingElement is passed, it computes nu of the principal ideal generated by this element. This is used frequently to compute the F-pure threshold.
+    Text
+        Given an ideal I in a polynomial ring k[x1, ..., xn], this function outputs the maximal integer nu such that I^nu is not in ideal J^[p^e].  If the input is (ZZ,Ideal) then the function computes the maximal integer nu such that I^nu in not in (x_1, ...,x_n)^[p^e]. If a RingElement is passed, it computes nu of the principal ideal generated by this element. This is used frequently to compute the F-pure threshold.
 ///
 
 doc ///
      Key
          nuList
-         (nuList,ZZ,Ideal,Ideal)
-         (nuList,ZZ,Ideal)
-         (nuList,ZZ,RingElement,Ideal)
-         (nuList,ZZ,RingElement)
+     (nuList,ZZ,Ideal,Ideal)
+     (nuList,ZZ,Ideal)
+     (nuList,ZZ,RingElement,Ideal)
+     (nuList,ZZ,RingElement)
      Headline
         Lists nu_I^J(p^d)$ for d = 1,...,e
      Usage
           nuList(e,I,J)
-          nuList(e,I)
-          nuList(e,f,J)
-          nuList(e,f) 
+      nuList(e,I)
+      nuList(e,f,J)
+      nuList(e,f) 
      Inputs
          e:ZZ
          I:Ideal
-         J:Ideal
-         f:RingElement
+     J:Ideal
+     f:RingElement
      Outputs
         :List
      Description
-        Text
-            Given an ideal I in a polynomial ring k[x1,...,xn], this function computes nu(d,I) for d = 0,...,e. If a RingElement is passed, it computes nu of the principal ideal generated by this element for d = 0,...,e.
+    Text
+         Given an ideal I in a polynomial ring k[x1,...,xn], this function computes nu(d,I) for d = 0,...,e. If a RingElement is passed, it computes nu of the principal ideal generated by this element for d = 0,...,e.
 ///
 
 doc ///
