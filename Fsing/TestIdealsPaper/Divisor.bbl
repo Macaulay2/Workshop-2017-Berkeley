@@ -1,0 +1,39 @@
+\def\cfudot#1{\ifmmode\setbox7\hbox{$\accent"5E#1$}\else
+  \setbox7\hbox{\accent"5E#1}\penalty 10000\relax\fi\raise 1\ht7
+  \hbox{\raise.1ex\hbox to 1\wd7{\hss.\hss}}\penalty 10000 \hskip-1\wd7\penalty
+  10000\box7}
+\providecommand{\bysame}{\leavevmode\hbox to3em{\hrulefill}\thinspace}
+\providecommand{\MR}{\relax\ifhmode\unskip\space\fi MR}
+% \MRhref is called by the amsart/book/proc definition of \MR.
+\providecommand{\MRhref}[2]{%
+  \href{http://www.ams.org/mathscinet-getitem?mr=#1}{#2}
+}
+\providecommand{\href}[2]{#2}
+\begin{thebibliography}{Har07}
+
+\bibitem[BH93]{BrunsHerzog}
+{\sc W.~Bruns and J.~Herzog}: \emph{Cohen-{M}acaulay rings}, Cambridge Studies
+  in Advanced Mathematics, vol.~39, Cambridge University Press, Cambridge,
+  1993. {\sf\scriptsize MR1251956 (95h:13020)}
+
+\bibitem[GS]{M2}
+{\sc D.~R. Grayson and M.~E. Stillman}: \emph{Macaulay2, a software system for
+  research in algebraic geometry}.
+
+\bibitem[Har77]{Hartshorne}
+{\sc R.~Hartshorne}: \emph{Algebraic geometry}, Springer-Verlag, New York,
+  1977, Graduate Texts in Mathematics, No. 52. {\sf\scriptsize MR0463157 (57
+  \#3116)}
+
+\bibitem[Har94]{HartshorneGeneralizedDivisorsOnGorensteinSchemes}
+{\sc R.~Hartshorne}: \emph{Generalized divisors on {G}orenstein schemes},
+  Proceedings of Conference on Algebraic Geometry and Ring Theory in honor of
+  Michael Artin, Part III (Antwerp, 1992), vol.~8, 1994, pp.~287--339.
+  {\sf\scriptsize MR1291023 (95k:14008)}
+
+\bibitem[Har07]{HartshonreGeneralizedDivisorsAndBiliaison}
+{\sc R.~Hartshorne}: \emph{Generalized divisors and biliaison}, Illinois J.
+  Math. \textbf{51} (2007), no.~1, 83--98 (electronic). {\sf\scriptsize
+  MR2346188}
+
+\end{thebibliography}

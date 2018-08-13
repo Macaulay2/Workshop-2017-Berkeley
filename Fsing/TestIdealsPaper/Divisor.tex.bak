@@ -1,0 +1,153 @@
+\documentclass{amsart}   		% use "amsart" instead of "article" for AMSLaTex format
+\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ...
+%\geometry{landscape}                		% Activate for for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+								% Tex will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb, amsmath, amsthm, latexsym}
+\usepackage{tikz-cd}
+
+\theoremstyle{plain}
+
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem{theorem}[proposition]{Theorem}
+\newtheorem{definition}[proposition]{Definition}
+\newtheorem{lemma}[proposition]{Lemma}
+\newtheorem{corollary}[proposition]{Corollary}
+\newtheorem{nota}[proposition]{Notation}
+\newtheorem{rem}[proposition]{Remark}
+\newtheorem{example}[proposition]{Example}
+
+\DeclareMathOperator{\Span}{span}
+\DeclareMathOperator{\Ima}{Im}
+\DeclareMathOperator{\rank}{rank}
+
+%Things LaTex names by appearance, rather than meaning
+% By now, I've learned the standard LaTex names, but I remember they used to give me trouble, so here are some macros
+\newcommand{\isom}{\cong} 				%The isomorphism symbol
+\newcommand{\union}{\cup} 				% union
+\newcommand{\intersec}{\cap} 				% intersection
+\newcommand{\Union}{\bigcup} 			% big union
+\newcommand{\Intersec}{\bigcap}			% big intersection
+\newcommand{\dunion}{\sqcup}			% disjoint union
+\newcommand{\Dunion}{\bigsqcup}			% big disjoint union
+\newcommand{\rarr}{\rightarrow}			% right arrow
+\newcommand{\larr}{\leftarrow}				% left arrow
+\newcommand{\Rarr}{\Rightarrow}			
+\newcommand{\Larr}{\Leftarrow}
+\newcommand{\Lrarr}{\Longrightarrow}
+\newcommand{\Llarr}{\Longleftarrow}
+\newcommand{\wt}{\widetilde}
+% Sets
+\newcommand{\empset}{\varnothing}		% empty set
+\newcommand{\contd}{\subseteq}			% contained in
+\newcommand{\ncontd}{\nsubseteq}			% not contained in
+\newcommand{\scontd}{\subset}			% strictly contained in
+\newcommand{\contg}{\supseteq}			% containing with equality
+\newcommand{\ncontg}{\nsupseteq}			% not containing (with equality}
+\newcommand{\scong}{\supset}			% strictly containing
+\newcommand{\nin}{\notin}				% not in
+\newcommand{\set}[1]{ \{  #1 \} }			% a set
+\newcommand{\setm}[2]{ \{ \, #1 \mid #2 \, \} }	% a set with middle
+\renewcommand{\ker}{\text{Ker} \;}
+
+
+%Blackboard bold letters.
+\renewcommand{\AA}{\mathbb{A}}
+\newcommand{\BB}{\mathbb{B}}
+\newcommand{\CC}{\mathbb{C}}
+\newcommand{\DD}{\mathbb{D}}
+\newcommand{\EE}{\mathbb{E}}
+\newcommand{\FF}{\mathbb{F}}
+\newcommand{\GG}{\mathbb{G}}
+\newcommand{\HH}{\mathbb{H}}
+\newcommand{\II}{\mathbb{I}}
+\newcommand{\JJ}{\mathbb{J}}
+\newcommand{\KK}{\mathbb{K}}
+\newcommand{\LL}{\mathbb{L}}
+\newcommand{\MM}{\mathbb{M}}
+\newcommand{\NN}{\mathbb{N}}
+\newcommand{\OO}{\mathbb{O}}
+\newcommand{\PP}{\mathbb{P}}
+\newcommand{\QQ}{\mathbb{Q}}
+\newcommand{\RR}{\mathbb{R}}
+\renewcommand{\SS}{\mathbb{S}}
+\newcommand{\TT}{\mathbb{T}}
+\newcommand{\UU}{\mathbb{U}}
+\newcommand{\VV}{\mathbb{V}}
+\newcommand{\WW}{\mathbb{W}}
+\newcommand{\xx}{\mathbb{x}}
+\newcommand{\YY}{\mathbb{Y}}
+\newcommand{\ZZ}{\mathbb{Z}}
+
+%Calligraphic letters
+\newcommand{\cA}{\mathcal{A}}
+\newcommand{\cB}{\mathcal{B}}
+\newcommand{\cC}{\mathcal{C}}
+\newcommand{\cD}{\mathcal{D}}
+\newcommand{\cE}{\mathcal{E}}
+\newcommand{\cF}{\mathcal{F}}
+\newcommand{\cG}{\mathcal{G}}
+\newcommand{\cH}{\mathcal{H}}
+\newcommand{\cI}{\mathcal{I}}
+\newcommand{\cJ}{\mathcal{J}}
+\newcommand{\cK}{\mathcal{K}}
+\newcommand{\cL}{\mathcal{L}}
+\newcommand{\cM}{\mathcal{M}}
+\newcommand{\cN}{\mathcal{N}}
+\newcommand{\cO}{\mathcal{O}}
+\newcommand{\cP}{\mathcal{P}}
+\newcommand{\cQ}{\mathcal{Q}}
+\newcommand{\cR}{\mathcal{R}}
+\newcommand{\cS}{\mathcal{S}}
+\newcommand{\cT}{\mathcal{T}}
+\newcommand{\cU}{\mathcal{U}}
+\newcommand{\cV}{\mathcal{V}}
+\newcommand{\cW}{\mathcal{W}}
+\newcommand{\cx}{\mathcal{x}}
+\newcommand{\cY}{\mathcal{Y}}
+\newcommand{\cZ}{\mathcal{Z}}
+
+\title{Divisors and certain computations of its functorial properties}
+\author{Karl Schwede}
+\date{\today}
+\address{Department of Mathematics, Pennsylvania State University, State College, PA, 16802}
+\email{schwede@math.psu.edu}
+
+\author{Zhaoning Yang}
+\date{\today}							% Activate to display a given date or no date
+\address{Department of Mathematics, Pennsylvania State University, State College, PA, 16802}
+\email{zyy5054@psu.edu}
+
+
+
+
+\begin{document}
+
+\begin{abstract} \upshape
+\end{abstract}
+\maketitle
+
+
+\subsection*{Acknowledgement}
+
+
+
+\begin{thebibliography}{9}
+		\bibitem{KS}
+		Karl Schwede.
+		\emph{Generalized Divisors and Reflexive Sheaves}. http://www.personal.psu.edu/kes32/Notes/GeneralizedDivisors.pdf
+		\bibitem{RH1}
+		Robin Hartshrone.
+		\emph{Algebraic Geometry}.
+		Springer-Verlag, New York, 1997,
+		Graduate Text in Mathemaics, No. 52.
+		\bibitem{RH2}
+		Robin Hartshrone.
+		\emph{Generalized divisors on Gorenstein schemes},
+		Proceedings of Conference on Algebraic Geometry and Ring Theory in honor of Michael Artin, Part III (Antwerp, 1992), vol. 8, 1994, pp. 287Ð339. MR1291023 (95k:14008)
+\end{thebibliography}
+
+
+\end{document} 
