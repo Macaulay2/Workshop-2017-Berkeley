@@ -67,7 +67,7 @@ export{
     "DiagonalCheck", 
     "FinalCheck", 
     "fpt",   
-    "FPTApproxList",
+    "fptApproximation",
     "FrobeniusPower",
     "FrobeniusRoot",     
     "FTApproxList",

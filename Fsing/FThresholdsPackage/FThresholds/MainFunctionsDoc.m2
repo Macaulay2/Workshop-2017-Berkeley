@@ -20,14 +20,14 @@ doc ///
 
 doc ///
      Key
-     	 FPTApproxList
-	 (FPTApproxList,ZZ,Ideal)
-	 (FPTApproxList,ZZ,RingElement)
+     	 fptApproximation
+	 (fptApproximation,ZZ,Ideal)
+	 (fptApproximation,ZZ,RingElement)
      Headline
         Gives a list of nu_I(p^d)/p^d for d=0,...,e.
      Usage
-     	  FPTApproxList(e,I)
-	  FPTApproxList(e,f) 
+     	  fptApproximation(e,I)
+	  fptApproximation(e,f) 
      Inputs
          e:ZZ
      	 I:Ideal
