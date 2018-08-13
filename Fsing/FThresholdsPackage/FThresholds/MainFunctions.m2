@@ -255,19 +255,19 @@ FTApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 FTApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
    FTApproxList( e, ideal(f), J )
 
-critExpApproxList = method();
+criticalExponentApproximation = method();
 
-critExpApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
+criticalExponentApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
     if not isSubset( I, radical(J) ) then 
-        error "critExpApproxList: critical exponent undefined.";
+        error "criticalExponentApproximation: critical exponent undefined.";
     p := char ring I;
     mus := muList( e, I, J );
     apply( mus, 1..e, (n,k) -> n/p^k )
 )
 
-critExpApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
-    critExpApproxList( e, ideal(f), J )
+criticalExponentApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
+    criticalExponentApproximation( e, ideal(f), J )
 
 --Guesses the FPT of ff.  It returns a list of all numbers in 
 --the range suggested by nu(e1,ff) with maxDenom as the maximum denominator

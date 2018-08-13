@@ -63,14 +63,14 @@ doc ///
 
 doc ///
      Key
-     	 critExpApproxList
-	 (critExpApproxList,ZZ,Ideal,Ideal)
-	 (critExpApproxList,ZZ,RingElement,Ideal)
+     	 criticalExponentApproximation
+	 (criticalExponentApproximation,ZZ,Ideal,Ideal)
+	 (criticalExponentApproximation,ZZ,RingElement,Ideal)
      Headline
         Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
      Usage
-     	  critExpApproxList(e,I,J)
-	  critExpApproxList(e,f,J) 
+     	  criticalExponentApproximation(e,I,J)
+	  criticalExponentApproximation(e,f,J) 
      Inputs
          e:ZZ
      	 I:Ideal
