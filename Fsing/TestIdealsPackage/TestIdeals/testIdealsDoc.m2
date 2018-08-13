@@ -17,7 +17,7 @@ doc ///
         Text
             Suppose that $R$ is a ring such that $(p^e-1)K_R$ is linearly equivalent to zero (for example, if $R$ is $Q$-Gorenstein with index not divisible by $p$).  Then if we write $R = S/I$ where $S$ is a polynomial ring, we have that $I^{[p^e]} : I = u S + I^{[p^e]}$ for some $u \in S$.  By Fedder's criterion, this element $u$ represents the generator of the $R^{1/p^e}$-module $Hom(R^{1/p^e}, R)$.  For example if $I = (f)$ is principal, then $u = f^{p^e-1}$ works.
         Text
-            This function produces the element $f$ described above.  If do not specify an integer e, it assumes e = 1.
+            This function produces the element $f$ described above.  If the user does not specify an integer e, it assumes e = 1.
         Example
             S = ZZ/3[x,y,z];
             f = x^2*y - z^2;
@@ -26,56 +26,33 @@ doc ///
             u = QGorensteinGenerator(1, R)
             u%I^3 == f^2%I^3
         Text
-            If Macaulay2 does not recognize that $I^{[p^e]} : I / I^{[p^e]}$ is principal, an error is thrown.  Note in the nongraded case, Macaulay2 is not guaranteed to do this simplification.
+            If Macaulay2 does not recognize that $I^{[p^e]} : I / I^{[p^e]}$ is principal, an error is thrown, which will also happen if R is not Q-Gorenstein of the appropriate index.  Note in the nongraded case, Macaulay2 is not guaranteed to find minimal generators of principally generated modules.
 ///
 
 doc ///
     Key
         testElement
         (testElement, Ring)
+        [testElement, AssumeDomain]
     Headline
         finds a test element of a ring
     Usage
         testElement(R)
     Inputs
         R: Ring
+        AssumeDomain => Boolean
     Outputs
         :RingElement
     Description
         Text
-            Given $R = S/I$ where $S$ is a polynomial ring, this finds an element of $S$ that restricts to a test element of $R$.  This does this by finding a minor of the Jacobian whose determinant is not in any minimal prime of the defining ideal of $R$.  It looks at random minors until one is found instead of computing all of them.  Thus it will not always produce the same answer.
+            Given $R = S/I$ where $S$ is a polynomial ring, this finds an element of $S$ that restricts to a test element of $R$.  This does this by finding a minor of the Jacobian whose determinant is not in any minimal prime of the defining ideal of $R$.  This funtion considers random minors until one is found, instead of computing all minors.  Thus, repeated calls will not always produce the same answer.
         Example
             R = ZZ/5[x,y,z]/(x^3+y^3+z^3);
             testElement(R)
             testElement(R)
             testElement(R)
-///
-
-doc ///
-    Key
-        [testElement, AssumeDomain]
-    Headline
-        assumes the ring is a domain when finding a test element
-    Description
         Text
-            If {\tt AssumeDomain => true} then testElement doesn't have to compute the minimal primes of the ring.  This can result in a substantial speedup in some cases.  The default value is {\tt false}.
-    SeeAlso
-        testElement
-///
-
-doc ///
-    Key
-        [testIdeal, AssumeDomain]
-        [testModule, AssumeDomain]
-        [isFregular, AssumeDomain]
-        [isFrational, AssumeDomain]
-    Headline
-        assume the ring is a domain
-    Description
-        Text
-            Set {\tt AssumeDomain => true} during the step of finding a test element.  The default value is {\tt false}.
-    SeeAlso
-        [testElement, AssumeDomain]
+            If {\tt AssumeDomain => true} then testElement does not to compute the minimal primes of the ring.  This can result in a substantial speedup in some cases.  The default value is {\tt false}.
 ///
 
 doc ///
@@ -87,6 +64,29 @@ doc ///
 
 doc ///
     Key
+        MaxCartierIndex
+    Headline
+        an option to specify the maximum number to consider when computing the Cartier index of a divisor
+    Description
+        Text
+                Some functions need to find the smallest value $N$ such that $N$ times a divisor (usually the canonical divisor) is Cartier. By specifying this value, the user controls what the maximal possible Cartier index to consider is.
+///   
+
+
+doc ///
+    Key
+        QGorensteinIndex
+    Headline
+        an option to specify the index of the canonical divisor, if known
+    Description
+        Text
+             When working in a $Q$-Gorenstein ring frequently we must find an $N$ such that $N * K_R$ is Cartier. This option lets the user skip this search if this integer $N$ is already known by setting {\tt QGorensteinIndex => N}.
+///   
+
+
+
+doc ///
+    Key
         testIdeal
         (testIdeal, Ring)
         (testIdeal, ZZ, RingElement)
@@ -95,6 +95,10 @@ doc ///
         (testIdeal, QQ, RingElement, Ring)
         (testIdeal, List, List)
         (testIdeal, List, List, Ring)
+        [testIdeal, AssumeDomain]
+        [testIdeal, FrobeniusRootStrategy]
+        [testIdeal, MaxCartierIndex]
+        [testIdeal, QGorensteinIndex]
     Headline
         computes the test ideal of f^t in a Q-Gorenstein ring
     Usage
@@ -109,6 +113,14 @@ doc ///
         f: RingElement
         Lexp: List
         Lelts: List
+        AssumeDomain => Boolean
+            assume the ring is an integral domain
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
+        MaxCartierIndex => ZZ
+            sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
+        QGorensteinIndex => ZZ
+            specifies the Q-Gorenstein index of the ring      
     Outputs
         :Ideal
     Description
@@ -160,67 +172,12 @@ doc ///
             time testIdeal(1/60, x^45*y^40*(x+y)^36)
         Text
             As above, frequently passing a list will be faster (as opposed to finding a common denominator and passing a single element) since the {\tt testIdeal} can do things in a more intelligent way for such a list.
-///
-
-    
-
-doc ///
-    Key
-        [testIdeal, MaxCartierIndex]
-        [isFregular, MaxCartierIndex]
-    Headline
-        sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
-    Usage
-        testIdeal(..., MaxCartierIndex=>N)
-    Inputs
-        N: ZZ
-    Outputs
-        :Ideal
-    Description
         Text
-            When working in a Q-Gorenstein ring, and computing the test ideal or whether a pair is F-regular, we find an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass it a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option {\tt QGorensteinIndex}.
-    SeeAlso
-        [testIdeal, QGorensteinIndex]
+            The option {\tt AssumeDomain => true} is used when finding a test element.  The default value is {\tt false}.  The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
+        Text
+            When working in a Q-Gorenstein ring this function finds an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass this function a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option {\tt QGorensteinIndex}.  In particular, specifying the {\tt QGorensteinIndex} will let the user skip the search for the value $N$.
 ///
 
-doc ///
-    Key
-        [testIdeal, QGorensteinIndex]
-        [isFregular, QGorensteinIndex]
-    Headline
-        specifies the Q-Gorenstein index of the ring
-    Usage
-        testIdeal(..., QGorenstein=>N)
-    Inputs
-        N: ZZ
-    Outputs
-        :Ideal
-    Description
-        Text
-            When working in a Q-Gorenstein ring, and computing the test ideal or whether a pair is F-regular, we find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known.  Specifying a value $> 0$ will mean that {\tt MaxCartierIndex} is ignored.
-    SeeAlso
-        [testIdeal, MaxCartierIndex]
-///
-
-doc ///
-    Key
-        QGorensteinIndex
-    Headline
-        an option used to specify the Q-Gorenstein index of the ring
-    Description
-        Text
-            When working in a Q-Gorenstein ring frequently we must find an $N$ such that $N * K_R$ is Cartier.  This option lets the user skip this search if this integer $N$ is already known by setting QGorensteinIndex => N.
-///
-
-doc ///
-    Key
-        MaxCartierIndex
-    Headline
-        an option used to specify the maximum possible Cartier index of a divisor
-    Description
-        Text
-            Some functions need to find the smallest value $N$ such that $N$ times a divisor is Cartier.  By specifying this value, the user controls what the maximal possible Cartier index to consider is.  
-///
 
 
 doc ///
@@ -230,6 +187,11 @@ doc ///
         (isFregular, ZZ, RingElement)
         (isFregular, QQ, RingElement)
         (isFregular, List, List)
+        [isFregular, AssumeDomain]
+        [isFregular, FrobeniusRootStrategy]
+        [isFregular, MaxCartierIndex]
+        [isFregular, QGorensteinIndex]
+        [isFregular, IsLocal]
     Headline
         whether a ring or pair is strongly F-regular
     Usage
@@ -243,6 +205,16 @@ doc ///
         f: RingElement
         Lexp: List
         Lelts: List
+        AssumeDomain => Boolean
+            assume the ring is an integral domain
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
+        MaxCartierIndex => ZZ
+            sets the maximum Gorenstein index to search for when working with a Q-Gorenstein ambient ring
+        QGorensteinIndex => ZZ
+            specifies the Q-Gorenstein index of the ring
+        IsLocal => Boolean
+            specifies whether to check F-regularity just at the origin
     Outputs
         :Boolean
     Description
@@ -263,22 +235,8 @@ doc ///
             isFregular(5/6, f)
             isFregular(4/5, f)
             isFregular(4/5-1/100000, f)
-///
-
-doc ///
-    Key
-        [isFregular, IsLocal]
-    Headline
-        controls whether F-regularity is checked at the origin or everywhere
-    Usage
-        isFregular(..., IsLocal=>b)
-    Inputs
-        b: Boolean
-    Outputs
-        :Boolean
-    Description
         Text
-            When checking whether a ring or pair is strongly F-regular, the default option is to check this everywhere.  If you set IsLocal=>true (default is false), it will only check this at the origin.
+            When checking whether a ring or pair is strongly F-regular, the option IsLocal determines if this is checked at the origin or everywhere (default is {\tt false}, which corresponds to everywhere).  If you set {\tt IsLocal=>true}, it will only check this at the origin.
         Example
             R = ZZ/7[x,y,z]/ideal((x-1)^3+(y-2)^3+z^3);
             isFregular(R)
@@ -287,7 +245,7 @@ doc ///
             isFregular(S)
             isFregular(S, IsLocal=>true)
         Text
-            Here is an example of a pair.
+            Here is an example of {\tt IsLocal} behavior with a pair.
         Example
             R = ZZ/13[x,y];
             f = (y-2)^2 - (x-3)^3;
@@ -296,13 +254,19 @@ doc ///
             g = y^2 - x^3;
             isFregular(5/6, g)
             isFregular(5/6, g, IsLocal=>true)
-///    
+        Text
+            The option {\tt AssumeDomain => true} is used when finding a test element.  The default value is {\tt false}.  The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
+        Text
+            When working in a Q-Gorenstein ring this function finds an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass this function a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option {\tt QGorensteinIndex}.  In particular, specifying the {\tt QGorensteinIndex} will let the user skip the search for the value $N$.
+///
 
 doc ///
     Key
         isFpure
         (isFpure, Ring)
-        (isFpure, Ideal)        
+        (isFpure, Ideal)
+        [isFpure, IsLocal]  
+        [isFpure, FrobeniusRootStrategy]      
     Headline
         whether a ring is F-pure
     Usage
@@ -311,6 +275,10 @@ doc ///
     Inputs
         R: Ring
         I: Ideal
+        IsLocal => Boolean
+            whether the F-purity is checked at the origin or everwhere
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :Boolean
     Description
@@ -331,22 +299,8 @@ doc ///
             S = ZZ/2[x,y,z];
             isFpure(ideal(y^2-x^3))
             isFpure(ideal(z^2-x*y*z+x*y^2+x^2*y))
-///
-
-doc ///
-    Key
-        [isFpure, IsLocal]
-    Headline
-        controls whether F-purity is checked at the origin or everywhere
-    Usage
-        isFpure(..., IsLocal=>b)
-    Inputs
-        b: Boolean
-    Outputs
-        :Boolean
-    Description
         Text
-            When checking whether a ring F-pure, the default option is to check this everywhere.  If you set {\tt IsLocal=>true} (default is {\tt false}), it will only check this at the origin.  
+            The option {\tt IsLocal} controls whether F-purity is checked at the origin or everywhere.  If you set {\tt IsLocal=>true} (default is {\tt false}), it will only check this at the origin.  
         Example
             R = ZZ/5[x,y,z]/ideal((x-1)^3+(y-2)^3+z^3);
             isFpure(R)
@@ -355,5 +309,9 @@ doc ///
             isFpure(S)
             isFpure(S, IsLocal=>true)
         Text
-            Note there is a difference in the computation done here, and checking it everywhere can sometimes be faster than checking the origin.  If {\tt IsLocal=>false} then the function computes @TO frobeniusRoot@ applied to $I^{[p]} : I$, if {\tt IsLocal=>true} then the function checks wheter or not $I^{[p^e]} : I$ is contained in $m^{[p^e]}$ where $m$ is the maximal ideal generated by the variables.
-///    
+            Note there is a difference in the strategy for the local or non-local computations.  In fact, checking it everywhere can sometimes be faster than checking the origin.  If {\tt IsLocal=>false} then the function computes @TO frobeniusRoot@ applied to $I^{[p]} : I$, if {\tt IsLocal=>true} then the function checks wheter or not $I^{[p^e]} : I$ is contained in $m^{[p^e]}$ where $m$ is the maximal ideal generated by the variables.
+        Text
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
+///
+
+

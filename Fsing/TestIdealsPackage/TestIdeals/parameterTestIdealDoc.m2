@@ -100,7 +100,7 @@ doc ///
         AssumeDomain => Boolean
             assume whether the ring passed is an integral domain
         FrobeniusRootStrategy => Symbol
-            choose strategies for internal frobeniusRoot calls
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :Sequence
     Description
@@ -162,7 +162,7 @@ doc ///
     Inputs
         R:Ring
         FrobeniusRootStrategy=>Symbol
-            choose strategies for internal frobeniusRoot calls
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :Ideal
     Description
@@ -235,6 +235,8 @@ doc ///
         (isFrational, Ring)
         [isFrational, IsLocal]
         [isFrational, AssumeCM]
+        [isFrational, AssumeDomain]
+        [isFrational, FrobeniusRootStrategy]
     Headline
         whether a ring is F-rational
     Usage
@@ -245,6 +247,10 @@ doc ///
             check F-rationality only at the origin and call the isCM command from the depth package
         AssumeCM => Boolean
             assume whether the ring is Cohen-Macaulay
+        AssumeDomain => Boolean
+            assume whether the ring is an integral domain
+        FrobeniusRootStrategy=>Symbol
+            choose the strategy for internal frobeniusRoot calls 
     Outputs
         :Boolean
     Description
@@ -269,6 +275,8 @@ doc ///
              I = minors(2, M);
              R = S/I;
              isFrational(R)
+        Text
+            The option {\tt AssumeDomain} is used when computing a test element.  The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
     Caveat
         Warning, this function assumes that Spec R is connected.  Like {\tt isCohenMacaulay}, if you pass it a non-equidimensional F-rational ring (for example, if Spec R has two connected components of different dimensions), this function will return false.  
 ///
