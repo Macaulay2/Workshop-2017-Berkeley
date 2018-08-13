@@ -63,7 +63,7 @@ export{
     "BinaryRecursive",
     "BinomialCheck",
     "ComputePreviousNus",
-    "critExpApproxList",
+    "criticalExponentApproximation",
     "DiagonalCheck", 
     "FinalCheck", 
     "fpt",   
