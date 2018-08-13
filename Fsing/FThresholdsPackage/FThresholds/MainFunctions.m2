@@ -15,7 +15,7 @@
 ----------------------------------------------------------------------------------
 -- FThreshold Approximations
 
--- Main functions: fptApproximation, ftApproximation, FTHatApproxList
+-- Main functions: fptApproximation, ftApproximation, criticalExponentApproximation
 
 ----------------------------------------------------------------------------------
 -- FThreshold Estimates
