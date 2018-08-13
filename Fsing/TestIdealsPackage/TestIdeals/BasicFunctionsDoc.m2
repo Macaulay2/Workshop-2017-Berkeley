@@ -204,6 +204,7 @@ doc ///
         decomposeFraction
         (decomposeFraction, ZZ, QQ)
         (decomposeFraction, ZZ, ZZ)
+        [decomposeFraction, NoZeroC]
     Headline
         decompose a rational number into a/(p^b(p^c-1))
     Usage
@@ -214,6 +215,8 @@ doc ///
             a prime
         t:QQ
         n:ZZ		
+        NoZeroC => Boolean
+            forces the returned c to not be zero
     Outputs
         L:List
     Description
@@ -225,27 +228,7 @@ doc ///
             decomposeFraction( 3, 4/45 )
             4/45 == 64/( 3^2 * ( 3^4 -1 ) )
         Text
-            If the denominator is a pure power of $p$, then $t = a/p^b$ and the 
-            function returns {\tt c = 0}. See the option @TO NoZeroC@ to avoid this.
-        Example
-            decomposeFraction( 3, 4/27 )
-///
-
-doc ///
-    Key
-        [decomposeFraction, NoZeroC]
-    Headline
-        decompose a rational number into a/p^b(p^c-1) and force c not equal to zero
-    Usage
-        L = decomposeFraction(..., NoZeroC => b)
-    Inputs
-        b:Boolean
-    Outputs
-        L:List
-    Description
-        Text
-            We are writing a rational number as $a/(p^b(p^c-1))$.
-            If our number is $a/p^b$ then there is no valid value of $c$ and the 
+            If our number is of the form $a/p^b$ then there is no valid value of $c$ and the 
             function returns $c = 0$. Setting the option {\tt NoZeroC => true} 
             forces the third entry of the output list to be nonzero, even if
             that means increasing the first entry.
@@ -253,7 +236,8 @@ doc ///
             decomposeFraction( 3, 4/27)
             decomposeFraction( 3, 4/27, NoZeroC => true )
             4/27 == 8/( 3^3 * ( 3 - 1 ) )
-///   
+///
+
 
 doc ///
     Key
