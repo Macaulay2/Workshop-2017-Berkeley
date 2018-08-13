@@ -2,12 +2,15 @@ doc ///
     Key
         compatibleIdeals 
         (compatibleIdeals, RingElement)
+        [compatibleIdeals, FrobeniusRootStrategy]
     Headline
         finds all ideals compatibly compatible with a Frobenius near-splitting ideals
     Usage
         compatibleIdeals (u)
     Inputs
         u:RingElement
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :List
     Description
@@ -42,6 +45,8 @@ doc ///
             u=x_{41}*(x_{31}*x_{42}-x_{41}*x_{32})*(x_{41}-x_{21}*x_{42}-x_{31}*x_{43}+x_{21}*x_{32}*x_{43});
             C=compatibleIdeals (u);
             apply(C, print);
+        Text
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
 ///
 
 

@@ -17,6 +17,8 @@ doc ///
         (ascendIdeal, ZZ, RingElement, Ideal)
         (ascendIdeal, ZZ, ZZ, RingElement, Ideal)
         (ascendIdeal, ZZ, BasicList, BasicList, Ideal)
+        [ascendIdeal, AscentCount]
+        [ascendIdeal, FrobeniusRootStrategy]
     Headline
         finds the smallest ideal containing a given ideal which is compatible with a given Frobenius near-splitting
     Usage
@@ -30,13 +32,16 @@ doc ///
         a:ZZ
         expList:BasicList
         hList:BasicList
+        AscentCount => ZZ
+            tell the function to return how many times it took before the ascent of the ideal stabilized
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls
     Outputs
         :Ideal
     Description
         Text
             Let $\phi$ be the $p^{-e}$ linear map obtained by multiplying $e$-th Frobenius trace on a polynomial ring by the polynomial $h$  (or $h^a$ if $a$ is given).  
 	    This function finds the smallest $\phi$-stable ideal containing $J$ which is the stable value of ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), \ldots$.  
-	    ---For instance, this can be used to compute the test ideal.  
 	    Note if the ideal $J$ is not an ideal in a polynomial ring, the function will do the computation with $e$-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
         Example
             S = ZZ/5[x,y,z];
@@ -56,22 +61,7 @@ doc ///
         Text
             More generally, if $h$ is a product of powers, $h = h_1^{a_1}\cdots h_n^{a_n}$, then you should pass {\tt ascendIdeal} the lists {\tt expList=\{a_1,\ldots,a_n\}} and {\tt \{h_1,\ldots,h_n\}} of exponents and bases.
         Text
-            This method is described in M. Katzman's "Parameter-test-ideals of Cohen–Macaulay rings" (Compositio Mathematica 144 (4), 933-948) under the name "star-closure".  
-///
-
-doc ///
-    Key
-        [ascendIdeal, AscentCount]
-    Headline
-        return how many times it took before the ascent of the ideal stabilized
-    Usage
-        ascendIdeal(..., AscentCount=>b)
-    Inputs
-        b:Boolean
-    Outputs
-        :Ideal
-        :List
-    Description
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
         Text
             By default (when {\tt AscentCount => true}), {\tt ascendIdeal} just returns the stable (ascended) ideal.  If instead you set {\tt AscentCount=>true} then it returns a list.  The first value is the stable ideal.  The second is how many steps it took to reach that ideal.
         Example
@@ -80,6 +70,8 @@ doc ///
             f = y^2+x^3-z^5;
             ascendIdeal(1, f^4, J)
             ascendIdeal(1, f^4, J, AscentCount=>true)
+        Text
+            This method is described in M. Katzman's "Parameter-test-ideals of Cohen–Macaulay rings" (Compositio Mathematica 144 (4), 933-948) under the name "star-closure".  
 ///
 
 doc ///
@@ -103,6 +95,7 @@ doc ///
         (frobeniusRoot, ZZ, ZZ, Ideal)
         (frobeniusRoot, ZZ, List, List, Ideal)
         (frobeniusRoot, ZZ, Matrix)
+        [frobeniusRoot, FrobeniusRootStrategy]
     Headline
         computes I^[1/p^e] in a polynomial ring over a perfect field
     Usage
@@ -129,6 +122,8 @@ doc ///
         m:ZZ
             the exponent you are raising {\tt I} to
         A:Matrix
+        FrobeniusRootStrategy => Symbol
+            control the strategy for this function
     Outputs
         :Ideal
     Description
@@ -150,8 +145,10 @@ doc ///
             frobeniusRoot(1, {4,5,6}, {I1, I2, I3})
         Text
             The above example computes the ideal {\tt (I1^4 I2^5 I3^6)^{[1/p]}}. For legacy reasons, you can specify the last ideal in your list using {\tt frobeniusRoot(e,exponentList,idealList,I)}. This last ideal is just raised to the first power. 
-
+        Text
             You can also call {\tt frobeniusRoot(e,a,f)}. This computes the $e$th root of the principal ideal $(f^a)$. Calling {\tt frobeniusRoot(e,m,I)} computes the $e$th root of the ideal $I^m$, and calling {\tt frobeniusRoot(e,a,f,I)} computes the eth root of the product $f^a I$. Finally, you can also compute the $p^e$-th root of a matrix $A$ by calling {\tt frobeniusRoot(e,A)}.
+        Text
+            There are two valid inputs for the option {\tt FrobeniusRootStrategy}, namely {\tt Substitution} and {\tt MonomialBasis}.  In the end, for each generator $f$ of an ideal $I$, we are simply writing $f = \sum a_i^{p^e} m_i$ where $m$ is a monomial all of whose exponents are $< p^e$, then all the possible $a_i$ generate the {\tt frobeniusRoot}. {\tt Substitution} computes this by doing a Grobner basis computation in a ring with twice as many variables. {\tt MonomialBasis} does this more directly and naively.  
     SeeAlso
         frobenius
         frobeniusPower
@@ -204,52 +201,9 @@ doc ///
 --///
 --*-
 
-doc ///
-    Key
-        [HSLGModule, FrobeniusRootStrategy]
-        [isFinjective, FrobeniusRootStrategy]
-        [ascendIdeal, FrobeniusRootStrategy]  
-        [frobenius, FrobeniusRootStrategy]
-        [frobeniusPower, FrobeniusRootStrategy]  
-        [compatibleIdeals, FrobeniusRootStrategy]
-    Headline
-        controls the strategy for computing the Frobenius root of an ideal within other call
-    Usage
-        testIdeal(..., FrobeniusRootStrategy=>S)
-        isFregular(..., FrobeniusRootStrategy=>S)
-        HSLGModule(..., FrobeniusRootStrategy=>S)        
-        isFpure(..., FrobeniusRootStrategy=>S)
-        isFinjective(..., FrobeniusRootStrategy=>S)        
-        ascendIdeal(..., FrobeniusRootStrategy=>S)
-        testModule(..., FrobeniusRootStrategy=>S)
-        frobenius(..., FrobeniusRootStrategy=>S)
-        frobeniusPower(..., FrobeniusRootStrategy=>S)
-        parameterTestIdeal(..., FrobeniusRootStrategy=>S)
-        compatibleIdeals(..., FrobeniusRootStrategy=>S)
-    Inputs
-        S: Symbol
-    Description
-        Text
-            Valid options are {\tt Substitution} and {\tt MonomialBasis}.  These options will be passed in various calls to @TO frobeniusRoot@.
-    SeeAlso
-        [frobeniusRoot, FrobeniusRootStrategy]
-///
 
-doc ///
-    Key
-        [frobeniusRoot, FrobeniusRootStrategy]
-    Headline
-        controls what strategy Frobenius root uses.        
-    Usage
-        frobeniusRoot(..., FrobeniusRootStrategy=>S)
-    Inputs
-        S: Symbol
-    Outputs
-        :Ideal
-    Description
-        Text
-            There are two valid inputs for {\tt FrobeniusRootStrategy}, namely {\tt Substitution} and {\tt MonomialBasis}.  In the end, for each generator $f$ of an ideal $I$, we are simply writing $f = \sum a_i^{p^e} m_i$ where $m$ is a monomial all of whose exponents are $< p^e$, then all the possible $a_i$ generate the {\tt frobeniusRoot}. {\tt Substitution} computes this by doing a Grobner basis computation in a ring with twice as many variables. {\tt MonomialBasis} does this more directly and naively.  There does not appear to be a single case where one is much faster than the other.
-///    
+
+ 
 
 doc ///
     Key

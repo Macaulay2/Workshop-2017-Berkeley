@@ -40,6 +40,7 @@ doc ///
 doc ///
     Key
         frobenius
+        [frobenius, FrobeniusRootStrategy]
     Headline
         computes Frobenius powers of ideals and matrices
     Usage
@@ -55,6 +56,8 @@ doc ///
             in a ring of positive characteristic $p > 0$
         M:Matrix
             with entries in a ring of positive characteristic $p > 0$
+        FrobeniusRootStrategy => Boolean
+            choose the strategy for internal frobeniusRoot calls            
     Outputs
         :Ideal
 	:Matrix
@@ -102,6 +105,8 @@ doc ///
         frobeniusPower
         ( frobeniusPower, ZZ, Ideal )
         ( frobeniusPower, QQ, Ideal )
+        [frobeniusPower, FrobeniusPowerStrategy]
+        [frobeniusPower, FrobeniusRootStrategy]
     Headline
         computes the (generalized) Frobenius power of an ideal
     Usage
@@ -114,6 +119,10 @@ doc ///
             nonnegative
         I:Ideal
             in a ring of characteristic $p > 0$
+        FrobeniusPowerStrategy => Symbol
+            control the strategy for frobeniusPower
+        FrobeniusRootStrategy => Symbol
+            choose the strategy for internal frobeniusRoot calls    
     Outputs
         :Ideal
     Description
@@ -159,27 +168,13 @@ doc ///
             expon = e -> ceiling( p^e*t )/p^e; -- a sequence converging to t from above
             scan( 5, i -> print frobeniusPower(expon(i),I) )
             frobeniusPower(t,I)
+        Text
+            The option {\tt FrobneiusPowerStrategy} controls the strategy for computing the generalized Frobenius power $I^{[t]}$. The two valid options are {\tt Safe} and {\tt Naive}, and the default strategy is {\tt Naive}.
+        Text
+            The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.  
     SeeAlso
         frobenius
         frobeniusRoot
-///
-
-doc ///
-    Key
-        [frobeniusPower, FrobeniusPowerStrategy]
-    Headline
-        control strategy for frobeniusPower
-    Usage
-        frobeniusPower(..., FrobeniusPowerStrategy=>S)
-    Inputs
-        S:Symbol
-    Outputs
-        :Ideal
-    Description
-        Text
-            Controls the strategy for computing the generalized Frobenius power 
-            $I^{[t]}$. The two valid options are {\tt Safe} and {\tt Naive}, and
-            the default strategy is {\tt Naive}.
 ///
 
 doc ///
