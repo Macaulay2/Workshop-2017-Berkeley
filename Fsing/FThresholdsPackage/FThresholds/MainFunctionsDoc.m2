@@ -20,14 +20,14 @@ doc ///
 
 doc ///
      Key
-     	 FPTApproxList
-	 (FPTApproxList,ZZ,Ideal)
-	 (FPTApproxList,ZZ,RingElement)
+     	 fptApproximation
+	 (fptApproximation,ZZ,Ideal)
+	 (fptApproximation,ZZ,RingElement)
      Headline
         Gives a list of nu_I(p^d)/p^d for d=0,...,e.
      Usage
-     	  FPTApproxList(e,I)
-	  FPTApproxList(e,f) 
+     	  fptApproximation(e,I)
+	  fptApproximation(e,f) 
      Inputs
          e:ZZ
      	 I:Ideal
@@ -41,14 +41,14 @@ doc ///
 
 doc ///
      Key
-     	 FTApproxList
-	 (FTApproxList,ZZ,Ideal,Ideal)
-	 (FTApproxList,ZZ,RingElement,Ideal)
+     	 ftApproximation
+	 (ftApproximation,ZZ,Ideal,Ideal)
+	 (ftApproximation,ZZ,RingElement,Ideal)
      Headline
         Gives a list of nu_I^J(p^d)/p^d for d=0,...,e.
      Usage
-     	  FTApproxList(e,I,J)
-	  FTApproxList(e,f,J) 
+     	  ftApproximation(e,I,J)
+	  ftApproximation(e,f,J) 
      Inputs
          e:ZZ
      	 I:Ideal
@@ -63,14 +63,14 @@ doc ///
 
 doc ///
      Key
-     	 critExpApproxList
-	 (critExpApproxList,ZZ,Ideal,Ideal)
-	 (critExpApproxList,ZZ,RingElement,Ideal)
+     	 criticalExponentApproximation
+	 (criticalExponentApproximation,ZZ,Ideal,Ideal)
+	 (criticalExponentApproximation,ZZ,RingElement,Ideal)
      Headline
         Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
      Usage
-     	  critExpApproxList(e,I,J)
-	  critExpApproxList(e,f,J) 
+     	  criticalExponentApproximation(e,I,J)
+	  criticalExponentApproximation(e,f,J) 
      Inputs
          e:ZZ
      	 I:Ideal

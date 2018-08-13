@@ -15,7 +15,7 @@
 ----------------------------------------------------------------------------------
 -- FThreshold Approximations
 
--- Main functions: FPTApproxList, FTApproxList, FTHatApproxList
+-- Main functions: fptApproximation, ftApproximation, criticalExponentApproximation
 
 ----------------------------------------------------------------------------------
 -- FThreshold Estimates
@@ -25,12 +25,12 @@
 ----------------------------------------------------------------------------------
 -- FPT/F-Jumping number check
 
--- Main functions: isFPTPoly, isFJumpingNumberPoly
+-- Main functions: isFPT, isFJumpingNumber
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ----------------------------------------------------------------------------------
--- Functions for computing \(nu_I)^J(p^e), \(nu_f)^J(p^e)
+-- Functions for computing (nu_I)^J(p^e), (nu_f)^J(p^e)
 ----------------------------------------------------------------------------------
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -228,23 +228,23 @@ mu = optIdeal >> o -> x -> nu( x, o, Test => FrobeniusPower )
 
 --Approximates the F-pure Threshold
 --Gives a list of nu_I(p^d)/p^d for d=1,...,e
-FPTApproxList = method();
+fptApproximation = method();
 
-FPTApproxList ( ZZ, Ideal ) := (e, I) ->
+fptApproximation ( ZZ, Ideal ) := (e, I) ->
 (
      p := char ring I;
      nus := nuList(e,I);
      apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
-FPTApproxList ( ZZ, RingElement ) := ( e, f ) -> FPTApproxList( e, ideal(f) )
+fptApproximation ( ZZ, RingElement ) := ( e, f ) -> fptApproximation( e, ideal(f) )
 
 --Approximates the F-Threshold with respect to an ideal J
 --More specifically, this gives a list of nu_I^J(p^d)/p^d for d=1,...,e
 
-FTApproxList = method();
+ftApproximation = method();
 
-FTApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
+ftApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
     if not isSubset( I, radical(J) ) then error "F-threshold undefined.";
     p := char ring I;
@@ -252,22 +252,22 @@ FTApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
     apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
-FTApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
-   FTApproxList( e, ideal(f), J )
+ftApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
+   fptApproximation( e, ideal(f), J )
 
-critExpApproxList = method();
+criticalExponentApproximation = method();
 
-critExpApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
+criticalExponentApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
     if not isSubset( I, radical(J) ) then 
-        error "critExpApproxList: critical exponent undefined.";
+        error "criticalExponentApproximation: critical exponent undefined.";
     p := char ring I;
     mus := muList( e, I, J );
     apply( mus, 1..e, (n,k) -> n/p^k )
 )
 
-critExpApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
-    critExpApproxList( e, ideal(f), J )
+criticalExponentApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
+    criticalExponentApproximation( e, ideal(f), J )
 
 --Guesses the FPT of ff.  It returns a list of all numbers in 
 --the range suggested by nu(e1,ff) with maxDenom as the maximum denominator
@@ -405,7 +405,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
       	else if o.Verbose then print "\nnu/(p^e-1) is not the fpt ...";
 	
         --check to see if (nu+1)/p^e is the FPT
-	if isFPTPoly( (n+1)/p^e, f, Origin => true ) then 
+	if isFPT( (n+1)/p^e, f, Origin => true ) then 
 	(
 	    if o.Verbose then print "\nFound answer via (nu+1)/(p^e)."; 
 	    return (n+1)/p^e
@@ -484,12 +484,12 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 ---------------------------------------------------------------------------------
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
---isFPTPoly, determines if a given rational number is the FPT of a pair in a 
+--isFPT, determines if a given rational number is the FPT of a pair in a 
 -- polynomial ring. If Origin is specified, it only checks at the origin. 
 
-isFPTPoly = method( Options => {Verbose=> false,Origin=>false} )
+isFPT = method( Options => {Verbose=> false,Origin=>false} )
 
-isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) -> 
+isFPT ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
 	if o.Origin then org := maxIdeal f;
@@ -528,17 +528,17 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	returnValue
 )
 
-isFPTPoly ( ZZ, RingElement ) := o -> ( t, f ) -> isFPTPoly( t/1, f, o )
+isFPT ( ZZ, RingElement ) := o -> ( t, f ) -> isFPT( t/1, f, o )
 
--- isFJumpingNumberPoly determines if a given rational number is an 
+-- isFJumpingNumber determines if a given rational number is an 
 -- F-jumping number
 --***************************************************************************
 --This needs to be speeded up, like the above function
 --***************************************************************************
 
-isFJumpingNumberPoly = method( Options => {Verbose=> false} )
+isFJumpingNumber = method( Options => {Verbose=> false} )
 
-isFJumpingNumberPoly ( QQ, RingElement ) := o -> ( t, f ) -> 
+isFJumpingNumber ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
 	--this writes t = a/(p^b(p^c-1))

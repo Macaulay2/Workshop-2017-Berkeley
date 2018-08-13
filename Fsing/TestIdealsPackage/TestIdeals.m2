@@ -87,7 +87,7 @@ export{
     "NoZeroC", --option to force certain behavior from a function
         
 --ethRootFunctions (EthRoots.m2)
-    "ascendIdeal", --Karl (still needs more tests / documentation)
+    "ascendIdeal", 
     "AscentCount",
     "FrobeniusRootStrategy",  
     "frobeniusRoot",  
