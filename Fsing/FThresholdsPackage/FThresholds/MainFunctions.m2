@@ -478,40 +478,44 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
     p := char R;
     --this writes t = a/(p^b(p^c-1))
     (a,b,c) := toSequence decomposeFraction( p, t );
-    mySigma := ideal f;
-    myTau := ideal 1_R;
-    myA := a;
-    myA2 := 0;
 
-    if c != 0 then 
-    (
-	myA = floor( a / (p^c - 1) );
-	myTau = testIdeal( fracPart( a/(p^c-1) ), f )
-    );
-	
-    if o.Verbose then print "\nHigher tau Computed";
-
-    --first we check whether this is even a jumping number.
+    -- sigma
+    local a1;
+    local Sigma;
     if c == 0 then 
     (
-	myA2 = a-1;
-	mySigma = sigma( f, p-1, 1 )
+	a1 = a-1;
+	Sigma = sigma( f, p-1, 1 )
     )
     else 
     (
-	myA2 = floor( (a-1)/(p^c-1) );
-	mySigma = sigma( f, ( (a-1)%(p^c-1) ) + 1, c )
+	a1 = floor( (a-1)/(p^c-1) );
+	Sigma = sigma( f, ( (a-1)%(p^c-1) ) + 1, c )
     );
-    if o.Verbose then print "\nHigher sigma Computed";
+    if o.Verbose then print "\nSigma Computed";
 	
-    if isSubset( ideal 1_R, frobeniusRoot( b, myA2, f , mySigma ) ) then 
+    if not isSubset( ideal 1_R, frobeniusRoot( b, a1, f , Sigma ) ) then
+        return false; 
+
+    if o.Verbose then print "\nWe know t <= FPT";
+    
+        -- Higher tau
+    local a2;
+    local Tau;
+    if c == 0 then
     (
-	if o.Verbose then print "\nWe know t <= FPT";
-	if not isSubset( ideal 1_R, frobeniusRoot( b, myA, f, myTau ) ) then 
-	    return true 
-    );
-		
-    false
+	a2 = a;
+	Tau = ideal 1_R
+    )
+    else
+    (
+	a2 = floor( a / (p^c - 1) );
+	Tau = testIdeal( fracPart( a/(p^c-1) ), f )
+    );	
+
+    if o.Verbose then print "\nHigher tau Computed";
+    
+    not isSubset( ideal 1_R, frobeniusRoot( b, a2, f, Tau ) )
 )
 
 isFPT ( ZZ, RingElement ) := o -> ( t, f ) -> isFPT( t/1, f, o )
@@ -529,18 +533,22 @@ isFJumpingNumber ( QQ, RingElement ) := o -> ( t, f ) ->
     p := char ring f;
     --this writes t = a/(p^b(p^c-1))
     (a,b,c) := toSequence decomposeFraction( p, t );
-    mySigma := ideal f;
-    myTau := frobeniusRoot( b, testIdeal( t*p^b, f ) );
+    Tau := frobeniusRoot( b, testIdeal( t*p^b, f ) );
     if o.Verbose then print "\nHigher tau Computed";
 
-    --first we check whether this is even a jumping number.
+    local Sigma;
     if c == 0 then
-        mySigma = frobeniusRoot( b, ideal( f^(a-1) ) * sigma( f, p-1, 1 ) )
-    else mySigma = frobeniusRoot( b, sigma( f, a, c ) );
+        Sigma = frobeniusRoot( b, ideal( f^(a-1) ) * sigma( f, p-1, 1 ) )
+    else Sigma = frobeniusRoot( b, sigma( f, a, c ) );
     if o.Verbose then print "\nSigma Computed";
 
-    not isSubset( mySigma, myTau ) 
+    -- if sigma is not contained in tau, this is an F-jumping number
+    not isSubset( Sigma, Tau ) 
 )
+
+isFJumpingNumber ( ZZ, RingElement ) := o -> ( t, f ) -> 
+    isFJumpingNumber( t/1, f, o )
+
 
 ----------------------------------------------------------------
 --************************************************************--
@@ -554,22 +562,22 @@ sigma = ( f, a, e ) ->
 (
     R := ring f;
     p := char R;
-    m1 := 0;
-    e2 := e;
-    a2 := a;
+    m := 0;
+    e1 := e;
+    a1 := a;
     --if e = 0, we treat (p^e-1) as 1.  
-    if e2 == 0 then 
+    if e1 == 0 then 
         (
-	    e2 = 1; 
-	    a2 = a*(p-1)
+	    e1 = 1; 
+	    a1 = a*(p-1)
 	);
-     if a2 > p^e2-1 then 
+     if a1 > p^e1-1 then 
          (
-	     m1 = floor( (a2-1)/(p^e2-1) ); 
-	     a2 = (a2-1)%(p^e2-1) + 1 
+	     m = floor( (a1-1)/(p^e1-1) ); 
+	     a1 = (a1-1)%(p^e1-1) + 1 
 	 );
-     --fpow := f^a2;
-     IN := frobeniusRoot( e2, ideal 1_R ); -- this is going to be the new value.
+     --fpow := f^a1;
+     IN := frobeniusRoot( e1, ideal 1_R ); -- this is going to be the new value.
      IP := ideal 0_R; -- this is going to be the old value.
      count := 0;
      
@@ -578,10 +586,10 @@ sigma = ( f, a, e ) ->
      while IN != IP do
      (
 	 IP = IN;
-	 IN = frobeniusRoot( e2, a2, f, IP ); -- ethRoot(e2,ideal(fpow)*IP);
+	 IN = frobeniusRoot( e1, a1, f, IP ); -- ethRoot(e1,ideal(fpow)*IP);
 	 count = count + 1
      );
 
      --return the final ideal
-    IP*ideal( f^m1 )
+    IP*ideal( f^m )
 )
