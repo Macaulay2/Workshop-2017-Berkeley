@@ -16,13 +16,13 @@ Authors => {
      Email => "drewtell@umich.edu"
      },
      {Name => "Daniel Hernandez",
-     Email => "dhernan@math.utah.edu",
-     HomePage => "http://math.utah.edu/~dhernan/"
+     Email => "hernandez@ku.edu",
+     HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
      },
-     {Name => "Mordechai Katzman",
+     {Name => "Moty Katzman",
      Email => "m.katzman@sheffield.ac.uk",
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
@@ -67,7 +67,7 @@ export{
     "DiagonalCheck", 
     "FinalCheck", 
     "fpt",   
-    "FPTApproxList",
+    "fptApproximation",
     "FrobeniusPower",
     "FrobeniusRoot",     
     "FTApproxList",
