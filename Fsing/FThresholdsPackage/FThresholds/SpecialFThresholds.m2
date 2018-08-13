@@ -306,7 +306,7 @@ binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
 	else
 	(
 	    F:=product(S#"polylist",a,(f,i)->f^i);
-	    if isFPTPoly( 2/deg, F ) then (return (2/deg))
+	    if isFPT( 2/deg, F ) then (return (2/deg))
 	    else mult = infinity
 	)
     );    
@@ -359,7 +359,7 @@ binaryFormFPT (RingElement) :=  QQ => opt ->  F ->
     -- because factoring is the weakness of this algorithm, we try to avoid it
     -- by first checking if fpt=lct
     deg:=(degree F)_0;
-    if isFPTPoly( 2/deg, F ) then return 2/deg;
+    if isFPT( 2/deg, F ) then return 2/deg;
     R:=ring F;
     vv:=R_*;
     kk:=splittingField(F);
