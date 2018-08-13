@@ -57,8 +57,8 @@ AuxiliaryFiles => true
 needsPackage "TestIdeals"
 
 export{
-    
---F-thresholds computations (FThresholds.m2)
+       
+--F-thresholds computations (MainFunctions.m2)
     "BinaryFormCheck",
     "BinaryRecursive",
     "BinomialCheck",
@@ -70,7 +70,7 @@ export{
     "fptApproximation",
     "FrobeniusPower",
     "FrobeniusRoot",     
-    "FTApproxList",
+    "ftApproximation",
     "guessFPT", --Karl (probably should be incorporated into estFPT
     "HSL",	
     "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
@@ -102,21 +102,20 @@ export{
     "MaxExp",
     "Nontrivial",    
     "PrintCP",
-    "setFTData",
-    "splittingField"
+    "setFTData"
 }
 
 --*************************************************
 
-load "./FThresholds/BasicFunctionsFPT.m2"
+load "./FThresholds/BasicFunctions.m2"
 
-load "./FThresholds/FThresholds.m2"
+load "./FThresholds/MainFunctions.m2"
 
 load "./FThresholds/SpecialFThresholds.m2"
 
 beginDocumentation()
 
-load "./FThresholds/FThresholdsDoc.m2"
+load "./FThresholds/MainFunctionsDoc.m2"
 
 load "./FThresholds/SpecialFThresholdsDoc.m2"
 
