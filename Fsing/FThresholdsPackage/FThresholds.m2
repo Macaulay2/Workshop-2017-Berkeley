@@ -85,7 +85,7 @@ export{
     "UseColonIdeals",
 
     "MaxExp",
-    "PrintCP",
+    "PrintCP"
 }
 
 --*************************************************
