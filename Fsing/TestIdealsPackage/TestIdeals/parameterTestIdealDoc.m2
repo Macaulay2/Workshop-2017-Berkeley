@@ -2,12 +2,15 @@ doc ///
     Key
         canonicalIdeal
         (canonicalIdeal, Ring)
+        [canonicalIdeal, MTries]
     Headline
         given a ring, produces an ideal isomorphic to the canonical module
     Usage
         canonicalIdeal(R)
     Inputs
         R:Ring  
+        MTries => ZZ
+            how many times the function should try to embed the canonical module as an ideal before giving up
     Outputs
         :Ideal
     Description
@@ -24,23 +27,9 @@ doc ///
         Example
             R = ZZ/13[x,y,z]/ideal(x*y, x*z, y*z);
             canonicalIdeal(R)     
-///
-
-doc ///
-    Key
-        [canonicalIdeal, MTries]
-    Headline
-        how many times to try to embed a canonical module as an ideal
-    Usage
-        canonicalIdeal(..., MTries=>n)
-    Inputs
-        n:ZZ
-    Outputs
-        :Ideal
-    Description
         Text
-            The option MTries is passed to embedAsIdeal.
-///      
+            The option MTries is passed to embedAsIdeal.            
+///
 
 doc ///
     Key
@@ -56,7 +45,7 @@ doc ///
     Key
         frobeniusTraceOnCanonicalModule
     Headline
-        finds the u, which in a polynomail ring, determines the Frobenius trace on canonical module of a quotient of that ring
+        finds the u, which in a polynomial ring, determines the Frobenius trace on the canonical module of a quotient of that ring
     Usage
         frobeniusTraceOnCanonicalModule(canIdeal, defIdeal)
     Inputs
