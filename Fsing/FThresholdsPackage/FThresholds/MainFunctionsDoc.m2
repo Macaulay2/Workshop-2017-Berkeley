@@ -103,12 +103,12 @@ doc ///
 
 doc ///
      Key
-     	isFJumpingNumberPoly 
-     	(isFJumpingNumberPoly,QQ,RingElement)
+     	isFJumpingNumber 
+     	(isFJumpingNumber,QQ,RingElement)
      Headline
         Checks whether a given number is an F-jumping number
      Usage
-     	 isFJumpingNumberPoly(t,f,Verbose=>V)  
+     	 isFJumpingNumber(t,f,Verbose=>V)  
      Inputs
          t:QQ
          f:RingElement
@@ -122,12 +122,12 @@ doc ///
 
 doc ///
      Key
-     	isFPTPoly 
-   	(isFPTPoly,QQ,RingElement)
+     	isFPT 
+   	(isFPT,QQ,RingElement)
      Headline
         Checks whether a given number is the FPT
      Usage
-     	  isFPTPoly(t,f,Verbose=>V,Origin=>W)  
+     	  isFPT(t,f,Verbose=>V,Origin=>W)  
      Inputs
  	 	t:QQ
         	f:RingElement
