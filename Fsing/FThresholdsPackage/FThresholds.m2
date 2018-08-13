@@ -81,7 +81,6 @@ export{
     "nu",
     "NuCheck",
     "nuList",
-    "Origin",
     "OutputRange",
     "Search",
     "StandardPower",
