@@ -1,6 +1,6 @@
 newPackage( "FThresholds",
 Version => "0.1", 
-Date => "May 30th, 2017", 
+Date => "August 13th, 2018", 
 Authors => {
      {Name => "Erin Bela",
      Email => "ebela@nd.edu"
@@ -27,7 +27,7 @@ Authors => {
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email => "smalec@gsu.edu"
+     Email => "malec@hood.edu"
      },
      {Name => "Marcus Robinson",
      Email => "robinson@math.utah.edu"
@@ -71,13 +71,12 @@ export{
     "FrobeniusPower",
     "FrobeniusRoot",     
     "ftApproximation",
-    "guessFPT", --Karl (probably should be incorporated into estFPT
+    "guessFPT", --Karl (probably should be incorporated into fpt
     "HSL",	
     "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
     "isFPT", --Karl (should be redone, so as not to assume a polynomial ring)
     "mu",
     "muList",
-    "MultiThread",
     "nu",
     "NuCheck",
     "nuList",
@@ -86,22 +85,8 @@ export{
     "StandardPower",
     "UseColonIdeals",
 
---F-thresholds of special families of polynomials (SpecialFThresholds.m2)
-    -- Eventually, only binomialFPT, diagonalFPT, and binaryFormFPT should  
-    -- be exported from this section **PT
-    "binaryFormFPT",     
-    "binaryFormFPTInternal",
-    "binomialFPT",
-    "diagonalFPT",
-    "factorsAndMultiplicities",    
-    "findCPBelow",
-    "isCP",
-    "isInLowerRegion",
-    "isInUpperRegion",
     "MaxExp",
-    "Nontrivial",    
     "PrintCP",
-    "setFTData"
 }
 
 --*************************************************
