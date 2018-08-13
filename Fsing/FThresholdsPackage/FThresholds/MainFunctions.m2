@@ -83,7 +83,7 @@ testFrobeniusPower ( Ideal, ZZ, Ideal, ZZ ) := ( J, a, I, e ) ->
 testFrobeniusPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> testRoot( f, a, I, e )
 
 -- hash table to select test function from option keyword
-test = new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
+test := new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
 
 ----------------------------------------------------------------------------------
 -- SEARCH FUNCTIONS
@@ -547,7 +547,8 @@ isFJumpingNumber ( QQ, RingElement ) := o -> ( t, f ) ->
 
 --Computes Non-Sharply-F-Pure ideals over polynomial rings for (R, fm^{a/(p^{e1}-1)}), 
 --at least defined as in Fujino-Schwede-Takagi.
-sigmaAOverPEMinus1Poly ={HSL=> false}>> o -> (fm, a1, e1) -> ( 
+sigmaAOverPEMinus1Poly = method(Options => {HSL => false} );
+sigmaAOverPEMinus1Poly => o -> (fm, a1, e1) -> ( 
      Rm := ring fm;
      pp := char Rm;
      m1 := 0;

@@ -34,8 +34,8 @@ doc ///
 doc ///
      Key
      	binaryFormFPT
-	(binaryFormFPT,RingElement)
-	(binaryFormFPT,List,List)
+         (binaryFormFPT,RingElement)
+         (binaryFormFPT,List,List)
      Headline
          computes the F-pure threshold of a form in two variables
      Usage
@@ -56,12 +56,10 @@ doc ///
 	Example
 	    R = ZZ/3[x,y];
 	    G = x^5*y^2-x^3*y^4+x*y^6-y^7;
-	    binaryFormFPT(G)
 	Text    
 	    The method used requires factoring G into linear forms in some extension of the base field. If the user knows such a factorization beforehand, the alternate call binaryFormFPT(factors,multiplicities) can be used for improved performance.
 	Example
 	    R = ZZ/5[x,y];
-	    binaryFormFPT( { x, y, x+y, x+2*y, x+3*y }, { 4, 5, 10, 3, 11 } )
 	Text    
 	    This is based on the work of Daniel Hernandez and Pedro Teixeira.
 ///
