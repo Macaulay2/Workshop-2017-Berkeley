@@ -72,7 +72,6 @@ export{
     "FrobeniusRoot",     
     "ftApproximation",
     "guessFPT", --Karl (probably should be incorporated into fpt
-    "HSL",	
     "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
     "isFPT", --Karl (should be redone, so as not to assume a polynomial ring)
     "mu",

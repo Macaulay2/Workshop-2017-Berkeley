@@ -3,20 +3,12 @@ ZZ/5[x,y,z];
 F = 2*x^7*y^3*z^8+2*x^4*z^9+2*x*y^7*z^4;
 --
 assert( nu(6,F) == 2968 ) 
-assert( nu(6,F,ComputePreviousNus=>false) == 2968 )
-assert( nu(6,F,SearchFunction=>binarySearchRecursive) == 2968 )
-assert( nu(6,F,SearchFunction=>linearSearch) == 2968 )
+assert( nu(6,F,ComputePreviousNus => false) == 2968 )
+assert( nu(6,F,Search => BinaryRecursive) == 2968 )
+assert( nu(6,F,Search => Linear) == 2968 )
 assert( nuList(6,F) == {0, 0, 4, 23, 118, 593, 2968} ) 
-
-
--- using roots (better)
-time assert( newNu(6,F,ComputePreviousNus=>false) == 2968 )  
-time assert( newNuList(6,F) == {0, 0, 4, 23, 118, 593, 2968} )  
-time assert( newNu(6,F,SearchFunction=>binarySearchRecursive) == 2968 )  
-time assert( newNu(6,F,SearchFunction=>linearSearch) == 2968 )  
--- using colon ideals (best)
-time assert( newNuList(6,F,UseColonIdeals=>true) == {0, 0, 4, 23, 118, 593, 2968} )  
-time assert( newNu(6,F,UseColonIdeals=>true,TestFunction=>testPower) == 2968 )
+assert( nuList(6,F,UseColonIdeals=>true) == {0, 0, 4, 23, 118, 593, 2968} )  
+assert( nu(6,F,UseColonIdeals=>true,TestFunction=>testPower) == 2968 )
 time assert( newNu(6,ideal F,UseColonIdeals=>true,TestFunction=>testPower,SearchFunction=>binarySearchRecursive) == 2968 )
 time assert( newNu(6,ideal F,UseColonIdeals=>true,TestFunction=>testPower,SearchFunction=>linearSearch) == 2968 )
 
