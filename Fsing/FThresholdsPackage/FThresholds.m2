@@ -57,7 +57,7 @@ AuxiliaryFiles => true
 
 needsPackage "TestIdeals"
 
-export => {
+export{
 --F-thresholds computations (MainFunctions.m2)
     "BinaryFormCheck", 
     "BinaryRecursive", 
@@ -81,12 +81,13 @@ export => {
     "OutputRange", 
     "Search", 
     "StandardPower", 
-    "Test", 
+    "ContainmentTest", 
     "UseColonIdeals", 
+    "Nontrivial",
 
 
     "MaxExp", -- Dan ( **no doc**)
-    "PrintCP", -- Dan ( **no doc**)
+    "PrintCP" -- Dan ( **no doc**)
 }
 
 --*************************************************

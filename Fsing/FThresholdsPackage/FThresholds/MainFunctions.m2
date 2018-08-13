@@ -83,7 +83,7 @@ testFrobeniusPower ( Ideal, ZZ, Ideal, ZZ ) := ( J, a, I, e ) ->
 testFrobeniusPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> testRoot( f, a, I, e )
 
 -- hash table to select test function from option keyword
-test = new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
+test := new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
 
 ----------------------------------------------------------------------------------
 -- SEARCH FUNCTIONS
