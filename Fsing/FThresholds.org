@@ -1,7 +1,7 @@
 #+TITLE: F-Thresholds Package
 
 * Master file: [[file:./FThresholdsPackage/FThresholds.m2][FThresholds.m2]]
-* Basic functions: [[file:./FThresholdsPackage/FThresholds/BasicFunctions.m2][BasicFunctions.m2]] [0/2]
+* Basic functions: [[file:./FThresholdsPackage/FThresholds/BasicFunctions.m2][BasicFunctions.m2]] [2/5]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -15,7 +15,7 @@
 *** fracPart
 *** nontrivialPowerSet
 *** numberToPrimeFactorList
-*** getFactorList
+*** properFactors (was getFactorList)
 *** findNumberBetweenWithDenom
 *** findNumberBetween
 *** carryTest
@@ -38,7 +38,14 @@
 *** isLinearBinaryForm
 *** xInt
 *** maxIdeal
-* Main functions: [[file:./FThresholdsPackage/FThresholds/MainFunctions.m2][MainFunctions.m2]] [0/4]
+*** factorsAndMultiplicities (was factorList) [1/1] 
+**** DONE Move to BasicFunctions
+     CLOSED: [2018-08-13 Mon 11:40]
+*** splittingField [1/2]
+**** TODO Determine to what class of polynomials this applies
+**** DONE Move to BasicFunctions
+     CLOSED: [2018-08-13 Mon 11:40]
+* Main functions: [[file:./FThresholdsPackage/FThresholds/MainFunctions.m2][MainFunctions.m2]] [2/6]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -78,13 +85,13 @@
      CLOSED: [2018-08-13 Mon 11:25]
 **** TODO Rewrite, so as not to assume a polynomial ring
 *** sigmaAOverPEMinus1Poly  
-* Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/3]
+* Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/0]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
 ** Documentation: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsDoc.m2][SpecialFThresholdsDoc.m2]]
 ** Tests: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsTest.m2][SpecialFThresholdsTest.m2]] 
-** Functions [0/3]
+** Functions [0/1]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -107,10 +114,6 @@
 *** isCP
 *** findCPBelow
 *** binaryFormFPTInternal
-*** binaryFormFPT
-*** factorList [0/1]
-**** TODO Move to BasicFunctions
-*** splittingField [0/2]
-**** TODO Determine to what class of polynomials this applies
-**** TODO Move to BasicFunctions
+*** binaryFormFPT [0/1]
+**** TODO Check for proper way to define ring
 

@@ -94,7 +94,7 @@ export{
     "binaryFormFPTInternal",
     "binomialFPT",
     "diagonalFPT",
-    "factorList",    
+    "factorsAndMultiplicities",    
     "findCPBelow",
     "isCP",
     "isInLowerRegion",

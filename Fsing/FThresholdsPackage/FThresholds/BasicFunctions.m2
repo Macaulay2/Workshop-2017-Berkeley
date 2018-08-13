@@ -47,9 +47,9 @@ numberToPrimeFactorList = n ->
 
 --Returns a list of all proper -- not one -- factors of number.
 --Has funny order...
-getFactorList = n ->
+properFactors = n ->
 (
-     if (n < 1) then error "getFactorList: expected an integer greater than 1.";
+     if (n < 1) then error "properFactors: expected an integer greater than 1.";
      powSet := nontrivialPowerSet( numberToPrimeFactorList( n ) ); 
      toList set apply( powSet, x -> product( x ) )
 )
@@ -98,7 +98,7 @@ findNumberBetween( ZZ, ZZ, ZZ) := ( maxDenom, firstN, secondN)->
      while (i > 0) do (
 	  if ((divisionChecks#(i-1)) == true) then --if we need to do a computation..
 	      outList = join(outList,findNumberBetweenWithDenom(i, firstN, secondN ));
-	  factorList := getFactorList(i);
+	  factorList := properFactors(i);
      	  apply(factorList, j-> (divisionChecks#(j-1) = false) );
 	  i = i - 1;
      );
@@ -309,3 +309,27 @@ maxIdeal ( RingElement ) := Ideal => f -> maxIdeal ring f
 maxIdeal ( Ideal ) := Ideal => I -> maxIdeal ring I
 
 --===============================================================================
+
+-- Factorization of polynomials and splitting fields --
+
+-- factorsAndMultiplicities(F) factors the RingElement F and returns a list of pairs of 
+-- the form {factor,multiplicity}.
+factorsAndMultiplicities = method( TypicalValue => List )
+
+factorsAndMultiplicities RingElement := List => F -> 
+    apply( toList factor F, toList )
+
+--splittingField returns the splittingField of a polynomial over a finite field
+splittingField = method( TypicalValue => GaloisField )
+
+splittingField RingElement := GaloisField => F -> 
+(
+    if not isPolynomialOverFiniteField F 
+        then error "splittingField expects a polynomial over a finite field";
+    p := char ring F;
+    ord := ( coefficientRing ring F )#order;
+    factors := first transpose factorsAndMultiplicities F;
+    deg := lcm selectPositive( flatten apply( factors, degree ) );
+    GF( p, deg * floorLog( p, ord ) )
+)
+
