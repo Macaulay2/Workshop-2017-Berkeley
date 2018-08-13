@@ -22,7 +22,7 @@ Authors => {
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
      },
-     {Name => "Mordechai Katzman",
+     {Name => "Moty Katzman",
      Email => "m.katzman@sheffield.ac.uk",
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
