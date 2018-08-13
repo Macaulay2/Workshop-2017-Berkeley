@@ -405,7 +405,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
       	else if o.Verbose then print "\nnu/(p^e-1) is not the fpt ...";
 	
         --check to see if (nu+1)/p^e is the FPT
-	if isFPT( (n+1)/p^e, f, Origin => true ) then 
+	if isFPT( (n+1)/p^e, f ) then 
 	(
 	    if o.Verbose then print "\nFound answer via (nu+1)/(p^e)."; 
 	    return (n+1)/p^e
@@ -485,14 +485,13 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 --isFPT, determines if a given rational number is the FPT of a pair in a 
--- polynomial ring. If Origin is specified, it only checks at the origin. 
+-- polynomial ring. 
 
-isFPT = method( Options => {Verbose=> false,Origin=>false} )
+isFPT = method( Options => { Verbose=> false } )
 
 isFPT ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
-	if o.Origin then org := maxIdeal f;
 	--this writes t = a/(p^b(p^c-1))
 	(a,b,c) := toSequence decomposeFraction( p, t );
 	mySigma := ideal(f);

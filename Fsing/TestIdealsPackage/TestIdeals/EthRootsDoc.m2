@@ -35,8 +35,7 @@ doc ///
     Description
         Text
             Let $\phi$ be the $p^{-e}$ linear map obtained by multiplying $e$-th Frobenius trace on a polynomial ring by the polynomial $h$  (or $h^a$ if $a$ is given).  
-	    Then this function finds the smallest $\phi$-stable ideal containing $J$.  This function returns the stable value of ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), \ldots$.  
-	    This is the star-closure operation described in 
+	    This function finds the smallest $\phi$-stable ideal containing $J$ which is the stable value of ascending chain $J, J+\phi(J), J+\phi(J)+\phi^2(J), \ldots$.  
 	    ---For instance, this can be used to compute the test ideal.  
 	    Note if the ideal $J$ is not an ideal in a polynomial ring, the function will do the computation with $e$-th Frobenius trace in the ambient polynomial ring, but will do the comparison inside the quotient ring (to see if we are done).  
         Example
