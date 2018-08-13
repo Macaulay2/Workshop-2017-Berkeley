@@ -312,7 +312,6 @@ isFRegularPoly = ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 -- F-pure threshold estimation, at the origin.
 -- e is the max depth to search in.
 -- FinalCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
--- If MultiThread is set to true, it will compute the two F-signatures simultaneously.
 -- This is essentially the same as the old estFPT, with a couple more tests, and changes to make the code clearer.
 fpt = method( 
     Options => 
@@ -322,9 +321,8 @@ fpt = method(
 	    DiagonalCheck => true, 
 	    BinomialCheck => true, 
 	    BinaryFormCheck => true, 
-	    NuCheck => true,
-	    MultiThread => false 
-    	}
+	    NuCheck => true    	
+	}
 )
 
 fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) -> 
@@ -417,30 +415,14 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     local s1;
     local s2;
     
-    if not o.MultiThread then 
-    (
-    	if o.Verbose then print "\nBeginning F-signature computation ...";
-    	s2 = fSig( f, n, e );
-    	if o.Verbose then 
-	    print( "\nFirst F-signature computed: s(f,nu/p^e) = " | toString s2 | " ..." );
-    	s1 = fSig( f, n-1, e );
-    	if o.Verbose then 
-	    print( "\nSecond F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 | " ..." )
-    ) 
-    else
-    (
-   	if o.Verbose then 
-	    print "\nBeginning multithreaded F-signature computation ...";
-	t := schedule( fSig, ( f, n-1, e ) );
-	s2 = fSig( f, n, e );	
-   	if o.Verbose then 
-	    print( "\nFirst F-signature computed: s(f,nu/p^e) = " | toString s2 | " ..." );
-	while not isReady t do sleep 1;
-	s1 = taskResult t;
-    	if o.Verbose then 
-	    print( "\nSecond F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 | " ..." )
-    );
-
+    if o.Verbose then print "\nBeginning F-signature computation ...";
+    s2 = fSig( f, n, e );
+    if o.Verbose then 
+        print( "\nFirst F-signature computed: s(f,nu/p^e) = " | toString s2 | " ..." );
+    s1 = fSig( f, n-1, e );
+    if o.Verbose then 
+	print( "\nSecond F-signature computed: s(f,(nu-1)/p^e) = " | toString s1 | " ..." );
+	
     a := xInt( (n-1)/p^e, s1, n/p^e, s2 );
     
     if o.Verbose then 
