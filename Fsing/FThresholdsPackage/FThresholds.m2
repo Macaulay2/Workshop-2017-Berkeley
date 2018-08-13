@@ -16,8 +16,8 @@ Authors => {
      Email => "drewtell@umich.edu"
      },
      {Name => "Daniel Hernandez",
-     Email => "dhernan@math.utah.edu",
-     HomePage => "http://math.utah.edu/~dhernan/"
+     Email => "hernandez@ku.edu",
+     HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
