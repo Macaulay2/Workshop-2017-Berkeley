@@ -9,8 +9,8 @@ Authors => {
      Email => "alberto.fernandezb@upf.edu"
      },
      {Name => "David J. Bruce",
-     Email => "djbruce@math.wisc.edu",
-     HomePage => "http://www.math.wisc.edu/~djbruce/"
+     Email => "juliette.bruce@math.wisc.edu",
+     HomePage => "https://juliettebruce.github.io/"
      },
      {Name => "Drew Ellingson",
      Email => "drewtell@umich.edu"
@@ -20,7 +20,7 @@ Authors => {
      HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
-     Email => "zhikadyr@umich.edu"
+     Email => "zhibek.kadyrsizova@nu.edu.kz"
      },
      {Name => "Moty Katzman",
      Email => "m.katzman@sheffield.ac.uk",
@@ -44,8 +44,8 @@ Authors => {
      HomePage => "http://www.knox.edu/academics/faculty/teixeira-pedro.html"
      },
      {Name => "Emily Witt",
-     Email => "ewitt@umn.edu",
-     HomePage => "http://math.umn.edu/~ewitt/"
+     Email => "witt@ku.edu",
+     HomePage => "https://witt.faculty.ku.edu"
      }
 },
 Headline => "A package for calculations of F-thresholds", 
@@ -94,7 +94,7 @@ export{
     "binaryFormFPTInternal",
     "binomialFPT",
     "diagonalFPT",
-    "factorList",    
+    "factorsAndMultiplicities",    
     "findCPBelow",
     "isCP",
     "isInLowerRegion",

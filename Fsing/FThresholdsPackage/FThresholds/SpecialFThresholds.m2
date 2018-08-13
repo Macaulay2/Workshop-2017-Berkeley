@@ -10,7 +10,7 @@
 --    allIntersections, isInPolytope, isInInteriorPolytope,
 --    polytopeDefiningPoints, maxCoordinateSum, dCalculation, calculateEpsilon
 --    setFTData, isInUpperRegion, isInLowerRegion, neighborInUpperRegion, isCP, 
---    findCPBelow, binaryFormFPTInternal, factorList, splittingField
+--    findCPBelow, binaryFormFPTInternal
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 ---------------------------------------------------------------------------------
@@ -20,11 +20,13 @@
 
 -- Computes the F-pure threshold of a diagonal hypersurface 
 -- x_1^(a_1) + ... +x_n^(a_n) using Daniel Hernandez' algorithm
+
 diagonalFPT = method( TypicalValue => QQ )
 
-diagonalFPT ( RingElement ) := QQ => f ->
+diagonalFPT RingElement := QQ => f ->
 (
-    if not isDiagonal( f ) then error "diagonalFPT: expected a diagonal polynomial over a field of positive characteristic";
+    if not isDiagonal f then 
+        error "diagonalFPT: expected a diagonal polynomial over a field of positive characteristic";
     p := char ring f;
     w := apply(terms f, g -> 1/( first degree g ) );  
       -- w = list of reciprocals of the powers of the variables appearing in f
@@ -43,8 +45,8 @@ diagonalFPT ( RingElement ) := QQ => f ->
 --corresponding vectors that omit all a_i and b_i such that a_i=b_i
 factorOutMonomial = ( v, w ) ->
 (
-     diffCoords := nonzeroPositions( v-w );
-     ( v_diffCoords, w_diffCoords )
+    diffCoords := nonzeroPositions( v-w );
+    ( v_diffCoords, w_diffCoords )
 )
 
 --Given input vectors v={a_1,...,a_n} and w={b_1,...,b_n}, gives the
@@ -124,11 +126,12 @@ calculateEpsilon = ( P1, P2, v, w ) ->
 -- Based on the work of Daniel Hernandez, and implemented by Emily Witt
 binomialFPT = method( TypicalValue => QQ )
 
-binomialFPT ( RingElement ) := QQ => g ->
+binomialFPT RingElement := QQ => g ->
 (
-    if not isBinomial( g ) then error "binomialFPT: expected a binomial over a field of positive characteristic";
+    if not isBinomial g then 
+        error "binomialFPT: expected a binomial over a field of positive characteristic";
     p := char ring g;
-    ( v, w ) := toSequence exponents( g );
+    ( v, w ) := toSequence exponents g;
     FPT := 0;
     mon := monomialFactor( v, w );
     ( v, w ) = factorOutMonomial( v, w );
@@ -159,16 +162,16 @@ binomialFPT ( RingElement ) := QQ => g ->
 
 -- Based on the work of Hernandez and Teixeira, and implemented by Teixeira
 
-{*
+-*
     Remark: At this point, only commands for computations of F-pure thresholds are
     implemented. Eventually computations of F-thresholds with respect to more general
     ideals will be implemented, and perhaps of more general polynomials. Some structures 
     and functions below are already designed to handle such greater generality. 
-*}
+*-
     
-{*
+-*
     Types and auxiliary commands
-*}
+*-
 
 -- FTData is a HashTable that stores the data necessary in F-threshold 
 -- calculations (for conveniently passing those data from one function 
@@ -187,19 +190,27 @@ FTData = new Type of HashTable
 -- list of polynomials, and builds an FTData from them.
 setFTData = method( TypicalValue => FTData )
 
-setFTData (List,List) := FTData => (gen,polylist) -> 
+setFTData ( List, List ) := FTData => ( gen, polylist ) -> 
 (
-    	A:=ring gen_0;
-    	p:= char A;	
-	new FTData from {"char"=>p,"ring"=>A, "ideal"=>ideal gen, "gens" => gen,
-	    "numpolys"=>#polylist,"polylist"=>polylist}
+    A := ring gen_0;
+    p:= char A;	
+    new FTData from 
+    {
+	"char" => p,
+	"ring" => A, 
+	"ideal" => ideal gen, 
+	"gens" => gen,
+	"numpolys" => #polylist,
+	"polylist" => polylist
+    }
 )
 
-setFTData (Ideal,List) := FTData => (I,polylist) -> setFTData(I_*,polylist)
+setFTData ( Ideal, List ) := FTData => ( I, polylist ) -> 
+    setFTData( I_*, polylist )
 
-{*
+-*
     Tests and auxiliary functions
-*}
+*-
 
 -- isInUpperRegion(a,q,S)/isInUpperRegion(u,S) test if the point u=a/q is in 
 -- the upper region attached to S. Suppose I is the ideal of the FTData S 
@@ -209,23 +220,25 @@ setFTData (Ideal,List) := FTData => (I,polylist) -> setFTData(I_*,polylist)
 -- otherwise it is in the lower region.
 isInUpperRegion = method( TypicalValue => Boolean )
 
-isInUpperRegion (List,ZZ,FTData) := Boolean => (a,q,S) -> 
+isInUpperRegion ( List, ZZ, FTData ) := Boolean => ( a, q, S ) -> 
 (
-    frob:=ideal apply(S#"gens",f->f^q);
-    F:=product(S#"polylist",a,(f,i)->fastExponentiation(i,f));
+    frob := ideal apply( S#"gens", f -> f^q );
+    F := product( a, S#"polylist", (i,f) -> fastExponentiation(i,f) );
     (F % frob) == 0
 )
 
-isInUpperRegion (List,FTData) := Boolean => (u,S) ->
-    isInUpperRegion append(getNumAndDenom(u),S)
+isInUpperRegion ( List, FTData ) := Boolean => ( u, S ) ->
+    isInUpperRegion append( getNumAndDenom u, S )
 
 -- isInLoweRegion(a,q,S)/isInLoweRegion(u,S) test if the point u=a/q is in 
 -- the lower region attached to S.
 isInLowerRegion = method( TypicalValue => Boolean )
 
-isInLowerRegion (List,ZZ,FTData) := Boolean => (a,q,S) -> not isInUpperRegion(a,q,S)
+isInLowerRegion ( List, ZZ, FTData ) := Boolean => ( a, q, S ) -> 
+    not isInUpperRegion( a, q, S )
 
-isInLowerRegion (List,FTData) := Boolean => (u,S) -> not isInUpperRegion(u,S)
+isInLowerRegion ( List, FTData ) := Boolean => ( u, S ) -> 
+    not isInUpperRegion( u, S )
 
 -- neighborInUpperRegion(a,q,S)/neighborInUpperRegion(u,S): auxiliary commands 
 -- that, given a point u=a/q in the upper region, try to find a "neighbor" of 
@@ -234,186 +247,182 @@ isInLowerRegion (List,FTData) := Boolean => (u,S) -> not isInUpperRegion(u,S)
 -- return nothing.
 neighborInUpperRegion = method( TypicalValue => Sequence )
 
-neighborInUpperRegion (List,ZZ,FTData) := Sequence => (a,q,S) ->
+neighborInUpperRegion ( List, ZZ, FTData ) := Sequence => ( a, q, S ) ->
 (
-    if isInLowerRegion(a,q,S) then (error "Expected point in the upper region.");
+    if isInLowerRegion( a, q, S ) then 
+        error "neighborInUpperRegion: expected point in the upper region";
     n := S#"numpolys";
-    posEntries := positions(a,k->(k>0));
+    posEntries := positions( a, k -> k>0 );
     found := false;
-    i:=0;
+    i := 0;
     local candidate;
     local neighbor;
-    while ((not found) and (i<#posEntries)) do 
+    while (not found) and i < #posEntries do 
     (
-	candidate=a-getCanVector(posEntries_i,n);
-	if isInUpperRegion(candidate,q,S) then (found=true; neighbor=candidate);
-	i=i+1;
+	candidate = a - getCanVector( posEntries_i, n );
+	if isInUpperRegion( candidate, q, S ) then 
+	    ( 
+		found = true; 
+		neighbor = candidate 
+	    );
+	i = i+1;
     );
-    if (not found) then null else (neighbor,q)
+    if not found then null else ( neighbor, q )
 )
 
-neighborInUpperRegion (List,FTData) := List => (u,S) -> 
+neighborInUpperRegion ( List, FTData ) := List => ( u, S ) -> 
 (
-    nbr:=neighborInUpperRegion append(getNumAndDenom(u),S);
-    if nbr===null then nbr else (nbr_0)/(nbr_1)
+    nbr := neighborInUpperRegion append( getNumAndDenom u, S );
+    if nbr === null then nbr else (nbr_0)/(nbr_1)
 )
 
 -- isCP(a,q,S)/isCP(u,S) test if u=a/q is a critical point, that is, if u is 
 -- in the upper region but each neighbor (a-e_i)/q (where a_i>0) is not.
 isCP = method( TypicalValue => Boolean )
 
-isCP (List,ZZ,FTData) := Boolean => (a,q,S) -> 
+isCP ( List, ZZ, FTData ) := Boolean => ( a, q, S ) -> 
 (
-    if isInLowerRegion(a,q,S) then return false;
-    neighborInUpperRegion(a,q,S)===null
+    if isInLowerRegion( a, q, S ) then return false;
+    neighborInUpperRegion( a, q, S ) === null
 )
 
-isCP (List,FTData) := Boolean => (u,S) -> isCP append(getNumAndDenom(u),S)
+isCP ( List, FTData ) := Boolean => (u,S) -> isCP append( getNumAndDenom u, S )
 
 --findCPBelow(u,S) takes a point u in the upper region attached to S and 
 -- finds a critical point <= u with the same denominator.
 findCPBelow = method( TypicalValue => List )
 
-findCPBelow (List,FTData) := List => (pt,S) ->
+findCPBelow ( List, FTData ) := List => ( pt, S ) ->
 (
-    if isInLowerRegion(pt,S) then (error "The point must be in the upper region.");
-    nbr:=neighborInUpperRegion(pt,S);
-    if nbr===null then return pt else findCPBelow(nbr,S)
+    if isInLowerRegion( pt, S ) then 
+        error "isInLowerFunction: the point must be in the upper region";
+    nbr := neighborInUpperRegion( pt, S );
+    if nbr === null then return pt else findCPBelow( nbr, S )
 )
 
-{*
+-*
     Computation of FPTs
-*}
+*-
 
 -- binaryFormFPTInternal({a1,...an},S): if S#"polylist={L1,...,Ln} is a list 
 -- of linear forms, binaryFormFPTInternal({a1,...an},S) finds the FPT of the 
 -- polynomial F=L1^(a1)...Ln^(an)
-binaryFormFPTInternal = method(TypicalValue => QQ, Options => {MaxExp => infinity, PrintCP => false, Nontrivial => false})
+binaryFormFPTInternal = method(
+    TypicalValue => QQ, 
+    Options => { MaxExp => infinity, PrintCP => false, Nontrivial => false }
+)
 
-binaryFormFPTInternal (List,FTData) := QQ => opt -> (a,S) ->
+binaryFormFPTInternal ( List, FTData ) := QQ => opt -> ( a, S ) ->
 (
-    deg:=taxicabNorm(a);
-    pos:=positions(a,k->(k>=deg/2));
-    if (pos!={}) then return(1/a_(pos_0)); 
+    deg := taxicabNorm a;
+    pos := positions( a, k -> k >= deg/2 );
+    if pos != {} then return( 1/a_(pos_0) ); 
        -- if some multiplicity a_i is "too big", return 1/a_i
-    p:=S#"char";
-    den:=denominator(2/deg);
+    p := S#"char";
+    den := denominator( 2/deg );
     local mult;
-    if (opt.Nontrivial) then mult = infinity
+    if opt.Nontrivial then mult = infinity
     else
     ( 
-    	if gcd(S#"char",den)==1 then mult = multiplicativeOrder(p,den)
+    	if gcd( S#"char", den) == 1 then mult = multiplicativeOrder( p, den )
 	else
 	(
-	    F:=product(S#"polylist",a,(f,i)->f^i);
-	    if isFPT( 2/deg, F ) then (return (2/deg))
+	    F := product( S#"polylist", a, (f,i) -> f^i );
+	    if isFPT( 2/deg, F ) then return 2/deg
 	    else mult = infinity
 	)
     );    
-    rng:=S#"ring";
-    polys:=S#"polylist";
-    I:=S#"ideal";
-    ideals:={I};
-    e:=0;
-    dgt:=0;
-    u:=2*a/deg;
-    while (I != ideal(1_rng) and e < (opt.MaxExp) and e < mult) do 
+    rng := S#"ring";
+    polys := S#"polylist";
+    I := S#"ideal";
+    ideals := { I };
+    e := 0;
+    dgt := 0;
+    u := 2*a/deg;
+    while I != ideal( 1_rng ) and e < opt.MaxExp and e < mult do 
     (
-	e=e+1;
-	dgt=adicDigit(p,e,u);
-	I=frobenius( I ):product(polys,dgt,(f,k)->f^k);
-	ideals=append(ideals,I)
+	e = e+1;
+	dgt = adicDigit( p, e, u );
+	I = frobenius( I ) : product( polys, dgt, (f,k) -> f^k );
+	ideals = append( ideals, I )
     );
-    if I!=ideal(1_rng) then 
+    if I != ideal( 1_rng ) then 
     (
-	if e == mult then (return (2/deg)) 
-	else error "Reached MaxExp."
+	if e == mult then return 2/deg 
+	else error "binaryFormFPTInternal: reached MaxExp"
     );    
-    e0:=e-1;
-    S1:=setFTData(ideals_e0,polys);
-    cp:=findCPBelow(dgt/p,S1); 
+    e0 := e-1;
+    S1 := setFTData( ideals_e0, polys );
+    cp := findCPBelow( dgt/p, S1 ); 
     	--if some coordinate of cp is 0, its magnification may not be a CP
-    while ( ( product(cp) == 0 ) and ( e0 > 0 ) ) do 
+    while product cp == 0 and e0 > 0 do 
     (
-	e0=e0-1;
+	e0 = e0-1;
         -- zoom out one step and look for CP again
-    	S1=setFTData(ideals_e0,polys);
-	cp=findCPBelow(cp/p+adicDigit(p,e0+1,u)/p,S1) 
+    	S1 = setFTData( ideals_e0, polys );
+	cp = findCPBelow( cp/p + adicDigit( p, e0+1, u )/p, S1 ) 
     );
-    cp=cp/p^e0+adicTruncation(p,e0,u); -- "zoom out"
-    if opt.PrintCP then print(toString cp);
-    max apply(cp,a,(c,k)->c/k)
+    cp = cp/p^e0 + adicTruncation( p, e0, u ); -- "zoom out"
+    if opt.PrintCP then print toString cp;
+    max apply( cp, a, (c,k) -> c/k )
 )
 
 -----------------------
-binaryFormFPT = method(TypicalValue => QQ, Options => {MaxExp => infinity, PrintCP => false})
+binaryFormFPT = method(
+    TypicalValue => QQ, 
+    Options => { MaxExp => infinity, PrintCP => false }
+)
 
 -- binaryFormFPT(RingElement)
 -- FPT(F) computes the F-pure threshold of a form F in two variables. 
 -- KNOWN ISSUE: if the splitting field of F is too big, factor will not work.
-binaryFormFPT (RingElement) :=  QQ => opt ->  F ->
+binaryFormFPT RingElement :=  QQ => opt ->  F ->
 (    
-   if not isNonConstantBinaryForm(F) then (
-	error "binaryFormFPT expects a nonconstant homogeneous polynomial in 2 variables."
-    );
+   if not isNonConstantBinaryForm F then
+       error "binaryFormFPT expects a nonconstant homogeneous polynomial in 2 variables";
     -- because factoring is the weakness of this algorithm, we try to avoid it
     -- by first checking if fpt=lct
-    deg:=(degree F)_0;
+    deg := (degree F)_0;
     if isFPT( 2/deg, F ) then return 2/deg;
-    R:=ring F;
-    vv:=R_*;
-    kk:=splittingField(F);
-    a:= symbol a;
-    b:= symbol b;
-    S:=kk[a,b];
-    G:=sub(F,{(vv#0)=>a,(vv#1)=>b});
-    (L,m):=toSequence transpose factorList(G);
-    binaryFormFPTInternal(m,setFTData(S_*,L),MaxExp=>(opt.MaxExp),PrintCP=>(opt.PrintCP),Nontrivial=>true)
+    R := ring F;
+    vv := R_*;
+    kk := splittingField F;
+    a := symbol a;
+    b := symbol b;
+    S :=kk[a,b];
+    G := sub( F, { vv#0 => a, vv#1 => b } );
+    ( L, m ) := toSequence transpose factorsAndMultiplicities G;
+    binaryFormFPTInternal( 
+	m, 
+	setFTData(S_*,L), 
+	MaxExp => opt.MaxExp, 
+	PrintCP => opt.PrintCP, 
+	Nontrivial => true 
+    )
 )
 
 -- binaryFormFPT(List,List)
 -- Given a list L={L_1,...,L_n} of linear forms in 2 variables and a list 
 -- m={m_1,...,m_n} of multiplicities, binaryFormFPT(L,m) returns the F-pure 
 -- threshold of the polynomial L_1^(m_1)*...*L_n^(m_n). 
-binaryFormFPT (List,List) := QQ => opt -> (L,m) -> 
+binaryFormFPT ( List, List ) := QQ => opt -> ( L, m ) -> 
 (
     -- some checks to see if input makes sense   
     if #L != #m then error "binaryFormFPT: expected lists of same length";
-    if not uniform( L ) then 
+    if not uniform L then 
         error  "binaryFormFPT: expected the entries of the first argument to be elements of the same ring";
     if not all( L, isLinearBinaryForm ) then 
         error  "binaryFormFPT: expected the first argument to be a list of linear forms in two variables";
-    if not all( m, x -> (class x) === ZZ ) then 
+    if not all( m, x -> ( class x ) === ZZ ) then 
         error  "binaryFormFPT: expected the second argument to be a list of positive integers";
     if not all( m, x -> x > 0 ) then 
         error  "binaryFormFPT: expected the second argument to be a list of positive integers";
     -- now pass things to binaryFormFPTInternal 
-    binaryFormFPTInternal(m,setFTData(gens ring L_0,L),MaxExp=>(opt.MaxExp),PrintCP=>(opt.PrintCP))
-)
-
-{*
-    Miscellaneous.
-*}
-
--- Factorization of polynomials and splitting fields --
-
--- factorList(F) factors the RingElement F and returns a list of pairs of 
--- the form {factor,multiplicity}.
-factorList = method( TypicalValue => List )
-
-factorList (RingElement) := List => F -> apply( toList( factor( F ) ), toList )
-
---splittingField returns the splittingField of a polynomial over a finite field
-splittingField = method( TypicalValue => GaloisField )
-
-splittingField (RingElement) := GaloisField => F -> 
-(
-    if not isPolynomialOverFiniteField( F ) 
-        then (error "splittingField expects a polynomial over a finite field");
-    p := char ring F;
-    ord := ( coefficientRing( ring F ) )#order;
-    factors := first transpose factorList( F );
-    deg := lcm selectPositive( flatten apply( factors, degree ) );
-    GF( p, deg * floorLog( p, ord ) )
+    binaryFormFPTInternal( 
+	m, 
+	setFTData( gens ring L_0, L ),
+	MaxExp => opt.MaxExp,
+	PrintCP => opt.PrintCP
+    )
 )
 
