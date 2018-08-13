@@ -16,8 +16,8 @@ Authors => {
      Email => "drewtell@umich.edu"
      },
      {Name => "Daniel Hernandez",
-     Email => "dhernan@math.utah.edu",
-     HomePage => "http://math.utah.edu/~dhernan/"
+     Email => "hernandez@ku.edu",
+     HomePage => "https://hernandez.faculty.ku.edu"
      },
      {Name => "Zhibek Kadyrsizova",
      Email => "zhikadyr@umich.edu"
@@ -63,18 +63,18 @@ export{
     "BinaryRecursive",
     "BinomialCheck",
     "ComputePreviousNus",
-    "critExpApproxList",
+    "criticalExponentApproximation",
     "DiagonalCheck", 
     "FinalCheck", 
     "fpt",   
-    "FPTApproxList",
+    "fptApproximation",
     "FrobeniusPower",
     "FrobeniusRoot",     
     "FTApproxList",
     "guessFPT", --Karl (probably should be incorporated into estFPT
     "HSL",	
-    "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring)
-    "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring)
+    "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
+    "isFPT", --Karl (should be redone, so as not to assume a polynomial ring)
     "mu",
     "muList",
     "MultiThread",

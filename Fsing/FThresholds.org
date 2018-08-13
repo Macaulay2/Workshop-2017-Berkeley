@@ -38,13 +38,13 @@
 *** isLinearBinaryForm
 *** xInt
 *** maxIdeal
-* Main functions: [[file:./FThresholdsPackage/FThresholds/FThresholds.m2][FThresholds.m2]] [0/4]
+* Main functions: [[file:./FThresholdsPackage/FThresholds/MainFunctions.m2][MainFunctions.m2]] [0/4]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
 ** Documentation: [[file:./FThresholdsPackage/FThresholds/FThresholdsDoc.m2][FThresholdsDoc.m2]] 
 ** Tests: [[file:./FThresholdsPackage/FThresholds/FThresholdsTest.m2][FThresholdsTest.m2]]
-** Functions [0/6]
+** Functions [2/6]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -60,19 +60,22 @@
 *** nu
 *** muList
 *** mu
-*** FPTApproxList
-*** critExpApproxList
+*** fptApproximation
+*** ftApproximation
+*** criticalExponentApproximation
 *** guessFPT [0/1]
 **** TODO Incorporate in fpt
 *** fSig
 *** isFRegularPoly
 *** fpt
-*** isFPTPoly [0/3]
-**** TODO Change name so it doesn't refer to type of argument
+*** isFPT [1/3]
+**** DONE Change name so it doesn't refer to type of argument
+     CLOSED: [2018-08-13 Mon 11:24]
 **** TODO Rewrite, so as not to assume a polynomial ring
 **** TODO  Origin does not seem to do anything
-*** isFJumpingNumerPoly [0/2]
-**** TODO Change name so it doesn't refer to type of argument
+*** isFJumpingNumber [1/2]
+**** DONE Change name so it doesn't refer to type of argument
+     CLOSED: [2018-08-13 Mon 11:25]
 **** TODO Rewrite, so as not to assume a polynomial ring
 *** sigmaAOverPEMinus1Poly  
 * Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/3]
