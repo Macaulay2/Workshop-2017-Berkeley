@@ -73,8 +73,8 @@ export{
     "FTApproxList",
     "guessFPT", --Karl (probably should be incorporated into estFPT
     "HSL",	
-    "isFJumpingNumberPoly", --Karl (should be redone, so as not to assume a polynomial ring)
-    "isFPTPoly", --Karl (should be redone, so as not to assume a polynomial ring)
+    "isFJumpingNumber", --Karl (should be redone, so as not to assume a polynomial ring)
+    "isFPT", --Karl (should be redone, so as not to assume a polynomial ring)
     "mu",
     "muList",
     "MultiThread",

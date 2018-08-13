@@ -25,7 +25,7 @@
 ----------------------------------------------------------------------------------
 -- FPT/F-Jumping number check
 
--- Main functions: isFPTPoly, isFJumpingNumberPoly
+-- Main functions: isFPT, isFJumpingNumber
 
 
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -405,7 +405,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
       	else if o.Verbose then print "\nnu/(p^e-1) is not the fpt ...";
 	
         --check to see if (nu+1)/p^e is the FPT
-	if isFPTPoly( (n+1)/p^e, f, Origin => true ) then 
+	if isFPT( (n+1)/p^e, f, Origin => true ) then 
 	(
 	    if o.Verbose then print "\nFound answer via (nu+1)/(p^e)."; 
 	    return (n+1)/p^e
@@ -484,12 +484,12 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 ---------------------------------------------------------------------------------
 --%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
---isFPTPoly, determines if a given rational number is the FPT of a pair in a 
+--isFPT, determines if a given rational number is the FPT of a pair in a 
 -- polynomial ring. If Origin is specified, it only checks at the origin. 
 
-isFPTPoly = method( Options => {Verbose=> false,Origin=>false} )
+isFPT = method( Options => {Verbose=> false,Origin=>false} )
 
-isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) -> 
+isFPT ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
 	if o.Origin then org := maxIdeal f;
@@ -528,17 +528,17 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 	returnValue
 )
 
-isFPTPoly ( ZZ, RingElement ) := o -> ( t, f ) -> isFPTPoly( t/1, f, o )
+isFPT ( ZZ, RingElement ) := o -> ( t, f ) -> isFPT( t/1, f, o )
 
--- isFJumpingNumberPoly determines if a given rational number is an 
+-- isFJumpingNumber determines if a given rational number is an 
 -- F-jumping number
 --***************************************************************************
 --This needs to be speeded up, like the above function
 --***************************************************************************
 
-isFJumpingNumberPoly = method( Options => {Verbose=> false} )
+isFJumpingNumber = method( Options => {Verbose=> false} )
 
-isFJumpingNumberPoly ( QQ, RingElement ) := o -> ( t, f ) -> 
+isFJumpingNumber ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
 	--this writes t = a/(p^b(p^c-1))
