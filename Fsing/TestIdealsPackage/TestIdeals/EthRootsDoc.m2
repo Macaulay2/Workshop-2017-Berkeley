@@ -206,16 +206,11 @@ doc ///
 
 doc ///
     Key
-        [testIdeal, FrobeniusRootStrategy]
-        [isFregular, FrobeniusRootStrategy]
         [HSLGModule, FrobeniusRootStrategy]
-        [isFpure, FrobeniusRootStrategy]
         [isFinjective, FrobeniusRootStrategy]
-        [ascendIdeal, FrobeniusRootStrategy]
-        [testModule, FrobeniusRootStrategy]   
+        [ascendIdeal, FrobeniusRootStrategy]  
         [frobenius, FrobeniusRootStrategy]
         [frobeniusPower, FrobeniusRootStrategy]  
-        [parameterTestIdeal, FrobeniusRootStrategy]
         [compatibleIdeals, FrobeniusRootStrategy]
     Headline
         controls the strategy for computing the Frobenius root of an ideal within other call
