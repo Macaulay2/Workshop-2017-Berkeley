@@ -1,6 +1,6 @@
 newPackage( "FThresholds",
 Version => "0.1", 
-Date => "May 30th, 2017", 
+Date => "August 13th, 2018", 
 Authors => {
      {Name => "Erin Bela",
      Email => "ebela@nd.edu"
@@ -27,7 +27,7 @@ Authors => {
      HomePage => "http://www.katzman.staff.shef.ac.uk/"
      },
      {Name => "Sara Malec",
-     Email => "smalec@gsu.edu"
+     Email => "malec@hood.edu"
      },
      {Name => "Marcus Robinson",
      Email => "robinson@math.utah.edu"
