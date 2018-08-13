@@ -41,14 +41,14 @@ doc ///
 
 doc ///
      Key
-     	 FTApproxList
-	 (FTApproxList,ZZ,Ideal,Ideal)
-	 (FTApproxList,ZZ,RingElement,Ideal)
+     	 ftApproximation
+	 (ftApproximation,ZZ,Ideal,Ideal)
+	 (ftApproximation,ZZ,RingElement,Ideal)
      Headline
         Gives a list of nu_I^J(p^d)/p^d for d=0,...,e.
      Usage
-     	  FTApproxList(e,I,J)
-	  FTApproxList(e,f,J) 
+     	  ftApproximation(e,I,J)
+	  ftApproximation(e,f,J) 
      Inputs
          e:ZZ
      	 I:Ideal

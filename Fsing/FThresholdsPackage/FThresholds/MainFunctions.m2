@@ -15,7 +15,7 @@
 ----------------------------------------------------------------------------------
 -- FThreshold Approximations
 
--- Main functions: fptApproximation, FTApproxList, FTHatApproxList
+-- Main functions: fptApproximation, ftApproximation, FTHatApproxList
 
 ----------------------------------------------------------------------------------
 -- FThreshold Estimates
@@ -242,9 +242,9 @@ fptApproximation ( ZZ, RingElement ) := ( e, f ) -> fptApproximation( e, ideal(f
 --Approximates the F-Threshold with respect to an ideal J
 --More specifically, this gives a list of nu_I^J(p^d)/p^d for d=1,...,e
 
-fptApproximation = method();
+ftApproximation = method();
 
-fptApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
+ftApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
     if not isSubset( I, radical(J) ) then error "F-threshold undefined.";
     p := char ring I;
@@ -252,7 +252,7 @@ fptApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
     apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
-fptApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
+ftApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
    fptApproximation( e, ideal(f), J )
 
 criticalExponentApproximation = method();
