@@ -57,7 +57,6 @@ AuxiliaryFiles => true
 needsPackage "TestIdeals"
 
 export{
-       
 --F-thresholds computations (MainFunctions.m2)
     "BinaryFormCheck",
     "BinaryRecursive",
