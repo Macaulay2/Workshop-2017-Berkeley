@@ -252,7 +252,8 @@ FTApproxList ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
     apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
-FTApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> FTApproxList( e, ideal(f), J )
+FTApproxList ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
+   FTApproxList( e, ideal(f), J )
 
 critExpApproxList = method();
 
@@ -329,7 +330,7 @@ fpt = method(
 fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) -> 
 (
     -- Check if polynomial has coefficients in a finite field
-    if not isPolynomialOverFiniteField( f ) then 
+    if not isPolynomialOverFiniteField f  then 
         error "fpt: expected polynomial with coefficients in a finite field";
 
     -- Check if polynomial is in the homogeneous maximal ideal
@@ -341,7 +342,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     if o.Verbose then print "\nStarting fpt ...";
     
     -- Check if fpt equals 1
-    if not isSubset( ideal( f^(p-1) ), frobenius( M ) ) then 
+    if not isSubset( ideal( f^(p-1) ), frobenius M ) then 
     (
         if o.Verbose then print "\nnu(1,f) = p-1, so fpt(f) = 1."; 
         return 1 
@@ -491,7 +492,7 @@ isFPTPoly = method( Options => {Verbose=> false,Origin=>false} )
 isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) -> 
 (
 	p := char ring f;
-	if (o.Origin == true) then org := ideal(vars (ring f));
+	if o.Origin then org := maxIdeal f;
 	--this writes t = a/(p^b(p^c-1))
 	(a,b,c) := toSequence decomposeFraction( p, t );
 	mySigma := ideal(f);
@@ -504,7 +505,7 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 		myTau = testIdeal( (a%(p^c-1))/(p^c-1), f )
 	);
 	
-	if (o.Verbose==true) then print "higher tau Computed";
+	if o.Verbose then print "higher tau Computed";
 
 	--first we check whether this is even a jumping number.
 	if (c == 0) then (
@@ -515,7 +516,7 @@ isFPTPoly ( QQ, RingElement ) := o -> ( t, f ) ->
 		myA2 = floor((a-1)/(p^c-1));
 		mySigma = (sigmaAOverPEMinus1Poly(f, ((a-1)%(p^c-1))+1, c))
 	);
-	if (o.Verbose==true) then print "higher sigma Computed";
+	if o.Verbose then print "higher sigma Computed";
 
 	returnValue := false;
 	

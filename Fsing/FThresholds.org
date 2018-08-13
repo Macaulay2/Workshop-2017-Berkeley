@@ -44,7 +44,7 @@
 :END:
 ** Documentation: [[file:./FThresholdsPackage/FThresholds/FThresholdsDoc.m2][FThresholdsDoc.m2]] 
 ** Tests: [[file:./FThresholdsPackage/FThresholds/FThresholdsTest.m2][FThresholdsTest.m2]]
-** Functions [0/5]
+** Functions [0/6]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -67,10 +67,10 @@
 *** fSig
 *** isFRegularPoly
 *** fpt
-*** isFPTPoly [0/2]
+*** isFPTPoly [0/3]
 **** TODO Change name so it doesn't refer to type of argument
 **** TODO Rewrite, so as not to assume a polynomial ring
-
+**** TODO  Origin does not seem to do anything
 *** isFJumpingNumerPoly [0/2]
 **** TODO Change name so it doesn't refer to type of argument
 **** TODO Rewrite, so as not to assume a polynomial ring
