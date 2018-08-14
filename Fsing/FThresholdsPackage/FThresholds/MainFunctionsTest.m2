@@ -47,22 +47,23 @@ assert( nuList(5,I, ContainmentTest => FrobeniusPower) == {0, 2, 8, 26, 80, 242}
 
 ZZ/13[x,y,z];
 I=ideal(x^3+y^4,y^6+z^3,z^5+x^7);
+--
 assert( nu(1,I) == 11 )
-assert( nu(1,I,SearchFunction => linearSearch) == 11 ) -- lucky
+assert( nu(1,I,Search => Linear) == 11 )
 assert( nu(1,I,ComputePreviousNus => false) == 11 ) 
 
-time assert( nu(2,I, Test => FrobeniusPower) == 154 ) 
+time assert( nu(2,I, ContainmentTest => FrobeniusPower) == 154 ) 
 
 ZZ/7[x,y,z];
 I=ideal(x+y^2,y+z^2,z+x^2);
 J=ideal(x^3,y^3,z^3);
 time assert( nu(1,I,J) == 60 )
-time assert( nu(1,I,J, Test => FrobeniusPower) == 60) -- slow
-time assert( newNu(1,I,J,TestFunction=>testRoot) == 60 ) -- better
-time assert( newNu(1,I,J,TestFunction=>testRoot,SearchFunction=>linearSearch) == 60 ) 
+time assert( nu(1,I,J, ContainmentTest => FrobeniusPower) == 60) -- slow
+time assert( newNu(1,I,J,ContainmentTest=>testRoot) == 60 ) -- better
+time assert( newNu(1,I,J,ContainmentTest=>testRoot,Search=>Linear) == 60 ) 
 
-time assert( nuHat(1,I,J) == 48 ) -- old version
+time assert( nu(1,I,J, ContainmentTest => FrobeniusPower) == 48 ) -- old version
 time assert( newNuHat(1,I,J,ComputePreviousNus=>false) == 48 )  
 time assert( newNuHatList(1,I,J) == {6, 48} )  
-time assert( newNuList(1,I,J,TestFunction=>testGenFrobeniusPower) == {6, 48} )  -- same as previous
+time assert( newNuList(1,I,J,ContainmentTest=>testGenFrobeniusPower) == {6, 48} )  -- same as previous
 ///
