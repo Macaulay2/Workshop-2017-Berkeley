@@ -39,11 +39,9 @@ assert( nu(3,I,UseColonIdeals => true,ContainmentTest => FrobeniusRoot) == 39 )
 assert( nuList(3,I) == {0, 3, 12, 39} ) 
 assert( nuList(3,I,UseColonIdeals => true) == {0, 3, 12, 39} ) 
 
---time assert( nu(5,I) == 242 ) 
 assert( nu(5,I,ComputePreviousNus => false, ContainmentTest => FrobeniusPower) == 242 ) 
 assert( nu(5,I,UseColonIdeals => true, ContainmentTest => FrobeniusPower) == 242 )
 
-assert( nuList(5,I) == {2, 8, 26, 80, 242} )
 assert( nuList(5,I, ContainmentTest => FrobeniusPower) == {0, 2, 8, 26, 80, 242} ) 
 
 
