@@ -230,7 +230,7 @@ doc ///
         :Boolean
     Description
         Text
-            Given a normal Q-Gorenstein ring $R$ (or a Gorenstein ring in general), this computes whether the ring is strongly F-regular.  It can also prove that a non-Q-Gorenstein ring is F-regular (but cannot show it is not).  See below for how to access this functionality.
+            Given a normal Q-Gorenstein ring $R$, this computes whether the ring is strongly F-regular.  It can also prove that a non-Q-Gorenstein ring is F-regular (but cannot show it is not).  See below for how to access this functionality.
         Example
             R = ZZ/5[x,y,z]/ideal(x^2+y*z);
             isFregular(R)
