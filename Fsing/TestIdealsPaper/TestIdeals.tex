@@ -35,6 +35,7 @@ urlcolor=OliveGreen
 \usepackage{enumerate}
 
 \DeclareMathOperator{\HH}{H}
+%\DeclareMathOperator{\Image}{image}
 
 \begin{document}
 \title{{TestIdeals} package for \emph{Macaulay2}}
@@ -70,7 +71,7 @@ and the resulting theory of test ideals. {\hfill\large\color{red} [Add reference
 
 We thank ??? for useful conversations and comments on the development of this package.  
 
-\section{Frobenius powers and Frobenius roots}
+\section{Frobenius powers and Frobenius roots}\label{Section: Frobenius powers and Frobenius roots}
 
 %%% Throughout  this paper $R$ will denote a polynomial ring over a field $\mathbb{K}$ of prime characteristic $p$. 
 
@@ -129,7 +130,7 @@ o6 : Ideal of R
 
 
 
-\section{$p^{-e}$- and $p^{e}$-linear maps}
+\section{$p^{-e}$- and $p^{e}$-linear maps}\label{Section: p-linear maps}
 
 \begin{definition}%{\hfill\large\color{red} [Add references]}\\
 Let  $M$ be an $S$-module and $e$ a non-negative integer.
@@ -158,7 +159,7 @@ Furthermore, any ideal $I\subseteq S$, $f$ induces an $p^{e}$-linear map $\HH_I^
 \end{example}
 
 Let $R$ be a polynomial ring with irrelevant ideal $\mathfrak{m}$ and let $g\in R\setminus \{0\}$.
-Let $E=E_R(R/\mathfrak{m})$ denote the injective hull of $R/\mathfrak{m}$.
+Let $E=E_{R\mathfrak{m}}(R_{\mathfrak{m}}/\mathfrak{m})$ denote the injective hull of $R_{\mathfrak{m}}/\mathfrak{m}$.
 
 The Frobenius map on $R$ induces a Frobenius map $S$ and on
 $\HH^{\dim R-1}_{\mathfrak{m}} (S)=E_S(S/\mathfrak{m}S)=\Ann_E g$ and the kernel of this map is given by
@@ -189,6 +190,53 @@ when the characteristic of $\mathbb{K}$ is $7$ and non-injective when the charac
 \section{Test ideals}
 
 \section{Ideals compatible with given $p^{-e}$-linear map}
+
+Throughout this section let $R$ denote a polynomial $\mathbb{K}[x_1, \dots, x_n]$. In this section we address the following question:
+given a $p^{-e}$ linear map $\phi: R \rightarrow R$, what are all ideals $I\subseteq R$ such that $\phi(I)=I$.
+We call these ideals $\phi$-compatible.
+
+Recall that in section \ref{Section: p-linear maps} we identified $p^{-e}$ linear maps
+with elements of $\Hom_R(F_*^e R, R)$ and it turns out that this is a principal $F_*^e R$-module generated
+the \emph{trace map} $\pi\in \Hom_R(F_*^e R, R)$, constructed as follows.  {\hfill\large\color{red} [Add references]}\\
+Let $B$ be a $\mathbb{K}^{p^e}$-basis for $\mathbb{K}$; 
+$F_*^e R$ is a free $R$-module with basis 
+$$\left\{ F_*^e b x_1^{\alpha_1} \dots x_n^{\alpha_n} \,|\, 0\leq \alpha_1, \dots, \alpha_n < p^e \right\}$$
+and the trace map $\pi$ is the projection onto the free summand 
+$R F_*^e  x_1^{p^e-1} \dots x_n^{p^e-1}\cong R$.
+
+We can now write our given $\phi$ multiplication by some $F_*^e u$ followed by $\pi$ and it is not hard to see that
+an ideal $I\subseteq R$ is $\phi$-compatible if and only if $u I \subseteq I^{[p^e]}$.
+
+\begin{theorem}[ {\large\color{red} [Add references]}]
+If $\phi$ is surjective, there are finitely many $\phi$-compatible ideals, consisting of all possible intersections
+of $\phi$-compatible prime ideals.
+
+In general, there are finitely many $\phi$-compatible prime ideals not containing $\sqrt{\Image \phi}$.
+ 
+\end{theorem}
+
+The method \emph{compatibleIdeals} produces the finite set of $\phi$-compatible prime ideals in the second statement of the theorem above.
+
+\begin{verbatim}
+i2 :      R = ZZ/3[u,v];
+i3 :      u = u^2*v^2;
+i4 :      compatibleIdeals(u)
+o4 = {ideal v, ideal (v, u), ideal u}
+o4 : List
+\end{verbatim}
+
+The defining condition $u I = I^{[p]}$ for $\phi$-compatible ideals allows us to
+think of these in a dual form: write $\mathfrak{m}=(x_1, \dots, x_n)$,
+$E=E_{R\mathfrak{m}}(R_{\mathfrak{m}}/\mathfrak{m})=\HH^n_{\mathfrak{m}} (R)$, and let $T: E \rightarrow E$ be the $p^e$-linear map
+induced from the Frobenius map on $R$.
+If $\psi=u T$, then $\psi \Ann_E I \subseteq \Ann_E I$ if and only if $u I = I^{[p]}$!
+Thus finding all $R$-submodules of $E$ compatible with $\psi=u T$ also amounts to finding all 
+$\phi=\pi \circ F_*^e u$ ideals.
+
+
+%Let $\mathbb{K}=\mathbb{Z}/2\mathbb{Z}$, $R=\mathbb{K}[x_1, x_2, x_3, x_4, x_5]$
+
+In (cf.~\cite[\S 9]{KatzmanParameterTestIdealOfCMRings})
 
 \section{Future plans}
 
