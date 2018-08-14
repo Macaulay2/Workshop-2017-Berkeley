@@ -49,8 +49,8 @@
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
-** Documentation: [[file:./FThresholdsPackage/FThresholds/FThresholdsDoc.m2][FThresholdsDoc.m2]] 
-** Tests: [[file:./FThresholdsPackage/FThresholds/FThresholdsTest.m2][FThresholdsTest.m2]]
+** Documentation: [[file:./FThresholdsPackage/FThresholds/MainFunctionsDoc.m2][MainFunctionsDoc.m2]] 
+** Tests: [[file:./FThresholdsPackage/FThresholds/MainFunctionsTest.m2][MainFunctionsTest.m2]]
 ** Functions [3/6]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
@@ -63,10 +63,7 @@
 *** binarySearchRecursive
 *** linearSearch
 *** nuInternal
-*** nuList
 *** nu
-*** muList
-*** mu
 *** fptApproximation
 *** ftApproximation
 *** criticalExponentApproximation
@@ -86,14 +83,14 @@
 **** DONE Change name so it doesn't refer to type of argument
      CLOSED: [2018-08-13 Mon 11:25]
 **** TODO Rewrite, so as not to assume a polynomial ring
-*** sigmaAOverPEMinus1Poly  
+*** sigma (was sigmaAOverPEMinus1Poly)  
 * Special FT functions: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholds.m2][SpecialFThresholds.m2]] [0/0]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
 ** Documentation: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsDoc.m2][SpecialFThresholdsDoc.m2]]
 ** Tests: [[file:./FThresholdsPackage/FThresholds/SpecialFThresholdsTest.m2][SpecialFThresholdsTest.m2]] 
-** Functions [0/1]
+** Functions [0/2]
 :PROPERTIES:
 :COOKIE_DATA: todo recursive
 :END:
@@ -116,6 +113,13 @@
 *** isCP
 *** findCPBelow
 *** binaryFormFPTInternal
-*** binaryFormFPT [0/1]
+*** binaryFormFPT [0/2]
 **** TODO Check for proper way to define ring
+**** TODO Remove options MaxExp and PrintCP
 
+* General notes
+** Should a function reject non-valid options? If so, how? 
+** binaryFormFPT has a template that doesn't fit the fpt function, so it should be exported (along with the options MaxExp and PrintCP (to be renamed). 
+** fpt needs a version with a single argument, for cases when the special algorithms are used.
+** Alternatively, the exponent e could be an option value (if you pass this option, fpt will try the nu computations and everything after; if not, then it won't).
+** Maybe DiagonalCheck, BinomialCheck, etc, is too much, and we could have only one option, say "UseSpecialAlgorithms" (default True). If set to false, it will go straight to the nu computation.

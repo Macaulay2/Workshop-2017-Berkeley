@@ -498,7 +498,7 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
 
     if o.Verbose then print "\nWe know t <= FPT";
     
-        -- Higher tau
+    -- Higher tau
     local a2;
     local Tau;
     if c == 0 then
@@ -508,7 +508,7 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
     )
     else
     (
-	a2 = floor( a / (p^c - 1) );
+	a2 = floor( a /(p^c-1) );
 	Tau = testIdeal( fracPart( a/(p^c-1) ), f )
     );	
 
