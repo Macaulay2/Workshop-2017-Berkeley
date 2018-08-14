@@ -92,3 +92,11 @@ TEST /// --test the isFregular function, including in the non-Q-Gorenstein case
     assert(isFregular(A) == true);
 ///
 
+TEST /// --test the isFregular function for non-Q-Gorenstein pairs (or at least when we forget the Gorenstein property)
+    R = ZZ/7[x,y];
+    f = y^2-x^3;
+    assert(isFregular(5/6, f) == false);
+    assert(isFregular(5/6, f, QGorensteinIndex=>infinity) == false);
+    assert(isFregular(5/6, f, QGorensteinIndex=>infinity, DepthOfSearch=> 10) == false);
+    assert(isFregular(5/6-1/100, f, QGorensteinIndex=>infinity, DepthOfSearch=> 10) == true);
+///

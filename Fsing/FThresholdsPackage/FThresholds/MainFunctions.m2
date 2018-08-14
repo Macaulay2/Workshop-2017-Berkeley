@@ -42,7 +42,7 @@ nu1 = method()
 nu1 ( Ideal, Ideal ) :=  ( I, J ) -> 
 (
     if not isSubset( I, radical J ) then 
-        error "nu1: The first ideal is not contained in the radical of the second.";
+        error "nu1: The first ideal is not contained in the radical of the second";
     d := 1;
     while not isSubset( I^d, J ) do d = d + 1;
     d - 1
@@ -52,7 +52,7 @@ nu1 ( Ideal, Ideal ) :=  ( I, J ) ->
 nu1 ( RingElement, Ideal ) := ( f, J ) -> 
 (
     if not isSubset( ideal f, radical J ) then 
-        error "nu1: The polynomial is not contained in the radical of the ideal.";
+        error "nu1: The polynomial is not contained in the radical of the ideal";
     d := 1;
     while not isSubset( ideal fastExponentiation( d, f ), J ) do d = d + 1;
     d - 1
@@ -246,7 +246,8 @@ ftApproximation = method();
 
 ftApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
-    if not isSubset( I, radical(J) ) then error "F-threshold undefined.";
+    if not isSubset( I, radical(J) ) then 
+        error "ftApproximation: F-threshold undefined";
     p := char ring I;
     nus := nuList(e,I,J);
     apply( nus, 1..e, (n,k) -> n/p^k )
@@ -260,7 +261,7 @@ criticalExponentApproximation = method();
 criticalExponentApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
     if not isSubset( I, radical(J) ) then 
-        error "criticalExponentApproximation: critical exponent undefined.";
+        error "criticalExponentApproximation: critical exponent undefined";
     p := char ring I;
     mus := muList( e, I, J );
     apply( mus, 1..e, (n,k) -> n/p^k )

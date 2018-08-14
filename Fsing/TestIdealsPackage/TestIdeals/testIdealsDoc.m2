@@ -83,7 +83,15 @@ doc ///
              When working in a $Q$-Gorenstein ring frequently we must find an $N$ such that $N * K_R$ is Cartier. This option lets the user skip this search if this integer $N$ is already known by setting {\tt QGorensteinIndex => N}.
 ///   
 
-
+doc ///
+    Key
+        DepthOfSearch
+    Headline
+        an option to specify how hard to search for something
+    Description
+        Text
+             This option is used to tell certain functions how hard to look for an answer.  Increasing it too much can make functions take a lot of time and resources.  Making it too small may mean that an incorrect or incomplete answer is given.  See the documentation for each function.  
+///   
 
 doc ///
     Key
@@ -192,6 +200,7 @@ doc ///
         [isFregular, MaxCartierIndex]
         [isFregular, QGorensteinIndex]
         [isFregular, IsLocal]
+        [isFregular, DepthOfSearch]
     Headline
         whether a ring or pair is strongly F-regular
     Usage
@@ -215,6 +224,8 @@ doc ///
             specifies the Q-Gorenstein index of the ring
         IsLocal => Boolean
             specifies whether to check F-regularity just at the origin
+        DepthOfSearch => ZZ
+            specifies how hard to try to prove a non-Q-Gorenstein ring is F-regular
     Outputs
         :Boolean
     Description
@@ -259,13 +270,13 @@ doc ///
         Text
             When working in a Q-Gorenstein ring this function finds an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass this function a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option {\tt QGorensteinIndex}.  In particular, specifying the {\tt QGorensteinIndex} will let the user skip the search for the value $N$.
         Text
-            You can also show that rings that are {\bf NOT} Q-Gorenstein are F-regular (it cannot show that such a ring is {\bf not} F-regular).  To do this, set the option {\tt QGorensteinIndex=>infinity}.  One may change the option {\tt MaxCartierIndex} to increase the depth of search.  
+            You can also show that rings that are {\bf NOT} Q-Gorenstein are F-regular (it cannot show that such a ring is {\bf not} F-regular).  To do this, set the option {\tt QGorensteinIndex=>infinity}.  One may change the option {\tt DepthOfSearch} to increase the depth of search.  
         Example
             S = ZZ/7[x,y,z,u,v,w];
             I = minors(2, matrix{{x,y,z},{u,v,w}});
             debugLevel = 1;
-            time isFregular(S/I, QGorensteinIndex=>infinity)
-            time isFregular(S/I, QGorensteinIndex=>infinity, MaxCartierIndex=>20)
+            time isFregular(S/I, QGorensteinIndex=>infinity, DepthOfSearch=>1)
+            time isFregular(S/I, QGorensteinIndex=>infinity, DepthOfSearch=>2)
             debugLevel = 0;
 ///
 
