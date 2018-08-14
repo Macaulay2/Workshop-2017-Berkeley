@@ -28,14 +28,14 @@
 -- Main functions: isFPT, isFJumpingNumber
 
 
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-----------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
 -- Functions for computing (nu_I)^J(p^e), (nu_f)^J(p^e)
-----------------------------------------------------------------------------------
---%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+---------------------------------------------------------------------------------
+--%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- nu1(I,J) finds the maximal N such that I^N is not contained in J, i.e., nu_I^J(1)
 nu1 = method()
 
@@ -58,10 +58,11 @@ nu1 ( RingElement, Ideal ) := ( f, J ) ->
     d - 1
 )
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- TESTS
+-- purpose is to verify containment in Frobenius powers
 
--- testRoot(J,a,I,e) checks whether J^a is a subset of I^[p^e], using frobeniusRoot
+-- testRoot(J,a,I,e) checks whether J^a is a subset of I^[p^e] by checking whether (J^a)^[1/p^e] is a subset of I
 testRoot = ( J, a, I, e ) -> isSubset( frobeniusRoot( e, a, J ), I )
 
 -- testPower(J,a,I,e) checks whether J^a is  a subset of I^[p^e], directly
@@ -80,16 +81,22 @@ testFrobeniusPower = method()
 testFrobeniusPower ( Ideal, ZZ, Ideal, ZZ ) := ( J, a, I, e ) -> 
     isSubset( frobeniusPower( a, J ), frobenius( e, I ) )
 
-testFrobeniusPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> testRoot( f, a, I, e )
+testFrobeniusPower ( RingElement, ZZ, Ideal, ZZ ) := ( f, a, I, e ) -> 
+    testRoot( f, a, I, e )
 
 -- hash table to select test function from option keyword
-test := new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot => testRoot, StandardPower => testPower }
+test := new HashTable from 
+    { 
+	FrobeniusPower => testFrobeniusPower, 
+	FrobeniusRoot => testRoot, 
+	StandardPower => testPower 
+    }
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- SEARCH FUNCTIONS
 
--- Each *Search(I,J,e,a,b,test) searches for the last n in [a,b) such that 
--- test(I,n,J,e) is false, assuming that test(I,a,J,e) is false and test(I,b,J,e) 
+-- Each *Search(I,J,e,a,b,testFunction) searches for the last n in [a,b) such that 
+-- testFunction(I,n,J,e) is false, assuming that test(I,a,J,e) is false and test(I,b,J,e) 
 -- is true.
 
 -- Non-recursive binary search, based on our previous code
@@ -119,38 +126,42 @@ binarySearchRecursive = ( I, J, e, a, b, testFunction ) ->
 -- Linear search
 linearSearch = ( I, J, e, a, b, testFunction ) -> 
 (
-    c := a + 1;
+    c := a+1;
     while not testFunction( I, c, J, e ) do c = c+1;
     c-1
 )
 
 -- hash table to select search function from option keyword
-search = new HashTable from { Binary => binarySearch, BinaryRecursive => binarySearchRecursive, Linear => linearSearch }
+search := new HashTable from 
+    { 
+	Binary => binarySearch, 
+	BinaryRecursive => binarySearchRecursive, 
+	Linear => linearSearch 
+    }
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- OPTION PACKAGES
 
-optIdealList = { ContainmentTest => StandardPower, UseColonIdeals => false, Search => Binary }
+optIdealList := 
+{ 
+    ContainmentTest => StandardPower, 
+    UseColonIdeals => false, 
+    Search => Binary 
+}
 
-optPolyList = { ContainmentTest => FrobeniusRoot, UseColonIdeals => false, Search => Binary }
+optPolyList := 
+{ 
+    ContainmentTest => FrobeniusRoot, 
+    UseColonIdeals => false, 
+    Search => Binary 
+}
 
-optIdeal = append( optIdealList, ComputePreviousNus => true )
+optIdeal := optIdealList | { ComputePreviousNus => true }
 
-optPoly = append( optPolyList, ComputePreviousNus => true )
+optPoly := optPolyList | { ComputePreviousNus => true }
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- INTERNAL FUNCTION
-
--*
-optIdealList = { ContainmentTest => StandardPower, UseColonIdeals => false, Search => Binary }
-
-optPolyList = { ContainmentTest => FrobeniusRoot, UseColonIdeals => false, Search => Binary }
-
-optIdeal = append( optIdealList, ComputePreviousNus => true )
-
-optPoly = append( optPolyList, ComputePreviousNus => true )
-
-*-
 
 nuInternal = optIdeal >> o -> ( n, f, J ) -> 
 (
@@ -205,39 +216,40 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
      theList
 )
 
-----------------------------------------------------------------------------------
+---------------------------------------------------------------------------------
 -- EXPORTED METHODS
 
 nuList = method( Options => true )
 
-nuList( ZZ, Ideal, Ideal ) := optIdealList >> o -> ( e, I, J ) -> 
+nuList ( ZZ, Ideal, Ideal ) := optIdealList >> o -> ( e, I, J ) -> 
     nuInternal( e, I, J, o )
 
-nuList( ZZ, RingElement, Ideal ) := optPolyList >> o -> ( e, I, J ) -> 
+nuList ( ZZ, RingElement, Ideal ) := optPolyList >> o -> ( e, I, J ) -> 
     nuInternal( e, I, J, o )
 
-nuList( ZZ, Ideal ) := optIdealList >> o -> ( e, I ) -> 
+nuList ( ZZ, Ideal ) := optIdealList >> o -> ( e, I ) -> 
     nuList( e, I, maxIdeal I, o )
 
-nuList( ZZ, RingElement ) := optPolyList >> o -> ( e, f ) -> 
+nuList ( ZZ, RingElement ) := optPolyList >> o -> ( e, f ) -> 
     nuList( e, f, maxIdeal f, o )
 
 nu = method( Options => true )
 
-nu( ZZ, Ideal, Ideal ) := optIdeal >> o -> ( e, I, J ) -> 
+nu ( ZZ, Ideal, Ideal ) := optIdeal >> o -> ( e, I, J ) -> 
     last nuInternal( e, I, J, o )
 
-nu( ZZ, RingElement, Ideal ) := optPoly >> o -> ( e, f, J ) -> 
+nu ( ZZ, RingElement, Ideal ) := optPoly >> o -> ( e, f, J ) -> 
     last nuInternal( e, f, J, o )
 
-nu( ZZ, Ideal ) := optIdeal >> o -> ( e, I ) -> nu( e, I, maxIdeal I, o )
+nu ( ZZ, Ideal ) := optIdeal >> o -> ( e, I ) -> nu( e, I, maxIdeal I, o )
 
-nu( ZZ, RingElement ) := optPoly >> o -> ( e, f ) -> nu( e, f, maxIdeal f, o )
+nu ( ZZ, RingElement ) := optPoly >> o -> ( e, f ) -> nu( e, f, maxIdeal f, o )
 
 -- Nus can be computed using generalized Frobenius powers, by using 
 -- ContainmentTest => FrobeniusPower. For convenience, here are some shortcuts: 
 
-muList = optIdealList >> o -> x -> nuList( x, o, ContainmentTest => FrobeniusPower ) 
+muList = optIdealList >> o -> x -> 
+    nuList( x, o, ContainmentTest => FrobeniusPower ) 
 
 mu = optIdeal >> o -> x -> nu( x, o, ContainmentTest => FrobeniusPower ) 
 
@@ -249,39 +261,40 @@ mu = optIdeal >> o -> x -> nu( x, o, ContainmentTest => FrobeniusPower )
 
 --Approximates the F-pure Threshold
 --Gives a list of nu_I(p^d)/p^d for d=1,...,e
-fptApproximation = method();
+fptApproximation = method()
 
-fptApproximation ( ZZ, Ideal ) := (e, I) ->
+fptApproximation ( ZZ, Ideal ) := ( e, I ) ->
 (
      p := char ring I;
-     nus := nuList(e,I);
+     nus := nuList( e, I );
      apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
-fptApproximation ( ZZ, RingElement ) := ( e, f ) -> fptApproximation( e, ideal(f) )
+fptApproximation ( ZZ, RingElement ) := ( e, f ) -> 
+    fptApproximation( e, ideal f )
 
 --Approximates the F-Threshold with respect to an ideal J
 --More specifically, this gives a list of nu_I^J(p^d)/p^d for d=1,...,e
 
-ftApproximation = method();
+ftApproximation = method()
 
 ftApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
-    if not isSubset( I, radical(J) ) then 
+    if not isSubset( I, radical J ) then 
         error "ftApproximation: F-threshold undefined";
     p := char ring I;
-    nus := nuList(e,I,J);
+    nus := nuList( e, I, J );
     apply( nus, 1..e, (n,k) -> n/p^k )
 )
 
 ftApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
    fptApproximation( e, ideal(f), J )
 
-criticalExponentApproximation = method();
+criticalExponentApproximation = method()
 
 criticalExponentApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 (
-    if not isSubset( I, radical(J) ) then 
+    if not isSubset( I, radical J ) then 
         error "criticalExponentApproximation: critical exponent undefined";
     p := char ring I;
     mus := muList( e, I, J );
@@ -289,21 +302,15 @@ criticalExponentApproximation ( ZZ, Ideal, Ideal ) := ( e, I, J ) ->
 )
 
 criticalExponentApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) -> 
-    criticalExponentApproximation( e, ideal(f), J )
+    criticalExponentApproximation( e, ideal f, J )
 
 --Guesses the FPT of ff.  It returns a list of all numbers in 
---the range suggested by nu(e1,ff) with maxDenom as the maximum denominator
-guessFPT ={OutputRange=>false}>>o -> (ff, e1, maxDenom) ->
+--the range suggested by nu( e1, ff ) with maxDenom as the maximum denominator
+guessFPT := ( f, e, maxDenom ) ->
 (
-    nn := nu(e1,ff);
-    pp := char ring ff;
-    if (o.OutputRange == false) then 
-        findNumberBetween( maxDenom, nn/(pp^e1-1), (nn+1)/(pp^e1) )
-    else
-        { 
-	    { nn/(pp^e1-1), (nn+1)/(pp^e1) }, 
-	    findNumberBetween( maxDenom, nn/(pp^e1-1), (nn+1)/(pp^e1) ) 
-	}
+    Nu := nu(e,f);
+    p := char ring f;
+    findNumberBetween( maxDenom, Nu/(p^e-1), (Nu+1)/p^e )
 )
 
 ----------------------------------------------------------------
@@ -333,7 +340,7 @@ isFRegularPoly = ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 
 -- F-pure threshold estimation, at the origin.
 -- e is the max depth to search in.
--- FRegularityCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
+-- FRegularityCheck is whether the last isFRegularPoly is run (which can take a significant amount of time). 
 -- This is essentially the same as the old estFPT, with a couple more tests, and changes to make the code clearer.
 fpt = method( 
     Options => 
@@ -352,7 +359,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     -- Check if option values are valid
     checkOptions( o, 
         {
-	    FinalCheck => Boolean, 
+	    FRegularityCheck => Boolean, 
 	    Verbose => Boolean, 
 	    DiagonalCheck => Boolean, 
 	    BinomialCheck => Boolean, 
