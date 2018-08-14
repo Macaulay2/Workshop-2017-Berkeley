@@ -104,7 +104,7 @@ doc ///
         e:ZZ
         BinaryFormCheck => Symbol
             Option to specify whether to check if f is a binary form.
-        BinomialChheck => Symbol 
+        BinomialCheck => Symbol 
             Option to specify whether to check if f is a binomial polynomial.
 	DiagonalCheck => Symbol
 	    Option to specify whether to check if f is a diagonal polynomial.
