@@ -213,7 +213,7 @@ o6 : Ideal of R
 \end{verbatim}
 The output of {\tt testModule} is a list with three items.  The first entry is the test module, the second is the canonical module (as an ideal) that it lives inside, and the third is the element $u$ described above (not listed here, since it is rather complicated).  Note since this ring is Gorenstein, the canonical module is simply represented as the unit ideal.
 
-Here is another example where the ring is not Gorenstein.  
+Here is another example where the ring is not Gorenstein.
 \begin{verbatim}
 i2 : R = ZZ/5[x,y,z]/ideal(y*z, x*z, x*y);
 i3 : N = testModule(R);
@@ -226,23 +226,37 @@ o5 = ideal (y - z, x + z)
 o5 : Ideal of R
 \end{verbatim}
 
-We briefly explain how this is computed.  First we find a \emph{test element}.  
-\begin{remark}[Computation of test elements]  
+We briefly explain how this is computed.  First we find a \emph{test element}.
+\begin{remark}[Computation of test elements]
 \label{rem.ComputationOfTestElements}
 Roughly, we recall that an element of the Jacobian ideal that is not contained in any minimal prime is a test element \cite{}.  We compute test elements by computing random partial derivatives (and linear combinations thereof) until we find an element that doesn't vanish at all the minimal primes.  This method is much faster than computing the entire Jacobian ideal.  If you know your ring is a domain, you can use the {\tt AssumeDomain} flag to speed this up further.
 \end{remark}
 
-After the test element $c$ has been identified, we pullback the ideal $\omega_R$ to an ideal $J = S$.  Then we compute the following ascending sequence of ideals 
+After the test element $c$ has been identified, we pullback the ideal $\omega_R$ to an ideal $J = S$.  Then we compute the following ascending sequence of ideals
 \begin{equation}
 \label{eq.AscendIdealExplanation}
 \begin{array}{rll}
 J_1 := & = J + (c J)^{[1/p]} & = {\tt J + frobeniusRoot(1, c*J)}\\
 J_2 := & = J + (c J)^{[1/p]} + (c^{1+p} J)^{[1/p^2]} & = {\tt J + frobeniusRoot(1, c*J_1)}\\
 J_3 := & = J + (c J)^{[1/p]} + (c^{1+p} J)^{[1/p^2]} + (c^{1+p+p^2} J)^{[1/p^3]} & = {\tt J + frobeniusRoot(1, c*J_2)}.\\
-\dots 
+\dots
 \end{array}
 \end{equation}
-In fact, because this strategy is used in several contexts, you can call it directly for a chosen ideal $J$ and $u$ with the function {\tt ascendIdeal}. 
+As soon as this ascending sequence of ideals stabilizes, we are done.  
+In fact, because this strategy is used in several contexts, you can call it directly for a chosen ideal $J$ and $u$ with the function {\tt ascendIdeal} (this is done for test ideals below).
+
+We can also compute parameter test modules of pairs $\tau(\omega_R, f^{t})$ with $t \in \mathbb{Q}_{\geq 0}$.  This is done by modifying the element $u$ when the denominator of $t$ is not divisible by $p$.  When $t$ has $p$ in the denominator, we rely on the fact (see \cite{}) that 
+\[
+\begin{array}{rcl}
+T(\tau(\omega_R, f^a)) & = & \tau(\omega_R, f^{a/p})\\
+{\tt frobeniusRoot(1, u*I_1)} & {\tt =} & {\tt I_2}
+\end{array}
+\]
+Where the second line roughly explains how this is accomplished internally, here ${\tt I_1}$ is $\tau(\omega_R, f^a)$ pulled back to $S$ and likewise $I_2$ defines $\tau(\omega_R, f^a)$ modulo the defining ideal of $R$.
+
+\begin{remark}[Optimizations in {\tt ascendIdeal} and other {\tt testModule} computations]
+Throughout the computations described above, we very frequently use the following fact.  
+\end{remark}
 
 \subsection{Parameter test ideals}
 
@@ -259,10 +273,10 @@ We call these ideals $\phi$-compatible.
 Recall that in section \ref{Section: p-linear maps} we identified $p^{-e}$ linear maps
 with elements of $\Hom_R(F_*^e R, R)$ and it turns out that this is a principal $F_*^e R$-module generated
 the \emph{trace map} $\pi\in \Hom_R(F_*^e R, R)$, constructed as follows.  {\hfill\large\color{red} [Add references]}\\
-Let $B$ be a $\mathbb{K}^{p^e}$-basis for $\mathbb{K}$; 
-$F_*^e R$ is a free $R$-module with basis 
+Let $B$ be a $\mathbb{K}^{p^e}$-basis for $\mathbb{K}$;
+$F_*^e R$ is a free $R$-module with basis
 $$\left\{ F_*^e b x_1^{\alpha_1} \dots x_n^{\alpha_n} \,|\, 0\leq \alpha_1, \dots, \alpha_n < p^e \right\}$$
-and the trace map $\pi$ is the projection onto the free summand 
+and the trace map $\pi$ is the projection onto the free summand
 $R F_*^e  x_1^{p^e-1} \dots x_n^{p^e-1}\cong R$.
 
 We can now write our given $\phi$ multiplication by some $F_*^e u$ followed by $\pi$ and it is not hard to see that
@@ -273,7 +287,7 @@ If $\phi$ is surjective, there are finitely many $\phi$-compatible ideals, consi
 of $\phi$-compatible prime ideals.
 
 In general, there are finitely many $\phi$-compatible prime ideals not containing $\sqrt{\Image \phi}$.
- 
+
 \end{theorem}
 
 The method \emph{compatibleIdeals} produces the finite set of $\phi$-compatible prime ideals in the second statement of the theorem above.
@@ -291,7 +305,7 @@ think of these in a dual form: write $\mathfrak{m}=(x_1, \dots, x_n)$,
 $E=E_{R\mathfrak{m}}(R_{\mathfrak{m}}/\mathfrak{m})=\HH^n_{\mathfrak{m}} (R)$, and let $T: E \rightarrow E$ be the $p^e$-linear map
 induced from the Frobenius map on $R$.
 If $\psi=u T$, then $\psi \Ann_E I \subseteq \Ann_E I$ if and only if $u I = I^{[p]}$!
-Thus finding all $R$-submodules of $E$ compatible with $\psi=u T$ also amounts to finding all 
+Thus finding all $R$-submodules of $E$ compatible with $\psi=u T$ also amounts to finding all
 $\phi=\pi \circ F_*^e u$ ideals.
 
 
