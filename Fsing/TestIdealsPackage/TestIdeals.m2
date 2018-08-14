@@ -128,6 +128,7 @@ export{
     "MaxCartierIndex", --the cartier index limfindAllCompatibleIdealsit in the test ideal method
     "testIdeal", --Karl (the new version)
     "QGorensteinIndex", --if you already know the Q-Gorenstein index, you can pass it
+    "DepthOfSearch",
     "isFregular",
     "isFpure",
     "compatibleIdeals" ---MK	   
