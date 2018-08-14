@@ -77,11 +77,11 @@ doc ///
      Key
           DiagonalCheck
      Headline
-          An option for the function fpt
+          An option for the function fpt to check whether the input is a diagonal polynomial. 
      Description
           Text
-               Enables the user to check whether the input is a diagonal polynomial, i.e., of the form x_1^(d_1) + ... + x_n^(d_n). 
-	            Valid values are {\tt true} or {\tt false}
+               Enables the user to check whether the input is a diagonal polynomial, i.e., of the form x_1^(d_1) + ... + x_n^(d_n) 
+	       in a polynomial ring in variables x_1,...,x_n.  Can only take on Boolean values.  Default value for fpt is {\tt true}. 
      SeeAlso
           fpt
 ///
