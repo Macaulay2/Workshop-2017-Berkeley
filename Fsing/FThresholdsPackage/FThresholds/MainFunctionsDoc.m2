@@ -89,7 +89,7 @@ doc ///
 doc ///
      Key
          fpt
-	 (fpt RingElement, ZZ)
+	 fpt(RingElement, ZZ)
 	 [fpt, BinaryFormCheck]
 	 [fpt, BinomialCheck]
 	 [fpt, DiagonalCheck]
@@ -100,11 +100,19 @@ doc ///
      Usage
           fpt(f,e,FRegularityCheck=>V,Verbose=>W)
      Inputs
-         f:RingElement
-         e:ZZ
-         BinaryFormCheck => Symbol
-            option to specify whether to check if f is a binary form
-	 BinomialChheck => Symbol 
+        f:RingElement
+        e:ZZ
+        BinaryFormCheck => Symbol
+            Option to specify whether to check if f is a binary form.
+        BinomialChheck => Symbol 
+            Option to specify whether to check if f is a binomial polynomial.
+	DiagonalCheck => Symbol
+	    Option to specify whether to check if f is a diagonal polynomial.
+	FRegularityCheck => Symbol
+	    Option to specify whether to check if the given pair is F-regular at the homogeneous maximal ideal 
+	    (so that if not, the F-pure threshold can be determined from the F-signature function).
+    	NuCheck => Symbol
+	    Option to specify whether to check if nu/(p^e-1) of (nu+1)/p^e is the F-pure threshold in computations.
      Outputs
         L:List
         Q:QQ
@@ -149,7 +157,7 @@ doc ///
           Text
                Enables the user to check whether the given pair is F-regular at the given maximal ideal 
 	            (so that if not, the F-pure threshold can be determined from the F-signature function).
-		    Valid values are {\tt true} or {\tt false}
+		    Only takes on Boolean values. 
      SeeAlso
           fpt
 ///
