@@ -2,11 +2,11 @@ doc ///
      Key
           BinaryFormCheck
      Headline
-          An option for fpt to check whether 
+          An option for the function fpt to check whether input is binary form. 
      Description
           Text
-               Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
-	            Valid values are {\tt true} or {\tt false}.
+               If {\tt true}, the input is a form in two variables (so that the function "binaryFormFPT" can then be used). 
+	       Can take on only Boolean values.  Default value for fpt is {\tt true}.
      SeeAlso
           fpt
 ///
@@ -15,10 +15,11 @@ doc ///
      Key
           BinomialCheck
      Headline
-          An option for the function fpt
+          An option for the function fpt to check whether the input is a binomial polynomial. 
      Description
           Text
-               Enables the user to check whether an input is a binomial in a polynomial ring.  Valid values are {\tt true} or {\tt false}.
+               If {\tt true}, the input is a binomial in a polynomial ring.  Can take on only Boolean values. 
+	       Default value for fpt is {\tt true}.
      SeeAlso
           fpt
 ///
@@ -27,10 +28,11 @@ doc ///
      Key
           ComputePreviousNus
      Headline
-          An option for nu and nuList
+          An option for functions nu and nuList to compute nus recursively. 
      Description
           Text
-               Valid values are {\tt true} or {\tt false}
+               If {\tt true}, then nu values are computed recursively, in succession; otherwise, another method can be applied.  
+	       Can take on only Boolean values. Default value for nu and nuList is {\tt true}.
      SeeAlso
           nu
           nuList
@@ -40,10 +42,12 @@ doc ///
      Key
           ContainmentTest
      Headline
-          An option for nu and nuList. 
+          An option for functions nu and nuList to specify containment test used. 
      Description
           Text
-               Specifies which test you use to check containment of powers of ideals. Valid values are {\tt FrobeniusPower, FrobeniusRoot}, and {\tt StandardPower}. 
+               Specifies which test you use to check containment of powers of ideals. Valid values are {\tt FrobeniusPower}, 
+	       {\tt FrobeniusRoot}, and {\tt StandardPower}. Default for nu and nuList applied to a polynomial is {\tt FrobeniusRoot}, 
+	       and applied to an ideal is {\tt StandardPower}. 
 ///
 
 doc ///
@@ -52,7 +56,7 @@ doc ///
          (criticalExponentApproximation,ZZ,Ideal,Ideal)
          (criticalExponentApproximation,ZZ,RingElement,Ideal)
      Headline
-        Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
+        Gives a list of mu_I^J(p^d)/p^d or mu_f^J(p^d)/p^d for d=0,...,e.
      Usage
           criticalExponentApproximation(e,I,J)
           criticalExponentApproximation(e,f,J) 
@@ -65,7 +69,8 @@ doc ///
          :List
      Description
          Text 
-             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
+             This returns a list of mu_I^J(p^d)/p^d or mu_f^J(p^d)/p^dfor d = 0,...,e.  As p approaches infinity, 
+	     the sequence of these terms converges to the critical exponent of I or f with respect to J.       
 ///
 
 doc ///
