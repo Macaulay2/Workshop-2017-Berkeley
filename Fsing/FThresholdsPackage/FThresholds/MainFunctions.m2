@@ -349,6 +349,18 @@ fpt = method(
 
 fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) -> 
 (
+    -- Check if option values are valid
+    checkOptions( o, 
+        {
+	    FinalCheck => Boolean, 
+	    Verbose => Boolean, 
+	    DiagonalCheck => Boolean, 
+	    BinomialCheck => Boolean, 
+	    BinaryFormCheck => Boolean, 
+	    NuCheck => Boolean    	
+	}
+    );
+
     -- Check if polynomial has coefficients in a finite field
     if not isPolynomialOverFiniteField f  then 
         error "fpt: expected polynomial with coefficients in a finite field";
@@ -501,18 +513,9 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
     (a,b,c) := toSequence decomposeFraction( p, t );
 
     -- sigma
-    local a1;
-    local Sigma;
-    if c == 0 then 
-    (
-	a1 = a-1;
-	Sigma = sigma( f, p-1, 1 )
-    )
-    else 
-    (
-	a1 = floor( (a-1)/(p^c-1) );
-	Sigma = sigma( f, ( (a-1)%(p^c-1) ) + 1, c )
-    );
+    a1 := if c == 0 then a-1 else floor( (a-1)/(p^c-1) );
+    Sigma := if c == 0 then sigma( f, p-1, 1 ) 
+        else sigma( f, ( (a-1)%(p^c-1) ) + 1, c );	
     if o.Verbose then print "\nSigma Computed";
 	
     if not isSubset( ideal 1_R, frobeniusRoot( b, a1, f , Sigma ) ) then
@@ -521,19 +524,8 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
     if o.Verbose then print "\nWe know t <= FPT";
     
     -- Higher tau
-    local a2;
-    local Tau;
-    if c == 0 then
-    (
-	a2 = a;
-	Tau = ideal 1_R
-    )
-    else
-    (
-	a2 = floor( a /(p^c-1) );
-	Tau = testIdeal( fracPart( a/(p^c-1) ), f )
-    );	
-
+    a2 := if c == 0 then a else floor( a /(p^c-1) );
+    Tau := if c == 0 then ideal 1_R else testIdeal( fracPart( a/(p^c-1) ), f );
     if o.Verbose then print "\nHigher tau Computed";
     
     not isSubset( ideal 1_R, frobeniusRoot( b, a2, f, Tau ) )
