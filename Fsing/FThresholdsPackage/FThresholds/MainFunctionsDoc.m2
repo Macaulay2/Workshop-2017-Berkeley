@@ -2,27 +2,13 @@ doc ///
      Key
           BinaryFormCheck
      Headline
-          An option for the function fpt
+          An option for fpt to check whether 
      Description
           Text
-              Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
-	           Valid values are {\tt true} or {\tt false}.
+               Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
+	            Valid values are {\tt true} or {\tt false}.
      SeeAlso
           fpt
-///
-
-doc ///
-     Key
-          Search
-     Headline
-          An option for the functions nu and nuList
-     Description
-          Text
-               Lets user specify the order in which ideal containment of powers are computed. Valid values are 
-	            {\tt Binary, BinaryRecursive}, and {\tt Linear}. 
-     SeeAlso
-          nu
-          nuList
 ///
 
 doc ///
@@ -33,43 +19,6 @@ doc ///
      Description
           Text
                Enables the user to check whether an input is a binomial in a polynomial ring.  Valid values are {\tt true} or {\tt false}.
-     SeeAlso
-          fpt
-///
-
-
-doc ///
-     Key
-          FinalCheck
-     Headline
-          An option for the function fpt
-     Description
-          Text
-               Valid values are {\tt true} or {\tt false}
-     SeeAlso
-          fpt
-///
-
-doc ///
-     Key
-          DiagonalCheck
-     Headline
-          An option for the function fpt
-     Description
-          Text
-               Valid values are {\tt true} or {\tt false}
-     SeeAlso
-          fpt
-///
-
-doc ///
-     Key
-          NuCheck
-     Headline
-          An option for the function fpt
-     Description
-          Text
-               Valid values are {\tt true} or {\tt false}
      SeeAlso
           fpt
 ///
@@ -95,6 +44,41 @@ doc ///
      Description
           Text
                Specifies which test you use to check containment of powers of ideals. Valid values are {\tt FrobeniusPower, FrobeniusRoot}, and {\tt StandardPower}. 
+///
+
+doc ///
+     Key
+         criticalExponentApproximation
+         (criticalExponentApproximation,ZZ,Ideal,Ideal)
+         (criticalExponentApproximation,ZZ,RingElement,Ideal)
+     Headline
+        Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
+     Usage
+          criticalExponentApproximation(e,I,J)
+          criticalExponentApproximation(e,f,J) 
+     Inputs
+         e:ZZ
+         I:Ideal
+         J:Ideal
+         f:RingElement
+     Outputs
+         :List
+     Description
+         Text 
+             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
+///
+
+doc ///
+     Key
+          DiagonalCheck
+     Headline
+          An option for the function fpt
+     Description
+          Text
+               Enables the user to check whether the input is a diagonal polynomial, i.e., of the form x_1^(d_1) + ... + x_n^(d_n). 
+	            Valid values are {\tt true} or {\tt false}
+     SeeAlso
+          fpt
 ///
 
 doc ///
@@ -138,6 +122,22 @@ doc ///
              This returns a list of nu_I(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I(p^d)/p^d} converges to the F-pure threshold.        
 ///
 
+
+doc ///
+     Key
+          FRegularityCheck
+     Headline
+          An option for the function fpt
+     Description
+          Text
+               Enables the user to check whether the given pair is F-regular at the given maximal ideal 
+	            (so that if not, the F-pure threshold can be determined from the F-signature function).
+		    Valid values are {\tt true} or {\tt false}
+     SeeAlso
+          fpt
+///
+
+
 doc ///
      Key
          ftApproximation
@@ -158,28 +158,6 @@ doc ///
      Description
          Text 
              This returns a list of nu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I^J(p^d)/p^d} converges to the F-threshold of I or f with respect to J.         
-///
-
-doc ///
-     Key
-         criticalExponentApproximation
-         (criticalExponentApproximation,ZZ,Ideal,Ideal)
-         (criticalExponentApproximation,ZZ,RingElement,Ideal)
-     Headline
-        Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
-     Usage
-          criticalExponentApproximation(e,I,J)
-          criticalExponentApproximation(e,f,J) 
-     Inputs
-         e:ZZ
-         I:Ideal
-         J:Ideal
-         f:RingElement
-     Outputs
-         :List
-     Description
-         Text 
-             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
 ///
 
 doc ///
@@ -218,7 +196,7 @@ doc ///
         Text
             Returns true if t is an F-jumping number, otherwise it returns false.
 ///
-
+ 
 doc ///
      Key
         isFPT 
@@ -238,6 +216,7 @@ doc ///
         Text
              Returns true if t is the FPT, otherwise it returns false.  If Origin is true, it only checks it at the homogeneous maximal ideal.
 ///
+
  
 doc ///
      Key
@@ -263,6 +242,18 @@ doc ///
      Description
         Text
             Given an ideal I in a polynomial ring k[x1, ..., xn], this function outputs the maximal integer nu such that I^nu is not in ideal J^[p^e].  If the input is (ZZ,Ideal) then the function computes the maximal integer nu such that I^nu in not in (x_1, ...,x_n)^[p^e]. If a RingElement is passed, it computes nu of the principal ideal generated by this element. This is used frequently to compute the F-pure threshold.
+///
+
+doc ///
+     Key
+          NuCheck
+     Headline
+          An option for the function fpt
+     Description
+          Text
+               Valid values are {\tt true} or {\tt false}
+     SeeAlso
+          fpt
 ///
 
 doc ///
@@ -299,6 +290,20 @@ doc ///
      Description
           Text
                Valid values are {\tt true} and {\tt false}
+///
+
+doc ///
+     Key
+          Search
+     Headline
+          An option for the functions nu and nuList
+     Description
+          Text
+               Lets user specify the order in which ideal containment of powers are computed. Valid values are 
+	            {\tt Binary, BinaryRecursive}, and {\tt Linear}. 
+     SeeAlso
+          nu
+          nuList
 ///
 
 doc ///

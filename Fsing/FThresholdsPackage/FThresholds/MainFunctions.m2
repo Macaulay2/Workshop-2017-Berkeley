@@ -333,12 +333,12 @@ isFRegularPoly = ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 
 -- F-pure threshold estimation, at the origin.
 -- e is the max depth to search in.
--- FinalCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
+-- FRegularityCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
 -- This is essentially the same as the old estFPT, with a couple more tests, and changes to make the code clearer.
 fpt = method( 
     Options => 
         {
-	    FinalCheck => true, 
+	    FRegularityCheck => true, 
 	    Verbose => false, 
 	    DiagonalCheck => true, 
 	    BinomialCheck => true, 
@@ -470,7 +470,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
 	return a
     );
 	       	
-    if o.FinalCheck then 
+    if o.FRegularityCheck then 
     (
 	if o.Verbose then print "\nStarting final check ..."; 
         if not isFRegularPoly( f, a, M ) then 
@@ -485,7 +485,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     if o.Verbose then 
         print(
 	    "\nfpt lies in the interval " |
-	    ( if o.FinalCheck then "( " else "[ " ) |  
+	    ( if o.FRegularityCheck then "( " else "[ " ) |  
 	    toString a | 
 	    ", " | 
 	    toString( (n+1)/p^e ) | 
