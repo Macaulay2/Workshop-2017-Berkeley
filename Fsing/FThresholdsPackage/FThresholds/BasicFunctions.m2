@@ -62,47 +62,37 @@ properFactors = n ->
 
 --===============================================================================
 
-findNumberBetweenWithDenom = method(); 
+findNumberBetweenWithDenom = method()
 
 --This function finds rational numbers in the range of the interval
 --with the given denominator
-findNumberBetweenWithDenom( ZZ, ZZ, ZZ) := ( myDenom, firstN, secondN) ->
+findNumberBetweenWithDenom ( ZZ, QQ, QQ ) := ( d, a, b ) ->
 (
-     upperBound := floor((secondN)*myDenom)/myDenom; 
-          --finds the number with denominator myDenom less than the second number
-     lowerBound := ceiling((firstN)*myDenom)/myDenom; 
-          --finds the number with denominator myDenom greater than the first number
-
-     if (upperBound >= lowerBound) then (
-	  --first we check whether there is anything to search for
-
-	  apply( 1+numerator((upperBound-lowerBound)*myDenom), i-> lowerBound+(i/myDenom) )
-     )
-     else {}
+     A := ceiling( a*d ); 
+     B := floor( b*d ); 
+     toList( A..B )/d
 )
 
---for backwards compatibility
---findNumberBetweenWithDenom( ZZ, List ) := (a, L) -> findNumberBetweenWithDenom(a, L#0, L#1);
-
-
-findNumberBetween = method(); 
+findNumberBetween = method()
 
 --This function finds rational numbers in the range of 
---the interval; the max denominator allowed is listed. 
-findNumberBetween( ZZ, ZZ, ZZ) := ( maxDenom, firstN, secondN)->
+--the interval, with a given maximum denominator. 
+findNumberBetween ( ZZ, ZZ, ZZ ) := ( maxDenom, a, b ) ->
 (
      divisionChecks :=  new MutableList from maxDenom:true; 
          -- creates a list with maxDenom elements all set to true.
      outList := {};
+     local factorList;
      i := maxDenom;
-     while (i > 0) do (
-	  if ((divisionChecks#(i-1)) == true) then --if we need to do a computation..
-	      outList = join(outList,findNumberBetweenWithDenom(i, firstN, secondN ));
-	  factorList := properFactors(i);
-     	  apply(factorList, j-> (divisionChecks#(j-1) = false) );
+     while i > 0 do 
+     (
+	  if divisionChecks#(i-1) then --if we need to do a computation..
+	      outList = outList | findNumberBetweenWithDenom( i, a, b );
+	  factorList = properFactors i;
+     	  apply( factorList, j -> divisionChecks#(j-1) = false );
 	  i = i - 1;
      );
-     sort(toList set outList)
+     sort toList set outList
 )
 
 --for backwards compatibility
