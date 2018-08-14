@@ -45,7 +45,7 @@ urlcolor=OliveGreen
 \email{schwede@math.utah.edu}
 
 \begin{abstract}
-  This note describes a \emph{Macaulay2} package for computations in commutative rings prime related to $p^{-e}$-linear and Frobenius maps,
+  This note describes a \emph{Macaulay2} package for computations in commutative rings prime related to $p^{-e}$-linear and $p^{e}$-linear  maps,
   singularities defined in terms of these maps,  various test ideals and modules, and ideals compatible with a given $p^{-e}$-linear map.
 \end{abstract}
 
@@ -236,7 +236,7 @@ o5 : Ideal of R
 \section{Ideals compatible with given $p^{-e}$-linear map}
 
 Throughout this section let $R$ denote a polynomial $\mathbb{K}[x_1, \dots, x_n]$. In this section we address the following question:
-given a $p^{-e}$ linear map $\phi: R \rightarrow R$, what are all ideals $I\subseteq R$ such that $\phi(I)=I$.
+given a $p^{-e}$ linear map $\phi: R \rightarrow R$, what are all ideals $I\subseteq R$ such that $\phi(I)=I$?
 We call these ideals $\phi$-compatible.
 
 Recall that in section \ref{Section: p-linear maps} we identified $p^{-e}$ linear maps
@@ -248,7 +248,7 @@ $$\left\{ F_*^e b x_1^{\alpha_1} \dots x_n^{\alpha_n} \,|\, 0\leq \alpha_1, \dot
 and the trace map $\pi$ is the projection onto the free summand 
 $R F_*^e  x_1^{p^e-1} \dots x_n^{p^e-1}\cong R$.
 
-We can now write our given $\phi$ multiplication by some $F_*^e u$ followed by $\pi$ and it is not hard to see that
+We can now write our given $\phi$ as multiplication by some $F_*^e u$ followed by $\pi$ and it is not hard to see that
 an ideal $I\subseteq R$ is $\phi$-compatible if and only if $u I \subseteq I^{[p^e]}$.
 
 \begin{theorem}[ {\large\color{red} [Add references]}]
@@ -281,14 +281,16 @@ $\phi=\pi \circ F_*^e u$ ideals.
 Let $\mathbb{K}=\mathbb{Z}/2\mathbb{Z}$, $R=\mathbb{K}[x_1, x_2, x_3, x_4, x_5]$, $\mathfrak{m}=(x_1, \dots, x_5)R$, and let $I$ be the ideal of
 $2\times 2$ minors of
 $$
+\left[
 \begin{array}{c c c c}
  x_1 & x_2 & x_2 & x_5\\
  x_4 & x_4 & x_3 & x_1
 \end{array}
+\right]
 $$
 In (cf.~\cite[\S 9]{KatzmanParameterTestIdealOfCMRings}) it is shown that
-there is a surjection $\Ann_E I \rightarrow \HH^2_(\mathfrak{m}) (R/I)$
-which is compatible with with the induced $p^1$-linear map on $\HH^2_(\mathfrak{m}) (R/I)$
+there is a surjection $\Ann_E I \rightarrow \HH^2_{\mathfrak{m}} (R/I)$
+which is compatible with with the induced $p^1$-linear map on $\HH^2_{\mathfrak{m}} (R/I)$
 and the $p^1$-linear map $u T$ on $\Ann_E I$ with 
 $$u=x_1^3x_2x_3 + x_1^3x_2x_4+x_1^2x_3x_4x_5+ x_1x_2x_3x_4x_5+ x_1x_2x_4^2x_5+ x_2^2x_4^2x_5+x_3x_4^2x_5^2+ x_4^3x_5^2 .$$   
 

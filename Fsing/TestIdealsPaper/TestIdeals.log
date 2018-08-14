@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=latex 2018.7.30)  14 AUG 2018 12:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.16 (TeX Live 2015/Debian) (preloaded format=latex 2018.7.30)  14 AUG 2018 14:21
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -539,27 +539,27 @@ Package hyperref Warning: Token not allowed in a PDF string (PDFDocEncoding):
 (hyperref)                removing `math shift' on input line 236.
 
 [3] [4] (./TestIdeals.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 342.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 344.
  [5]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 342.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 344.
  (./TestIdeals.aux)
-Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 342.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 342.
+Package atveryend Info: Empty hook `AtVeryEndDocument' on input line 344.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 344.
 Package rerunfilecheck Info: File `TestIdeals.out' has not changed.
 (rerunfilecheck)             Checksum: BBAD7DDEE5228847C8BE4DAD3FD1921D;798.
 
 
 LaTeX Warning: There were undefined references.
 
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 342.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 344.
  ) 
 Here is how much of TeX's memory you used:
  7777 strings out of 493030
  104091 string characters out of 6136260
- 204895 words of memory out of 5000000
+ 205895 words of memory out of 5000000
  11033 multiletter control sequences out of 15000+600000
  17012 words of font info for 68 fonts, out of 8000000 for 9000
  1302 hyphenation exceptions out of 8191
  34i,12n,35p,401b,457s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on TestIdeals.dvi (5 pages, 30028 bytes).
+Output written on TestIdeals.dvi (5 pages, 30068 bytes).
