@@ -119,17 +119,18 @@ doc ///
      Description
           Text 
               This function first tries to find an exact value for the F-pure threshold of f at the origin, and returns the value 
-	      if possible. Otherwise, it returns a range of possible values for the F-pure threshold.  If Options DiagonalCheck, 
-	      BinomialCheck, and BinaryFormCheck are {\tt true}, respectively (and each have default value {\tt true}), then the 
-	      function first checks whether f is a diagonal polynomial, a binomial polynomial, or a form in two variables, respectively.  
-	      If so, algorithms of D. Hernandez, or D. Hernandez and P. Teixeira, are applied to compute the F-pure threshold of f. 
+	      if possible.  Otherwise, it returns a range of possible values for the F-pure threshold.  If Options DiagonalCheck, 
+	      BinomialCheck, and BinaryFormCheck are set to {\tt true}, respectively (and each have default value {\tt true}), 
+	      then the function first checks whether f is a diagonal polynomial, a binomial polynomial, or a form in two variables, 
+	      respectively.  If it is one of these, algorithms of D. Hernandez, or D. Hernandez and P. Teixeira, are executed to 
+	      compute the F-pure threshold of f.  Otherwise, the function computes nu_f(p^e) and if NuCheck is set to {\tt true}
+	      (its default value), then checks whether either nu/(p^e-1) or (nu+1)/p^e equal the F-pure threshold.  If the value 
+	      is still unknown, the function uses the convexity of the F-signature function, and a secant line argument, to find 
+	      the F-pure threshold.  If FRegularityCheck is set to {\tt true} (its default value), then 
 	      
-	      
-	      It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  
-	      Next it tries to estimate the range of the FPT using nu's.  
-	      Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument. 
 	      finalCheck is a Boolean with default value True that determines whether the last isFRegularPoly is run (it is possibly very slow).  
-	      If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be.  Verbose set to true displays verbose output.
+	      If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be. 
+	      Verbose set to {\tt true} displays verbose output.
 ///
 
 doc ///
