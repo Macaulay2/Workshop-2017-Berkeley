@@ -2,10 +2,10 @@ doc ///
      Key
           BinaryFormCheck
      Headline
-          An option for fpt to check whether 
+          An option for the function fpt to check whether input is binary form. 
      Description
           Text
-               Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
+               If true, the input is a form in two variables (so that the function "binaryFormFPT" can then be used). 
 	            Valid values are {\tt true} or {\tt false}.
      SeeAlso
           fpt
@@ -15,7 +15,7 @@ doc ///
      Key
           BinomialCheck
      Headline
-          An option for the function fpt
+          An option for the function fpt to check whether the input is a binomial polynomial. 
      Description
           Text
                Enables the user to check whether an input is a binomial in a polynomial ring.  Valid values are {\tt true} or {\tt false}.
