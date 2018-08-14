@@ -333,3 +333,33 @@ splittingField RingElement := GaloisField => F ->
     GF( p, deg * floorLog( p, ord ) )
 )
 
+--===============================================================================
+
+-- checkOptions checks whether the option values passed to a function are valid.
+-- The arguments are:
+-- 1. An option table.
+-- 2. A list of the form { Option1 => validValues1, Option2 => validValues2, ...}
+--     where validValues is either a type or a list of valid values.
+-- If an option value is not of the expected class or not in the appropriate
+--     set, an intelligible error message is returned. 
+
+checkOptions = method()
+
+checkOptions ( OptionTable, List ) := (o, L) -> 
+(
+    opts := new HashTable from L;
+    scanKeys( opts, k -> 
+	(
+	    if instance( opts#k, VisibleList ) and not member( o#k, opts#k ) then
+	        (
+	            error ( "checkOptions: option " | toString( k ) | " must be an element of " | toString( opts#k ) )
+		);   
+	    if instance( opts#k, Type ) and not instance( o#k, opts#k ) then
+	        (
+		    error ( "checkOptions: option " | toString( k ) | " must be of class " | toString( opts#k ) )
+		)
+	) 
+    )
+)
+
+
