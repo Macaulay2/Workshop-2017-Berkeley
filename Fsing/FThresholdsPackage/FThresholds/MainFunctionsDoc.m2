@@ -98,7 +98,7 @@ doc ///
      Headline
          Atempts to compute the F-pure threshold of a polynomial at the origin. 
      Usage
-          fpt(f,e,FRegularityCheck=>V,Verbose=>W)
+          fpt(f,e)
      Inputs
         f:RingElement
         e:ZZ
@@ -118,7 +118,13 @@ doc ///
         Q:QQ
      Description
           Text 
-              This tries to find an exact value for the fpt.  If it can, it returns that value.  Otherwise it returns a range of possible values (eventually).  
+              This function first tries to find an exact value for the F-pure threshold of f at the origin, and returns the value 
+	      if possible. Otherwise, it returns a range of possible values for the F-pure threshold.  If Options DiagonalCheck, 
+	      BinomialCheck, and BinaryFormCheck are {\tt true}, respectively (and each have default value {\tt true}), then the 
+	      function first checks whether f is a diagonal polynomial, a binomial polynomial, or a form in two variables, respectively.  
+	      If so, algorithms of D. Hernandez, or D. Hernandez and P. Teixeira, are applied to compute the F-pure threshold of f. 
+	      
+	      
 	      It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  
 	      Next it tries to estimate the range of the FPT using nu's.  
 	      Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument. 
