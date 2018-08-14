@@ -89,7 +89,7 @@ doc ///
 doc ///
      Key
          fpt
-	 fpt(RingElement, ZZ)
+	 ( fpt, RingElement, ZZ )
 	 [fpt, BinaryFormCheck]
 	 [fpt, BinomialCheck]
 	 [fpt, DiagonalCheck]
