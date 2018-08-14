@@ -219,7 +219,7 @@ doc ///
         :Boolean
     Description
         Text
-            Given a normal Q-Gorenstein ring $R$ (or a Gorenstein ring in general), this computes whether the ring is strongly F-regular.
+            Given a normal Q-Gorenstein ring $R$ (or a Gorenstein ring in general), this computes whether the ring is strongly F-regular.  It can also prove that a non-Q-Gorenstein ring is F-regular (but cannot show it is not).  See below for how to access this functionality.
         Example
             R = ZZ/5[x,y,z]/ideal(x^2+y*z);
             isFregular(R)
@@ -258,6 +258,15 @@ doc ///
             The option {\tt AssumeDomain => true} is used when finding a test element.  The default value is {\tt false}.  The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
         Text
             When working in a Q-Gorenstein ring this function finds an $N$ such that $N * K_R$ is Cartier.  This option controls the maximum value of $N$ to consider.  The default value is $100$.  If you pass this function a ring such that the smallest such $N$ is less that MaxCartierIndex, then the function will throw an error.  This value is ignored if the user specifies the option {\tt QGorensteinIndex}.  In particular, specifying the {\tt QGorensteinIndex} will let the user skip the search for the value $N$.
+        Text
+            You can also show that rings that are {\bf NOT} Q-Gorenstein are F-regular (it cannot show that such a ring is {\bf not} F-regular).  To do this, set the option {\tt QGorensteinIndex=>infinity}.  One may change the option {\tt MaxCartierIndex} to increase the depth of search.  
+        Example
+            S = ZZ/7[x,y,z,u,v,w];
+            I = minors(2, matrix{{x,y,z},{u,v,w}});
+            debugLevel = 1;
+            time isFregular(S/I, QGorensteinIndex=>infinity)
+            time isFregular(S/I, QGorensteinIndex=>infinity, MaxCartierIndex=>20)
+            debugLevel = 0;
 ///
 
 doc ///
