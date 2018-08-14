@@ -225,6 +225,23 @@ o5 = ideal (y - z, x + z)
 o5 : Ideal of R
 \end{verbatim}
 
+We briefly explain how this is computed.  First we find a \emph{test element}.  
+\begin{remark}[Computation of test elements]  
+\label{rem.ComputationOfTestElements}
+Roughly, we recall that an element of the Jacobian ideal that is not contained in any minimal prime is a test element \cite{}.  We compute test elements by computing random partial derivatives (and linear combinations thereof) until we find an element that doesn't vanish at all the minimal primes.  This method is much faster than computing the entire Jacobian ideal.  If you know your ring is a domain, you can use the {\tt AssumeDomain} flag to speed this up further.
+\end{remark}
+
+After the test element $c$ has been identified, we pullback the ideal $\omega_R$ to an ideal $J = S$.  Then we compute the following ascending sequence of ideals 
+\begin{equation}
+\label{eq.AscendIdealExplanation}
+\begin{array}{rll}
+J_1 := & = J + (c J)^{[1/p]} & = {\tt J + frobeniusRoot(1, c*J)}\\
+J_2 := & = J + (c J)^{[1/p]} + (c^{1+p} J)^{[1/p^2]} & = {\tt J + frobeniusRoot(1, c*J_1)}\\
+J_3 := & = J + (c J)^{[1/p]} + (c^{1+p} J)^{[1/p^2]} + (c^{1+p+p^2} J)^{[1/p^3]} & = {\tt J + frobeniusRoot(1, c*J_2)}.\\
+\dots 
+\end{array}
+\end{equation}
+In fact, because this strategy is used in several contexts, you can call it directly for a chosen ideal $J$ and $u$ with the function {\tt ascendIdeal}. 
 
 \subsection{Parameter test ideals}
 
