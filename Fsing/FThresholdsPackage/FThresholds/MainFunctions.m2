@@ -60,8 +60,9 @@ nu1 ( RingElement, Ideal ) := ( f, J ) ->
 
 ----------------------------------------------------------------------------------
 -- TESTS
+-- purpose is to verify containment in Frobenius powers
 
--- testRoot(J,a,I,e) checks whether J^a is a subset of I^[p^e], using frobeniusRoot
+-- testRoot(J,a,I,e) checks whether J^a is a subset of I^[p^e] by checking whether (J^a)^[1/p^e] is a subset of I
 testRoot = ( J, a, I, e ) -> isSubset( frobeniusRoot( e, a, J ), I )
 
 -- testPower(J,a,I,e) checks whether J^a is  a subset of I^[p^e], directly
@@ -88,8 +89,8 @@ test := new HashTable from { FrobeniusPower => testFrobeniusPower, FrobeniusRoot
 ----------------------------------------------------------------------------------
 -- SEARCH FUNCTIONS
 
--- Each *Search(I,J,e,a,b,test) searches for the last n in [a,b) such that 
--- test(I,n,J,e) is false, assuming that test(I,a,J,e) is false and test(I,b,J,e) 
+-- Each *Search(I,J,e,a,b,testFunction) searches for the last n in [a,b) such that 
+-- testFunction(I,n,J,e) is false, assuming that test(I,a,J,e) is false and test(I,b,J,e) 
 -- is true.
 
 -- Non-recursive binary search, based on our previous code
@@ -141,17 +142,6 @@ optPoly = append( optPolyList, ComputePreviousNus => true )
 ----------------------------------------------------------------------------------
 -- INTERNAL FUNCTION
 
--*
-optIdealList = { ContainmentTest => StandardPower, UseColonIdeals => false, Search => Binary }
-
-optPolyList = { ContainmentTest => FrobeniusRoot, UseColonIdeals => false, Search => Binary }
-
-optIdeal = append( optIdealList, ComputePreviousNus => true )
-
-optPoly = append( optPolyList, ComputePreviousNus => true )
-
-*-
-
 nuInternal = optIdeal >> o -> ( n, f, J ) -> 
 (
     -- verify if option values are valid
@@ -163,6 +153,10 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
 	    ComputePreviousNus => Boolean
 	}
     );
+
+    -- Check if polynomial has coefficients in a finite field
+        if not isPolynomialOverFiniteField f  then 
+        error "nu: expected polynomial with coefficients in a finite field";
  
     p := char ring f;
     nu := nu1( f, J );
