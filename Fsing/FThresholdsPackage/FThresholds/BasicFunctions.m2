@@ -352,11 +352,11 @@ checkOptions ( OptionTable, List ) := (o, L) ->
 	(
 	    if instance( opts#k, VisibleList ) and not member( o#k, opts#k ) then
 	        (
-	            error ( "checkOptions: option " | toString( k ) | " must be an element of " | toString( opts#k ) )
+	            error ( "checkOptions: value for option " | toString( k ) | " must be an element of " | toString( opts#k ) )
 		);   
 	    if instance( opts#k, Type ) and not instance( o#k, opts#k ) then
 	        (
-		    error ( "checkOptions: option " | toString( k ) | " must be of class " | toString( opts#k ) )
+		    error ( "checkOptions: value for option " | toString( k ) | " must be of class " | toString( opts#k ) )
 		)
 	) 
     )
