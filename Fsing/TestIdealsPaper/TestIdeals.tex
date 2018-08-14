@@ -69,11 +69,11 @@ and the resulting theory of test ideals. {\hfill\large\color{red} [Add reference
 
 \subsection*{Acknowledgements}
 
-We thank ??? for useful conversations and comments on the development of this package.  
+We thank ??? for useful conversations and comments on the development of this package.
 
 \section{Frobenius powers and Frobenius roots}\label{Section: Frobenius powers and Frobenius roots}
 
-%%% Throughout  this paper $R$ will denote a polynomial ring over a field $\mathbb{K}$ of prime characteristic $p$. 
+%%% Throughout  this paper $R$ will denote a polynomial ring over a field $\mathbb{K}$ of prime characteristic $p$.
 
 Let $S$ denote any commutative ring of prime characteristic $p$.
 
@@ -90,7 +90,7 @@ For any ideal $I\subseteq S$ and any integer $e\geq I$, we define the \emph{$e$t
 the smallest ideal $J$ such that $I\subseteq J^{[p^e]}$, if such ideal exists.
 \end{definition}
 
-$e$th Frobenius roots exist in polynomial rings (cf.~\cite[\S 2]{BlickleMustataSmithDiscretenessAndRationalityOfFThresholds}) and in power series rings 
+$e$th Frobenius roots exist in polynomial rings (cf.~\cite[\S 2]{BlickleMustataSmithDiscretenessAndRationalityOfFThresholds}) and in power series rings
 (cf.~\cite[\S 5]{KatzmanParameterTestIdealOfCMRings}).
 
 
@@ -109,7 +109,7 @@ We can extend the definition of Frobenius powers as follows
 \begin{definition}{\hfill\large\color{red} [Add references]}\\
 Let  $I\subseteq S$ be an ideal.
 \begin{enumerate}
- \item[(a)] If $a$ is a positive integer with base-$p$ expansion  $a=a_0 + a_1 p +  \dots + a_r p^r$, we define 
+ \item[(a)] If $a$ is a positive integer with base-$p$ expansion  $a=a_0 + a_1 p +  \dots + a_r p^r$, we define
  $I^{[n]}=I^{a_0} \left(I^{a_1}\right)^{[p]} \dots  (I^{a_r})^{[p^r]}$. %\left( I^{a_r}\right)^{[p^r]}$ .
  \item[(b)] If $t$ is a non-negative rational number of the form $t = a/p^e$, we define  $I^{[t]} = (I^{[a]})^{[1/p^e]}.$
  \item[(c)] If $t$ is any non-negative rational number, and $\{a_n/p^{e_n}\}_{n\geq 1}$ is a sequence of rational numbers converging to $t$ from above, we define $I^{[t]}$
@@ -135,19 +135,19 @@ o6 : Ideal of R
 \begin{definition}%{\hfill\large\color{red} [Add references]}\\
 Let  $M$ be an $S$-module and $e$ a non-negative integer.
 \begin{enumerate}
- \item[(a)] A $p^{-e}$-linear map $\phi:M \rightarrow M$ is an additive map such that 
+ \item[(a)] A $p^{-e}$-linear map $\phi:M \rightarrow M$ is an additive map such that
  $\phi(s^{p^e} m)= s\phi(m)$ for all $s\in S$ and $m\in M$.
- \item[(b)] A $p^{e}$-linear map $\psi:M \rightarrow M$ is an additive map such that 
+ \item[(b)] A $p^{e}$-linear map $\psi:M \rightarrow M$ is an additive map such that
  $\phi(s m)= s^{p^e}\phi(m)$ for all $s\in S$ and $m\in M$.
 \end{enumerate}
 \end{definition}
 
 
-The following two examples describe two prototypical 
+The following two examples describe two prototypical
 $p^{-e}$- and $p^{e}$-linear maps.
 \begin{example}
 For any $S$-module $M$, we can construct a new $S$-module $F_*^e M$ with elements $\{ F_*^e m \,|\,m\in M\}$ by defining
-$F_*^e m_1 + F_*^e m_2 = F_*^e (m_1 +  m_2)$ for all $m_1, m_2 \in M$ and 
+$F_*^e m_1 + F_*^e m_2 = F_*^e (m_1 +  m_2)$ for all $m_1, m_2 \in M$ and
 $s F_*^e m= F_*^e s^{p^e}$ for all $m\in M$ and $s\in S$.
 
 Consider any $\phi\in \Hom_S(F_*^e M, M)$: if we identify $F_*^e M$ with $M$ we can interpret $\phi$ as a $p^{-e}$-linear map.
@@ -188,6 +188,50 @@ when the characteristic of $\mathbb{K}$ is $7$ and non-injective when the charac
 \section{$F$-singularities}
 
 \section{Test ideals}
+
+In this section, we explain how to compute parameter test modules, parameter test ideals, test ideals and HSLG-modules\footnote{HSLG-modules can be used to give a scheme structure to the $F$-injective or $F$-pure locus.}.
+
+\subsection{Parameter test modules}
+
+Given an $F$-finite reduced ring $R$, the Frobenius map $R \to R^{1/p^e}$ is dual to $T : \omega_{R^{1/p^e}} \to \omega_R$.  As before in \autoref{}, we can represent $\omega_R \subseteq R$ as an ideal, we can write $R = S/I$, and so we can find a $u \in S^{1/p^e}$ representing the map $\omega_{R^{1/p^e}} \to \omega_R$.
+
+The parameter test submodule is the smallest submodule $M \subseteq \omega_R$ (and hence ideal of $R$ since $M \subseteq R$) that agrees generically with $\omega_R$ and that satisfies
+\[
+T (M^{1/p^e}) \subseteq M.
+\]
+From within Macualay2, we can compute this using the {\tt testModule} command as follows.
+\begin{verbatim}
+i3 : R = ZZ/5[x,y,z]/ideal(x^4+y^4+z^4);
+i4 : N = testModule(R);
+i5 : N#0
+             2             2        2
+o5 = ideal (z , y*z, x*z, y , x*y, x )
+o5 : Ideal of R
+i6 : N#1
+o6 = ideal 1
+o6 : Ideal of R
+\end{verbatim}
+The output of {\tt testModule} is a list with three items.  The first entry is the test module, the second is the canonical module (as an ideal) that it lives inside, and the third is the element $u$ described above (not listed here, since it is rather complicated).  Note since this ring is Gorenstein, the canonical module is simply represented as the unit ideal.
+
+Here is another example where the ring is not Gorenstein.  
+\begin{verbatim}
+i2 : R = ZZ/5[x,y,z]/ideal(y*z, x*z, x*y);
+i3 : N = testModule(R);
+i4 : N#0
+             2   2   2
+o4 = ideal (z , y , x )
+o4 : Ideal of R
+i5 : N#1
+o5 = ideal (y - z, x + z)
+o5 : Ideal of R
+\end{verbatim}
+
+
+\subsection{Parameter test ideals}
+
+\subsection{Test ideals}
+
+\subsection{HSLG modules}
 
 \section{Ideals compatible with given $p^{-e}$-linear map}
 
@@ -245,4 +289,4 @@ In (cf.~\cite[\S 9]{KatzmanParameterTestIdealOfCMRings})
 
 
 
-\end{document} 
+\end{document}

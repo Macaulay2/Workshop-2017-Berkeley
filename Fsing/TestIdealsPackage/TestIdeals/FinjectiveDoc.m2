@@ -148,7 +148,7 @@ doc ///
         Text
             If {\tt AssumedReduced=>true} (default {\tt true}) then the bottom local cohomology is avoided (this means the Frobenius action on the top potentially nonzero Ext is not computed).
         Text
-            If {\tt AssumeNormal=>true} (default {\tt false}) then certain cohomologies of the local cohomology can be avoided.
+            If {\tt AssumeNormal=>true} (default {\tt false}) then we need not compute the bottom two local cohomology modules (or rather their duals).
         Text
             The option {\tt FrobeniusRootStrategy} is passed to internal @TO frobeniusRoot@ calls.
     SeeAlso
