@@ -2,7 +2,7 @@ doc ///
      Key
           BinaryFormCheck
      Headline
-          An option for the function fpt
+          An option for fpt to check whether 
      Description
           Text
                Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
@@ -44,6 +44,28 @@ doc ///
      Description
           Text
                Specifies which test you use to check containment of powers of ideals. Valid values are {\tt FrobeniusPower, FrobeniusRoot}, and {\tt StandardPower}. 
+///
+
+doc ///
+     Key
+         criticalExponentApproximation
+         (criticalExponentApproximation,ZZ,Ideal,Ideal)
+         (criticalExponentApproximation,ZZ,RingElement,Ideal)
+     Headline
+        Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
+     Usage
+          criticalExponentApproximation(e,I,J)
+          criticalExponentApproximation(e,f,J) 
+     Inputs
+         e:ZZ
+         I:Ideal
+         J:Ideal
+         f:RingElement
+     Outputs
+         :List
+     Description
+         Text 
+             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
 ///
 
 doc ///
@@ -136,28 +158,6 @@ doc ///
      Description
          Text 
              This returns a list of nu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {nu_I^J(p^d)/p^d} converges to the F-threshold of I or f with respect to J.         
-///
-
-doc ///
-     Key
-         criticalExponentApproximation
-         (criticalExponentApproximation,ZZ,Ideal,Ideal)
-         (criticalExponentApproximation,ZZ,RingElement,Ideal)
-     Headline
-        Gives a list of mu_I^J(p^d)/p^d for d=0,...,e.
-     Usage
-          criticalExponentApproximation(e,I,J)
-          criticalExponentApproximation(e,f,J) 
-     Inputs
-         e:ZZ
-         I:Ideal
-         J:Ideal
-         f:RingElement
-     Outputs
-         :List
-     Description
-         Text 
-             This returns a list of mu_I^J(p^d)/p^d for d = 0, ..., e.  The sequence {mu_I^J(p^d)/p^d} converges to the critical exponent of I or f with respect to J.       
 ///
 
 doc ///
