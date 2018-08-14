@@ -333,7 +333,7 @@ isFRegularPoly = ( f, t, Q ) -> not isSubset( testIdeal( t, f ), Q )
 
 -- F-pure threshold estimation, at the origin.
 -- e is the max depth to search in.
--- FRegularityCheck is whether the last isFRegularPoly is run (it is possibly very slow). 
+-- FRegularityCheck is whether the last isFRegularPoly is run (which can take a significant amount of time). 
 -- This is essentially the same as the old estFPT, with a couple more tests, and changes to make the code clearer.
 fpt = method( 
     Options => 

@@ -46,7 +46,7 @@ doc ///
      Description
           Text
                Specifies which test you use to check containment of powers of ideals. Valid values are {\tt FrobeniusPower}, 
-	       {\tt FrobeniusRoot}, and {\tt StandardPower}. Default for nu and nuList applied to a polynomial is {\tt FrobeniusRoot}, 
+	       {\tt FrobeniusRoot}, and {\tt StandardPower}.  Default for nu and nuList applied to a polynomial is {\tt FrobeniusRoot}, 
 	       and applied to an ideal is {\tt StandardPower}. 
 ///
 
@@ -89,21 +89,33 @@ doc ///
 doc ///
      Key
          fpt
+	 (fpt RingElement, ZZ)
+	 [fpt, BinaryFormCheck]
+	 [fpt, BinomialCheck]
+	 [fpt, DiagonalCheck]
+	 [fpt, FRegularityCheck]
+	 [fpt, NuCheck]
      Headline
-         Atempts to compute the F-pure threshold of a polynomial at the origin  
+         Atempts to compute the F-pure threshold of a polynomial at the origin. 
      Usage
-          estFPT(f,e,FinalCheck=>V,Verbose=>W)
+          fpt(f,e,FRegularityCheck=>V,Verbose=>W)
      Inputs
          f:RingElement
          e:ZZ
-         V:Boolean
-         W:Boolean
+         BinaryFormCheck => Symbol
+            option to specify whether to check if f is a binary form
+	 BinomialChheck => Symbol 
      Outputs
         L:List
         Q:QQ
      Description
           Text 
-              This tries to find an exact value for the fpt.  If it can, it returns that value.  Otherwise it should return a range of possible values (eventually).  It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  Next it tries to estimate the range of the FPT using nu's.  Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument.  finalCheck is a Boolean with default value True that determines whether the last isFRegularPoly is run (it is possibly very slow).  If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be.  Verbose set to true displays verbose output.
+              This tries to find an exact value for the fpt.  If it can, it returns that value.  Otherwise it returns a range of possible values (eventually).  
+	      It first checks to see if the ring is binonmial or diagonal.  In either case it uses methods of D. Hernandez.  
+	      Next it tries to estimate the range of the FPT using nu's.  
+	      Finally, it tries to use this to deduce the actual FPT via taking advantage of convexity of the F-signature function and a secant line argument. 
+	      finalCheck is a Boolean with default value True that determines whether the last isFRegularPoly is run (it is possibly very slow).  
+	      If FinalCheck is false, then a last time consuming check won't be tried.  If it is true, it will be.  Verbose set to true displays verbose output.
 ///
 
 doc ///
@@ -253,10 +265,10 @@ doc ///
      Key
           NuCheck
      Headline
-          An option for the function fpt
+          An option for the function fpt to specify whether the user would like to check whether nu/(p^e-1) or (nu+1)/p^e is the F-pure threshold.
      Description
           Text
-               Valid values are {\tt true} or {\tt false}
+               Takes on only Boolean values.  Default value for fpt is {\tt true}. 
      SeeAlso
           fpt
 ///
