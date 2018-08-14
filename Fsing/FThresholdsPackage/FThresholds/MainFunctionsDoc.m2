@@ -5,7 +5,8 @@ doc ///
           An option for the function fpt
      Description
           Text
-               Valid values are {\tt true} or {\tt false}
+              Enables the user to check whether an input is a form in two variables (so that the function "binaryFormFPT" can be used). 
+	           Valid values are {\tt true} or {\tt false}.
      SeeAlso
           fpt
 ///
@@ -17,7 +18,8 @@ doc ///
           An option for the functions nu and nuList
      Description
           Text
-               Valid Values are {\tt Binary, BinaryRecursive}, and {\tt Linear}. 
+               Lets user specify the order in which ideal containment of powers are computed. Valid values are 
+	            {\tt Binary, BinaryRecursive}, and {\tt Linear}. 
      SeeAlso
           nu
           nuList
@@ -30,7 +32,7 @@ doc ///
           An option for the function fpt
      Description
           Text
-               Valid values are {\tt true} or {\tt false}
+               Enables the user to check whether an input is a binomial in a polynomial ring.  Valid values are {\tt true} or {\tt false}.
      SeeAlso
           fpt
 ///
