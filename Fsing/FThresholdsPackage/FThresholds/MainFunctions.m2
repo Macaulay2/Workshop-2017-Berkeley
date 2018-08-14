@@ -141,8 +141,29 @@ optPoly = append( optPolyList, ComputePreviousNus => true )
 ----------------------------------------------------------------------------------
 -- INTERNAL FUNCTION
 
+-*
+optIdealList = { ContainmentTest => StandardPower, UseColonIdeals => false, Search => Binary }
+
+optPolyList = { ContainmentTest => FrobeniusRoot, UseColonIdeals => false, Search => Binary }
+
+optIdeal = append( optIdealList, ComputePreviousNus => true )
+
+optPoly = append( optPolyList, ComputePreviousNus => true )
+
+*-
+
 nuInternal = optIdeal >> o -> ( n, f, J ) -> 
-( 
+(
+    -- verify if option values are valid
+    checkOptions( o,
+	{
+	    ContainmentTest => { StandardPower, FrobeniusRoot, FrobeniusPower },
+	    Search => { Binary, Linear, BinaryRecursive },
+	    UseColonIdeals => Boolean,
+	    ComputePreviousNus => Boolean
+	}
+    );
+ 
     p := char ring f;
     nu := nu1( f, J );
     theList := { nu };
