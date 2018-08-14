@@ -306,7 +306,7 @@ criticalExponentApproximation ( ZZ, RingElement, Ideal ) := ( e, f, J ) ->
 
 --Guesses the FPT of ff.  It returns a list of all numbers in 
 --the range suggested by nu( e1, ff ) with maxDenom as the maximum denominator
-guessFPT := ( f, e, maxDenom ) ->
+guessFPT = ( f, e, maxDenom ) ->
 (
     Nu := nu(e,f);
     p := char ring f;
@@ -381,7 +381,7 @@ fpt ( RingElement, ZZ ) := QQ => o -> ( f, e ) ->
     if o.Verbose then print "\nStarting fpt ...";
     
     -- Check if fpt equals 1
-    if not isSubset( ideal( f^(p-1) ), frobenius M ) then 
+    if not isSubset( ideal f^(p-1), frobenius M ) then 
     (
         if o.Verbose then print "\nnu(1,f) = p-1, so fpt(f) = 1."; 
         return 1 
@@ -521,21 +521,20 @@ isFPT ( QQ, RingElement ) := o -> ( t, f ) ->
 
     -- sigma
     a1 := if c == 0 then a-1 else floor( (a-1)/(p^c-1) );
-    Sigma := if c == 0 then sigma( f, p-1, 1 ) 
-        else sigma( f, ( (a-1)%(p^c-1) ) + 1, c );	
+    Sigma := if c == 0 then sigma(f,p-1,1) else sigma(f,(a-1)%(p^c-1)+1,c);	
     if o.Verbose then print "\nSigma Computed";
 	
-    if not isSubset( ideal 1_R, frobeniusRoot( b, a1, f , Sigma ) ) then
+    if not isSubset( ideal 1_R, frobeniusRoot(b,a1,f,Sigma) ) then
         return false; 
 
     if o.Verbose then print "\nWe know t <= FPT";
     
     -- Higher tau
     a2 := if c == 0 then a else floor( a /(p^c-1) );
-    Tau := if c == 0 then ideal 1_R else testIdeal( fracPart( a/(p^c-1) ), f );
+    Tau := if c == 0 then ideal 1_R else testIdeal( fracPart(a/(p^c-1)), f );
     if o.Verbose then print "\nHigher tau Computed";
     
-    not isSubset( ideal 1_R, frobeniusRoot( b, a2, f, Tau ) )
+    not isSubset( ideal 1_R, frobeniusRoot(b,a2,f,Tau) )
 )
 
 isFPT ( ZZ, RingElement ) := o -> ( t, f ) -> isFPT( t/1, f, o )
