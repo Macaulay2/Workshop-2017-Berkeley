@@ -174,6 +174,10 @@ nuInternal = optIdeal >> o -> ( n, f, J ) ->
 	    ComputePreviousNus => Boolean
 	}
     );
+
+    -- Check if polynomial has coefficients in a finite field
+        if not isPolynomialOverFiniteField f  then 
+        error "nu: expected polynomial with coefficients in a finite field";
  
     p := char ring f;
     nu := nu1( f, J );
