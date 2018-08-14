@@ -26,3 +26,26 @@ g=x^3+y^3+z^3
 u=g^(7-1)
 
 frobeniusPower(1/7,ideal(u))
+
+restart; 
+loadPackage "TestIdeals"
+
+R = ZZ/3[u,v];
+
+u = u^2*v^2;
+
+compatibleIdeals(u)
+
+
+
+restart;
+
+pp=2;
+m=5;
+R=ZZ/pp[x_1..x_m]; 
+E=matrix {{x_1,x_2,x_2,x_5},{x_4,x_4,x_3,x_1}};
+I=minors(2,E);
+I=gens I;
+u=x_1^3*x_2*x_3 + x_1^3*x_2*x_4+x_1^2*x_3*x_4*x_5+ x_1*x_2*x_3*x_4*x_5+ x_1*x_2*x_4^2*x_5+ x_2^2*x_4^2*x_5+x_3*x_4^2*x_5^2+ x_4^3*x_5^2;
+
+
